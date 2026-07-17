@@ -1,0 +1,222 @@
+{
+  "meta": {
+    "schemaVersion": 4,
+    "project": "Example App",
+    "projectSlug": "example-app",
+    "date": "2026-07-10",
+    "auditedCommit": "abc1234",
+    "scope": {
+      "dimensions": [
+        "security",
+        "concurrency",
+        "reliability",
+        "accessibility",
+        "ui",
+        "infra"
+      ],
+      "runtimePass": false,
+      "quick": false,
+      "excludedDimensions": [
+        {
+          "dimension": "operability",
+          "status": "not-assessed",
+          "reason": "Conditional dimension introduced after this run; resolve applicability and assess on the next full audit."
+        },
+        {
+          "dimension": "testing-confidence",
+          "status": "not-assessed",
+          "reason": "Conditional dimension introduced after this run; resolve applicability and assess on the next full audit."
+        },
+        {
+          "dimension": "data-migration-safety",
+          "status": "not-assessed",
+          "reason": "Conditional dimension introduced after this run; resolve applicability and assess on the next full audit."
+        },
+        {
+          "dimension": "release-safety",
+          "status": "not-assessed",
+          "reason": "Conditional dimension introduced after this run; resolve applicability and assess on the next full audit."
+        },
+        {
+          "dimension": "performance-capacity",
+          "status": "not-assessed",
+          "reason": "Conditional dimension introduced after this run; resolve applicability and assess on the next full audit."
+        }
+      ]
+    },
+    "skillVersion": "v1",
+    "loc": 12000
+  },
+  "verdict": {
+    "level": "ship-with-known-risks",
+    "assessedScope": "static",
+    "justification": "Assessed statically, without a runtime pass. One high-severity authorization gap (SEC-01) must be fixed before opening signups beyond the invite list. No critical findings. Reliability and accessibility issues are real but not launch-blocking for an invite-gated audience.",
+    "blockingFindingIds": [
+      "SEC-01"
+    ]
+  },
+  "shipGates": [
+    {
+      "gate": "mobile",
+      "status": "met",
+      "note": "Responsive layout with no fixed-width core paths; touch targets meet 44px. Device-level checks are runtime (see Not assessed)."
+    },
+    {
+      "gate": "instrumentation",
+      "status": "not-assessed",
+      "note": "A static pass cannot confirm the activation funnel fires end to end. Run the instrumentation discipline against a live session to verify one identity across client and server."
+    }
+  ],
+  "stats": {
+    "bySeverity": {
+      "critical": 0,
+      "high": 1,
+      "medium": 1,
+      "low": 1,
+      "informational": 0
+    },
+    "byDimension": {
+      "security": 1,
+      "concurrency": 1,
+      "reliability": 0,
+      "accessibility": 1,
+      "ui": 0,
+      "infra": 0
+    },
+    "verification": {
+      "confirmed": 1,
+      "downgraded": 1,
+      "refuted": 2
+    }
+  },
+  "findings": [
+    {
+      "id": "SEC-01",
+      "kind": "risk",
+      "severity": "high",
+      "category": "security",
+      "dimension": "security",
+      "location": {
+        "file": "lib/settings/actions.ts",
+        "line": 42,
+        "symbol": "updateHouseholdName"
+      },
+      "issue": "Server action updates a household row using a client-supplied householdId without checking the caller's membership.",
+      "impact": "Any authenticated user can rename another household by invoking the action with a foreign householdId.",
+      "evidence": "lib/settings/actions.ts:42 reads householdId from FormData and passes it to the update at line 55; no membership lookup between. RLS policy on households (migrations/0008) covers select but the update policy uses USING (true).",
+      "recommendedFix": "Resolve householdId from the caller's membership server-side instead of trusting the form value, and tighten the update policy to membership-scoped USING/WITH CHECK.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "confirmed",
+        "refutationNotes": "Skeptic checked middleware, layout gate, and all migrations touching households; no compensating control found. rls-isolation tests do not cover update.",
+        "method": "fresh-subagent"
+      },
+      "instances": [
+        {
+          "file": "lib/settings/actions.ts",
+          "line": 78,
+          "symbol": "updateHouseholdTimezone"
+        }
+      ]
+    },
+    {
+      "id": "CON-01",
+      "kind": "risk",
+      "severity": "medium",
+      "category": "race-condition",
+      "dimension": "concurrency",
+      "location": {
+        "file": "components/shopping/add-item-form.tsx",
+        "line": 31
+      },
+      "issue": "Submit button stays enabled while the server action is in flight; double-click creates duplicate list items.",
+      "impact": "Duplicate shopping items under normal double-click behavior; no data corruption.",
+      "evidence": "No pending state from useActionState is applied to the button's disabled prop (components/shopping/add-item-form.tsx:31); the insert has no idempotency key.",
+      "recommendedFix": "Disable the control while pending and add a client-generated idempotency key or a unique constraint on (list_id, normalized_name).",
+      "confidence": "high-confidence",
+      "assumption": "Assumes no debouncing exists in a parent component; none was found in the component tree read.",
+      "verification": {
+        "status": "downgraded",
+        "refutationNotes": "Originally high; skeptic confirmed duplicates are possible but showed deletes are one tap and no financial or shared-state damage occurs, failing the high bar."
+      }
+    },
+    {
+      "id": "A11Y-01",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "accessibility",
+      "dimension": "accessibility",
+      "location": {
+        "file": "components/ui/modal.tsx",
+        "line": 12
+      },
+      "issue": "Modal renders without a focus trap; Tab moves focus to content behind the overlay.",
+      "impact": "Keyboard and screen-reader users can interact with obscured content while the modal is open.",
+      "evidence": "components/ui/modal.tsx:12 renders a fixed overlay div with no focus management; no inert or aria-modal usage anywhere in the file.",
+      "recommendedFix": "Add aria-modal, role=dialog, and a focus trap (or use the native dialog element); restore focus to the trigger on close.",
+      "confidence": "needs-verification",
+      "verification": {
+        "status": "not-verified"
+      },
+      "reproduction": "Open any modal, press Tab repeatedly, observe focus outline on background controls."
+    }
+  ],
+  "remediationPlan": [
+    {
+      "title": "Membership-scope all household mutations",
+      "findingIds": [
+        "SEC-01"
+      ],
+      "detail": "Fix the two actions and the RLS update policy together, then extend rls-isolation tests to cover updates."
+    },
+    {
+      "title": "Pending-state discipline on mutation forms",
+      "findingIds": [
+        "CON-01"
+      ]
+    }
+  ],
+  "quickWins": [
+    {
+      "title": "Disable submit while pending in add-item-form",
+      "findingId": "CON-01",
+      "blastRadius": "One form component; worst case a stuck disabled state on error, mitigated by useActionState reset."
+    }
+  ],
+  "deeperInvestigation": [
+    {
+      "title": "Idempotency strategy for all inserts",
+      "detail": "Duplicate-on-retry applies beyond shopping items; needs a project-wide convention (unique constraints or idempotency keys).",
+      "findingIds": [
+        "CON-01"
+      ]
+    }
+  ],
+  "notAssessed": [
+    {
+      "check": "Focus visibility and contrast on rendered UI",
+      "reason": "Static run; no browser pass",
+      "howToVerify": "Run /production-audit --runtime, or tab through the app with axe DevTools open at 200% zoom."
+    }
+  ],
+  "mechanicalSweeps": [
+    {
+      "name": "dependency-audit",
+      "tool": "npm audit",
+      "outcome": "clean",
+      "summary": "0 high/critical advisories"
+    },
+    {
+      "name": "secret-scan",
+      "tool": "grep patterns",
+      "outcome": "clean",
+      "summary": "No key-shaped strings outside .env(.example)"
+    },
+    {
+      "name": "lint",
+      "tool": "eslint",
+      "outcome": "findings",
+      "summary": "12 warnings, 0 errors; none security-relevant"
+    }
+  ]
+}

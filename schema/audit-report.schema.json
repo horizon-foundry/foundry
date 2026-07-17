@@ -1,0 +1,278 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/horizon-foundry/foundry/main/schema/audit-report.schema.json",
+  "title": "Production Audit Report",
+  "description": "Output contract for a /production-audit run. Emitted by the skill, rendered by the site's ReportView. Bump meta.schemaVersion on breaking changes and update both sides in the same commit.",
+  "type": "object",
+  "required": ["meta", "verdict", "shipGates", "stats", "findings", "remediationPlan", "quickWins", "deeperInvestigation", "notAssessed", "mechanicalSweeps"],
+  "additionalProperties": false,
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": ["schemaVersion", "project", "date", "scope"],
+      "additionalProperties": false,
+      "properties": {
+        "schemaVersion": { "const": 4 },
+        "project": { "type": "string", "minLength": 1, "description": "Human-readable project name" },
+        "projectSlug": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$", "description": "URL slug; report file is <projectSlug>-<date>.json" },
+        "owner": { "type": "string", "pattern": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$", "description": "Email that owns this report. The /reports collection shows a signed-in user only reports whose owner matches their session email; ADMIN_EMAILS see all. Public example reports may omit it." },
+        "date": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+        "auditedCommit": { "type": "string", "description": "Git SHA of the audited working tree HEAD" },
+        "scope": {
+          "type": "object",
+          "required": ["dimensions", "runtimePass"],
+          "additionalProperties": false,
+          "properties": {
+            "dimensions": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": { "$ref": "#/$defs/dimension" },
+              "description": "Dimensions this run assessed. Conditional dimensions the run resolved as inapplicable or unassessable belong in excludedDimensions, not here."
+            },
+            "excludedDimensions": {
+              "type": "array",
+              "description": "Conditional dimensions this run resolved out, each with why: not-applicable (the product has no such surface) or not-assessed (the surface exists but this run could not assess it, e.g. runtime-only checks on a static run).",
+              "items": {
+                "type": "object",
+                "required": ["dimension", "status", "reason"],
+                "additionalProperties": false,
+                "properties": {
+                  "dimension": { "$ref": "#/$defs/dimension" },
+                  "status": { "enum": ["not-applicable", "not-assessed"] },
+                  "reason": { "type": "string", "minLength": 1 }
+                }
+              }
+            },
+            "runtimePass": { "type": "boolean", "description": "Whether a live browser pass ran" },
+            "quick": { "type": "boolean", "description": "True for --quick single-pass triage" }
+          }
+        },
+        "skillVersion": { "type": "string", "description": "Git SHA or tag of the skill repo at run time" },
+        "version": { "type": "string", "description": "The audited product's own release version (e.g. 0.1.0). When set, the report header stamps it instead of leading with the date, so a published report reads as the audit of a release rather than a stale dated run." },
+        "loc": { "type": "integer", "minimum": 0, "description": "Approximate source LOC audited" },
+        "public": { "type": "boolean", "description": "When true, this report is served ungated at /example/<slug> as a public credibility example and is listed on the public /reports index. Default false." }
+      }
+    },
+    "verdict": {
+      "type": "object",
+      "required": ["level", "assessedScope", "justification", "blockingFindingIds"],
+      "additionalProperties": false,
+      "properties": {
+        "level": { "enum": ["safe-to-ship", "ship-with-known-risks", "do-not-ship"] },
+        "assessedScope": { "enum": ["static", "static-plus-runtime"], "description": "The evidence base the verdict rests on. Must be static when scope.runtimePass is false. A static verdict names its evidence base beneath the recommendation (static review, runtime not exercised) and lists the skipped runtime checks under notAssessed, so it never overclaims a runtime-verified result." },
+        "posture": { "type": "string", "description": "One-line honest read of overall health, shown before the findings so a healthy app does not read as broken" },
+        "justification": { "type": "string", "minLength": 1, "description": "Opens by naming the assessed scope, then the reasons" },
+        "blockingFindingIds": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/findingId" },
+          "description": "Findings that drove a non-safe verdict; empty for safe-to-ship. Every finding listed here must have verification.status confirmed or downgraded, never not-verified (enforced by make validate)."
+        }
+      }
+    },
+    "strengths": {
+      "type": "array",
+      "description": "Verified-safe controls the audit confirmed are correct. Naming what is solid is part of an honest audit; rendered prominently before the findings. Not a place for problems.",
+      "items": {
+        "type": "object",
+        "required": ["area", "note"],
+        "additionalProperties": false,
+        "properties": {
+          "area": { "type": "string", "minLength": 1, "description": "Short label, e.g. 'Authorization' or 'Accessibility'" },
+          "note": { "type": "string", "minLength": 1, "description": "What was verified and why it is sound" },
+          "dimension": { "$ref": "#/$defs/dimension" }
+        }
+      }
+    },
+    "shipGates": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Status of the pre-ship release gates (mobile, instrumentation) that cap the verdict. Report every gate the product's surface implies, even if only to say it was not assessed statically. A not-met gate caps the verdict below safe-to-ship.",
+      "items": {
+        "type": "object",
+        "required": ["gate", "status", "note"],
+        "additionalProperties": false,
+        "properties": {
+          "gate": { "enum": ["mobile", "instrumentation"] },
+          "status": { "enum": ["met", "at-risk", "not-met", "not-assessed", "not-applicable"] },
+          "note": { "type": "string", "minLength": 1, "description": "What was checked and the basis for the status" },
+          "findingIds": { "type": "array", "items": { "$ref": "#/$defs/findingId" }, "description": "Findings that inform this gate's status" }
+        }
+      }
+    },
+    "stats": {
+      "type": "object",
+      "required": ["bySeverity", "byDimension", "verification"],
+      "additionalProperties": false,
+      "properties": {
+        "bySeverity": {
+          "type": "object",
+          "required": ["critical", "high", "medium", "low", "informational"],
+          "additionalProperties": false,
+          "properties": {
+            "critical": { "type": "integer", "minimum": 0 },
+            "high": { "type": "integer", "minimum": 0 },
+            "medium": { "type": "integer", "minimum": 0 },
+            "low": { "type": "integer", "minimum": 0 },
+            "informational": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "byDimension": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "security": { "type": "integer", "minimum": 0 },
+            "concurrency": { "type": "integer", "minimum": 0 },
+            "reliability": { "type": "integer", "minimum": 0 },
+            "accessibility": { "type": "integer", "minimum": 0 },
+            "ui": { "type": "integer", "minimum": 0 },
+            "infra": { "type": "integer", "minimum": 0 },
+            "operability": { "type": "integer", "minimum": 0 },
+            "testing-confidence": { "type": "integer", "minimum": 0 },
+            "data-migration-safety": { "type": "integer", "minimum": 0 },
+            "release-safety": { "type": "integer", "minimum": 0 },
+            "performance-capacity": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "verification": {
+          "type": "object",
+          "required": ["confirmed", "downgraded", "refuted"],
+          "additionalProperties": false,
+          "properties": {
+            "confirmed": { "type": "integer", "minimum": 0, "description": "Critical/High findings that survived refutation" },
+            "downgraded": { "type": "integer", "minimum": 0 },
+            "refuted": { "type": "integer", "minimum": 0, "description": "Dropped entirely; not present in findings[]" }
+          }
+        }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/finding" }
+    },
+    "remediationPlan": {
+      "type": "array",
+      "description": "Ordered by priority; index is the order",
+      "items": {
+        "type": "object",
+        "required": ["title", "findingIds"],
+        "additionalProperties": false,
+        "properties": {
+          "title": { "type": "string", "minLength": 1 },
+          "findingIds": { "type": "array", "items": { "$ref": "#/$defs/findingId" } },
+          "detail": { "type": "string" }
+        }
+      }
+    },
+    "quickWins": {
+      "type": "array",
+      "description": "Safe, low-regression-risk fixes",
+      "items": {
+        "type": "object",
+        "required": ["title", "blastRadius"],
+        "additionalProperties": false,
+        "properties": {
+          "title": { "type": "string", "minLength": 1 },
+          "findingId": { "$ref": "#/$defs/findingId" },
+          "blastRadius": { "type": "string", "minLength": 1, "description": "What could regress if this fix is wrong" }
+        }
+      }
+    },
+    "deeperInvestigation": {
+      "type": "array",
+      "description": "Issues needing architectural change or investigation beyond this audit",
+      "items": {
+        "type": "object",
+        "required": ["title"],
+        "additionalProperties": false,
+        "properties": {
+          "title": { "type": "string", "minLength": 1 },
+          "detail": { "type": "string" },
+          "findingIds": { "type": "array", "items": { "$ref": "#/$defs/findingId" } }
+        }
+      }
+    },
+    "notAssessed": {
+      "type": "array",
+      "description": "Checks this run could not perform (typically runtime-only checks in a static run)",
+      "items": {
+        "type": "object",
+        "required": ["check", "howToVerify"],
+        "additionalProperties": false,
+        "properties": {
+          "check": { "type": "string", "minLength": 1 },
+          "reason": { "type": "string" },
+          "howToVerify": { "type": "string", "minLength": 1, "description": "The exact runtime check to run" }
+        }
+      }
+    },
+    "mechanicalSweeps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "outcome"],
+        "additionalProperties": false,
+        "properties": {
+          "name": { "enum": ["dependency-audit", "secret-scan", "lint", "typecheck", "other"] },
+          "tool": { "type": "string" },
+          "outcome": { "enum": ["clean", "findings", "skipped", "failed"] },
+          "summary": { "type": "string" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "findingId": {
+      "type": "string",
+      "pattern": "^(SEC|CON|REL|A11Y|UI|INF|OPS|TEST|DATA|SHIP|PERF)-\\d{2}$",
+      "description": "Dimension prefix + zero-padded ordinal, e.g. SEC-01. Prefixes: SEC security, CON concurrency, REL reliability, A11Y accessibility, UI ui, INF infra, OPS operability, TEST testing-confidence, DATA data-migration-safety, SHIP release-safety, PERF performance-capacity."
+    },
+    "dimension": { "enum": ["security", "concurrency", "reliability", "accessibility", "ui", "infra", "operability", "testing-confidence", "data-migration-safety", "release-safety", "performance-capacity"], "description": "Eleven dimensions with applicability resolved per project: the first six are usually applicable, the last five conditional, and a dimension with no surface here (accessibility on a headless service) is excluded with a reason, never silently skipped." },
+    "severity": { "enum": ["critical", "high", "medium", "low", "informational"] },
+    "location": {
+      "type": "object",
+      "required": ["file"],
+      "additionalProperties": false,
+      "properties": {
+        "file": { "type": "string", "minLength": 1, "description": "Repo-relative path" },
+        "line": { "type": "integer", "minimum": 1 },
+        "symbol": { "type": "string", "description": "Function/component/endpoint name" }
+      }
+    },
+    "finding": {
+      "type": "object",
+      "required": ["id", "kind", "severity", "category", "dimension", "location", "issue", "impact", "evidence", "recommendedFix", "confidence", "verification"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/findingId" },
+        "kind": { "enum": ["risk", "improvement"], "description": "risk: there is a path to harm in production (exposure, data or payment corruption, crash or unavailability, abuse, a hidden active failure). improvement: the code is safe today; this makes it more robust, observable, consistent, accessible, or faster, with no harm path. Only risks drive the verdict; improvements never cap it." },
+        "severity": { "$ref": "#/$defs/severity" },
+        "category": { "enum": ["security", "race-condition", "reliability", "accessibility", "performance", "visual-consistency", "infra", "operability", "testing", "data-safety", "release-process"] },
+        "dimension": { "$ref": "#/$defs/dimension" },
+        "location": { "$ref": "#/$defs/location" },
+        "issue": { "type": "string", "minLength": 1, "description": "What is wrong, one or two sentences" },
+        "impact": { "type": "string", "minLength": 1, "description": "What realistically happens in production" },
+        "evidence": { "type": "string", "minLength": 1, "description": "The code path or condition supporting the finding, citing file:line" },
+        "recommendedFix": { "type": "string", "minLength": 1 },
+        "confidence": { "enum": ["runtime-reproduced", "code-traced", "configuration-confirmed", "high-confidence", "needs-verification"], "description": "Evidence class: runtime-reproduced (behavior observed live), code-traced (complete code path traced), configuration-confirmed (verified in config/infrastructure state), high-confidence (path traced with exactly one named unverified assumption), needs-verification (requires runtime/browser/multi-client observation; the exact check is stated)" },
+        "assumption": { "type": "string", "description": "Required when confidence is high-confidence: the one unverified assumption" },
+        "verification": {
+          "type": "object",
+          "required": ["status"],
+          "additionalProperties": false,
+          "properties": {
+            "status": { "enum": ["confirmed", "downgraded", "not-verified"], "description": "Adversarial verification outcome; refuted findings are removed, not listed" },
+            "method": { "enum": ["fresh-subagent", "different-model", "repro-script", "runtime-test", "human"], "description": "How the skeptic was made independent of the finder. fresh-subagent is the default; high-impact findings should escalate to a more independent method" },
+            "refutationNotes": { "type": "string", "description": "What the skeptic checked; required for downgraded" }
+          }
+        },
+        "instances": {
+          "type": "array",
+          "description": "Additional occurrences of the same root cause",
+          "items": { "$ref": "#/$defs/location" }
+        },
+        "reproduction": { "type": "string", "description": "Steps to trigger; only for runtime-reproduced findings with observable behavior" }
+      }
+    }
+  }
+}

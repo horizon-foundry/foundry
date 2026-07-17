@@ -1,0 +1,48 @@
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Secrets
+*.pem
+.env
+.env.local
+.env.*.local
+
+# User-provided staging area (reference images, drafts, etc.)
+tmp/
+
+# Claude Code per-machine state
+.claude/
+
+# Playwright scratch output
+.playwright-mcp/
+
+# Common toolchain caches, safe to keep here so adding any of these
+# later doesn't require a second commit of ignore rules
+node_modules/
+.next/
+.turbo/
+.cache/
+dist/
+build/
+coverage/
+.eslintcache
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# TypeScript incremental build info
+*.tsbuildinfo
+
+# Internal design-critique logs (impeccable); never publish
+.impeccable/

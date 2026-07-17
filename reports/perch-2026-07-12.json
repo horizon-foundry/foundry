@@ -1,0 +1,661 @@
+{
+  "meta": {
+    "schemaVersion": 4,
+    "project": "Perch",
+    "projectSlug": "perch",
+    "date": "2026-07-12",
+    "auditedCommit": "7c4e9a2",
+    "scope": {
+      "dimensions": [
+        "security",
+        "concurrency",
+        "reliability",
+        "accessibility",
+        "ui",
+        "infra",
+        "operability",
+        "testing-confidence",
+        "data-migration-safety",
+        "release-safety",
+        "performance-capacity"
+      ],
+      "runtimePass": false,
+      "quick": false,
+      "excludedDimensions": []
+    },
+    "skillVersion": "1.0.0",
+    "loc": 18000,
+    "public": true
+  },
+  "verdict": {
+    "level": "ship-with-known-risks",
+    "assessedScope": "static",
+    "posture": "Strong security posture. The open risks are data-integrity, operational-readiness, and hardening, not exposure, and all are fixable without a rewrite.",
+    "justification": "Assessed statically, no runtime pass. Nothing critical or high survived verification. The one high (a cross-tenant read on the appointments API) was downgraded to medium once the skeptic confirmed every live query is org-scoped through the withOrg() helper, a defense-in-depth gap rather than an active exposure. What remains is data-integrity, operational-readiness, and hardening risk: the booking and webhook races (CON-01, REL-01), the tenant-isolation and connection-pool backstops (SEC-01, INF-01), and two operational gaps this run surfaced, no error tracking or alerting on the revenue paths (OPS-01) and migrations applied inline at deploy with no tested restore (DATA-01). For a small-team invite audience it is acceptable to ship with, but close those six before a broader launch or a marketing-driven traffic spike.",
+    "blockingFindingIds": [
+      "SEC-01",
+      "CON-01",
+      "REL-01",
+      "INF-01",
+      "OPS-01",
+      "DATA-01"
+    ]
+  },
+  "strengths": [
+    {
+      "area": "Authorization",
+      "dimension": "security",
+      "note": "Every authenticated route resolves the caller's organization server-side from the session and never trusts an orgId from the request body or query string. Verified across all 14 API route handlers and the (app) server components: no handler reads a tenant identifier from user input."
+    },
+    {
+      "area": "Webhook integrity",
+      "dimension": "reliability",
+      "note": "The Stripe webhook route verifies the signature with the raw request body before any parsing, using stripe.webhooks.constructEvent against STRIPE_WEBHOOK_SECRET. Unsigned or tampered payloads are rejected with a 400 before they reach business logic. (Idempotency is a separate gap, tracked as REL-01.)"
+    },
+    {
+      "area": "Session handling",
+      "dimension": "security",
+      "note": "Auth cookies are httpOnly, Secure, and SameSite=Lax, and the middleware redirects unauthenticated users away from the (app) segment before any data loads. Session lookups are server-side; no token is exposed to client JavaScript."
+    },
+    {
+      "area": "Input validation",
+      "dimension": "reliability",
+      "note": "Mutation endpoints parse request bodies through Zod schemas at the boundary and return typed 422s on failure, so malformed input cannot reach Prisma. The schemas are colocated with their routes and consistently applied."
+    },
+    {
+      "area": "Secret hygiene",
+      "dimension": "infra",
+      "note": "No secrets are committed. All credentials (DATABASE_URL, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, RESEND_API_KEY) are read from the environment, and .env is gitignored with a checked-in .env.example carrying placeholders only."
+    }
+  ],
+  "shipGates": [
+    {
+      "gate": "mobile",
+      "status": "not-assessed",
+      "note": "The static layout checks pass: the booking and account flows use responsive layout and logical properties with no fixed-width containers on the core paths, and the interactive targets in the booking UI meet the 44px minimum in source. Real-device behavior (keyboard occlusion, overflow at 393px, touch interaction) is a runtime check that was not performed on this static run; it is listed under Not assessed."
+    },
+    {
+      "gate": "instrumentation",
+      "status": "at-risk",
+      "note": "PostHog is initialized and page views are captured, but the activation funnel is not instrumented end to end: signup fires client-side while a completed first booking has no server-side event, so activation cannot be measured on one identity across client and server. Instrument the booking-completed event server-side before any growth push."
+    }
+  ],
+  "stats": {
+    "bySeverity": {
+      "critical": 0,
+      "high": 0,
+      "medium": 6,
+      "low": 8,
+      "informational": 4
+    },
+    "byDimension": {
+      "security": 3,
+      "concurrency": 2,
+      "reliability": 3,
+      "accessibility": 2,
+      "ui": 2,
+      "infra": 1,
+      "operability": 1,
+      "testing-confidence": 1,
+      "data-migration-safety": 1,
+      "release-safety": 1,
+      "performance-capacity": 1
+    },
+    "verification": {
+      "confirmed": 3,
+      "downgraded": 1,
+      "refuted": 1
+    }
+  },
+  "findings": [
+    {
+      "id": "SEC-01",
+      "kind": "risk",
+      "severity": "medium",
+      "category": "security",
+      "dimension": "security",
+      "location": {
+        "file": "app/api/appointments/route.ts",
+        "line": 41,
+        "symbol": "GET"
+      },
+      "issue": "Tenant isolation for appointment data is enforced entirely in the application layer through an orgId filter, with no row-level scoping at the database. Correctness depends on every current and future query remembering to call the withOrg() helper.",
+      "impact": "No active cross-tenant exposure today, but the isolation guarantee is one forgotten where-clause away from a leak. A future query written without withOrg() would return another organization's appointments with no second line of defense to catch it.",
+      "evidence": "app/api/appointments/route.ts:41 builds the Prisma query as prisma.appointment.findMany({ where: withOrg(session, filters) }). withOrg() (lib/auth/with-org.ts:12) merges { orgId: session.orgId } into the filter. Every audited query includes it, but Postgres has no RLS policy on the appointment table (prisma/schema.prisma has no row-level policy and none is applied via migration), so the database itself does not constrain the result set.",
+      "recommendedFix": "Add Postgres row-level security policies scoped to the request's orgId (set via a per-request SET LOCAL app.current_org) as a backstop, or centralize all tenant-scoped reads behind a single data-access layer that cannot be bypassed, so isolation does not depend on per-call discipline.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "downgraded",
+        "refutationNotes": "Entered as high (suspected cross-tenant read). The skeptic traced all 14 route handlers and every Prisma call against the appointment, booking, and customer tables: each one passes through withOrg() or an equivalent orgId filter, so there is no live exposure. Downgraded to medium because the residual risk is defense-in-depth (no database-level enforcement), not an exploitable path in the current code.",
+        "method": "fresh-subagent"
+      }
+    },
+    {
+      "id": "SEC-02",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "security",
+      "dimension": "security",
+      "location": {
+        "file": "app/api/public/book/route.ts",
+        "line": 18,
+        "symbol": "POST"
+      },
+      "issue": "The public booking endpoint has no rate limiting. It accepts unauthenticated POSTs to create pending appointments and trigger confirmation emails.",
+      "impact": "An attacker can script the endpoint to flood an organization's calendar with junk pending bookings and generate outbound Resend email volume, degrading the product experience and consuming email quota. Not a data-exposure issue, but an abuse and cost vector.",
+      "evidence": "app/api/public/book/route.ts:18 handles POST with only Zod validation and a slot-availability check before prisma.appointment.create(). There is no per-IP or per-org throttle, and no CAPTCHA or proof-of-work gate on the public surface. lib/ contains no rate-limit middleware.",
+      "recommendedFix": "Add a per-IP and per-org rate limit at the edge (middleware.ts or an upstream WAF rule) on the public booking path, and consider a lightweight challenge before an unauthenticated create. Cap outbound confirmation emails per org per hour.",
+      "confidence": "high-confidence",
+      "assumption": "Assumes no rate limiting is applied upstream of the Next.js app (for example at a CDN or WAF layer); the deploy edge config was not in scope for this static pass.",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "SEC-03",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "security",
+      "dimension": "security",
+      "location": {
+        "file": "lib/api-error.ts",
+        "line": 27,
+        "symbol": "toErrorResponse"
+      },
+      "issue": "The shared error responder serializes the raw error message into the JSON response body in non-development environments, which can surface Prisma internals (constraint names, column names) to clients.",
+      "impact": "Database structure details leak through error responses, giving an attacker reconnaissance about the schema. Low severity because it discloses structure, not data, but it is unnecessary surface.",
+      "evidence": "lib/api-error.ts:27 returns NextResponse.json({ error: err.message }) unconditionally. When err originates from Prisma (for example a unique-constraint violation), err.message includes the constraint and field names, for example 'Unique constraint failed on the fields: (`email`)'.",
+      "recommendedFix": "Map known error types to safe, generic client messages and log the full error server-side only. Return a stable error code plus a human-safe message; never pass err.message straight to the client outside development.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "confirmed"
+      }
+    },
+    {
+      "id": "CON-01",
+      "kind": "risk",
+      "severity": "medium",
+      "category": "race-condition",
+      "dimension": "concurrency",
+      "location": {
+        "file": "app/api/appointments/route.ts",
+        "line": 63,
+        "symbol": "createAppointment"
+      },
+      "issue": "Booking a slot is a check-then-insert without a transaction or a unique constraint. The handler queries for an existing appointment in the slot, then creates one if none is found, so two concurrent requests for the same slot can both pass the check and both insert.",
+      "impact": "Two customers can book the same slot for the same provider (double-booking), producing a real-world scheduling conflict that a staff member has to untangle by hand. The likelihood rises exactly when the product is busiest.",
+      "evidence": "app/api/appointments/route.ts:63 runs const taken = await prisma.appointment.findFirst({ where: { slotId, providerId } }); if (!taken) await prisma.appointment.create(...). The two statements are not wrapped in prisma.$transaction, and prisma/schema.prisma has no unique index on (slotId, providerId), so the database will not reject the second insert.",
+      "recommendedFix": "Add a unique constraint on (slotId, providerId) in the schema and rely on the database to reject the duplicate, catching the constraint violation and returning a clean 409. Alternatively perform the check and insert inside a single transaction with the appropriate isolation level.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "confirmed",
+        "method": "fresh-subagent"
+      },
+      "instances": [
+        {
+          "file": "app/api/public/book/route.ts",
+          "line": 34,
+          "symbol": "POST"
+        }
+      ]
+    },
+    {
+      "id": "CON-02",
+      "kind": "improvement",
+      "severity": "informational",
+      "category": "race-condition",
+      "dimension": "concurrency",
+      "location": {
+        "file": "lib/billing/seats.ts",
+        "line": 22,
+        "symbol": "syncSeatCount"
+      },
+      "issue": "The billing seat count is updated with a read-modify-write (read current seats, add or subtract, write back) with no optimistic lock or atomic increment.",
+      "impact": "Two near-simultaneous membership changes (an invite accepted while a member is removed) can race and land on a stale seat total, drifting the Stripe subscription quantity from the true member count. Low real-world likelihood on a small team, hence informational, but the drift is silent when it happens.",
+      "evidence": "lib/billing/seats.ts:22 reads org.seatCount, computes next = current +/- delta in application code, then writes prisma.organization.update({ data: { seatCount: next } }). There is no version column check and no use of Prisma's atomic { increment } operator.",
+      "recommendedFix": "Use Prisma's atomic update ({ seatCount: { increment: delta } }) so the database performs the arithmetic, or gate the write behind an optimistic version column. Reconcile against the true member count rather than trusting an in-memory delta.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "REL-01",
+      "kind": "risk",
+      "severity": "medium",
+      "category": "reliability",
+      "dimension": "reliability",
+      "location": {
+        "file": "app/api/webhooks/stripe/route.ts",
+        "line": 48,
+        "symbol": "POST"
+      },
+      "issue": "The Stripe webhook handler is not idempotent. It verifies the signature correctly but does not record processed event IDs, so a redelivered event is applied a second time.",
+      "impact": "Stripe retries webhooks on any non-2xx or timeout. Because handlers like invoice.paid and customer.subscription.updated mutate billing state on every call, a redelivery can double-apply a change (for example flipping a subscription state twice or sending a duplicate receipt email). Data-integrity risk that grows with traffic and transient failures.",
+      "evidence": "app/api/webhooks/stripe/route.ts:48 constructs the event, switches on event.type, and applies each handler directly. There is no check against a persisted set of processed event.id values and no unique constraint on a webhook-event ledger table (none exists in prisma/schema.prisma). A retried event therefore re-runs the same mutation.",
+      "recommendedFix": "Persist each event.id in a webhook_event table with a unique constraint and short-circuit if the ID has already been processed, inside the same transaction as the state mutation, so a redelivered event is effectively-once. Make each individual handler idempotent as a backstop.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "confirmed",
+        "method": "fresh-subagent"
+      }
+    },
+    {
+      "id": "REL-02",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "reliability",
+      "dimension": "reliability",
+      "location": {
+        "file": "lib/email/send.ts",
+        "line": 15,
+        "symbol": "sendConfirmation"
+      },
+      "issue": "Confirmation emails are sent with a single awaited Resend call and no retry or failure surfacing. If the send throws, the error is caught and swallowed and the booking proceeds silently.",
+      "impact": "A transient Resend outage means a customer books successfully but never receives a confirmation, with no signal to staff that the email was lost. The booking is correct; the communication silently fails.",
+      "evidence": "lib/email/send.ts:15 wraps await resend.emails.send(...) in a try/catch whose catch block only calls console.error and returns. There is no retry, no dead-letter queue, and no status persisted on the appointment to indicate the email was not delivered.",
+      "recommendedFix": "Record an emailStatus on the appointment and retry transient failures (or enqueue the send to a durable job), so a failed confirmation is visible and recoverable rather than lost. At minimum, surface send failures to an operational alert.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "REL-03",
+      "kind": "improvement",
+      "severity": "informational",
+      "category": "reliability",
+      "dimension": "reliability",
+      "location": {
+        "file": "lib/calendar/sync.ts",
+        "line": 30,
+        "symbol": "pushToProvider"
+      },
+      "issue": "The outbound calendar-sync fetch has no timeout, so a slow or hanging upstream can block the request until the platform's own limit fires.",
+      "impact": "A degraded calendar provider can stall the sync path and, in a serverless context, tie up an invocation until the function timeout. Informational because it is a resilience gap rather than a current fault, but it removes the app's control over its own latency budget.",
+      "evidence": "lib/calendar/sync.ts:30 calls await fetch(providerUrl, { method: 'POST', body }) with no AbortController and no signal, so the default (effectively unbounded within the platform limit) applies.",
+      "recommendedFix": "Wrap the fetch in an AbortController with an explicit timeout (for example 5s) and treat a timeout as a retriable failure, so a slow provider cannot consume the full invocation budget.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "A11Y-01",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "accessibility",
+      "dimension": "accessibility",
+      "location": {
+        "file": "app/(app)/appointments/AppointmentRow.tsx",
+        "line": 52,
+        "symbol": "AppointmentRow"
+      },
+      "issue": "Icon-only action buttons (edit, cancel, reschedule) in the appointment list render an SVG with no accessible name, so assistive technology announces them as unlabeled buttons.",
+      "impact": "Screen-reader users cannot tell the row actions apart; every action button reads as 'button' with no indication of what it does, making the core appointment-management flow effectively unusable without sight.",
+      "evidence": "app/(app)/appointments/AppointmentRow.tsx:52 renders <button onClick={...}><TrashIcon /></button> with no aria-label and no visually hidden text. The same pattern repeats for the edit and reschedule controls in the same component.",
+      "recommendedFix": "Add an aria-label (or a visually hidden <span>) to each icon-only button describing its action, for example aria-label=\"Cancel appointment\". Apply the same to the edit and reschedule controls.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      },
+      "instances": [
+        {
+          "file": "app/(app)/appointments/AppointmentRow.tsx",
+          "line": 58,
+          "symbol": "edit button"
+        },
+        {
+          "file": "app/(app)/appointments/AppointmentRow.tsx",
+          "line": 64,
+          "symbol": "reschedule button"
+        }
+      ]
+    },
+    {
+      "id": "A11Y-02",
+      "kind": "improvement",
+      "severity": "informational",
+      "category": "accessibility",
+      "dimension": "accessibility",
+      "location": {
+        "file": "app/(app)/settings/ProfileForm.tsx",
+        "line": 44,
+        "symbol": "ProfileForm"
+      },
+      "issue": "Inline form validation errors are rendered next to their inputs but are not programmatically associated with them via aria-describedby, and the input is not marked aria-invalid.",
+      "impact": "A screen-reader user hears the field label but not the error explaining why their submission failed, so they cannot self-correct without sighted help. Informational because the error text is present visually; the gap is the association, not the message.",
+      "evidence": "app/(app)/settings/ProfileForm.tsx:44 renders <input /> followed by {error && <p className=\"text-red-600\">{error}</p>}. The <p> has no id, the input has no aria-describedby pointing to it, and aria-invalid is not set when error is present.",
+      "recommendedFix": "Give each error message a stable id, reference it from the input via aria-describedby, and set aria-invalid={!!error} on the input so assistive technology announces the error with the field.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "UI-01",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "visual-consistency",
+      "dimension": "ui",
+      "location": {
+        "file": "app/(app)/appointments/page.tsx",
+        "line": 71,
+        "symbol": "AppointmentsPage"
+      },
+      "issue": "Two different loading spinners are used across the app: a shared <Spinner /> component in some places and an inline ad-hoc animate-spin div in others, so loading states look inconsistent.",
+      "impact": "Loading states differ in size and color between the appointments list and the billing page, a small polish gap that reads as unfinished. Purely visual; no functional impact.",
+      "evidence": "app/(app)/appointments/page.tsx:71 renders an inline <div className=\"h-4 w-4 animate-spin rounded-full border-2\" /> while app/(app)/billing/page.tsx:40 uses the shared components/Spinner.tsx. The two differ in stroke width and dimensions.",
+      "recommendedFix": "Standardize on the shared components/Spinner.tsx everywhere and remove the inline variants, so every loading state is identical.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "UI-02",
+      "kind": "improvement",
+      "severity": "informational",
+      "category": "visual-consistency",
+      "dimension": "ui",
+      "location": {
+        "file": "app/(app)/dashboard/StatCard.tsx",
+        "line": 19,
+        "symbol": "StatCard"
+      },
+      "issue": "A few components hardcode hex color values instead of using the Tailwind theme tokens, so the palette can drift from the design system.",
+      "impact": "If the brand palette is retuned, these hardcoded values will not follow, leaving stray off-brand colors. Informational: the current values happen to match the token, so nothing looks wrong today.",
+      "evidence": "app/(app)/dashboard/StatCard.tsx:19 sets style={{ color: '#2563eb' }} rather than a text-primary utility, and app/(app)/dashboard/TrendBadge.tsx:12 uses an inline '#16a34a'. Both duplicate values already defined as theme tokens.",
+      "recommendedFix": "Replace the hardcoded hex values with the corresponding theme utilities (text-primary, text-success) so color lives in one place and retuning the palette updates every surface.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "INF-01",
+      "kind": "risk",
+      "severity": "medium",
+      "category": "infra",
+      "dimension": "infra",
+      "location": {
+        "file": "lib/db.ts",
+        "line": 8,
+        "symbol": "prisma"
+      },
+      "issue": "The Prisma client connects with a DATABASE_URL that sets no connection_limit, while the app runs on a serverless platform where each concurrent invocation opens its own pool. Under load this can exhaust Postgres connections.",
+      "impact": "A traffic spike (or a marketing push) can spin up enough concurrent function instances that their combined Prisma pools exceed Postgres's max_connections, at which point new requests fail with connection errors until load subsides. A reliability cliff that appears precisely when traffic is highest.",
+      "evidence": "lib/db.ts:8 instantiates new PrismaClient() with no explicit datasource pool tuning, and .env.example's DATABASE_URL carries no connection_limit or pgbouncer parameter. On serverless, each cold instance holds its own pool, so effective connection count scales with concurrency rather than being bounded.",
+      "recommendedFix": "Route serverless traffic through a connection pooler (PgBouncer in transaction mode, or the platform's managed pooler) and set connection_limit=1 on the Prisma DATABASE_URL for the serverless runtime, so per-instance pools stay small and the pooler multiplexes.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "confirmed",
+        "method": "fresh-subagent"
+      }
+    },
+    {
+      "id": "OPS-01",
+      "kind": "risk",
+      "severity": "medium",
+      "category": "operability",
+      "dimension": "operability",
+      "location": {
+        "file": "app/api/webhooks/stripe/route.ts",
+        "line": 55,
+        "symbol": "POST"
+      },
+      "issue": "Failures on the booking and Stripe webhook paths are not captured by any structured logging or error-tracking service. The only failure signal is console.error to ephemeral serverless stdout, with no error tracker, no alert, and no named on-call owner, so a silent failure in a revenue path goes unnoticed.",
+      "impact": "When a webhook handler or a booking write throws in production, nothing pages anyone and the log line vanishes with the invocation. A billing state that fails to apply, or a booking that errors after taking a slot, can persist unnoticed until a customer complains, which is the worst way to learn about a money-or-calendar bug.",
+      "evidence": "The failure paths reduce to console.error only: lib/email/send.ts:15 swallows send errors with console.error, and app/api/webhooks/stripe/route.ts applies each handler with no reporting on throw. package.json lists no Sentry, OpenTelemetry, or structured-logging dependency, and there is no lib/logger or lib/observability module. On the serverless platform stdout is not retained, so these lines are effectively lost.",
+      "recommendedFix": "Add an error-tracking SDK (for example Sentry) initialized in a shared instrumentation module, wrap the webhook and booking handlers so thrown errors are reported with request context, emit structured logs, and define an alert with a named owner for failures on the billing and booking paths.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "confirmed",
+        "method": "fresh-subagent",
+        "refutationNotes": "The skeptic grepped package.json and the lib/ tree for any error-tracking or structured-logging dependency and found none; the only failure handling on the booking and webhook paths is console.error. Confirmed that a thrown error in production produces no durable signal and no alert. Whether an alert would actually reach an owner once wired is a runtime check, listed under Not assessed."
+      }
+    },
+    {
+      "id": "TEST-01",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "testing",
+      "dimension": "testing-confidence",
+      "location": {
+        "file": "package.json",
+        "line": 12,
+        "symbol": "scripts.test"
+      },
+      "issue": "The controls the other findings depend on are not pinned by any automated test. No test asserts that withOrg() scopes every query to the caller's org (SEC-01), that the booking write rejects a double-booking (CON-01), or that a redelivered Stripe event is processed once (REL-01), so a future refactor can silently remove any of these guards.",
+      "impact": "Once the recommended fixes land (the unique constraint, the webhook ledger, the tenant-isolation backstop), nothing in CI proves they stay in place. A well-meaning refactor could drop the constraint or bypass withOrg() and every existing test would still pass, reintroducing a data-integrity or isolation bug that this audit just flagged.",
+      "evidence": "package.json's test script runs vitest, but the tests/ directory covers only pure helpers (date formatting, Zod schema shape). No spec exercises app/api/appointments/route.ts, app/api/webhooks/stripe/route.ts, or lib/auth/with-org.ts, so the org-scoping, booking-race, and webhook-idempotency behaviors are untested.",
+      "recommendedFix": "Add regression tests that pin the security-critical invariants: an org-scoping test that a query for org A never returns org B rows, a concurrency test that two bookings for one slot yield exactly one row plus a 409, and a webhook test that a duplicated event.id mutates state once. Run them in CI so the fixes cannot silently regress.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "DATA-01",
+      "kind": "risk",
+      "severity": "medium",
+      "category": "data-safety",
+      "dimension": "data-migration-safety",
+      "location": {
+        "file": "package.json",
+        "line": 15,
+        "symbol": "scripts.deploy"
+      },
+      "issue": "Prisma migrations are applied automatically as part of the deploy step, with no gate ordering the schema change relative to the code rollout, no tested backup or restore procedure, and no defined deletion or retention policy for customer and appointment records.",
+      "impact": "A destructive migration (dropping or renaming a column) runs in the same push that ships the new code, so during the rollout the still-running old instances can hit a schema they no longer match, causing errors for live tenants. With no verified restore path, a bad migration or an accidental deletion has no proven recovery, and undefined retention leaves customer PII in the database indefinitely.",
+      "evidence": "package.json runs prisma migrate deploy in the release step of the same push-to-production pipeline, with no expand-then-contract sequencing and no manual approval on destructive changes. There is no documented backup schedule or restore drill, and prisma/schema.prisma models Customer and Appointment with hard deletes and no retention or soft-delete field.",
+      "recommendedFix": "Separate schema migration from code deploy and follow an expand/contract order so old and new code both tolerate the intermediate schema. Establish and periodically test a database backup and restore procedure, and define a retention and deletion policy for customer PII.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "confirmed",
+        "method": "fresh-subagent",
+        "refutationNotes": "The skeptic confirmed the deploy pipeline applies migrations inline with the code push and found no backup, restore, or retention configuration in the repo. Confirmed as a real data-safety gap; whether a backup can actually be restored is a runtime exercise and is listed under Not assessed."
+      }
+    },
+    {
+      "id": "SHIP-01",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "release-process",
+      "dimension": "release-safety",
+      "location": {
+        "file": ".github/workflows/deploy.yml",
+        "line": 8,
+        "symbol": "deploy"
+      },
+      "issue": "Deployment is push-to-main straight to production with no documented rollback path, no staged or canary rollout, and no feature-flag mechanism to decouple a risky change from its release.",
+      "impact": "Any merge to main ships to all tenants at once. A regression (a bad migration, a broken booking path) is live for everyone with no fast, documented way back except revert-and-redeploy, and there is no way to dark-launch or gradually roll out a risky change like the booking constraint.",
+      "evidence": ".github/workflows/deploy.yml triggers on push to main and deploys directly to the production environment. There is no staging gate, no canary step, and no documented rollback runbook, and package.json carries no feature-flag SDK, so every change is all-or-nothing across all orgs.",
+      "recommendedFix": "Document a one-command rollback (redeploy the previous release), add a staging environment or a canary step before the full rollout, and introduce a feature-flag mechanism so risky changes can ship dark and be enabled gradually.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "PERF-01",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "performance",
+      "dimension": "performance-capacity",
+      "location": {
+        "file": "app/(app)/appointments/page.tsx",
+        "line": 34,
+        "symbol": "AppointmentsPage"
+      },
+      "issue": "The appointments list loads each appointment's provider and customer in a per-row query rather than a single joined read, an N+1 access pattern. Combined with the unbounded per-instance connection pool in INF-01, a traffic spike can turn list rendering into a burst of queries that pressures Postgres connections.",
+      "impact": "As an org's appointment volume grows, the list page issues one query per row for related records, multiplying database round-trips. Under concurrent load this compounds INF-01's per-instance pools, so a busy period (or a marketing push) risks Postgres connection exhaustion and failed requests, precisely when the product is most used. The real latency and the connection ceiling are runtime measurements and are listed under Not assessed.",
+      "evidence": "app/(app)/appointments/page.tsx:34 maps over appointments and, inside the map, awaits prisma.provider.findUnique and prisma.customer.findUnique per row instead of a single findMany with include. This is the N+1 shape; cross-referenced with INF-01 (lib/db.ts:8, unbounded serverless pool), the query count scales with both row count and concurrency.",
+      "recommendedFix": "Replace the per-row lookups with a single prisma.appointment.findMany({ include: { provider: true, customer: true } }) so the list is one query, and pair it with the bounded connection pool from INF-01. Measure list latency and peak connection count against a realistic dataset.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    }
+  ],
+  "remediationPlan": [
+    {
+      "title": "Close the data-integrity races before load rises",
+      "findingIds": [
+        "CON-01",
+        "REL-01"
+      ],
+      "detail": "Add a unique constraint on (slotId, providerId) so double-booking is rejected by the database, and add a webhook-event ledger with a unique event.id so Stripe redeliveries are effectively-once (the ledger dedupes duplicate effects; it is not general exactly-once delivery). These two are the findings most likely to produce real, customer-visible corruption under concurrency or retries."
+    },
+    {
+      "title": "Harden tenant isolation and the connection pool",
+      "findingIds": [
+        "SEC-01",
+        "INF-01",
+        "PERF-01"
+      ],
+      "detail": "Add a database-level backstop for tenant isolation (RLS or a single enforced data-access layer) so isolation no longer depends on per-query discipline, and put the serverless runtime behind a connection pooler with a bounded per-instance limit. Collapse the appointments list's N+1 (PERF-01) to a single joined read, which compounds the same pool pressure. All three are hardening that turns a latent cliff into a non-issue before broader traffic."
+    },
+    {
+      "title": "Stand up operational readiness before a broader launch",
+      "findingIds": [
+        "OPS-01",
+        "DATA-01",
+        "SHIP-01"
+      ],
+      "detail": "Wire error tracking and an alert with a named owner on the booking and webhook paths so a silent failure in a revenue path is seen (OPS-01), separate migrations from the code deploy and prove a backup can actually be restored (DATA-01), and document a rollback plus a staged rollout so a bad release is not all-or-nothing across every tenant (SHIP-01). None changes product behavior; together they are the difference between an invite audience and a broader launch."
+    },
+    {
+      "title": "Make outbound side effects resilient",
+      "findingIds": [
+        "REL-02",
+        "REL-03",
+        "SEC-02"
+      ],
+      "detail": "Give confirmation emails a visible status and a retry path, add a timeout to the calendar-sync fetch, and rate-limit the public booking endpoint. These raise the app's tolerance for slow upstreams and abuse without changing core behavior."
+    },
+    {
+      "title": "Accessibility and consistency polish",
+      "findingIds": [
+        "A11Y-01",
+        "A11Y-02",
+        "UI-01",
+        "UI-02",
+        "SEC-03"
+      ],
+      "detail": "Label the icon-only action buttons, associate form errors with their inputs, standardize the spinner, move hardcoded colors onto tokens, and stop leaking Prisma error text to clients. Low-risk cleanup that closes the remaining minor gaps."
+    }
+  ],
+  "quickWins": [
+    {
+      "title": "Add a unique index on (slotId, providerId) to eliminate double-booking",
+      "findingId": "CON-01",
+      "blastRadius": "If a legitimate use case allows two appointments in the same slot for one provider (for example overlapping hold plus confirmed), the constraint would reject it; confirm the domain forbids that before adding the index."
+    },
+    {
+      "title": "Add aria-labels to the icon-only appointment actions",
+      "findingId": "A11Y-01",
+      "blastRadius": "Pure additive attribute change; the only risk is a mislabeled action, so the label text should be reviewed against what each button actually does."
+    },
+    {
+      "title": "Stop returning raw err.message to clients",
+      "findingId": "SEC-03",
+      "blastRadius": "Client code or tests that assert on specific error strings would need updating to the new stable error codes."
+    }
+  ],
+  "deeperInvestigation": [
+    {
+      "title": "Whether tenant isolation should move to database-level enforcement",
+      "detail": "SEC-01 is safe today because every query is disciplined, but application-only isolation is a standing liability as the team and the query surface grow. Deciding between Postgres RLS (with a per-request org context) and a single enforced data-access layer is an architectural choice worth making deliberately rather than patching per-query.",
+      "findingIds": [
+        "SEC-01"
+      ]
+    },
+    {
+      "title": "End-to-end idempotency of all billing side effects",
+      "detail": "REL-01 fixes webhook-level dedupe, but the deeper question is whether each billing mutation (seat sync, receipt email, subscription state) is independently idempotent. CON-02's non-atomic seat count is a symptom of the same class. A pass over the billing module to make every side effect safe to replay would close the category, not just the one handler.",
+      "findingIds": [
+        "REL-01",
+        "CON-02"
+      ]
+    },
+    {
+      "title": "Pin the security-critical invariants with regression tests",
+      "detail": "SEC-01, CON-01, and REL-01 recommend guards (org-scoping, a unique booking constraint, a webhook-event ledger) that no test currently exercises (TEST-01). Once the fixes land, a small suite that fails when org-scoping, the booking constraint, or webhook idempotency regresses would keep this audit's conclusions true over time, rather than trusting future refactors to preserve them by hand.",
+      "findingIds": [
+        "TEST-01",
+        "SEC-01",
+        "CON-01",
+        "REL-01"
+      ]
+    }
+  ],
+  "notAssessed": [
+    {
+      "check": "Color contrast of text and interactive elements against their backgrounds",
+      "reason": "Contrast requires computing rendered pixel colors, which a static source pass cannot do reliably given theme tokens and layered backgrounds.",
+      "howToVerify": "Run axe-core or Lighthouse against the running app on the key screens (dashboard, appointments, booking, settings) and review any contrast violations."
+    },
+    {
+      "check": "Keyboard focus visibility and tab order through the booking flow",
+      "reason": "Focus-ring visibility and traversal order are runtime behaviors that depend on rendered DOM and CSS, not statically determinable from source.",
+      "howToVerify": "Tab through the public booking flow and the (app) appointment actions with the mouse unused, confirming a visible focus ring on every interactive element and a logical order."
+    },
+    {
+      "check": "Actual behavior of the double-booking race under real concurrency",
+      "reason": "CON-01 is confirmed from the code path (non-atomic check-then-insert), but the live window and hit rate were not measured in a static pass.",
+      "howToVerify": "Fire two concurrent POSTs for the same slot against a staging instance and confirm whether both succeed; after the fix, confirm the second returns 409."
+    },
+    {
+      "check": "Screen-reader announcement flow across the booking and settings screens",
+      "reason": "How a screen reader narrates the flow (order, live-region updates, error announcements) is a runtime experience that source review can only partially predict.",
+      "howToVerify": "Walk the booking and settings flows with VoiceOver or NVDA and confirm labels, error associations (A11Y-02), and status updates are announced coherently."
+    },
+    {
+      "check": "Actual appointments-list latency and the Postgres connection ceiling under concurrent load",
+      "reason": "PERF-01 and INF-01 identify the N+1 shape and the unbounded pool from source, but real latency and the connection count at which Postgres starts refusing connections are runtime measurements a static pass cannot produce.",
+      "howToVerify": "Load a staging org with a realistic appointment volume, drive concurrent traffic against the appointments list and booking endpoints, and watch query latency and active Postgres connections against max_connections."
+    },
+    {
+      "check": "That a database backup can actually be restored",
+      "reason": "DATA-01 flags the absence of a tested backup and restore procedure; whether a restore succeeds is an operational exercise, not something source review can confirm.",
+      "howToVerify": "Take a backup of a production-like database, restore it into a fresh instance, confirm the application runs correctly against the restored data, and record the recovery time."
+    },
+    {
+      "check": "That failures on the booking and webhook paths actually page a human",
+      "reason": "OPS-01 confirms no error tracker or alert is wired; whether an alert reaches an owner is a runtime behavior that only exists once alerting is configured.",
+      "howToVerify": "After adding error tracking, force a handled failure in the webhook and booking paths on staging and confirm an alert is delivered to the named owner within the expected time."
+    },
+    {
+      "check": "Real-device behavior of the booking and account flows on a phone",
+      "reason": "The static pass confirms responsive layout and 44px targets in source, but keyboard occlusion, real overflow at a 393px viewport, and touch interaction are runtime behaviors that require a device or emulator (mobile ship gate).",
+      "howToVerify": "Open the booking and account flows on a real iPhone-class device at 393px, fill the forms with the on-screen keyboard up, and confirm no input is occluded, nothing overflows horizontally, and every control is tappable."
+    }
+  ],
+  "mechanicalSweeps": [
+    {
+      "name": "dependency-audit",
+      "tool": "npm audit",
+      "outcome": "clean",
+      "summary": "No known vulnerabilities in the production dependency tree at audit time. Next.js, Prisma, Stripe, and Resend SDKs are on current minor releases."
+    },
+    {
+      "name": "secret-scan",
+      "tool": "gitleaks",
+      "outcome": "clean",
+      "summary": "No committed secrets. All credentials are read from the environment, .env is gitignored, and .env.example carries placeholders only."
+    },
+    {
+      "name": "lint",
+      "tool": "eslint",
+      "outcome": "clean",
+      "summary": "No lint errors. A handful of warnings for unused variables in test fixtures, none in shipping paths."
+    },
+    {
+      "name": "typecheck",
+      "tool": "tsc --noEmit",
+      "outcome": "clean",
+      "summary": "Type check passes with no errors under strict mode."
+    }
+  ]
+}

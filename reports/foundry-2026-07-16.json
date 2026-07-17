@@ -1,0 +1,656 @@
+{
+  "meta": {
+    "schemaVersion": 4,
+    "project": "Foundry",
+    "projectSlug": "foundry",
+    "date": "2026-07-16",
+    "auditedCommit": "7d85850",
+    "scope": {
+      "dimensions": [
+        "security",
+        "concurrency",
+        "reliability",
+        "accessibility",
+        "ui",
+        "infra",
+        "operability",
+        "testing-confidence",
+        "release-safety",
+        "performance-capacity"
+      ],
+      "runtimePass": false,
+      "quick": false,
+      "excludedDimensions": [
+        {
+          "dimension": "data-migration-safety",
+          "status": "not-applicable",
+          "reason": "Foundry has no application database or migrations. Audit reports are static JSON files committed to the repo and read at runtime, and Supabase is used only for magic-link auth identity, so there is no app-owned schema to migrate or roll back."
+        }
+      ]
+    },
+    "skillVersion": "1.0.0",
+    "version": "0.1.0",
+    "loc": 4700,
+    "public": true
+  },
+  "verdict": {
+    "level": "safe-to-ship",
+    "assessedScope": "static",
+    "posture": "No risks. The core controls are verified clean; what remains are improvements to schedule, not blockers.",
+    "justification": "Assessed statically, no runtime pass. No risks: the three findings that carried a path to harm, an unguarded report parse that could 500 the index, a silent auth lockout, and a magic-link origin taken from a forwarded host, were fixed in this repo and verified, so nothing here blocks a ship within the assessed scope. What remains is improvements, robustness, observability, consistency, and accessibility work that make the app better over time but do not cap the verdict. Runtime-only checks (real-device mobile, live funnel delivery, contrast) stay listed under Not assessed.",
+    "blockingFindingIds": []
+  },
+  "strengths": [
+    {
+      "area": "Report and doc access control",
+      "dimension": "security",
+      "note": "Path traversal is blocked before any filesystem read: getReport validates the slug against a strict character class and re-checks that the resolved path startsWith the reports directory (lib/reports.ts:70-76), the skills reader applies the same guard (lib/skills.ts:167-170), and the docs reader uses an exact-match ALLOWED whitelist fed only hardcoded literals (lib/docs.ts:13-21). Encoded traversal, absolute paths, and null bytes all fail."
+    },
+    {
+      "area": "Authentication posture",
+      "dimension": "security",
+      "note": "Auth is fail-closed at every layer: missing Supabase env yields a null client (lib/supabase.ts:25,70) and denial in middleware, the /reports layout, and both /reports pages independently (middleware.ts:17, app/reports/layout.tsx:20-23, app/reports/page.tsx:18, app/reports/[slug]/page.tsx:36). Identity is validated with supabase.auth.getUser() rather than trusted from the cookie (lib/supabase.ts:99-113), the admin check is an exact case-insensitive element match (lib/supabase.ts:120-129), non-owner detail slugs return 404 not 403, and the ungated /example route serves only meta.public reports (lib/reports.ts:81-84)."
+    },
+    {
+      "area": "Output safety",
+      "dimension": "security",
+      "note": "No XSS sink on any author- or user-influenced content: react-markdown v10 renders with remark-gfm only and no rehype-raw, so embedded HTML is escaped (components/MarkdownDoc.tsx); all report fields render as auto-escaped React children; the single dangerouslySetInnerHTML is a static JSON-LD constant (app/layout.tsx). No innerHTML, eval, or new Function anywhere, and no open redirect (auth targets are hardcoded)."
+    },
+    {
+      "area": "Security headers and CSP",
+      "dimension": "infra",
+      "note": "A complete enforcing header set is dogfooded: a real CSP with default-src 'self', object-src 'none', frame-ancestors 'none', base-uri 'self', form-action 'self', and connect-src scoped to the two exact PostHog hosts, plus HSTS, X-Frame-Options DENY, nosniff, and a locked Permissions-Policy (next.config.ts:12-54). The connect-src is deliberately narrow, honoring the recorded lesson that a wide-open policy once broke analytics."
+    },
+    {
+      "area": "Analytics safety",
+      "dimension": "reliability",
+      "note": "Analytics can never break a flow: the client no-ops when its key is unset (instrumentation-client.ts:10, guarded at every call site), and server capture returns a null client without a key and is never awaited, with flushAt:1/flushInterval:0 so events are not lost when the Fly machine auto-stops (lib/posthog-server.ts:18-37)."
+    },
+    {
+      "area": "Instrumentation completeness",
+      "dimension": "operability",
+      "note": "The activation funnels are instrumented end to end in code: two funnels on one identity across client and server, with the Supabase user id as the distinct id and the pre-auth email id aliased on sign-in, defined as a table in CLAUDE.md before the code, and the code conforms to it. This is the shape the instrumentation gate looks for."
+    },
+    {
+      "area": "Magic-link replay handling",
+      "dimension": "security",
+      "note": "Replay of a used or expired link is handled cleanly: verifyOtp returns an error routed to /unlock?error=expired with no half-session established (app/auth/confirm/route.ts). The token_hash is deliberately redeemable cross-device for email opens, a documented tradeoff rather than a defect."
+    },
+    {
+      "area": "Design token discipline",
+      "dimension": "ui",
+      "note": "No hardcoded colors in any rendered style; every visible color routes through a @theme token, the severity and verdict color maps use full literal class strings to survive JIT purging (components/report-ui.tsx), and no color-only signaling exists (every severity and verdict hue is paired with a text label). Consistent 44px touch targets and a spec-accurate focus-visible ring throughout."
+    },
+    {
+      "area": "Reduced motion and semantics",
+      "dimension": "accessibility",
+      "note": "prefers-reduced-motion is honored at multiple layers (a global duration kill plus per-effect overrides and JS guards that never attach the pointer tracker or run the terminal animation under reduced motion), there is one h1 per page with MarkdownDoc shifting doc headings down a level, the magic-link form is labeled with a role=alert error, and decorative graphics are correctly aria-hidden."
+    },
+    {
+      "area": "Report contract enforcement",
+      "dimension": "release-safety",
+      "note": "A real content-contract check exists and guards against drift: make validate schema-validates every report, runs the cross-field invariants (blocking findings must be verified, severity stats must match, no em dashes, no personal paths), and cmp-guards the bundled skill schema copy against the canonical one, protecting the contract both the installed skill and the site renderer depend on."
+    },
+    {
+      "area": "Guarded report rendering",
+      "dimension": "reliability",
+      "note": "The report readers skip a malformed or shape-invalid file rather than throwing (lib/reports.ts readReport), and a root error boundary degrades any unexpected error to a recoverable page (app/error.tsx), so a single bad report can no longer 500 the index for every viewer."
+    },
+    {
+      "area": "Observable auth failures",
+      "dimension": "operability",
+      "note": "The fail-closed auth path logs the underlying verifyOtp/exchangeCodeForSession error, and a missing Supabase env is logged once at the client boundary, so a total lockout shows up in the logs (Fly captures stdout and stderr) rather than failing silently (app/auth/confirm/route.ts, lib/supabase.ts)."
+    },
+    {
+      "area": "Pinned magic-link origin",
+      "dimension": "security",
+      "note": "The magic-link redirect target is taken from a server-only SITE_ORIGIN (fly.toml), not a client-influenceable X-Forwarded-Host, so a spoofed forwarded host cannot point the emailed link at another origin (lib/supabase.ts publicOrigin)."
+    }
+  ],
+  "shipGates": [
+    {
+      "gate": "mobile",
+      "status": "not-assessed",
+      "note": "Static checks pass in source: the layouts are responsive with logical properties and no fixed-width containers on the core paths, and the interactive targets meet the 44px minimum (min-h-11) across the buttons, terminal chips, and nav. Real-device behavior (keyboard occlusion, overflow at 393px, touch interaction) is a runtime check not performed on this static run and is listed under Not assessed."
+    },
+    {
+      "gate": "instrumentation",
+      "status": "met",
+      "note": "The activation funnels are fully wired in code on one identity across client and server, with server capture env-gated and fire-and-forget and the CSP connect-src allowing the PostHog hosts. Live event delivery (that events actually arrive on one identity end to end) is the runtime portion and is listed under Not assessed, but the gate's static requirement is satisfied."
+    }
+  ],
+  "stats": {
+    "bySeverity": {
+      "critical": 0,
+      "high": 0,
+      "medium": 2,
+      "low": 13,
+      "informational": 6
+    },
+    "byDimension": {
+      "testing-confidence": 1,
+      "release-safety": 1,
+      "security": 2,
+      "infra": 4,
+      "concurrency": 2,
+      "reliability": 2,
+      "operability": 1,
+      "performance-capacity": 2,
+      "ui": 3,
+      "accessibility": 3
+    },
+    "verification": {
+      "confirmed": 2,
+      "downgraded": 1,
+      "refuted": 1
+    }
+  },
+  "findings": [
+    {
+      "id": "TEST-01",
+      "kind": "improvement",
+      "severity": "medium",
+      "category": "testing",
+      "dimension": "testing-confidence",
+      "location": {
+        "file": "package.json",
+        "line": 8
+      },
+      "issue": "There is no test suite: no test runner, no test files, and no test script in package.json. The four critical controls, the ownership check (lib/reports.ts:27), the slug path-traversal guard (lib/reports.ts:70), the meta.public filter that keeps private reports off /example (lib/reports.ts:81), and the ALLOWED doc whitelist (lib/docs.ts:13), are all pure functions and none is pinned by a test.",
+      "impact": "A refactor that inverts the ownership check, loosens the slug regex, or drops the meta.public filter would compile, typecheck, lint, and deploy green while silently opening the gate. This is the highest-leverage untested surface, and it matters more as main becomes the public install channel.",
+      "evidence": "No test script in package.json; no *.test.* / *.spec.* / __tests__ in the repo; no vitest, jest, or playwright dependency.",
+      "recommendedFix": "Land four pure-function unit tests for the controls above plus a test script, and make them a required CI gate before the public flip.",
+      "confidence": "configuration-confirmed",
+      "verification": {
+        "status": "confirmed",
+        "method": "repro-script",
+        "refutationNotes": "Confirmed by a repo scan: no test script in package.json and no test files or runner present."
+      }
+    },
+    {
+      "id": "SHIP-01",
+      "kind": "improvement",
+      "severity": "medium",
+      "category": "release-process",
+      "dimension": "release-safety",
+      "location": {
+        "file": "fly.toml"
+      },
+      "issue": "No CI gates the deploy. There is no .github/workflows or CI config of any kind, and deploy is a manual fly deploy from main. Typecheck, lint, build, and make validate exist but are human-invoked, never enforced.",
+      "impact": "A bad version, a broken SKILL.md, a schema fork between the canonical and bundled schema copies, or a compile break reaches production the moment someone runs fly deploy. Per the publish plan, main is about to become the live npx skills add install channel, so an unguarded break would land directly in installers.",
+      "evidence": "No .github directory; deploy documented as manual fly deploy; typecheck, lint, build, and validate are npm and make targets with no workflow invoking them.",
+      "recommendedFix": "Add a CI workflow running npm ci, typecheck, lint, build, and make validate on pull requests to main, and require it green before the visibility flip.",
+      "confidence": "configuration-confirmed",
+      "verification": {
+        "status": "confirmed",
+        "method": "repro-script",
+        "refutationNotes": "Confirmed by a repo scan: no .github/workflows and no CI config present."
+      }
+    },
+    {
+      "id": "SEC-02",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "security",
+      "dimension": "security",
+      "location": {
+        "file": "app/unlock/actions.ts",
+        "line": 18,
+        "symbol": "requestMagicLink"
+      },
+      "issue": "No application-level rate limiting on the magic-link request action; it can be driven to send repeated sign-in emails to any address.",
+      "impact": "Email-bomb or cost, bounded only by Supabase's own per-email and per-IP OTP limits, which are the actual control and live in Supabase config rather than the repo.",
+      "evidence": "requestMagicLink calls signInWithOtp with no local throttle (app/unlock/actions.ts:18-38).",
+      "recommendedFix": "Rely on Supabase OTP rate limits (confirm they are enabled) and add a lightweight per-IP throttle at the edge if abuse appears.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "INF-01",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "infra",
+      "dimension": "infra",
+      "location": {
+        "file": "next.config.ts",
+        "line": 29
+      },
+      "issue": "The X-Powered-By: Next.js framework header is not disabled (poweredByHeader is not set to false), so every response advertises the framework.",
+      "impact": "Framework fingerprint disclosure. Not exploitable, but the one gap in an otherwise curated header set.",
+      "evidence": "The Next config sets output and headers but never poweredByHeader: false (next.config.ts:29-55).",
+      "recommendedFix": "Add poweredByHeader: false to the Next config.",
+      "confidence": "configuration-confirmed",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "INF-02",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "infra",
+      "dimension": "infra",
+      "location": {
+        "file": "Dockerfile",
+        "line": 26
+      },
+      "issue": "The runtime container never switches to a non-root user (no USER directive), so the Node process runs as root.",
+      "impact": "A standard container-hardening gap. Blast radius is contained by Fly's per-app Firecracker microVM, so it is not directly exploitable here, but running as root is unnecessary.",
+      "evidence": "The Dockerfile runner stage has no USER node; the node base image ships a node user.",
+      "recommendedFix": "Add USER node (and chown of the app directory) in the runner stage.",
+      "confidence": "configuration-confirmed",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "CON-01",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "race-condition",
+      "dimension": "concurrency",
+      "location": {
+        "file": "lib/supabase.ts",
+        "line": 103,
+        "symbol": "getSessionUser"
+      },
+      "issue": "getSessionUser is not request-memoized, so a single gated request validates the session up to three or four times (middleware, layout, generateMetadata, page). getUser triggers refresh-token rotation near expiry and the server client has no cross-request lock, so concurrent near-expiry requests (multiple tabs, or a Link prefetch alongside a real navigation) can each attempt a rotation and prematurely sign the user out. The same fan-out adds redundant auth round trips.",
+      "impact": "A user with a near-expiry token and concurrent requests can be bounced to /unlock mid-session. Recoverable by signing in again and dependent on specific timing, hence low; downgraded from the finder's medium on that recoverability.",
+      "evidence": "getUser used in middleware.ts:38, lib/supabase.ts:111 (layout), and app/reports/[slug]/page.tsx:16 and :35 with no React.cache; the server createServerClient has no navigator.locks serialization.",
+      "recommendedFix": "Wrap getSessionUser in React.cache so the layout, generateMetadata, and page share one validated result per request; treat middleware as the single refresher; enable the Supabase refresh-token reuse interval.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "downgraded",
+        "method": "fresh-subagent",
+        "refutationNotes": "Calibrated the finder's medium to low: the failure is recoverable by re-authentication and requires concurrent near-expiry requests."
+      }
+    },
+    {
+      "id": "REL-02",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "reliability",
+      "dimension": "reliability",
+      "location": {
+        "file": "app/unlock/actions.ts",
+        "line": 35
+      },
+      "issue": "No timeout on any Supabase auth call (signInWithOtp, verifyOtp, exchangeCodeForSession, getUser). If Supabase hangs rather than errors, the request blocks until the platform timeout with no user-visible timeout state.",
+      "impact": "Degraded experience on a Supabase slowdown, with no distinct timeout signal to the user.",
+      "evidence": "Default supabase-js fetch with no AbortController at the auth call sites (app/unlock/actions.ts:35, app/auth/confirm/route.ts:60,69).",
+      "recommendedFix": "Wrap auth calls in an AbortController timeout mapped to the existing error=failed and error=unavailable states.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "REL-03",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "reliability",
+      "dimension": "reliability",
+      "location": {
+        "file": "lib/supabase.ts",
+        "line": 109,
+        "symbol": "getSessionUser"
+      },
+      "issue": "An auth-unavailable condition is indistinguishable from signed-out. When getUser errors because Supabase is unreachable during an active session, only data.user is read (null), so the user is redirected to /unlock as if signed out, where the magic-link request would also fail.",
+      "impact": "A transient auth outage looks to the user like an expired session, with no temporarily-down-retry signal.",
+      "evidence": "getSessionUser reads only data.user and discards the error (lib/supabase.ts:109-113).",
+      "recommendedFix": "Inspect the getUser error and route a transient or unavailable case to a distinct message.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "CON-02",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "race-condition",
+      "dimension": "concurrency",
+      "location": {
+        "file": "components/CopyButton.tsx",
+        "line": 26
+      },
+      "issue": "The CopyButton success timeout (a setTimeout that resets the copied state after 1.6s) is never tracked or cleared. If the button unmounts within that window, the state setter runs after unmount.",
+      "impact": "A latent timer leak and a post-unmount state update. Harmless under React 19 (no warning or crash), but the one component that does not follow the clean-timer pattern the Terminal uses.",
+      "evidence": "window.setTimeout with no ref or cleanup (components/CopyButton.tsx:26); the Terminal clears all timers on unmount (components/Terminal.tsx:133).",
+      "recommendedFix": "Store the timer id in a ref and clear it in a cleanup effect.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "OPS-02",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "operability",
+      "dimension": "operability",
+      "location": {
+        "file": "fly.toml",
+        "line": 31
+      },
+      "issue": "Thin observability. The Fly health check is liveness-only (GET /), so it confirms the landing page renders but never exercises the auth gate or Supabase; there is no structured logging on the critical auth and report flows, and no rollback runbook, SLO, or named operational owner.",
+      "impact": "The gate can be fully broken (locking out users) while the health check stays green, and recovery depends on operator memory. A fast platform rollback exists (fly releases plus a redeploy), which caps this at low.",
+      "evidence": "A single GET / check (fly.toml:31-36); no console logging or logger in app, lib, or middleware; no runbook or SLO in the docs.",
+      "recommendedFix": "Add a deeper health probe that touches the gate path, minimal structured logging at the auth-failure and report-read-failure sites, and an Operations section with the rollback command, the known failure modes, and a named owner.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "PERF-01",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "performance",
+      "dimension": "performance-capacity",
+      "location": {
+        "file": "lib/reports.ts",
+        "line": 36,
+        "symbol": "listReports"
+      },
+      "issue": "Filesystem reads are not memoized. The /reports index parses the entire reports directory on every request (the subtree is force-dynamic and cookie-gated), and the detail routes parse the same file twice per render (generateMetadata plus the page body). Reports are immutable build artifacts, so caching is trivially safe.",
+      "impact": "Negligible at current scale (one report). It bites around the low hundreds of reports, where each index request does hundreds of synchronous readFileSync plus JSON.parse calls on the request path, and it doubles the parse cost on every detail render.",
+      "evidence": "listReports reads and parses all files with no cache (lib/reports.ts:36-55); getReport and getPublicReport re-read per call in generateMetadata and the page body (app/reports/[slug]/page.tsx:26,40).",
+      "recommendedFix": "Wrap the leaf readers in React.cache and hold a module-level cache keyed on file mtime; reports are immutable so invalidate only on cold start.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "PERF-02",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "performance",
+      "dimension": "performance-capacity",
+      "location": {
+        "file": "fly.toml",
+        "line": 23
+      },
+      "issue": "The site runs on a single scale-to-zero 512MB machine (min_machines_running = 0 with auto-stop). The first request after an idle window pays a full machine boot plus Node standalone start, and a single VM has no horizontal headroom.",
+      "impact": "Cold-start tail latency, most visible on the gated /reports path that also fans out to Supabase on that same cold request. A reasonable posture for a low-traffic site, stated on the record.",
+      "evidence": "auto_stop_machines with min_machines_running = 0 and a single shared-cpu-1x 512MB VM (fly.toml:23-37).",
+      "recommendedFix": "None required at current traffic. Set min_machines_running = 1 if cold-start p95 proves painful; measure cold versus warm first-byte to quantify.",
+      "confidence": "needs-verification",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "UI-01",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "visual-consistency",
+      "dimension": "ui",
+      "location": {
+        "file": "components/NavLink.tsx",
+        "line": 38
+      },
+      "issue": "The two nav bars use different active-underline treatments, and neither matches the design spec. The header nav underlines the active tab in line-strong (a dim slate) while the Behind-the-Build nav uses a signal (white) bottom border, and DESIGN.md specifies the active tab underlined in bone.",
+      "impact": "Two tab systems disagree with each other and with the stated spec.",
+      "evidence": "NavLink active uses decoration-line-strong (components/NavLink.tsx:38); BehindNav uses border-signal (components/BehindNav.tsx:33); DESIGN.md:85 specifies bone.",
+      "recommendedFix": "Pick one active-underline token for both bars and align it with DESIGN.md, ideally sharing one active-state helper.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "UI-02",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "visual-consistency",
+      "dimension": "ui",
+      "location": {
+        "file": "components/SubmitButton.tsx",
+        "line": 22
+      },
+      "issue": "There is no shared Button primitive. The filled-bone primary button is hand-reimplemented in three places with divergent padding, casing, and press feedback, and the bordered ghost button appears with different text colors and padding across four sites.",
+      "impact": "The same visual roles drift across implementations, and a style change must be made in several places.",
+      "evidence": "Primary reimplemented at components/SubmitButton.tsx:22, app/page.tsx:135, and app/page.tsx:396; ghost variants at app/page.tsx:141, components/SiteHeader.tsx:42 and :51, and app/not-found.tsx:18.",
+      "recommendedFix": "Extract one Button/ButtonLink with primary and secondary variants so padding, casing, and the press micro-interaction are defined once.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "A11Y-01",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "accessibility",
+      "dimension": "accessibility",
+      "location": {
+        "file": "app/layout.tsx",
+        "line": 83
+      },
+      "issue": "The skip link targets #main, but no main element carries tabindex=-1 and main is not focusable by default. Where the browser does not set a sequential-focus starting point on fragment navigation, activating the skip link only scrolls and the next Tab returns to the header.",
+      "impact": "The skip-to-content control (WCAG 2.4.1) may not move focus into main on some engines.",
+      "evidence": "Skip link at app/layout.tsx:83-88; no tabIndex on any main id=\"main\" (for example app/page.tsx:110).",
+      "recommendedFix": "Add tabIndex={-1} to each main id=\"main\" so focus reliably lands in the main region.",
+      "confidence": "needs-verification",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "SEC-03",
+      "kind": "improvement",
+      "severity": "informational",
+      "category": "security",
+      "dimension": "security",
+      "location": {
+        "file": "app/auth/confirm/route.ts",
+        "line": 27
+      },
+      "issue": "The type query param is cast as EmailOtpType without validation before verifyOtp. This is not exploitable: Supabase rejects an invalid type server-side and it falls through to the error redirect, never establishing a session. Noted because the cast masks that the value is attacker-controlled.",
+      "impact": "None today; a future refactor that trusts the cast elsewhere could regress.",
+      "evidence": "type is read and cast without a whitelist (app/auth/confirm/route.ts:27,59-63).",
+      "recommendedFix": "Optional. Whitelist type against the expected OTP types before the call.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "INF-03",
+      "kind": "improvement",
+      "severity": "informational",
+      "category": "infra",
+      "dimension": "infra",
+      "location": {
+        "file": "package.json",
+        "line": 22
+      },
+      "issue": "npm audit reports advisories in two dependencies, both confirmed non-runtime. postcss (moderate, via Next) is a build-time CSS compiler and is absent from the standalone runtime image, and ajv-cli with fast-json-patch (high, prototype pollution) is a devDependency backing make validate that is never shipped.",
+      "impact": "No production attack surface; local audit noise only.",
+      "evidence": "postcss resolves under next and is not present in .next/standalone; ajv-cli is under devDependencies and not in the runtime image.",
+      "recommendedFix": "No runtime action. Track the Next release that bumps postcss; optionally move report validation off ajv-cli to clear the local audit output. Do not run npm audit fix --force, which would downgrade Next.",
+      "confidence": "configuration-confirmed",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "INF-04",
+      "kind": "improvement",
+      "severity": "informational",
+      "category": "infra",
+      "dimension": "infra",
+      "location": {
+        "file": "next.config.ts",
+        "line": 24
+      },
+      "issue": "The CSP script-src includes 'unsafe-inline' with no nonce or hash strategy, the standard Next-without-nonces tradeoff needed for the inline bootstrap.",
+      "impact": "Lowers XSS defense-in-depth, but the app renders no user-controlled HTML into a script context (report data is typed JSON through React, escaped by default), and the rest of the CSP is tight.",
+      "evidence": "script-src 'self' 'unsafe-inline' with the PostHog assets host (next.config.ts:24).",
+      "recommendedFix": "Optional. Adopt a nonce-based CSP via middleware if inline-script defense-in-depth becomes warranted.",
+      "confidence": "configuration-confirmed",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "UI-03",
+      "kind": "improvement",
+      "severity": "informational",
+      "category": "visual-consistency",
+      "dimension": "ui",
+      "location": {
+        "file": "app/unlock/page.tsx",
+        "line": 93
+      },
+      "issue": "The sign-in form error state renders in the severity critical hue on brand chrome, while DESIGN.md's rule is that color means a severity or a verdict and nothing else. There is no dedicated error or negative token, so the error reuses the severity red.",
+      "impact": "A defensible but real divergence from the stated color-meaning rule.",
+      "evidence": "The error message uses border-critical, bg-critical, and text-critical (app/unlock/page.tsx:93); DESIGN.md reserves severity hues for report excerpts.",
+      "recommendedFix": "Add a documented error or negative semantic token distinct from severity critical, or record an explicit DESIGN.md exception for form errors.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "A11Y-02",
+      "kind": "improvement",
+      "severity": "informational",
+      "category": "accessibility",
+      "dimension": "accessibility",
+      "location": {
+        "file": "components/CopyButton.tsx",
+        "line": 36
+      },
+      "issue": "After a copy, the button label and aria-label change to Copied, but nothing is announced to assistive tech: there is no role=status or aria-live region, and a changed aria-label on a control the user has moved past is not re-read. Copy-install is the declared adoption event, so the confirmation matters.",
+      "impact": "Screen-reader users get no confirmation of a successful copy.",
+      "evidence": "The label and aria-label swap on a timeout with no live region (components/CopyButton.tsx:36-45).",
+      "recommendedFix": "Add a visually-hidden role=status (aria-live=polite) element that renders Copied when the state flips.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "A11Y-03",
+      "kind": "improvement",
+      "severity": "informational",
+      "category": "accessibility",
+      "dimension": "accessibility",
+      "location": {
+        "file": "app/unlock/page.tsx",
+        "line": 78
+      },
+      "issue": "On a form error the email input is correctly described by the error via aria-describedby and the error carries role=alert, but the input itself is never marked aria-invalid, so assistive tech does not flag which field is in an error state.",
+      "impact": "Minor; the error is currently form-level, so this is a refinement rather than a break.",
+      "evidence": "The input has aria-describedby but no aria-invalid (app/unlock/page.tsx:78-97).",
+      "recommendedFix": "Set aria-invalid on the input when an error is present.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    }
+  ],
+  "remediationPlan": [
+    {
+      "title": "Land the test and CI safety net before the public flip",
+      "findingIds": [
+        "TEST-01",
+        "SHIP-01"
+      ],
+      "detail": "Add the four pure-function tests that pin the gate controls (ownership, slug guard, meta.public filter, doc whitelist) and a CI workflow that runs typecheck, lint, build, and make validate on pull requests to main, required green before the visibility flip. The controls are correct today; these keep a future refactor from silently regressing them once main is the install channel."
+    },
+    {
+      "title": "Deepen observability and memoize the read path",
+      "findingIds": [
+        "OPS-02",
+        "PERF-01"
+      ],
+      "detail": "Add an alert with a named receiver on the now-logged auth failures and a health probe that touches the gate path, and wrap the report readers in React.cache plus a module-level cache so the index does not reparse the whole directory per request. Both are robustness, not blockers."
+    }
+  ],
+  "quickWins": [
+    {
+      "title": "Disable the X-Powered-By header",
+      "findingId": "INF-01",
+      "blastRadius": "None. Setting poweredByHeader: false only removes a fingerprint header; no functionality depends on it."
+    },
+    {
+      "title": "Run the container as the node user",
+      "findingId": "INF-02",
+      "blastRadius": "Low. Add USER node plus a chown of the app directory; verify the standalone server still binds its port and reads the COPY'd docs and reports as the non-root user."
+    },
+    {
+      "title": "Add tabindex=-1 to the main landmark for the skip link",
+      "findingId": "A11Y-01",
+      "blastRadius": "None. Making main programmatically focusable does not change tab order for other controls."
+    }
+  ],
+  "deeperInvestigation": [
+    {
+      "title": "Request-level memoization of session validation and file reads",
+      "detail": "CON-01 and PERF-01 share a root: getSessionUser and the file readers run several times per request with no React.cache. Wrapping the leaf readers in React.cache removes the redundant auth round trips and file parses, and collapses the low-severity refresh-rotation race, in one idiomatic change.",
+      "findingIds": [
+        "CON-01",
+        "PERF-01"
+      ]
+    }
+  ],
+  "notAssessed": [
+    {
+      "check": "Color contrast of text and interactive elements against their backgrounds",
+      "reason": "Contrast requires computing rendered pixel colors, which a static source pass cannot do reliably given theme tokens and layered backgrounds. The bone-faint, informational, and low tokens at small mono sizes are the ones to check.",
+      "howToVerify": "Run axe-core or Lighthouse against the running site on the landing, skills, reports, and example pages and review any contrast violations."
+    },
+    {
+      "check": "Real-device mobile behavior on the core flows",
+      "reason": "Keyboard occlusion, overflow at a real 393px width, and touch interaction are runtime behaviors a static pass cannot confirm; only the source-level layout and target sizes were checked.",
+      "howToVerify": "Load the sign-in and reports flows on a real iOS Safari and Android Chrome device, check zero horizontal overflow at 393px, and confirm the keyboard does not occlude the submit control."
+    },
+    {
+      "check": "Live activation-funnel event delivery",
+      "reason": "The funnels are fully wired in code, but whether events actually arrive on one identity end to end is a runtime observation not performed on this static run.",
+      "howToVerify": "Walk the sign-in and report-view flows against the running site and confirm the funnel events land in PostHog on a single distinct id across client and server."
+    },
+    {
+      "check": "Skip-link focus landing and scroll-reveal opacity at page bottom",
+      "reason": "Whether the skip link moves focus into main, and whether every scroll-reveal section reaches full opacity in a scroll-timeline-supporting browser, are runtime behaviors.",
+      "howToVerify": "In a Chromium build, activate the skip link then press Tab and confirm focus is inside main, and scroll to the last section before the footer and confirm it is fully opaque."
+    },
+    {
+      "check": "Cold-start and gated-route latency",
+      "reason": "Real first-byte times for a cold Fly machine and the Supabase fan-out on the gated route are runtime numbers.",
+      "howToVerify": "Measure first-byte with curl against the landing and a gated route after the machine has auto-stopped, and again warm, and report both."
+    }
+  ],
+  "mechanicalSweeps": [
+    {
+      "name": "dependency-audit",
+      "tool": "npm audit",
+      "outcome": "findings",
+      "summary": "Two moderate and two high advisories, all confirmed non-runtime: postcss (moderate) is Next's build-time CSS compiler and is absent from the standalone runtime image, and ajv-cli with fast-json-patch (high) is a devDependency backing make validate. Neither ships to production. Recorded as INF-03."
+    },
+    {
+      "name": "secret-scan",
+      "tool": "pattern-grep",
+      "outcome": "clean",
+      "summary": "No committed secrets in source. All credentials are read from the environment, .env.local is gitignored and excluded from the Docker build context, and only .env.example (placeholders) is tracked. No service-role key usage found."
+    },
+    {
+      "name": "typecheck",
+      "tool": "tsc",
+      "outcome": "clean",
+      "summary": "tsc --noEmit passes with no errors."
+    },
+    {
+      "name": "lint",
+      "tool": "eslint",
+      "outcome": "clean",
+      "summary": "eslint passes with no errors."
+    }
+  ]
+}

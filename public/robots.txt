@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /$
+Allow: /behind
+Allow: /skills
+Allow: /example
+Disallow: /reports
+Disallow: /unlock

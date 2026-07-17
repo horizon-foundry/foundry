@@ -1,0 +1,44 @@
+# Fly.io config for the Foundry site. Stateless Next standalone app.
+# The /reports index is public (examples + sign-in); owned-report detail is gated
+# by Supabase magic-link auth (server-side); set before it works:
+#   fly secrets set SUPABASE_URL="https://<ref>.supabase.co"
+#   fly secrets set SUPABASE_ANON_KEY="<anon key>"
+#   fly secrets set ADMIN_EMAILS="you@example.com"
+# Without the Supabase env the gate fails closed (no one gets in). The Supabase
+# project's redirect allowlist must include https://foundry-skills.fly.dev/auth/confirm.
+
+app = "foundry-skills"
+primary_region = "iad"
+
+[env]
+  # Pinned public origin for the magic-link redirect target, so it is never
+  # derived from a spoofable X-Forwarded-Host (see lib/supabase.ts publicOrigin).
+  # Not a secret; it is the public site URL.
+  SITE_ORIGIN = "https://foundry-skills.fly.dev"
+
+[build]
+  # Browser analytics key, inlined into the client bundle at build time (a phc
+  # key is public by design; it ships in the served JS regardless). Empty
+  # means the site builds with analytics off. The server reads POSTHOG_KEY at
+  # runtime (fly secrets) with this as fallback.
+  [build.args]
+    NEXT_PUBLIC_POSTHOG_KEY = "phc_vGUC95F5jJhJ5QANyz9qqTzBqAQkHjAkHibJCdqWytby"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+  [[http_service.checks]]
+    grace_period = "10s"
+    interval = "30s"
+    method = "GET"
+    timeout = "5s"
+    path = "/"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"

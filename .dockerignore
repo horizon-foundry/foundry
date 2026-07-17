@@ -1,0 +1,12 @@
+.git
+node_modules
+.next
+out
+tmp
+.cache
+.claude
+.playwright-mcp
+.env.local
+.env.*.local
+*.log
+.DS_Store

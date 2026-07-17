@@ -1,0 +1,28 @@
+name: CI
+
+# The release gate for main. Once the repo is public, main is the live
+# `npx skills add horizon-foundry/foundry` install channel, so nothing merges to it
+# without typecheck, lint, build, and the report-contract validation passing.
+# No secrets are needed: PostHog and Supabase both no-op when their env is unset,
+# so the build is clean without them.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run build
+      - run: make validate

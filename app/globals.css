@@ -1,0 +1,493 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/*
+  Instrument design system. Tokens mirror DESIGN.md frontmatter; when the
+  frontmatter changes, change these in the same commit. The rule of the system:
+  color means severity or verdict, nothing else (the single `signal` accent
+  excepted). See DESIGN.md.
+*/
+@theme {
+  /* Horizon Foundry ground: a dark blue-gray steel ramp anchored on the
+     Brand Slate #334455 (used as the hairline). See DESIGN.md. */
+  --color-ink: #14191f;
+  --color-ink-raised: #1e2530;
+  --color-ink-raised-2: #283340;
+  --color-line: #334455;
+  --color-line-strong: #45566a;
+  --color-bone: #e8ecf0;
+  --color-bone-dim: #a2abb8;
+  /* Brightened from #6c7684 so small label/metadata text clears WCAG AA 4.5:1
+     on the ink and ink-raised grounds (was ~3.8:1). */
+  --color-bone-faint: #8b94a4;
+
+  /* The brand is monochrome (Horizon Foundry palette: slate + white). The
+     "signal" emphasis is pure white, so brand emphasis reads by luminance. */
+  --color-signal: #ffffff;
+
+  /* Amber is the forge glow: reserved for the invoke/run layer (commands you
+     fire, install and invocation tokens), and nothing else. It is the one
+     functional accent, distinct from the monochrome brand and from the
+     severity/verdict colors in the reports. */
+  --color-command: #d99a2e;
+
+  --color-critical: #ff5c5c;
+  --color-high: #ff9f45;
+  --color-medium: #f5ce4b;
+  --color-low: #5ab0e6;
+  --color-informational: #8b93a0;
+
+  --color-verdict-safe: #3fcb7a;
+  --color-verdict-risk: #f5ce4b;
+  --color-verdict-noship: #ff5c5c;
+
+  --font-display: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+  --font-serif: var(--font-plex-serif), ui-serif, Georgia, serif;
+}
+
+/* No global smooth scroll: it made Next's scroll-to-top on route change animate,
+   so navigating from a scrolled page visibly scrolled the old page up before the
+   new one rendered. In-page anchor jumps are instant, which also reads snappier. */
+html {
+  scroll-behavior: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+body {
+  background-color: var(--color-ink);
+  color: var(--color-bone);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Consistent, visible keyboard focus on every interactive element (WCAG 2.4.7).
+   A bone ring with offset reads on the steel ground; command surfaces get an
+   amber ring so the accent's meaning carries into focus. */
+:where(a, button, [role="button"], input, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-bone);
+  outline-offset: 2px;
+  border-radius: 1px;
+}
+.text-command:focus-visible,
+:where(a, button):has(> .text-command):focus-visible {
+  outline-color: var(--color-command);
+}
+
+/* Faint film grain over the ground: printed-stock texture, no color.
+   A tiny inline SVG turbulence, fixed so it doesn't scroll. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  /* Behind all content. Using a negative z-index (rather than elevating every
+     body child) keeps the grain back WITHOUT forcing position: relative on the
+     header, which would override the sticky utility and break the anchored nav. */
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Hairline-grid backdrop utility for hero/section grounds. */
+.grid-field {
+  background-image:
+    linear-gradient(to right, var(--color-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--color-line) 1px, transparent 1px);
+  background-size: 56px 56px;
+  /* Alpha mask: only opacity matters, so the token's hue is irrelevant: any
+     fully-opaque value fades the grid the same way. Use the token, not a raw
+     literal. */
+  -webkit-mask-image: radial-gradient(
+    ellipse 80% 60% at 50% 0%,
+    var(--color-ink) 20%,
+    transparent 75%
+  );
+  mask-image: radial-gradient(
+    ellipse 80% 60% at 50% 0%,
+    var(--color-ink) 20%,
+    transparent 75%
+  );
+}
+
+/* Staggered entrance for slide content and hero. Children rise in sequence. */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.stagger-rise > * {
+  opacity: 0;
+  animation: rise 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+.stagger-rise > *:nth-child(1) {
+  animation-delay: 0.04s;
+}
+.stagger-rise > *:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.stagger-rise > *:nth-child(3) {
+  animation-delay: 0.16s;
+}
+.stagger-rise > *:nth-child(4) {
+  animation-delay: 0.22s;
+}
+.stagger-rise > *:nth-child(5) {
+  animation-delay: 0.28s;
+}
+.stagger-rise > *:nth-child(6) {
+  animation-delay: 0.34s;
+}
+.stagger-rise > *:nth-child(7) {
+  animation-delay: 0.4s;
+}
+
+/* A hairline that draws itself from the left on entry (the "rule" gesture). */
+@keyframes draw-line {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+.draw-rule {
+  transform-origin: left;
+  animation: draw-line 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) 0.2s both;
+}
+
+/* Long-form rendered doc prose (Behind-the-Build tabs). IBM Plex Serif,
+   bone on ink, narrow measure, hairline rules. Overrides Tailwind typography. */
+.doc-prose {
+  font-family: var(--font-serif);
+  color: var(--color-bone);
+  max-width: 68ch;
+}
+.doc-prose h1,
+.doc-prose h2,
+.doc-prose h3,
+.doc-prose h4 {
+  font-family: var(--font-mono);
+  color: var(--color-bone);
+  letter-spacing: -0.01em;
+  font-weight: 600;
+}
+.doc-prose h1 {
+  font-size: 1.6rem;
+  margin: 0 0 1rem;
+}
+.doc-prose h2 {
+  font-size: 1.2rem;
+  margin: 2.2rem 0 0.5rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--color-line);
+}
+.doc-prose h3 {
+  font-size: 1rem;
+  margin: 1.6rem 0 0.4rem;
+  color: var(--color-bone-dim);
+}
+.doc-prose p,
+.doc-prose li {
+  line-height: 1.7;
+  color: var(--color-bone-dim);
+}
+.doc-prose strong {
+  color: var(--color-bone);
+  font-weight: 600;
+}
+.doc-prose a {
+  color: var(--color-signal);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.doc-prose code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--color-ink-raised-2);
+  border: 1px solid var(--color-line);
+  border-radius: 3px;
+  padding: 0.05em 0.35em;
+  color: var(--color-bone);
+}
+.doc-prose pre {
+  font-family: var(--font-mono);
+  background: var(--color-ink-raised);
+  border: 1px solid var(--color-line);
+  border-radius: 4px;
+  padding: 1rem;
+  overflow-x: auto;
+  font-size: 0.82rem;
+}
+.doc-prose pre code {
+  background: none;
+  border: none;
+  padding: 0;
+}
+.doc-prose ul,
+.doc-prose ol {
+  padding-left: 1.3rem;
+  margin: 0.6rem 0;
+}
+.doc-prose ul {
+  list-style: square;
+}
+.doc-prose blockquote {
+  border-left: 2px solid var(--color-line-strong);
+  padding-left: 1rem;
+  margin: 1rem 0;
+  color: var(--color-bone-faint);
+  font-style: italic;
+}
+/* Tables scroll inside their own box on narrow viewports instead of forcing
+   the page to scroll horizontally. */
+.doc-prose table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  margin: 1rem 0;
+}
+.doc-prose th,
+.doc-prose td {
+  border: 1px solid var(--color-line);
+  padding: 0.4rem 0.6rem;
+  text-align: left;
+}
+.doc-prose th {
+  font-family: var(--font-mono);
+  color: var(--color-bone);
+  background: var(--color-ink-raised);
+}
+.doc-prose hr {
+  border: none;
+  border-top: 1px solid var(--color-line);
+  margin: 2rem 0;
+}
+
+/* ============================================================
+   Enhancement layer (animate / delight / overdrive).
+   All motion is progressive and reduced-motion safe: without
+   scroll-timeline support the reveal state is simply "shown", and
+   the reduced-motion block below disables every effect.
+   ============================================================ */
+
+/* Scroll-triggered section reveal. Timeline-driven, so no duration is set;
+   browsers without view() support skip straight to the end (visible) state. */
+@keyframes reveal-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.reveal {
+  animation: reveal-rise linear both;
+  animation-timeline: view();
+  animation-range: entry 5% cover 22%;
+}
+
+/* The quieter sibling: opacity only, no travel. Sections alternate between
+   .reveal and .reveal-fade so the scroll rhythm varies instead of repeating
+   one identical entrance (the uniform-reveal reflex). Same no-support and
+   reduced-motion behavior as .reveal. */
+@keyframes reveal-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.reveal-fade {
+  animation: reveal-fade linear both;
+  animation-timeline: view();
+  animation-range: entry 5% cover 20%;
+}
+
+/* Print and full-page capture: scroll timelines never advance, so revealed
+   sections would render blank. Show everything, kill the atmosphere layers. */
+@media print {
+  .reveal,
+  .reveal-fade {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .forge-glow,
+  .hero-spotlight {
+    display: none !important;
+  }
+}
+
+/* The forge glow: an ambient amber radial behind the hero, the foundry's heat.
+   Slow breathe, very low opacity, purely atmospheric. Amber here is ambient
+   brand atmosphere, not an interactive command, so it stays faint. */
+/* Opacity-only breathe, so the element's transform is free for pointer drift. */
+@keyframes forge-breathe {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+/* The forge glow drifts toward the cursor. --gx/--gy are px offsets set by
+   HeroForge (rAF-throttled); the transform is GPU-friendly and eased so the
+   heat follows with a slow, molten lag. */
+.forge-glow {
+  position: absolute;
+  left: 34%;
+  top: 44%;
+  width: 42rem;
+  height: 42rem;
+  pointer-events: none;
+  border-radius: 9999px;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--color-command) 16%, transparent) 0%,
+    transparent 62%
+  );
+  filter: blur(28px);
+  transform: translate(
+    calc(-50% + var(--gx, 0px)),
+    calc(-50% + var(--gy, 0px))
+  );
+  transition: transform 0.55s var(--ease-out-quint, ease-out);
+  animation: forge-breathe 7s ease-in-out infinite;
+  z-index: 0;
+}
+
+/* A soft light under the cursor brightens the hairline grid, the forge
+   reacting to your presence. --mx/--my (in %) are set by HeroForge. */
+.hero-spotlight {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(
+    18rem 18rem at var(--mx, 50%) var(--my, 40%),
+    color-mix(in srgb, var(--color-bone) 7%, transparent) 0%,
+    transparent 65%
+  );
+  transition: background 0.2s linear;
+}
+
+/* Command micro-interaction: the amber tokens warm slightly and lift on hover,
+   reinforcing "this is executable". */
+.text-command {
+  transition:
+    color 0.18s ease,
+    text-shadow 0.18s ease;
+}
+a:hover .text-command,
+.group:hover .text-command {
+  text-shadow: 0 0 14px
+    color-mix(in srgb, var(--color-command) 40%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal-fade {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .forge-glow {
+    animation: none !important;
+    opacity: 0.55 !important;
+    transform: translate(-50%, -50%) !important;
+    transition: none !important;
+  }
+  .hero-spotlight {
+    display: none !important;
+  }
+  .text-command {
+    transition: none !important;
+  }
+}
+
+/* Refined easing (animate skill: no bounce/elastic). */
+:root {
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Feedback layer: interactive cards lift slightly on hover/focus (transform +
+   border only, GPU-friendly). Applied ONLY to genuinely interactive cards, not
+   decorative ones. */
+.lift {
+  transition:
+    transform 0.22s var(--ease-out-quint),
+    border-color 0.22s var(--ease-out-quint),
+    background-color 0.22s var(--ease-out-quint);
+}
+.lift:hover,
+.lift:focus-visible {
+  transform: translateY(-2px);
+}
+
+/* CTAs acknowledge the press (quick, <150ms). */
+.press {
+  transition: transform 0.12s var(--ease-out-quint);
+}
+.press:active {
+  transform: translateY(1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lift,
+  .press {
+    transition: none !important;
+  }
+  .lift:hover,
+  .lift:focus-visible,
+  .press:active {
+    transform: none !important;
+  }
+}
+
+/* Overview-slide glyphs draw themselves in on entry (a hairline sketch). Each
+   stroke element sweeps from a dash offset to full. Reduced-motion shows them
+   already drawn. */
+@keyframes glyph-stroke {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.glyph-draw :is(path, line, rect, circle, polygon) {
+  stroke-dasharray: 220;
+  stroke-dashoffset: 220;
+  animation: glyph-stroke 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.25s forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .glyph-draw :is(path, line, rect, circle, polygon) {
+    stroke-dasharray: none !important;
+    stroke-dashoffset: 0 !important;
+    animation: none !important;
+  }
+}
