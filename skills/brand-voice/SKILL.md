@@ -5,11 +5,44 @@ description: Use when writing or reviewing any user-facing copy, marketing, land
 
 # brand-voice
 
-> **Using this skill:** announce "Using brand-voice", make a todo per step below, and do not skip the gates. This skill's worth is its process, not a hand-reproduced outcome. If you were told to "run brand-voice", run it, do not improvise the result. (Suite standard: https://github.com/horizon-foundry/foundry/blob/main/reference/skill-authoring.md)
+> **Using this skill:** announce "Using brand-voice" and the resolved mode, make a todo per numbered step in `## Steps` for the resolved path, and do not skip the gates. This skill's worth is its process, not a hand-reproduced outcome. If you were told to "run brand-voice", run it, do not improvise its result. (Suite standard: https://github.com/horizon-foundry/foundry/blob/main/reference/skill-authoring.md)
+
+## Steps
+
+0. **Resolve the mode.** Read `BRAND.md`'s approval header. If the file is
+   absent or `Status: draft`, run the Define path; if `Status: approved`,
+   run the Apply path. Check: the announced mode names the header state that
+   selected it.
+
+**Define path:**
+
+1. **Draft `BRAND.md` from what exists.** Fill the suite template
+   (`reference/templates/BRAND.md`, bundled in the repo; fallback:
+   https://raw.githubusercontent.com/horizon-foundry/foundry/main/reference/templates/BRAND.md)
+   from what the builder already has or has approved, per "Define the voice
+   first" below. Artifact: a draft `BRAND.md` opening with the approval
+   header at `Status: draft`.
+2. **Run the completeness check.** Every template section is present and
+   either filled, marked "assumed, unconfirmed", or visibly blank as a
+   finding.
+3. **Stop at the sign-off gate.** `Status` flips to `approved` only by the
+   human, who sets all three header fields in one action. Check: an empty
+   `Approved by` under `approved` status is a finding; until approved, the
+   file guides and never blocks.
+
+**Apply path:**
+
+1. **List the surfaces.** Name every surface the copy change touches, before
+   judging any of it. Artifact: the surface list.
+2. **Check each surface** against the four checks in "Applying the voice"
+   below. Check: every listed surface gets all four, none skipped.
+3. **Leave the report.** Artifact: a per-surface check report, one line per
+   surface touched, each of the four checks pass or violation-with-fix.
+   "Checked" without the report is not a run.
 
 ## Overview
 
-Copy drifts when every surface invents its own tone. This skill keeps one voice by making `BRAND.md` the single source of truth for identity, voice, glossary, and copy rules, then applying it. Model-invoked (runs when copy changes) or user-invoked. `BRAND.md` is defined by `doc-set-spec`; it owns voice the way `DESIGN.md` owns visuals.
+Copy drifts when every surface invents its own tone. This skill keeps one voice by making `BRAND.md` the single source of truth for identity, voice, glossary, and copy rules, then applying it. Model-invoked (runs when copy changes) or user-invoked. `BRAND.md` is defined by the doc set spec (`reference/doc-set-spec.md`, bundled in the repo; fallback: https://raw.githubusercontent.com/horizon-foundry/foundry/main/reference/doc-set-spec.md); it owns voice the way `DESIGN.md` owns visuals.
 
 ## Define the voice first (from what already exists)
 
@@ -44,9 +77,7 @@ The priority order is fixed: **comprehension, accessibility, and error recovery 
 
 ## Product surfaces get brand prose, not raw internal docs
 
-A **public, user-facing** surface is hand-written in brand voice. Never drop an internal doc onto it verbatim, not a spec, a session log, or a decision record. Timestamps, internal labels, and working notes do not belong in front of users. Rewrite the substance in the brand's voice.
-
-This is scoped to **public** surfaces on purpose. A gated internal portal (see `document`'s `internal` mode) may render the raw docs directly, that is its job, continuity and inspection for people who already have access. The rule `document`'s `public` mode and this skill share: raw internal logs never reach a public URL. If a "Behind the Build" hub is public, it shows only curated, sanitized docs (the deck, the design system, the forever spec, the brand); the raw logs live in the internal portal.
+A **public, user-facing** surface is hand-written in brand voice. Never drop an internal doc onto it verbatim, not a spec, a session log, or a decision record. Timestamps, internal labels, and working notes do not belong in front of users. Rewrite the substance in the brand's voice. The underlying boundary rule (raw internal logs never reach a public URL; a gated internal portal may render them directly) is owned by the `document` skill.
 
 ## Keep outward copy in sync with the product
 
