@@ -5,6 +5,8 @@ All notable changes to Foundry are recorded here. The format follows [Keep a Cha
 ## [Unreleased]
 
 - Docs: reworded one NOTES.md decision entry and one skill-authoring phrase; added a house style rule to CLAUDE.md.
+- Skills: an execution-quality pass over all nine skills. Every skill now carries a numbered procedure its opening gate points at, with each step ending in a named check or artifact, because an unanchored "todo per step" gate was ceremony in the four skills that had no steps. `foundry check` is rewritten as prepare's read-only preview: it cites existing records and reports staleness instead of re-inspecting what the audit inspects, and `prepare` gains an authority envelope. production-audit adds a risk/improvement decision table, a verbatim subagent brief, a quote-the-motivating-line rule, a verification floor (every risk is verified), and release-safety depth (artifact identity, post-deploy verification). mobile now leaves a filled verification matrix as its artifact; instrumentation's plan table carries the guardrail and owner; frame's confirmation is a dated stamp; brand-voice branches modes off the approval header and leaves a per-surface apply report; scaffold verifies its own placeholders before finishing; document gains per-mode procedures, a mechanical sanitization sweep, and a cold-start drill.
+- Reference: skill-authoring adds anchored gates, evidence-per-step, declared degradation, retrieval honesty, and requalification; doc-set-spec adds the lesson-promotion ladder and defers plan-chain mechanics to phase-plan; new reference/templates/plan.md.
 
 ## [0.1.0]
 
