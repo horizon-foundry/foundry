@@ -181,6 +181,7 @@ Duplication between any of these is drift. If the same fact appears in two, remo
 - Published reports are named `reports/<project-slug>-<YYYY-MM-DD>.json`. The slug becomes the `/reports/[slug]` URL.
 - Reports contain vulnerability findings for live products. They are only ever surfaced behind the sign-in gate, to their owner (`meta.owner`) or an admin; nothing under `reports/` may be linked from or summarized on ungated pages beyond aggregate counts and verdict level.
 - No em dashes in any authored content, including SKILL.md, docs, site copy, and generated report text.
+- The word "ritual" (any casing) is not used in authored content in this repo. Where the concept is needed, write "ceremony", "rite", or "routine" instead. House style rule, applied the same way as the em-dash rule.
 
 ## Self-Maintenance: NOTES.md, PROMPTS.md, and FRICTION.md
 
