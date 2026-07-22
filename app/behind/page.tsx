@@ -20,13 +20,16 @@ const SLIDES: Slide[] = [
   {
     category: "The Suite",
     glyph: "suite",
-    heading: "Software delivery integrity, as skills.",
-    body: "Foundry makes five promises between an idea and its release. A Claude Code skill keeps each one, and you can run them yourself: product intent is declared and audited (frame), execution context survives every session (phase-plan), the outcome is instrumented (instrumentation), the documentation matches reality (document), and technical readiness is audited before real users reach it (foundry + production-audit). Delivery integrity, not product strategy. It is the outer loop: the gate at the end of the build cycle. It composes with the inner-loop skills you use to write and review code, rather than replacing them.",
+    heading: "Five promises, each kept by a skill.",
+    body: "Foundry is nine Claude Code skills that turn fast, AI-built code into something you can ship. It is the outer loop: the gate at the end of the build cycle, composing with the inner-loop skills you use to write and review code rather than replacing them. Five promises carry the suite.",
+    items: [
+      "Product intent is declared and audited (frame).",
+      "Execution context survives every session (phase-plan).",
+      "The outcome is instrumented (instrumentation).",
+      "The documentation matches reality (document).",
+      "Technical readiness is audited before real users arrive (foundry + production-audit).",
+    ],
     chips: ["Distill", "Forge", "Deliver"],
-    quote: {
-      text: "The cheapest, fastest, and most reliable components are those that aren't there.",
-      attribution: "Gordon Bell",
-    },
   },
   {
     category: "The Memory",
@@ -37,20 +40,12 @@ const SLIDES: Slide[] = [
       "phase-plan writes the next unit's plan while the context is warm. A scaffolded CLAUDE.md rule makes the next session read it before acting.",
       "document keeps the docs and the code from disagreeing, and flags a suspected regression rather than documenting a bug.",
     ],
-    quote: {
-      text: "The palest ink is better than the best memory.",
-      attribution: "proverb",
-    },
   },
   {
     category: "The Workflow",
     glyph: "workflow",
     heading: "Build and ship it, honestly.",
     body: "scaffold starts a project in the shape its profile requires, not a blank prototype. document keeps the docs true to the code. It also renders the repo's own docs inside the product, so they cannot drift. phase-plan writes the next unit's plan before you close the current one.",
-    quote: {
-      text: "Quality is not an act, it is a habit.",
-      attribution: "after Aristotle",
-    },
   },
   {
     category: "The Release Gates",
@@ -58,13 +53,9 @@ const SLIDES: Slide[] = [
     heading: "The gates your launch needs, resolved and then enforced.",
     body: "There is no universal gate list: a CLI is not a web product. foundry resolves the project's release policy (what it is, its risk tier, its audience), then scores every gate that policy names. mobile pressure-tests the real device experience where one exists. instrumentation wires the activation funnel on one identity model. A gate with no surface is marked not-applicable, with a reason. Skipping one silently is never allowed.",
     items: [
-      "A phone-breaking core flow blocks a launch.",
+      "A phone-breaking core flow blocks a launch where the policy requires the mobile gate.",
       "A product you cannot measure is not ready to ship, unless you deliberately chose to waive measuring it.",
     ],
-    quote: {
-      text: "If you can't measure it, you can't improve it.",
-      attribution: "attributed to Lord Kelvin",
-    },
   },
   {
     category: "The Verdict",
@@ -83,22 +74,14 @@ const SLIDES: Slide[] = [
     category: "The Guardrail",
     glyph: "guardrail",
     heading: "Skills that resist being ignored.",
-    body: "A named skill is invoked and followed, never hand-reproduced. Every skill opens with a mandatory gate that makes the expected process explicit and harder to bypass. Gates improve compliance; the invariants that must hold are enforced by schema and make validate, not by prose alone.",
-    quote: {
-      text: "A witty saying proves nothing.",
-      attribution: "Voltaire",
-    },
+    body: "A named skill is invoked and followed, never hand-reproduced. Every skill opens with a gate anchored to its numbered steps, and every step ends in a named check or artifact, so a skipped process is visible in the transcript. Gates improve compliance; the invariants that must hold are enforced by schema and make validate, not by prose alone.",
   },
   {
     category: "Getting Started",
     glyph: "start",
     heading: "Install once, invoke anywhere.",
-    body: "npx skills@latest add horizon-foundry/foundry adds the suite to your Claude Code skills (or clone and make install from source). Then run a skill by name: scaffold a project, document it, or gate a release with production-audit. When a project is nearing release, foundry check reports which pre-ship gates are met, and foundry prepare closes the gaps.",
+    body: "npx skills@latest add horizon-foundry/foundry adds the suite to your Claude Code skills (or clone and make install from source). Then run a skill by name: scaffold a project, document it, or gate a release with production-audit. When a project is nearing release, foundry check previews the release gates read-only, and foundry prepare closes the gaps.",
     chips: ["npx skills@latest add", "/foundry", "/production-audit", "/scaffold"],
-    quote: {
-      text: "Well begun is half done.",
-      attribution: "after Aristotle",
-    },
   },
 ]
 
@@ -108,7 +91,7 @@ export default function BehindOverview() {
       <SlideDeck
         slides={SLIDES}
         title="Foundry"
-        tagline="Software delivery integrity, as Claude Code skills: five kept promises between an idea and its release."
+        tagline="Nine Claude Code skills that turn fast, AI-built code into something you can ship."
         statChips={[
           "Distill. Forge. Deliver.",
           "Docs as memory",

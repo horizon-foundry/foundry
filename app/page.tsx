@@ -127,11 +127,10 @@ export default function Home() {
                 from <span className="text-signal">AI-built code</span>.
               </h1>
               <p className="mt-6 max-w-2xl text-lg leading-relaxed text-bone-dim">
-                Foundry is a suite of Claude Code skills that turns fast, messy,
-                AI-built code into something you can ship. It distills the mess
-                into clear direction, forges it with the discipline that keeps a
-                cold start from going wrong, and delivers a pre-launch audit that
-                ends in a verdict.
+                Foundry is nine Claude Code skills that turn fast, AI-built
+                code into something you can ship. The flagship audits the whole
+                application and ends in one verdict that names its evidence:
+                safe to ship; ready to ship, risks noted; or do not ship.
               </p>
               <div className="mt-8 flex flex-wrap items-center gap-3">
                 <Link
@@ -173,43 +172,47 @@ export default function Home() {
               ))}
             </div>
 
-            {/* The five promises: the suite's whole claim, each kept by a
-                named skill. Delivery integrity, not product strategy. */}
-            <div className="stagger-rise mt-10">
-              <p className="font-mono text-xs uppercase tracking-[0.25em] text-bone-faint">
-                Five promises, each kept by a skill
-              </p>
-              <ol className="mt-4 divide-y divide-line border-y border-line">
-                {(
-                  [
-                    ["Product intent is declared and audited", "/frame"],
-                    ["Execution context survives every session", "/phase-plan"],
-                    ["The intended outcome is instrumented", "/instrumentation"],
-                    ["The documentation matches reality", "/document"],
-                    ["Technical readiness is audited before real users", "/foundry + /production-audit"],
-                  ] as const
-                ).map(([promise, cmd], i) => (
-                  <li
-                    key={cmd}
-                    className="flex flex-col gap-1 py-3 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6"
-                  >
-                    <span className="text-sm leading-relaxed text-bone-dim">
-                      <span className="mr-3 font-mono text-xs tabular-nums text-bone-faint">
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                      {promise}
-                    </span>
-                    <span className="pl-8 font-mono text-xs text-command sm:pl-0">
-                      {cmd}
-                    </span>
-                  </li>
-                ))}
-              </ol>
-            </div>
           </div>
         </section>
 
         <InstallBlock />
+
+        {/* The five promises: the suite's whole claim, each kept by a named
+            skill. Placed after the install so the pitch never outranks the
+            quick start. Delivery integrity, not product strategy. */}
+        <section className="reveal border-b border-line">
+          <div className="mx-auto max-w-[1180px] px-5 py-12 sm:px-8">
+            <p className="font-mono text-xs uppercase tracking-[0.25em] text-bone-faint">
+              Five promises, each kept by a skill
+            </p>
+            <ol className="mt-4 divide-y divide-line border-y border-line">
+              {(
+                [
+                  ["Product intent is declared and audited", "/frame"],
+                  ["Execution context survives every session", "/phase-plan"],
+                  ["The intended outcome is instrumented", "/instrumentation"],
+                  ["The documentation matches reality", "/document"],
+                  ["Technical readiness is audited before real users", "/foundry + /production-audit"],
+                ] as const
+              ).map(([promise, cmd], i) => (
+                <li
+                  key={cmd}
+                  className="flex flex-col gap-1 py-3 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6"
+                >
+                  <span className="text-sm leading-relaxed text-bone-dim">
+                    <span className="mr-3 font-mono text-xs tabular-nums text-bone-faint">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    {promise}
+                  </span>
+                  <span className="pl-8 font-mono text-xs text-command sm:pl-0">
+                    {cmd}
+                  </span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
 
         {/* The flagship divider */}
         <section className="reveal border-b border-line bg-ink-raised">
@@ -454,7 +457,8 @@ export default function Home() {
             <p className="mt-4 max-w-2xl text-sm leading-relaxed text-bone-dim">
               The audit is read-only. It never changes your code. It produces a
               structured report and a verdict, and it tells you what it did not
-              look at.
+              look at. It reads code and traces flows; it is not a penetration
+              test.
             </p>
           </div>
         </section>
