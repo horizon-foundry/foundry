@@ -5,15 +5,26 @@ description: Use when building or fixing a mobile, touch, or small-screen experi
 
 # mobile
 
-> **Using this skill:** announce "Using mobile", make a todo per step below, and do not skip the gates. This skill's worth is its process, not a hand-reproduced outcome. If you were told to "run mobile", run it, do not improvise the result. (Suite standard: https://github.com/horizon-foundry/foundry/blob/main/reference/skill-authoring.md)
+> **Using this skill:** announce "Using mobile", make a todo per numbered step in `## Steps`, and do not skip the gates. This skill's worth is its process, not a hand-reproduced outcome. If you were told to "run mobile", run it, do not improvise its result. (Suite standard: https://github.com/horizon-foundry/foundry/blob/main/reference/skill-authoring.md)
 
 ## Overview
 
-This is a ship gate where a mobile surface exists. You do not ship a product people will hold in their hands until the mobile experience is solved. `production-audit` treats a core flow that breaks on a phone as a launch blocker.
+This is a ship gate where a mobile surface exists, and its weight follows the project's declared release policy (the `foundry` skill owns the required/optional/waived semantics). Absent a declared policy, required is the default for any real audience: a core flow that breaks on a phone holds the release.
 
 **Not every product has a mobile surface.** A headless service, a CLI, a desktop-only internal tool: for those, the honest gate status is `not-applicable` with a one-line reason (the same status `production-audit`'s shipGates carry). Do not invent work. Declare the status and move on.
 
 Desktop-designed UI does not degrade gracefully to a phone. It breaks in specific, repeatable ways. The core discipline is not a list of CSS fixes. It is a loop: **reproduce the exact reported state and instrument it before you change anything.** The most common mobile failure is not the bug itself. It is misdiagnosing the bug and fixing the wrong mechanism. Everything below the loop is a catalog of **diagnostic candidates**: the usual suspects the probe confirms or clears, never fixes to apply blind.
+
+## Steps
+
+The pressure-test loop and the verification matrix below are the reference these steps point at; the steps carry the order and the evidence.
+
+1. **Reproduce and instrument the exact broken state first**, untouched, with the loop's probes (`document.activeElement`, scroll position, `getComputedStyle`, `matchMedia('(pointer: coarse)')`). Check: the observed mechanism is recorded before anything changes.
+2. **Diagnose against the candidate catalog**, naming the confirmed cause. Check: the cause is stated with its probe evidence, not assumed.
+3. **Fix minimally at the confirmed cause.** Check: the change touches the confirmed mechanism, nothing speculative.
+4. **Re-verify the original probe on the fixed state.** Check: the probe that showed the failure now shows it resolved.
+5. **Walk the verification matrix** through the core flows. Check: every matrix row has a result.
+6. **Emit the filled matrix as the run's artifact** (see "The verification matrix"): report it in the closing output and write it to `<project>/tmp/mobile-matrix-<date>.md`. Check: the file exists and every row reads pass, fail, or unverified with the exact check to run.
 
 ## The pressure-test loop
 
@@ -41,14 +52,8 @@ Each of these is a candidate cause to check against the probe, with its tradeoff
 - **Fixed heights clip content** on small screens. Prefer `height: auto` (or `min-height`) below your breakpoint.
 - **Viewport height:** `100vh` is inconsistent on mobile (browser chrome is counted differently across browsers and scroll states). Where a full-viewport height is genuinely needed, use `100dvh`. Often the better fix is to not need a full-viewport height.
 - **Safe areas:** on notched devices, pad with `env(safe-area-inset-*)` and set `viewport-fit=cover` when content goes edge to edge.
-
-## Touch targets
-
-Interactive controls target **44px** (the iOS minimum). For a small visual glyph, keep the glyph small and expand the hit area with padding plus negative margin (or a `::before { position:absolute; inset:-N }`). The tap target is then 44px while the visible pixels stay small, and it is snapshot-safe.
-
-## Prefer mechanisms that stay out of fragile code
-
-When a fix touches a surface with animation, FLIP, or gesture physics, prefer the CSS-only or declarative mechanism (a body-lock class, `interactive-widget`, `overscroll-behavior`) over JS that threads into the physics. The mobile fix should be additive and removable, not entangled.
+- **Touch targets too small:** interactive controls target **44px** (the iOS minimum). For a small visual glyph, keep the glyph small and expand the hit area with padding plus negative margin (or a `::before { position:absolute; inset:-N }`); the tap target is then 44px while the visible pixels stay small, and it is snapshot-safe.
+- **A fix entangled with fragile code:** when the fix touches a surface with animation, FLIP, or gesture physics, prefer the CSS-only or declarative mechanism (a body-lock class, `interactive-widget`, `overscroll-behavior`) over JS that threads into the physics. The mobile fix should be additive and removable, not entangled.
 
 ## iOS Safari caveats
 
@@ -66,6 +71,8 @@ One width is a spot check, not verification. When mobile is a release gate, walk
 | Software keyboard | Open on every input in the flow; the focused field and the submit affordance both visible |
 | Keyboard-only | The flow completes without touch (external keyboard users, switch access) |
 | Real devices | Follow the product's declared support matrix: for a product that supports both, one pass on real iOS Safari AND one on real Android Chrome; a product scoped to one managed platform verifies that one and records the scope. Emulators do not exercise the soft keyboard, autofill, or scroll physics |
+
+**The filled matrix is the run's artifact.** One row per case (three widths, landscape, text zoom, software keyboard, keyboard-only, iOS Safari, Android Chrome), marked pass, fail, or unverified with the exact check to run, per core flow. Report it in the run's closing output and write it to `<project>/tmp/mobile-matrix-<date>.md`, so a later `foundry check` or audit can cite a record instead of a claim. An unfilled matrix means the skill did not run.
 
 Anything the run could not cover is reported as unverified, with the check to run. This is the same honesty rule the audit uses. "Works on mobile" with an untested matrix row is a claim, not a result.
 
