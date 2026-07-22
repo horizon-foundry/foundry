@@ -18,13 +18,33 @@ This rule ships with the suite (stated in the README and installable into an ado
 
 Author every skill so it cannot be satisfied by jumping to the output. Three mechanisms, used together:
 
-1. **An observable opening gate.** The skill opens by making itself visible: announce "Using [skill]", create a todo per step. An agent that skipped the skill cannot produce these, so the gate is a tell.
+1. **An observable opening gate, anchored to something real.** The skill opens by making itself visible: announce "Using [skill]", create a todo per numbered step in the skill's `## Steps` section. The anchor matters: a gate that says "a todo per step" while the skill has no step list is ceremony, because the agent invents its own decomposition and the tell proves nothing. The strongest gates bind the todos to an artifact the skill itself resolves ("a todo per gate the resolved policy names"). Every suite skill therefore carries a numbered `## Steps` section, and the gate points at it.
 
 2. **A required early artifact.** The skill's value is bound to an artifact the shortcut cannot fake: the audit's scored report and authz matrix, `document`'s truth-checklist run reported against the actual files, `phase-plan`'s written-and-indexed plan file. No artifact, skill not run.
 
 3. **A confirmation gate before expensive or irreversible work.** For skills whose misfire is costly, require a user decision before acting: `brand-voice` drafts `BRAND.md` but it binds only after the human signs off; `foundry check` proposes a release policy and gets confirmation before scoring against it; `foundry prepare` closes gaps but hands the verdict to an independent audit rather than judging its own work. The gate is a hard stop the outcome-shortcut cannot cross.
 
 A skill with none of these is a suggestion. A skill with all three is hard to fake and cheap to verify.
+
+## Steps end in evidence, and gates bind the contract, not the path
+
+Two construction rules keep a step list honest without strangling judgment:
+
+- **Every step ends in a named check or artifact.** A step that ends in an activity ("review the copy") cannot be verified from the transcript; a step that ends in evidence ("report each surface against the four checks, pass or violation") can. Where the expected outcome is observable, state it, so the executing agent can confirm it is on track instead of drifting. A step whose completion nobody could dispute is the unit this suite is built from.
+
+- **Gate the contract, not the path.** The mandatory parts of a skill are its entry contract (what must be declared or resolved before work starts) and its exit contract (the artifact and checks the run must leave behind). The middle, the diagnosis, the drafting, the judgment, stays adaptive: a step list that scripts every move overfits one path and makes the worker refuse sensible exceptions. When a section is judgment, say what the judgment must produce, not how to think it.
+
+## Degraded runs are declared, never silent
+
+When a run lacks a capability the skill prefers (no sub-agent tool, no way to ask the user, a missing helper or schema fetch), it degrades along the path the skill names, and it says so: the run's artifact or closing report opens with a declaration line naming the degradation and its reason. A silent degraded run is a failed run, because the reader prices the output as if the full process ran. "Unavailable" means the capability is not exposed in this session; it never means inconvenient.
+
+## Retrieval honesty: present is not retrieved, retrieved is not used
+
+A doc or instruction existing in the repo is not evidence it shaped behavior. Available, retrieved, invoked, and relevant are four separate facts, and a claim about any of them is verified in a session that did not inherit the authoring context. When a skill's worth depends on a future cold session finding something (a plan index, a standing instruction, a template), the skill verifies the finding path, not just the artifact's existence.
+
+## Requalify when the worker changes
+
+A skill is calibrated against the models and harnesses it actually ran on. When the underlying model or harness changes, re-run a representative journey (this repo's is the self-audit) before trusting prior calibration, and retire scaffolding the new worker no longer needs. Calibration is evidence, and evidence expires when the worker does.
 
 ## Honest limits: gates improve compliance, they do not guarantee it
 
@@ -46,7 +66,9 @@ A skill that emits artifacts must be able to say what each one is *for*. The tes
 
 Each SKILL.md carries this near the top, so the gate is the first thing read:
 
-> **Using this skill:** announce "Using [name]", make a todo per step below, and do not skip the gates. This skill's worth is its process, not a hand-reproduced outcome. If you were told to "run [name]", run it, do not improvise its result.
+> **Using this skill:** announce "Using [name]" (and the mode, where the skill has modes), make a todo per numbered step in `## Steps`, and do not skip the gates. This skill's worth is its process, not a hand-reproduced outcome. If you were told to "run [name]", run it, do not improvise its result.
+
+Where a skill resolves its own work list (gates from a policy, entries from a frame), the gate binds the todos to that resolved list instead, which is stronger: the todos then cannot exist unless the resolution step ran.
 
 ## "Gate" has four senses here (glossary)
 
