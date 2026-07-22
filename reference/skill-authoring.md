@@ -18,7 +18,7 @@ This rule ships with the suite (stated in the README and installable into an ado
 
 Author every skill so it cannot be satisfied by jumping to the output. Three mechanisms, used together:
 
-1. **An observable opening gate, anchored to something real.** The skill opens by making itself visible: announce "Using [skill]", create a todo per numbered step in the skill's `## Steps` section. The anchor matters: a gate that says "a todo per step" while the skill has no step list is ceremony, because the agent invents its own decomposition and the tell proves nothing. The strongest gates bind the todos to an artifact the skill itself resolves ("a todo per gate the resolved policy names"). Every suite skill therefore carries a numbered `## Steps` section, and the gate points at it.
+1. **An observable opening gate, anchored to something real.** The skill opens by making itself visible: announce "Using [skill]", create a todo per numbered step in the skill's `## Steps` section. The anchor matters: a gate that says "a todo per step" while the skill has no step list is ceremony, because the agent invents its own decomposition and the tell proves nothing. The strongest gates bind the todos to an artifact the skill itself resolves ("a todo per gate the resolved policy names"). Every suite skill therefore carries a numbered procedure section (`## Steps`, or `## Phases` where the procedure is a staged pipeline), and the gate points at it by name.
 
 2. **A required early artifact.** The skill's value is bound to an artifact the shortcut cannot fake: the audit's scored report and authz matrix, `document`'s truth-checklist run reported against the actual files, `phase-plan`'s written-and-indexed plan file. No artifact, skill not run.
 
