@@ -5,7 +5,31 @@ description: Use before scaffolding or building anything new, or when a project 
 
 # frame
 
-> **Using this skill:** announce "Using frame", make a todo per step below, and do not skip the gates. The frame is the builder's declaration: NEVER invent users, evidence, or outcomes, and never turn this into a questionnaire. This skill's worth is its process, not a hand-reproduced outcome. If you were told to "run frame", run it, do not improvise the result. (Suite standard: https://github.com/horizon-foundry/foundry/blob/main/reference/skill-authoring.md)
+> **Using this skill:** announce "Using frame", make a todo per numbered step in `## Steps` and one per frame entry audited, and do not skip the gates. The frame is the builder's declaration: NEVER invent users, evidence, or outcomes, and never turn this into a questionnaire. This skill's worth is its process, not a hand-reproduced outcome. If you were told to "run frame", run it, do not improvise its result. (Suite standard: https://github.com/horizon-foundry/foundry/blob/main/reference/skill-authoring.md)
+
+## Steps
+
+1. **Check for an existing frame.** If `PRODUCT.md` already opens with one,
+   audit that frame as it stands; the run's artifact is the finding report,
+   never a duplicate frame.
+2. **Obtain the declaration.** The human writes it against the entry list
+   below, or asks for a draft assembled only from existing materials with
+   every drafted entry marked "assumed, unconfirmed". Check: no entry exists
+   that the human did not state and the draft did not mark assumed.
+3. **Audit it.** Artifact: a findings list against the entry numbers, per
+   "The audit" section below.
+4. **Human resolves and confirms.** Revisions or explicitly accepted gaps.
+   On confirmation, write a `Confirmed: <date>` line at the top of the frame
+   section in `PRODUCT.md`; confirmation is that lookup, never a memory. If
+   no way to ask the human exists this session, stamp
+   `Audited, unconfirmed: <date>` instead, and the build handoff does not
+   proceed on it.
+5. **Hand off.** `scaffold` fills the doc set around the frame;
+   `instrumentation` takes the success measure as an input to its plan,
+   deriving the activation moment separately; a release decision later
+   checks the risks and non-goals still hold. Check: the frame section
+   carries the `Confirmed` stamp; an `Audited, unconfirmed` stamp does not
+   hand off to a build.
 
 ## Overview
 
@@ -16,9 +40,8 @@ that assumption gets written down and audited. The frame is a one-page
 declaration of intent: who this is for, what it fixes, what success measurably
 looks like, and what would prove the idea wrong. The skill's job is the same
 job the suite does everywhere else: hold a declared artifact up to checkable
-criteria and report what is blank, vague, or asserted without evidence.
-Discovery, research, and structured elicitation are other tools' work. frame
-audits what the builder already believes. It does not extract it.
+criteria and report what is blank, vague, or asserted without evidence. It
+audits what the builder already believes; it does not extract it.
 
 ## The gate: the builder declares, the skill audits
 
@@ -28,7 +51,8 @@ from what already exists (the README, existing docs and notes, what they have
 said in the session), with every drafted entry explicitly marked "assumed,
 unconfirmed" for them to correct. Either way, nothing enters the frame that
 the human did not state or confirm. Do not proceed to scaffolding or building
-until the audited frame is confirmed.
+until the frame section in `PRODUCT.md` carries a `Confirmed: <date>` line;
+confirmation is a lookup, never a memory.
 
 ## The frame (one page, nine entries)
 
@@ -75,11 +99,15 @@ Like the audit's matrices, the frame is checkable and blanks are findings:
 
 - A missing or empty entry.
 - "Everyone" (or an unnamed segment) as the user.
-- A problem stated as a feature request rather than a struggle.
+- A problem stated as a feature request rather than a struggle. "Needs a
+  dashboard" is a finding; "cannot tell which client is unprofitable until
+  quarter end" passes.
 - An outcome with no observable change in it.
 - Evidence entries that are assumptions without the label.
 - A success measure that cannot be observed, or that lists several signals.
-- Risks that are all technical (idea risk absent is itself a finding).
+- Risks that are all technical (idea risk absent is itself a finding). A
+  risk list that is all "scaling, refactors, tech debt" is a finding; a real
+  risk list names at least one way the product thesis itself could be wrong.
 - A blank or unconsidered security declaration (a considered "no sensitive
   data, no accounts" is fine; silence is not).
 - Any entry the human did not author or confirm.
@@ -90,26 +118,14 @@ still vague, accepted for now"), which stays visible in the frame.
 
 ## Where the frame lives
 
-The opening `## The frame` section of `PRODUCT.md`, dated. If no `PRODUCT.md`
-exists yet, create one containing just the frame; `scaffold` and the doc set
-grow around it. One file holds two kinds of writing. The frame records intent
-and assumptions, and may be revised as learning lands (date each revision).
-The rest of `PRODUCT.md` records shipped, present-tense truth. An assumption
-graduates into the truth sections only with the evidence that promoted it.
-
-## Steps
-
-1. **Check for an existing frame.** If `PRODUCT.md` already opens with one,
-   audit it as it stands and report; do not duplicate it.
-2. **Obtain the declaration.** The human writes it, or asks for the
-   assembled-from-existing-materials draft with every entry marked assumed.
-3. **Audit it.** Findings per the list above, reported against entry numbers.
-4. **Human resolves and confirms.** Revisions or explicitly accepted gaps;
-   only then does scaffolding or building proceed.
-5. **Hand off.** `scaffold` fills the doc set around it; `instrumentation`
-   takes the success measure as an input to its plan, deriving the activation
-   moment separately; a release decision later checks the risks and non-goals
-   still hold.
+The opening `## The frame` section of `PRODUCT.md`, dated, with the
+confirmation stamp (`Confirmed: <date>`, or `Audited, unconfirmed: <date>`)
+as its first line. If no `PRODUCT.md` exists yet, create one containing just
+the frame; `scaffold` and the doc set grow around it. One file holds two
+kinds of writing. The frame records intent and assumptions, and may be
+revised as learning lands (date each revision). The rest of `PRODUCT.md`
+records shipped, present-tense truth. An assumption graduates into the truth
+sections only with the evidence that promoted it.
 
 ## What this skill is not (non-goals)
 
@@ -131,13 +147,14 @@ so, not a workshop to produce the answer.
 
 ## Red flags
 
-- Asking the builder a sequence of discovery questions -> wrong mechanism and
-  wrong product: this skill audits a declaration, it does not run discovery.
+- Asking the builder a sequence of discovery questions -> this skill audits
+  a declaration; see the non-goals.
 - Filling any entry the human did not state or confirm -> an invented user is
   worse than a blank cell; blanks are honest findings.
 - A frame longer than a page -> it has become a research document; the frame
   is the declaration, not the investigation.
-- Scaffolding or building started before the audited frame is confirmed -> the
-  suite's own failure mode: disciplined delivery of an unexamined idea.
+- Scaffolding or building started before the frame carries its `Confirmed`
+  stamp -> the suite's own failure mode: disciplined delivery of an
+  unexamined idea.
 - Editing the frame to match what got built -> the frame records intent; when
   reality diverges, the divergence is a finding to discuss, not to erase.

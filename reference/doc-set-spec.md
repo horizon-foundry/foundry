@@ -68,13 +68,17 @@ The resume rule (a standing instruction in a scaffolded `CLAUDE.md`: read the in
 
 > **A unit of work is not done when it is merged. It is done when it is merged and what happens next is written down and indexed: the next unit's plan, or an honest terminal entry.**
 
-- **Plan while warm.** The next unit is planned at the moment context is maximal, right after the last one finishes, not cold-reconstructed at the start of a fresh session. Most planning happens when context is weakest; this inverts it.
-- **Write and index atomically.** A plan file is written and its path is added to `TODOS.md`'s Master Plan / Phase Plans index in the same action. An unindexed plan is invisible after a `/clear`.
-- **The chain never goes empty, and never goes vacuous.** When there is genuinely no next unit, the index gets an explicit terminal entry (decision required, awaiting evidence, or no next work selected) instead of a filler plan. The resume side always finds either a real plan or an honest statement of why there is none.
-- **Plans carry a status.** Every plan file opens with `Status: active | completed | superseded (by <file>) | abandoned (<why>)`, so a reader never executes a plan that has already been replaced. An artifact that no longer supports a decision or a handoff is closed, not left ambient.
-- **The repo wins on resume.** The plan explains intent; `git status`, the branch, and recent commits prove current state. A resumed plan is reconciled against the repo before any new work starts.
+`TODOS.md` holds the index; the plan files hold the handoff. Together they are the "next" tense of the memory. The mechanics of the chain (plan while warm, write and index atomically, honest terminal entries, the plan-file status line, reconciling a resumed plan against the repo) are owned by the `phase-plan` skill; this spec states the invariant and defers the procedure there, per its own one-owner rule.
 
-`TODOS.md` holds the index; the plan files hold the handoff (kickoff decisions, steps, acceptance criteria, dependencies, non-goals, risks, current state). Together they are the "next" tense of the memory.
+## Lesson promotion (how a recurring lesson becomes enforcement)
+
+A lesson that recurs, two or more `FRICTION.md` entries, or one entry plus a repeat in the wild, has outgrown the file it was logged in. Promote it:
+
+1. **Sweep the siblings.** Before fixing the one instance, find every place the same class of mistake can occur, so the fix covers the class, not the anecdote.
+2. **Classify to the earliest durable owner that can enforce it.** The ladder, weakest to strongest: a prose rule in the relevant doc; a rule in the owning skill's text; a review-checklist item; a schema constraint or validation script that fails the build. Climb only as high as the lesson's cost justifies; a hard rule that only exists as prose is a hope.
+3. **Retire the weaker rule.** Once mechanical enforcement lands, remove the now-redundant prose version. Two statements of one rule is drift waiting to happen, even when one is a machine check.
+
+To make promotion decidable, a `FRICTION.md` entry may carry an optional maturity line stating the candidate improvement as a testable hypothesis: "If [change] at [owner], then [observable behavioral change], because [mechanism]." An entry that cannot be stated that way is not ready to promote.
 
 ## Self-maintenance cadence
 

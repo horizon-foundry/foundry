@@ -5,7 +5,7 @@ description: Use when a unit of work is finishing (a PR is about to merge, a pha
 
 # phase-plan
 
-> **Using this skill:** announce "Using phase-plan", make a todo per step below, and do not skip the gates. This skill's worth is its process, not a hand-reproduced outcome. If you were told to "run phase-plan", run it, do not improvise the result. (Suite standard: https://github.com/horizon-foundry/foundry/blob/main/reference/skill-authoring.md)
+> **Using this skill:** announce "Using phase-plan", make a todo per numbered step in `## Steps`, and do not skip the gates. This skill's worth is its process, not a hand-reproduced outcome. If you were told to "run phase-plan", run it, do not improvise its result. (Suite standard: https://github.com/horizon-foundry/foundry/blob/main/reference/skill-authoring.md)
 
 ## Overview
 
@@ -19,12 +19,29 @@ Most planning happens when context is weakest: at the start of a fresh session, 
 
 A plan file is written **and** its path is added to the project's `TODOS.md` Master Plan / Phase Plans index **in the same action**. An unindexed plan is invisible after a `/clear`, so writing without indexing is the same as not writing it.
 
+Plans live in one project-declared directory, named in the project's `CLAUDE.md` (a maintainer may keep a global plans directory outside the repo; a project with no declaration defaults to `<project>/plans/`). The index line's path is written exactly as the next session should open it.
+
 ## Steps
 
-1. **Locate the index.** Open `TODOS.md`'s `### Phase Plans` list. It is the authoritative map of which file holds which plan.
-2. **Choose the file, safely.** New phase, new file, with a clear name. Before writing to any existing path, read it: if it holds a different phase's plan, stop and pick a new file, never overwrite a plan. Plan files are permanent records.
-3. **Write the handoff.** The plan is a handoff to a cold reader. Its fields: the goal and why now; kickoff decisions already made; the steps; **acceptance criteria** (how the next session knows the unit is done, checkable); **dependencies** (what must merge, exist, or be answered first); **non-goals** (what this unit deliberately does not touch); the risks; and the current state, **anchored to the repo objectively**, not just prose: the base commit and branch the plan was written from, the verification state at that point (build, tests, and any audit passing or not), what is done, and what is next. The objective anchor is what lets the next session reconcile the plan against `git` (below) instead of trusting the narrative. Enough that a fresh agent can act without re-deriving.
-4. **Stamp the status.** The plan file opens with a status line: `Status: active`. The other values are `completed`, `superseded (by <file>)`, and `abandoned (<why>)`. Update the line when the plan transitions, so a reader never executes a plan that has already been replaced.
+1. **Locate the index.** Open `TODOS.md`'s `### Phase Plans` list. It is the authoritative map of which file holds which plan; note whether the unit being planned already has an entry, because that decides the next step.
+2. **Choose the file, safely.** New phase, new file, with a clear name, in the project's plan directory (above). Before writing to any existing path, read it: if it holds a different phase's plan, stop and pick a new file, never overwrite a plan. Plan files are permanent records.
+3. **Write the handoff.** The plan is a handoff to a cold reader. Copy the bundled template, `reference/templates/plan.md` in the suite repo (fallback: https://raw.githubusercontent.com/horizon-foundry/foundry/main/reference/templates/plan.md), and fill every section. The shape:
+
+   ```
+   Status: active
+
+   ## Goal
+   ## Kickoff decisions
+   ## Steps
+   ## Acceptance criteria
+   ## Dependencies
+   ## Non-goals
+   ## Risks
+   ## Current state
+   ```
+
+   Current state is the **objective anchor**: the base commit and branch the plan was written from, the verification state at that point (build, tests, and any audit passing or not), what is done, and what is next. The anchor is what lets the next session reconcile the plan against `git` (below) instead of trusting the narrative. A missing section is a defect: fill it or write "none", never drop the heading.
+4. **Stamp the status.** The plan file opens with the template's status line: `Status: active`. The other values are `completed`, `superseded (by <file>)`, and `abandoned (<why>)`. Update the line when the plan transitions, so a reader never executes a plan that has already been replaced.
 5. **Index it in the same action.** Add `- [ ] Phase N, <name> -> <path>` to the Phase Plans list. Keep the checkboxes current: check the box when that phase's PR merges. A superseded plan's entry points at its successor.
 
 ## Honest terminal outcomes
