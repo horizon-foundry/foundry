@@ -45,8 +45,8 @@ type SkillCopy = { tagline: string; why: string; when: string[] };
 const SKILL_COPY: Record<string, SkillCopy> = {
   foundry: {
     tagline:
-      "One pre-ship pass over your project's release gates. It works out which gates this launch actually requires, checks them read-only, helps you close the gaps, and leaves the verdict to one independent audit.",
-    why: "Each of these disciplines is easy to skip on its own. Nothing stops you when you do. That is exactly how a product reaches launch day with gaps nobody audited. foundry works out the release policy first. A CLI is not a web product. An internal tool is not a public launch. Then it checks every gate that policy requires. Readiness gets checked because you ran foundry, not because you remembered each piece. The scorecard says more than pass or fail. It names every state on the record: not-applicable, waived, blocked, and accepted-risk.",
+      "One pre-ship pass over your project's release gates. It works out which gates this launch actually requires, previews where each stands read-only, helps you close the gaps, and leaves the verdict to one independent audit.",
+    why: "Each of these disciplines is easy to skip on its own. Nothing stops you when you do. That is exactly how a product reaches launch day with gaps nobody audited. foundry works out the release policy first. A CLI is not a web product. An internal tool is not a public launch. Then check previews every gate that policy requires, citing the records that already exist instead of re-auditing anything, and telling you when those records have gone stale. Readiness gets reviewed because you ran foundry, not because you remembered each piece. The scorecard says more than pass or fail. It names every state on the record: not-applicable, waived, blocked, and accepted-risk.",
     when: [
       "A release decision or invite wave is close and you want one honest readiness pass",
       "A heavy build stretch just ended and you want to know what it cost",
