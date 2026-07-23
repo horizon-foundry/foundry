@@ -40,7 +40,7 @@ A skill that leans on a harness capability names the assumption and degrades whe
 
 ## Artifact value: every artifact earns its existence
 
-A skill that emits artifacts must be able to say what each one is *for*. The test: an artifact supports a **decision** (the audit report feeds ship/no-ship), an **execution handoff** (the plan file a next session resumes from), an **operational responsibility** (the event plan a named owner reviews), or a **user outcome**. An artifact that supports none of these is ritual output; cut it. And artifacts that outlive their moment carry a lifecycle: plan files open with `Status: active | completed | superseded | abandoned`, so a stale artifact reads as closed instead of ambiently authoritative.
+A skill that emits artifacts must be able to say what each one is *for*. The test: an artifact supports a **decision** (the audit report feeds ship/no-ship), an **execution handoff** (the plan file a next session resumes from), an **operational responsibility** (the event plan a named owner reviews), or a **user outcome**. An artifact that supports none of these is ceremony, not output; cut it. And artifacts that outlive their moment carry a lifecycle: plan files open with `Status: active | completed | superseded | abandoned`, so a stale artifact reads as closed instead of ambiently authoritative.
 
 ## The pattern every suite skill opens with
 
