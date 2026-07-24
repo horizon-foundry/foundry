@@ -51,7 +51,7 @@ The organizing color rule holds throughout: the brand is monochrome, so color me
 
 The **mark** is the Horizon Foundry symbol: an angular geometric mark (inlined from the brand SVG). It is monochrome and takes the surrounding text color, so it reads bone on the dark ground and slate on light. Minimum height 20px, clear space equal to the mark's cap height.
 
-The **wordmark** pairs the mark with "Foundry" (the suite) in Archivo Black, or "Horizon Foundry" (the parent brand) in the fuller lockup. Set the wordmark only in Archivo Black, never the mono or serif.
+The **wordmark** pairs the mark with "Foundry" (the suite) in Archivo Black, or "Horizon Foundry" (the parent brand) in the fuller lockup. Set the wordmark only in Archivo Black, never the mono or serif, uppercase with slightly open tracking (0.02em), matching the studio site's lockup treatment so the two surfaces read as one brand.
 
 ## Colors
 

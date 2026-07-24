@@ -35,8 +35,12 @@ export function BrandMark({ className = "" }: { className?: string }) {
   );
 }
 
-// The lockup used in site chrome: the mark + the "Foundry" wordmark. Foundry is
-// the suite; Horizon Foundry is the parent brand (see BRAND.md).
+// The lockup used in site chrome: the mark + the "Foundry" wordmark, set
+// uppercase with slightly open tracking to match the studio site's lockup
+// treatment (Horizon-Foundry's components/Wordmark.tsx). Foundry is the
+// suite; Horizon Foundry is the parent brand (see BRAND.md). The text takes
+// its size from the caller's className on the Link (text-sm in the header,
+// text-xs in the footer): no font-size utility here, so it inherits.
 export function Wordmark({ className = "" }: { className?: string }) {
   return (
     <Link
@@ -45,7 +49,7 @@ export function Wordmark({ className = "" }: { className?: string }) {
       aria-label="Foundry, by Horizon Foundry, home"
     >
       <BrandMark className="h-5 w-auto" />
-      <span className="font-display text-base tracking-normal">
+      <span className="font-display uppercase tracking-[0.02em]">
         Foundry
       </span>
     </Link>

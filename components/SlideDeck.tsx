@@ -86,7 +86,11 @@ export function SlideDeck({ slides, title, tagline, statChips }: Props) {
             <p className="font-mono text-xs uppercase tracking-[0.2em] text-bone-faint">
               Behind the Build · Overview
             </p>
-            <h2 className="font-display text-4xl tracking-normal text-bone">
+            {/* This is a mark + wordmark lockup (BrandMark above), so it
+                gets the same uppercase, open-tracking treatment as the
+                header/footer Wordmark, not the sentence-case display
+                heading style used elsewhere in this deck. */}
+            <h2 className="font-display text-4xl uppercase tracking-[0.02em] text-bone">
               {title}
             </h2>
             <p className="mx-auto max-w-xl leading-relaxed text-bone-dim">
