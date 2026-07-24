@@ -22,9 +22,9 @@ colors:
   verdict-noship: '#FF5C5C'
 typography:
   display:
-    fontFamily: 'Inter'
-    fontWeight: '600'
-    letterSpacing: '-0.01em'
+    fontFamily: 'Big Shoulders'
+    fontWeight: '700'
+    letterSpacing: '-0.025em'
   body:
     fontFamily: 'IBM Plex Sans'
   mono:
@@ -37,11 +37,13 @@ spacing:
   container-max: '1180px'
 ---
 
+Inherits the Horizon Foundry parent brand (the horizon-foundry/horizon-foundry repo's BRAND.md); Big Shoulders display, decided 2026-07-23.
+
 ## Brand & Style
 
 Foundry is Horizon Foundry's suite, and the site wears the Horizon Foundry identity: a dark blue-gray steel ground, the angular Horizon Foundry mark, and a monochrome palette. The register is a working foundry, industrial and precise, software forged with craft rather than announced with hype.
 
-Two layers share one screen. The **brand layer** (chrome, the suite pages, the mark and wordmark) is steel and white in a geometric sans. The **instrument layer** (the audit reports and other technical surfaces) keeps a monospace, ledger character and the severity palette. The instrument is the tool; the brand is the foundry it was made in.
+Two layers share one screen. The **brand layer** (chrome, the suite pages, the mark and wordmark) is steel and white in an industrial condensed gothic. The **instrument layer** (the audit reports and other technical surfaces) keeps a monospace, ledger character and the severity palette. The instrument is the tool; the brand is the foundry it was made in.
 
 The organizing color rule holds throughout: the brand is monochrome, so color means a severity or a verdict, nothing else. A screen is steel and bone until a finding or a verdict speaks; emphasis in the brand layer reads by luminance (bright white on steel), not by hue.
 
@@ -49,7 +51,7 @@ The organizing color rule holds throughout: the brand is monochrome, so color me
 
 The **mark** is the Horizon Foundry symbol: an angular geometric mark (inlined from the brand SVG). It is monochrome and takes the surrounding text color, so it reads bone on the dark ground and slate on light. Minimum height 20px, clear space equal to the mark's cap height.
 
-The **wordmark** pairs the mark with "Foundry" (the suite) in Inter, or "Horizon Foundry" (the parent brand) in the fuller lockup. Set the wordmark only in Inter, never the mono or serif.
+The **wordmark** pairs the mark with "Foundry" (the suite) in Big Shoulders, or "Horizon Foundry" (the parent brand) in the fuller lockup. Set the wordmark only in Big Shoulders, never the mono or serif.
 
 ## Colors
 
@@ -63,7 +65,7 @@ The severity ramp (critical red, high orange, medium amber-yellow, low steel-blu
 
 ## Typography
 
-**Inter** carries the brand: the wordmark and display headings. **IBM Plex Sans** is the body and UI voice. **IBM Plex Mono** is the instrument voice: verdicts, finding IDs, severities, code, and all technical metadata. **IBM Plex Serif** sets long-form rendered documentation. Geometric sans for the foundry, monospace for the instrument.
+**Big Shoulders** carries the brand: the wordmark and display headings, an industrial condensed gothic that rhymes with the angular mark. **IBM Plex Sans** is the body and UI voice. **IBM Plex Mono** is the instrument voice: verdicts, finding IDs, severities, code, and all technical metadata. **IBM Plex Serif** sets long-form rendered documentation. Condensed gothic for the foundry, monospace for the instrument.
 
 ## Layout & Spacing
 
@@ -99,5 +101,5 @@ The audit report is read by a detail-oriented but time-poor senior or principal 
 - No drop shadows, glows, rounded-pill buttons, or gradient meshes.
 - No color that does not mean a severity or a verdict. The brand layer is monochrome.
 - No hype or marketing warmth; this is a foundry, not a SaaS splash.
-- Never set the identity in anything but Inter and the Horizon Foundry mark.
+- Never set the identity in anything but Big Shoulders and the Horizon Foundry mark.
 - No em dashes in any copy.

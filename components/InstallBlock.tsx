@@ -79,7 +79,7 @@ export async function InstallBlock() {
       <div className="mx-auto max-w-[1180px] px-5 py-16 sm:px-8">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h2 className="font-display text-2xl font-semibold tracking-tight text-bone sm:text-3xl">
+            <h2 className="font-display text-2xl font-bold tracking-tight text-bone sm:text-3xl">
               Install Foundry
             </h2>
             <p className="mt-2 max-w-2xl text-sm leading-relaxed text-bone-dim">

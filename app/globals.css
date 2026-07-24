@@ -41,7 +41,7 @@
   --color-verdict-risk: #f5ce4b;
   --color-verdict-noship: #ff5c5c;
 
-  --font-display: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-display), ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-plex-mono), ui-monospace, monospace;
   --font-serif: var(--font-plex-serif), ui-serif, Georgia, serif;

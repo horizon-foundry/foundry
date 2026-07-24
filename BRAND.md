@@ -8,6 +8,8 @@ The identity and voice source of truth for Foundry. Distinct from [DESIGN.md](DE
 
 The three lines above are the machine-readable sign-off the `brand-voice` skill reads: this brand is `approved`, so its glossary and copy rules are enforced, not merely suggested.
 
+Inherits the Horizon Foundry parent brand (the horizon-foundry/horizon-foundry repo's BRAND.md); Big Shoulders display, decided 2026-07-23. Type is [DESIGN.md](DESIGN.md)'s fact, not duplicated here.
+
 ## Purpose
 
 Foundry turns fast, messy, AI-built code into something you can ship. It is a suite of Claude Code skills, a way of building turned into tools. The parent brand is Horizon Foundry. It distills complexity into clarity and forges ideas into impact. Foundry does the same for a codebase.

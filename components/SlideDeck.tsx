@@ -86,7 +86,7 @@ export function SlideDeck({ slides, title, tagline, statChips }: Props) {
             <p className="font-mono text-xs uppercase tracking-[0.2em] text-bone-faint">
               Behind the Build · Overview
             </p>
-            <h2 className="font-display text-4xl font-semibold tracking-tight text-bone">
+            <h2 className="font-display text-4xl font-bold tracking-tight text-bone">
               {title}
             </h2>
             <p className="mx-auto max-w-xl leading-relaxed text-bone-dim">

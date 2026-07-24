@@ -2,18 +2,23 @@ import {
   IBM_Plex_Sans,
   IBM_Plex_Mono,
   IBM_Plex_Serif,
-  Inter,
+  Big_Shoulders,
 } from "next/font/google";
 
-// Inter carries the Horizon Foundry brand layer (wordmark + display headings),
-// matching the brand lockup. The IBM Plex trio stays for body, technical/report
-// surfaces (mono), and long-form doc prose (serif).
-// Weights are only what the site sets: display type is 400/600 everywhere
-// (300/500/700 shipped unused and cost three font files).
-export const inter = Inter({
+// Big Shoulders carries the Horizon Foundry brand layer (wordmark + display
+// headings): an industrial condensed gothic that rhymes with the angular mark.
+// Decision of record 2026-07-23 (BRAND.md); the studio site adopted the same
+// face first, this is the companion PR. The IBM Plex trio stays for body,
+// technical/report surfaces (mono), and long-form doc prose (serif).
+// Big Shoulders has no true 400-adjacent look at display sizes, so display
+// type moves to 500/700 (medium/bold), replacing Inter's 400/600. Every
+// current font-display element renders bold (700); medium (500) is loaded to
+// match the studio site's weight set for shared-brand consistency, ready for
+// the first display element that wants the lighter cut.
+export const bigShoulders = Big_Shoulders({
   subsets: ["latin"],
-  weight: ["400", "600"],
-  variable: "--font-inter",
+  weight: ["500", "700"],
+  variable: "--font-display",
   display: "swap",
 });
 

@@ -96,8 +96,8 @@ export default function DesignSystem() {
         <Section label="Typography: the foundry and the instrument">
           <div className="space-y-5">
             <div>
-              <p className="font-display text-2xl font-semibold tracking-tight text-bone">
-                Inter
+              <p className="font-display text-2xl font-bold tracking-tight text-bone">
+                Big Shoulders
               </p>
               <p className="mt-1 font-mono text-xs uppercase tracking-wide text-bone-faint">
                 The brand voice · wordmark · display headings
