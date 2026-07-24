@@ -15,10 +15,19 @@ import {
 // current font-display element renders bold (700); medium (500) is loaded to
 // match the studio site's weight set for shared-brand consistency, ready for
 // the first display element that wants the lighter cut.
+//
+// Variable is named --font-big-shoulders (not --font-display): next/font's
+// generated class is unlayered CSS, and Tailwind's @theme block compiles into
+// a @layer, which always loses to unlayered rules regardless of specificity
+// or source order. Reusing --font-display for both would make next/font's
+// single-name value (just the font, no fallback) permanently win over the
+// theme's fallback chain, so the sans-serif fallback becomes unreachable.
+// Two distinct names, with the theme token referencing this one, keeps the
+// fallback chain intact. See app/globals.css.
 export const bigShoulders = Big_Shoulders({
   subsets: ["latin"],
   weight: ["500", "700"],
-  variable: "--font-display",
+  variable: "--font-big-shoulders",
   display: "swap",
 });
 
