@@ -2,21 +2,20 @@ import {
   IBM_Plex_Sans,
   IBM_Plex_Mono,
   IBM_Plex_Serif,
-  Big_Shoulders,
+  Archivo_Black,
 } from "next/font/google";
 
-// Big Shoulders carries the Horizon Foundry brand layer (wordmark + display
-// headings): an industrial condensed gothic that rhymes with the angular mark.
-// Decision of record 2026-07-23 (BRAND.md); the studio site adopted the same
-// face first, this is the companion PR. The IBM Plex trio stays for body,
-// technical/report surfaces (mono), and long-form doc prose (serif).
-// Big Shoulders has no true 400-adjacent look at display sizes, so display
-// type moves to 500/700 (medium/bold), replacing Inter's 400/600. Every
-// current font-display element renders bold (700); medium (500) is loaded to
-// match the studio site's weight set for shared-brand consistency, ready for
-// the first display element that wants the lighter cut.
+// Archivo Black carries the Horizon Foundry brand layer (wordmark + display
+// headings): a heavy grotesque whose blunt, machined letterforms rhyme with
+// the angular mark. Decision of record 2026-07-24 (BRAND.md), replacing Big
+// Shoulders, which was reversed on letterform grounds before any merge; the
+// studio site switched first, this mirrors that change. The IBM Plex trio
+// stays for body, technical/report surfaces (mono), and long-form doc prose
+// (serif). Single weight by design: the face ships only at 400, so display
+// elements never set font-bold or font-semibold (the browser would
+// synthesize a faux weight).
 //
-// Variable is named --font-big-shoulders (not --font-display): next/font's
+// Variable is named --font-archivo-black (not --font-display): next/font's
 // generated class is unlayered CSS, and Tailwind's @theme block compiles into
 // a @layer, which always loses to unlayered rules regardless of specificity
 // or source order. Reusing --font-display for both would make next/font's
@@ -24,10 +23,10 @@ import {
 // theme's fallback chain, so the sans-serif fallback becomes unreachable.
 // Two distinct names, with the theme token referencing this one, keeps the
 // fallback chain intact. See app/globals.css.
-export const bigShoulders = Big_Shoulders({
+export const archivoBlack = Archivo_Black({
   subsets: ["latin"],
-  weight: ["500", "700"],
-  variable: "--font-big-shoulders",
+  weight: "400",
+  variable: "--font-archivo-black",
   display: "swap",
 });
 

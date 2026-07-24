@@ -45,7 +45,7 @@
      and would always beat this @theme-layer declaration in the cascade if
      they shared a name, silently dropping the fallback chain below. See
      lib/fonts.ts. */
-  --font-display: var(--font-big-shoulders), ui-sans-serif, system-ui,
+  --font-display: var(--font-archivo-black), ui-sans-serif, system-ui,
     sans-serif;
   --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-plex-mono), ui-monospace, monospace;

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { bigShoulders, plexSans, plexMono, plexSerif } from "@/lib/fonts";
+import { archivoBlack, plexSans, plexMono, plexSerif } from "@/lib/fonts";
 import { HfSymbolDefs } from "@/components/Wordmark";
 import { ConsoleSignature } from "@/components/ConsoleSignature";
 import "./globals.css";
@@ -71,7 +71,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${bigShoulders.variable} ${plexSans.variable} ${plexMono.variable} ${plexSerif.variable}`}
+      className={`${archivoBlack.variable} ${plexSans.variable} ${plexMono.variable} ${plexSerif.variable}`}
     >
       <body className="min-h-screen antialiased">
         <script

@@ -45,7 +45,7 @@ export function Wordmark({ className = "" }: { className?: string }) {
       aria-label="Foundry, by Horizon Foundry, home"
     >
       <BrandMark className="h-5 w-auto" />
-      <span className="font-display text-base font-bold tracking-tight">
+      <span className="font-display text-base tracking-normal">
         Foundry
       </span>
     </Link>

@@ -22,9 +22,9 @@ colors:
   verdict-noship: '#FF5C5C'
 typography:
   display:
-    fontFamily: 'Big Shoulders'
-    fontWeight: '700'
-    letterSpacing: '-0.025em'
+    fontFamily: 'Archivo Black'
+    fontWeight: '400'
+    letterSpacing: '0'
   body:
     fontFamily: 'IBM Plex Sans'
   mono:
@@ -37,7 +37,7 @@ spacing:
   container-max: '1180px'
 ---
 
-Inherits the Horizon Foundry parent brand (the horizon-foundry/horizon-foundry repo's BRAND.md); Big Shoulders display, decided 2026-07-23.
+Inherits the Horizon Foundry parent brand (the horizon-foundry/horizon-foundry repo's BRAND.md); Archivo Black display, decided 2026-07-24 (revised from the initial Big Shoulders pick on 2026-07-23, reversed on letterform grounds before any merge).
 
 ## Brand & Style
 
@@ -51,7 +51,7 @@ The organizing color rule holds throughout: the brand is monochrome, so color me
 
 The **mark** is the Horizon Foundry symbol: an angular geometric mark (inlined from the brand SVG). It is monochrome and takes the surrounding text color, so it reads bone on the dark ground and slate on light. Minimum height 20px, clear space equal to the mark's cap height.
 
-The **wordmark** pairs the mark with "Foundry" (the suite) in Big Shoulders, or "Horizon Foundry" (the parent brand) in the fuller lockup. Set the wordmark only in Big Shoulders, never the mono or serif.
+The **wordmark** pairs the mark with "Foundry" (the suite) in Archivo Black, or "Horizon Foundry" (the parent brand) in the fuller lockup. Set the wordmark only in Archivo Black, never the mono or serif.
 
 ## Colors
 
@@ -65,7 +65,7 @@ The severity ramp (critical red, high orange, medium amber-yellow, low steel-blu
 
 ## Typography
 
-**Big Shoulders** carries the brand: the wordmark and display headings, an industrial condensed gothic that rhymes with the angular mark. **IBM Plex Sans** is the body and UI voice. **IBM Plex Mono** is the instrument voice: verdicts, finding IDs, severities, code, and all technical metadata. **IBM Plex Serif** sets long-form rendered documentation. Condensed gothic for the foundry, monospace for the instrument.
+**Archivo Black** carries the brand: the wordmark and display headings, a heavy grotesque whose blunt, machined letterforms rhyme with the angular mark. It ships in a single 400 weight, so display type never sets a bold or semibold utility (the browser would synthesize a faux weight); emphasis in the brand layer comes from size and the mark, not weight. **IBM Plex Sans** is the body and UI voice. **IBM Plex Mono** is the instrument voice: verdicts, finding IDs, severities, code, and all technical metadata. **IBM Plex Serif** sets long-form rendered documentation. A heavy grotesque for the foundry, monospace for the instrument.
 
 ## Layout & Spacing
 
@@ -101,5 +101,5 @@ The audit report is read by a detail-oriented but time-poor senior or principal 
 - No drop shadows, glows, rounded-pill buttons, or gradient meshes.
 - No color that does not mean a severity or a verdict. The brand layer is monochrome.
 - No hype or marketing warmth; this is a foundry, not a SaaS splash.
-- Never set the identity in anything but Big Shoulders and the Horizon Foundry mark.
+- Never set the identity in anything but Archivo Black and the Horizon Foundry mark.
 - No em dashes in any copy.
