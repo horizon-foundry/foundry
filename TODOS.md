@@ -52,6 +52,7 @@ That audit was much fresher than the prior one; its #1 "blocker" (retired /commi
 - [x] Phase 13: Publish, LAUNCHED 2026-07-17 as `horizon-foundry/foundry` (fresh orphan repo, custom domain live) -> `~/.claude/plans/foundry-phase-13-publish.md` (top section holds the remaining launch-tail checklist: Supabase allowlist + SITE_ORIGIN flip, www DNS, GitHub presentation, branch protection)
 - [ ] Phase 14: Post-launch learning (the one lifecycle item that needs launched users, so it is correctly post-flip) -> seeded in the Phase 12.9 plan's workstream N; write its own plan file when Phase 13 completes. Did users reach the outcome, which assumptions died, expand/change/stop; closes the loop instrumentation opens.
 - [ ] Phase 15: v0.1.1, first version bump + suite improvements from the 2026-07-22 comparative audits -> `~/.claude/plans/foundry-v0-1-1-release-hardening.md` (scope law: improve existing skills only, no new skills/artifacts/schemas; wall scrub PR #1; skill execution pass + check-as-preview rewrite PR #2; value-prop simplification PR #3; remaining: release protocol with CI-enforced changelog rigor, full doc sweep, regenerated self-audit, tag v0.1.1)
+- [ ] Phase 16: Adopted Big Shoulders as the brand display face, companion PR to the parent-brand decision in horizon-foundry/horizon-foundry (see PROMPTS Phase 16 / NOTES 2026-07-23). `SITE_URL` moved to `https://foundry.thehorizonfoundry.com`; `SITE_ORIGIN` in fly.toml is deliberately unchanged pending the Supabase redirect-allowlist step above.
 
 ## Launch sequence (do in this order)
 

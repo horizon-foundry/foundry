@@ -41,7 +41,12 @@
   --color-verdict-risk: #f5ce4b;
   --color-verdict-noship: #ff5c5c;
 
-  --font-display: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  /* Two distinct variable names: next/font's generated rule is unlayered CSS
+     and would always beat this @theme-layer declaration in the cascade if
+     they shared a name, silently dropping the fallback chain below. See
+     lib/fonts.ts. */
+  --font-display: var(--font-archivo-black), ui-sans-serif, system-ui,
+    sans-serif;
   --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-plex-mono), ui-monospace, monospace;
   --font-serif: var(--font-plex-serif), ui-serif, Georgia, serif;

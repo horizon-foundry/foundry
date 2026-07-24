@@ -55,7 +55,7 @@ export default function SkillsIndex() {
             <p className="font-mono text-xs uppercase tracking-[0.25em] text-bone-faint">
               The Foundry suite
             </p>
-            <h1 className="mt-3 max-w-3xl font-display text-3xl font-semibold tracking-tight text-bone sm:text-4xl">
+            <h1 className="mt-3 max-w-3xl font-display text-3xl tracking-normal text-bone sm:text-4xl">
               Software delivery integrity, as Claude Code skills.
             </h1>
             <p className="mt-4 max-w-2xl leading-relaxed text-bone-dim">
