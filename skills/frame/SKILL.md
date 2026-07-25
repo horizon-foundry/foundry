@@ -43,6 +43,12 @@ job the suite does everywhere else: hold a declared artifact up to checkable
 criteria and report what is blank, vague, or asserted without evidence. It
 audits what the builder already believes; it does not extract it.
 
+## When NOT to use
+
+- Auditing built code or a release candidate: `production-audit`; frame audits intent before anything exists.
+- Standing up the repo and doc set: `scaffold`, after the frame carries its `Confirmed` stamp.
+- Producing intent the builder has not declared: out of scope by design (see the non-goals section); blanks are honest findings.
+
 ## The gate: the builder declares, the skill audits
 
 The human authors the frame's content, one of two ways. They write it
