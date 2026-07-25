@@ -1,6 +1,6 @@
 ---
 name: brand-voice
-description: Use when writing or reviewing any user-facing copy, marketing, landing pages, UI labels, error messages, empty states, docs prose, or when a project needs its brand voice defined. Enforces one voice from a single source of truth instead of ad-hoc tone per surface.
+description: Use when writing or reviewing any user-facing copy, marketing, landing pages, UI labels, error messages, empty states, docs prose, or when a project needs its brand voice defined. Enforces one voice from a single source of truth instead of ad-hoc tone per surface. Not for deciding what a surface may claim (the forever spec owns capability truth) or for visual design.
 ---
 
 # brand-voice
@@ -43,6 +43,12 @@ description: Use when writing or reviewing any user-facing copy, marketing, land
 ## Overview
 
 Copy drifts when every surface invents its own tone. This skill keeps one voice by making `BRAND.md` the single source of truth for identity, voice, glossary, and copy rules, then applying it. Model-invoked (runs when copy changes) or user-invoked. `BRAND.md` is defined by the doc set spec (`reference/doc-set-spec.md`, bundled in the repo; fallback: https://raw.githubusercontent.com/horizon-foundry/foundry/main/reference/doc-set-spec.md); it owns voice the way `DESIGN.md` owns visuals.
+
+## When NOT to use
+
+- Deciding what capability a surface may claim: shipped truth comes from the forever spec, and unshipped features never appear, whatever the voice.
+- Visual identity (tokens, type, layout): `DESIGN.md` territory; this skill owns words, not looks.
+- Choosing which docs render on which surface: `document` owns the public/internal boundary; this skill checks the words once they are there.
 
 ## Define the voice first (from what already exists)
 

@@ -1,6 +1,6 @@
 ---
 name: instrumentation
-description: Use when adding analytics or event tracking, instrumenting a funnel or an activation flow, wiring a product-analytics tool (PostHog, etc.), or when you need to measure whether a feature works. Covers defining events before building, one identity model across client and server (keyed on the right entity per event, not always the user), reliable server-side capture, operational governance (schema versioning, dedup, a named owner), and measuring activation over vanity.
+description: Use when adding analytics or event tracking, instrumenting a funnel or an activation flow, wiring a product-analytics tool (PostHog, etc.), or when you need to measure whether a feature works. Covers defining events before building, one identity model across client and server (keyed on the right entity per event, not always the user), reliable server-side capture, operational governance (schema versioning, dedup, a named owner), and measuring activation over vanity. Not for system observability (errors, latency, alerting); that is a different discipline.
 ---
 
 # instrumentation
@@ -12,6 +12,12 @@ description: Use when adding analytics or event tracking, instrumenting a funnel
 This is a ship gate, and its weight follows the project's declared release policy (the `foundry` skill owns the required/optional/waived semantics). Where the policy requires instrumentation, an uninstrumented activation funnel caps the `production-audit` verdict; where the policy marks it optional or waived, the gap is recorded, not a cap.
 
 You cannot improve what you do not measure. Most instrumentation is added after the fact, as scattered `capture()` calls that never answer a real question. The discipline: decide what you need to learn first, instrument the whole path to it on one identity, make the capture reliable. Analytics that silently drops events or splits a user across two identities is worse than none: it produces confident, wrong funnels.
+
+## When NOT to use
+
+- System observability (errors, latency, saturation, alerting): a different question with its own discipline, assessed by `production-audit`'s operability dimension; never folded into the event plan (see "Product analytics is not observability").
+- Choosing the product's success measure: the frame declares it; this skill derives activation from it and instruments the path.
+- Scoring the instrumentation gate or issuing a ship verdict: `foundry check` cites the records; `production-audit` judges.
 
 ## Steps
 

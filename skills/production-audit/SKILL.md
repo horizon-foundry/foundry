@@ -1,6 +1,6 @@
 ---
 name: production-audit
-description: Use when a product is approaching launch, an invite wave, or a release decision and needs a whole-application production-readiness audit across the dimensions its surface implies, from a standing set of eleven (security, concurrency, reliability, accessibility, UI consistency, infra, plus operability, testing confidence, data and migration safety, release safety, performance and capacity) with applicability resolved per project, ending in a scope-qualified ship/no-ship recommendation. Also use for "is this safe to ship", "pre-launch review", or "audit the whole app" requests.
+description: Use when a product is approaching launch, an invite wave, or a release decision and needs a whole-application production-readiness audit across the dimensions its surface implies, from a standing set of eleven (security, concurrency, reliability, accessibility, UI consistency, infra, plus operability, testing confidence, data and migration safety, release safety, performance and capacity) with applicability resolved per project, ending in a scope-qualified ship/no-ship recommendation. Also use for "is this safe to ship", "pre-launch review", or "audit the whole app" requests. Not for reviewing a single diff or applying fixes; the audit reads the whole application and only reports.
 ---
 
 # Production Audit

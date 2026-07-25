@@ -1,6 +1,6 @@
 ---
 name: scaffold
-description: Use when starting a new project, or when an existing project still has placeholder markers in its docs. Declares the project's profile (experiment, internal-tool, web-product, service, or library), then stands up the doc set, posture, and deploy or publish shape that profile actually needs, filled from the builder's answers, not a blank prototype.
+description: Use when starting a new project, or when an existing project still has placeholder markers in its docs. Declares the project's profile (experiment, internal-tool, web-product, service, or library), then stands up the doc set, posture, and deploy or publish shape that profile actually needs, filled from the builder's answers, not a blank prototype. Not for maintaining docs on an already-scaffolded project (that is document) or deciding whether the idea is worth building (that is frame).
 ---
 
 # scaffold
@@ -12,6 +12,13 @@ description: Use when starting a new project, or when an existing project still 
 A project starts in the shape it will need at the end of its life. That shape depends on what the project is. This skill first declares the project's **profile**. Then it stands up the doc set, posture, and deploy or publish path that profile needs, filled from a few setup answers the builder supplies. User-invoked. The doc set is defined by `reference/doc-set-spec.md`. The skill is self-contained: no external template repo is required (the skeletons below are the normative fallback).
 
 An existing project is also in a "scaffold needed" state if its docs still contain `{placeholder}` markers. The same flow applies.
+
+## When NOT to use
+
+- The doc set exists and has drifted: that is `document reconcile`. scaffold re-runs only for graduation (a profile change) or leftover `{placeholder}` markers.
+- The question is whether to build it or who it serves: `frame` audits declared intent; scaffold assumes a confirmed frame.
+- The project is approaching a release decision: `foundry` and `production-audit` own that moment.
+- The next unit of work needs a plan: `phase-plan`; scaffold only seeds the chain's first block.
 
 ## Profiles
 

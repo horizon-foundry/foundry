@@ -1,6 +1,6 @@
 ---
 name: phase-plan
-description: Use when a unit of work is finishing (a PR is about to merge, a phase is complete) and the next unit needs a plan, or when writing any plan file. Writes the next unit's plan while context is warm and indexes it so the next session can resume from it; when there is genuinely no next unit, indexes an honest terminal entry (decision required, awaiting evidence, or no next work selected) instead of a vacuous plan.
+description: Use when a unit of work is finishing (a PR is about to merge, a phase is complete) and the next unit needs a plan, or when writing any plan file. Writes the next unit's plan while context is warm and indexes it so the next session can resume from it; when there is genuinely no next unit, indexes an honest terminal entry (decision required, awaiting evidence, or no next work selected) instead of a vacuous plan. Not for whole-product master planning or mid-execution task tracking; it writes the handoff at a close.
 ---
 
 # phase-plan
@@ -14,6 +14,13 @@ A unit of work is not done when it is merged. It is done when it is merged and w
 ## Why plan at the end, not the start
 
 Most planning happens when context is weakest: at the start of a fresh session, reconstructed cold. Plan the next unit when context is strongest instead, right after finishing the last one. The next session then opens on a plan written while the work was warm, not a cold guess, and the user never has to ask whether the next plan exists.
+
+## When NOT to use
+
+- Planning a whole product or its phase set from scratch: that is the master plan, a different artifact this skill links to but does not author.
+- Tracking tasks mid-execution: the harness's own todo list owns in-flight work; the plan chain records handoffs between sessions.
+- A routine PR that leaves nothing to resume: the honest output is no plan or a terminal entry, never a filler artifact.
+- Recording decisions or product truth: NOTES.md and the forever spec own those; a plan is a handoff, not a record of why.
 
 ## The rule: write and index atomically
 
