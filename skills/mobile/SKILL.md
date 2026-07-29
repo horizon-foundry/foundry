@@ -1,6 +1,6 @@
 ---
 name: mobile
-description: Use when building or fixing a mobile, touch, or small-screen experience, when a layout breaks on a phone, or when a feature was designed on desktop and needs to hold up on a real device. Covers touch vs pointer, the keyboard, overscroll, safe areas, viewport units, and the pressure-test loop that gets to a good mobile result.
+description: Use when building or fixing a mobile, touch, or small-screen experience, when a layout breaks on a phone, or when a feature was designed on desktop and needs to hold up on a real device. Covers touch vs pointer, the keyboard, overscroll, safe areas, viewport units, and the pressure-test loop that gets to a good mobile result. Not for products with no mobile surface; that gate resolves not-applicable, and no work is invented.
 ---
 
 # mobile
@@ -11,9 +11,13 @@ description: Use when building or fixing a mobile, touch, or small-screen experi
 
 This is a ship gate where a mobile surface exists, and its weight follows the project's declared release policy (the `foundry` skill owns the required/optional/waived semantics). Absent a declared policy, required is the default for any real audience: a core flow that breaks on a phone holds the release.
 
-**Not every product has a mobile surface.** A headless service, a CLI, a desktop-only internal tool: for those, the honest gate status is `not-applicable` with a one-line reason (the same status `production-audit`'s shipGates carry). Do not invent work. Declare the status and move on.
-
 Desktop-designed UI does not degrade gracefully to a phone. It breaks in specific, repeatable ways. The core discipline is not a list of CSS fixes. It is a loop: **reproduce the exact reported state and instrument it before you change anything.** The most common mobile failure is not the bug itself. It is misdiagnosing the bug and fixing the wrong mechanism. Everything below the loop is a catalog of **diagnostic candidates**: the usual suspects the probe confirms or clears, never fixes to apply blind.
+
+## When NOT to use
+
+- A product with no mobile surface (a headless service, a CLI, a desktop-only internal tool): the honest gate status is `not-applicable` with a one-line reason (the same status `production-audit`'s shipGates carry). Do not invent work; declare the status and move on.
+- General visual or interaction polish with no mobile defect or gate in play: that is design work, not this loop.
+- Weighing mobile findings into a release verdict: the audit and the release policy own the weighing; this skill produces the filled matrix they cite.
 
 ## Steps
 

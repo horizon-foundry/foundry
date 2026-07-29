@@ -1,6 +1,6 @@
 ---
 name: document
-description: Use to keep a project's documentation true to the code and current across every surface, or to turn the repo's own docs into a product surface. Covers docs-versus-code drift (repair the doc, flag a suspected regression) and presentation drift (deck, hub, showcase copy). Modes, public (curated external hub), internal (raw docs behind a gate), reconcile (idempotent, pull every surface and the docs-versus-code layer current). Safe to run as often as you like.
+description: Use to keep a project's documentation true to the code and current across every surface, or to turn the repo's own docs into a product surface. Covers docs-versus-code drift (repair the doc, flag a suspected regression) and presentation drift (deck, hub, showcase copy). Modes, public (curated external hub), internal (raw docs behind a gate), reconcile (idempotent, pull every surface and the docs-versus-code layer current). Safe to run as often as you like. Not for creating a doc set from nothing (that is scaffold) or judging release readiness (that is production-audit).
 ---
 
 # document
@@ -12,6 +12,13 @@ description: Use to keep a project's documentation true to the code and current 
 Documenting a project is a lifecycle stage, not a favor you do when asked. The build sequence is scaffold, build, **document**, audit, ship. The document step is the one that silently gets skipped, because nobody is blocked without it. The cost lands later: a cold-start agent has no map, a stakeholder cannot see what was built, and worst, a wrong doc gets trusted and built on.
 
 This skill owns the project's words on two layers. **Truth**: the docs must agree with the running code (a wrong doc is worse than no doc). **Presentation**: the docs become a live surface (the overview deck, the "Behind the Build" hub) so they cannot rot unseen. User-invoked and idempotent: a run that finds everything current changes nothing. Assumes the doc set from `doc-set-spec`.
+
+## When NOT to use
+
+- The doc set does not exist yet: that is `scaffold`; this skill reconciles what exists and never fabricates docs to render.
+- The question is whether the product is safe to ship: `production-audit` issues verdicts; this skill maintains truth and surfaces.
+- The work is defining or enforcing voice and tone: `brand-voice` owns the words' sound; this skill owns where docs render and whether they are true.
+- A doc disagrees with runtime behavior and the fix would change the code: never from here; flag the suspected regression and let a human decide.
 
 ## Steps
 

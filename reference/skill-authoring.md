@@ -70,6 +70,15 @@ Each SKILL.md carries this near the top, so the gate is the first thing read:
 
 Where a skill resolves its own work list (gates from a policy, entries from a frame), the gate binds the todos to that resolved list instead, which is stronger: the todos then cannot exist unless the resolution step ran.
 
+## Every skill names its boundary (the "When NOT to use" section)
+
+A trigger without a boundary invites skill creep: adjacent requests get absorbed because they superficially pattern-match, and the wrong skill produces a confident artifact for a question it was never designed to answer. A misroute is worse than a miss, because the output looks legitimate. So the boundary is as load-bearing as the trigger, and it is declared in two places:
+
+1. **The frontmatter description names at least one refusal.** Routing happens at the description, before the skill body is ever read, so the strongest anti-trigger belongs there ("Not for backend-only or non-UI tasks").
+2. **The body carries a `## When NOT to use` section**: two to five bullets, each naming an adjacent request the skill must refuse and where that request goes instead (another suite skill, a doc's owner, or "out of scope by design"). A refusal without a destination just strands the user; name the right home. Skills whose identity boundary needs more than routing (what the skill philosophically is not) may carry a fuller non-goals section as well; the routing bullets still exist.
+
+The section also serves the run, not just the router: mid-execution, it is the check against scope creep ("this request drifted into territory the boundary refuses; stop and name the right skill"). A skill that cannot say what it refuses does not yet know what it is.
+
 ## "Gate" has four senses here (glossary)
 
 The suite uses one word for four distinct mechanisms; when authoring, say which you mean:
