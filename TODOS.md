@@ -147,6 +147,7 @@ remainder from the presentation-split idea stays open below.
 - [ ] **[Proof]** Publish 2+ more example audits across meaningfully different app types (not just a web SaaS). Show repeatability across independent runs on the same commit. Publish approximate repo size, audit duration, model config per run. Demonstrate one complete before-and-after: `/foundry check` -> `/foundry prepare` -> final `/production-audit`. Eventually publish known false positives and how the verifier eliminated them. Synthetic / permissioned targets only.
 
 ### Brand / infra
+- [ ] **[Infra]** Destroy the old `production-audit` Fly app: stopped and scaled to 0 since the Foundry rename, and the replacement URL is confirmed live. (Relocated from CLAUDE.md, 2026-07-29 context-rightsizing pass.)
 - [ ] **[Brand]** Point a custom domain (e.g. foundry.horizonfoundry.com) at the Fly app once the domain is set up.
 - [x] **[Brand]** Rename the Fly app to a Foundry URL (foundry-skills.fly.dev)
 - [x] **[Docs]** Public install path (npx skills add + from-source make install)
