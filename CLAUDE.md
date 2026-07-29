@@ -40,10 +40,10 @@ The shape: nine skills under `skills/` (production-audit is the flagship inspect
 
 The maintainer's standard workflow applies: all work on feature branches, commit messages via temp file and `git commit -F`, every unit of work ends in a PR. Project-specific steps:
 
-1. **Build and verify (root Step 2):** `npm run typecheck && npm run lint && npm run build`. For skill or schema changes, also `make validate` (schema-validates the sample and every published report, checks the bundled schema copy, and enforces the cross-field report invariants).
+**Step 2 — Build and verify:** `npm run typecheck && npm run lint && npm run build`. For skill or schema changes, also `make validate` (schema-validates the sample and every published report, checks the bundled schema copy, and enforces the cross-field report invariants).
 
-2. **Update CLAUDE.md (root Step 5):** Only for changes to agent-facing gotchas, conventions, or source-of-truth rules. Never copy content from the other docs into here.
+**Step 5 — Update CLAUDE.md:** Only for changes to agent-facing gotchas, conventions, or source-of-truth rules. Never copy content from the other docs into here.
 
-3. **Update NOTES.md, PROMPTS.md, and FRICTION.md (in parallel with root Step 5):** Per the `document` skill's self-maintenance cadence. If any are out of date, bring them current before staging the commit.
+**Step 5 (parallel) — Update NOTES.md, PROMPTS.md, FRICTION.md:** Per the `document` skill's self-maintenance cadence. If any are out of date, bring them current before staging the commit.
 
-4. **README.md (root Step 6)** and **TODOS.md (root Step 7):** Update per the workspace format specs when counts, descriptions, or backlog items change.
+**Step 6 — README.md and TODOS.md:** Update per the workspace format specs when counts, descriptions, or backlog items change.
