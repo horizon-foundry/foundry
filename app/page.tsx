@@ -121,7 +121,7 @@ export default function Home() {
               <p className="font-mono text-xs uppercase tracking-[0.25em] text-bone-faint">
                 A Horizon Foundry suite · Distill. Forge. Deliver.
               </p>
-              <h1 className="mt-5 font-display text-4xl font-semibold leading-[1.05] tracking-tight text-bone sm:text-6xl">
+              <h1 className="mt-5 font-display text-4xl leading-[1.05] tracking-normal text-bone sm:text-6xl">
                 Forge shippable software{" "}
                 <br />
                 from <span className="text-signal">AI-built code</span>.
@@ -220,7 +220,7 @@ export default function Home() {
             <div>
               <div className="flex items-center gap-3">
                 <span className="draw-rule h-px w-8 bg-signal" aria-hidden="true" />
-                <h2 className="font-display text-2xl font-semibold tracking-tight text-bone sm:text-3xl">
+                <h2 className="font-display text-2xl tracking-normal text-bone sm:text-3xl">
                   Production Audit
                 </h2>
               </div>
@@ -265,7 +265,7 @@ export default function Home() {
         {/* The problem */}
         <section className="reveal-fade border-b border-line">
           <div className="mx-auto grid max-w-[1180px] gap-8 px-5 py-16 sm:px-8 md:grid-cols-[0.9fr_1.1fr]">
-            <h2 className="font-display text-2xl font-semibold tracking-tight text-bone sm:text-3xl">
+            <h2 className="font-display text-2xl tracking-normal text-bone sm:text-3xl">
               Software built fast ships confident and unverified.
             </h2>
             <div className="space-y-4 text-bone-dim">
@@ -288,7 +288,7 @@ export default function Home() {
         {/* Dimensions */}
         <section id="dimensions" className="reveal border-b border-line">
           <div className="mx-auto max-w-[1180px] px-5 py-16 sm:px-8">
-            <h2 className="max-w-2xl font-display text-2xl font-semibold tracking-tight text-bone sm:text-3xl">
+            <h2 className="max-w-2xl font-display text-2xl tracking-normal text-bone sm:text-3xl">
               Eleven dimensions, resolved per project.
             </h2>
             <div className="mt-6 grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
@@ -319,7 +319,7 @@ export default function Home() {
           <div className="mx-auto max-w-[1180px] px-5 py-16 sm:px-8">
             <div className="flex items-center gap-3">
               <span className="draw-rule h-px w-8 bg-signal" aria-hidden="true" />
-              <h2 className="font-display text-2xl font-semibold tracking-tight text-bone sm:text-3xl">
+              <h2 className="font-display text-2xl tracking-normal text-bone sm:text-3xl">
                 The method
               </h2>
             </div>
@@ -349,7 +349,7 @@ export default function Home() {
         {/* Principles */}
         <section className="reveal border-b border-line">
           <div className="mx-auto max-w-[1180px] px-5 py-16 sm:px-8">
-            <h2 className="max-w-2xl font-display text-2xl font-semibold tracking-tight text-bone sm:text-3xl">
+            <h2 className="max-w-2xl font-display text-2xl tracking-normal text-bone sm:text-3xl">
               What makes the findings trustworthy.
             </h2>
             <div className="mt-6 grid gap-px border border-line bg-line md:grid-cols-2 lg:grid-cols-3">
@@ -380,7 +380,7 @@ export default function Home() {
             <div className="mx-auto max-w-[1180px] px-5 py-16 sm:px-8">
               <div className="grid gap-8 md:grid-cols-[1.1fr_0.9fr] md:items-center">
                 <div>
-                  <h2 className="font-display text-2xl font-semibold tracking-tight text-bone sm:text-3xl">
+                  <h2 className="font-display text-2xl tracking-normal text-bone sm:text-3xl">
                     We audited Foundry with Foundry.
                   </h2>
                   <p className="mt-4 leading-relaxed text-bone-dim">
@@ -434,7 +434,7 @@ export default function Home() {
           <div className="mx-auto max-w-[1180px] px-5 py-16 sm:px-8">
             <div className="flex items-center gap-3">
               <span className="draw-rule h-px w-8 bg-signal" aria-hidden="true" />
-              <h2 className="font-display text-2xl font-semibold tracking-tight text-bone sm:text-3xl">
+              <h2 className="font-display text-2xl tracking-normal text-bone sm:text-3xl">
                 Run it
               </h2>
             </div>
