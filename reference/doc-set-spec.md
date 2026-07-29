@@ -32,6 +32,17 @@ Each file owns exactly one responsibility. Duplication between any two is drift 
 
 Smaller projects can omit `ARCHITECTURE.md` (fold the data model into `PRODUCT.md` or `CLAUDE.md`) and `BRAND.md` (only if the project genuinely has no outward voice). Everything else is load-bearing for a shipping product. **The full set is the web-product shape, not a universal mandate:** `scaffold`'s profiles (experiment, internal-tool, web-product, service, library) each select the subset that project kind actually needs; an experiment carries a README and NOTES, a library's README is its product surface and it has no DESIGN. The ownership rules above apply to whichever files exist.
 
+## CLAUDE.md is gotchas, not inventory
+
+An agent can inspect the repo; it cannot infer a gotcha. So `CLAUDE.md` carries only what inspection cannot recover: a heading, pointers to the sibling docs, a brief project overview, the project's gotchas, conventions, and source-of-truth rules, and the commit-workflow overrides. Everything derivable by reading the repo stays out: no annotated file tree, no stack table, no command inventory, no token tables mirroring the stylesheet. The one exception is a derivable fact that carries a gotcha (a command that costs money, a directory that must never be touched); the gotcha earns the fact its line.
+
+Two corollaries:
+
+- **Guardrails earn their residency.** A rule lives in `CLAUDE.md` when it is backed by an incident or enforces a real product constraint. A preference, or a rule a machine check already enforces, shrinks to one line naming the why.
+- **No status-bearing content.** Phase history, "not yet wired" snapshots, machine identifiers, and embedded to-do items rot in a file nobody re-reads critically. `TODOS.md` and `NOTES.md` own state and history; relocating a status fact requires the destination to be current for it, and a stale destination is repaired first.
+
+The self-maintenance cadence for `NOTES.md`, `PROMPTS.md`, and `FRICTION.md` is likewise owned elsewhere (the `document` skill; see below): a project `CLAUDE.md` points there instead of inlining the protocol.
+
 ## Source-of-truth rules
 
 - **One owner per fact.** When docs and running behavior conflict, implementation is the source of truth; documentation is repaired to match, never the reverse without explicit instruction.
@@ -82,14 +93,9 @@ To make promotion decidable, a `FRICTION.md` entry may carry an optional maturit
 
 ## Self-maintenance cadence
 
-These files are maintained as work happens, not in an end-of-session cleanup:
+The working docs are maintained as work happens, never in an end-of-session cleanup: a decision worth preserving lands in `NOTES.md` in the same turn, a finished unit of work gets its `PROMPTS.md` phase entry and its next plan (the plan chain), a product change updates `PRODUCT.md` in the same commit (the forever-spec invariant), observed friction lands in `FRICTION.md`, and finalizing a unit of work verifies all of the above are current before the change lands.
 
-- **A decision worth preserving** -> `NOTES.md`, in the same turn, with its reasoning and the rejected alternative.
-- **A prompt arrives** -> append to the `PROMPTS.md` log before doing the work, in projects that keep a raw log. A repo whose docs may render publicly can deliberately keep no verbatim log (the phases narrative carries the history instead); that is a valid, declared choice, not drift.
-- **A unit of work finishes** -> a `PROMPTS.md` phase entry, and the next plan written and indexed (the plan chain).
-- **The product changes** -> `PRODUCT.md` in the same commit (the forever-spec invariant).
-- **Process friction observed** -> `FRICTION.md`.
-- **When finalizing a unit of work** -> verify all of the above are current before the change lands.
+The mechanics (what each of `NOTES.md`, `PROMPTS.md`, and `FRICTION.md` records, in what shape, and exactly when) are owned by the `document` skill's self-maintenance section; this spec states the invariant and defers the procedure there, per its own one-owner rule, and a project's `CLAUDE.md` points at that skill rather than restating the protocol.
 
 ## Rendering the docs proves they are maintained
 

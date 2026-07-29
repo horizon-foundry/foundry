@@ -100,6 +100,11 @@ Companion PR to a parent-brand decision made in the studio site (horizon-foundry
 ### The skill-boundaries pass (2026-07-25)
 
 A boundary is as load-bearing as a trigger: a misrouted skill produces a confident artifact for a question it was never designed to answer. This pass codified that in the authoring standard (a refusal clause in every frontmatter description, plus a destination-naming "When NOT to use" section in every body) and rolled it across all nine skills in each skill's own voice; production-audit and frame, which already carried boundary sections, became the pattern the rest now follow, and mobile's not-applicable paragraph moved into its boundary section rather than being duplicated. A gate-regression harness (deterministic skill-invariant lint in make validate plus a requalification scenario suite) was planned and indexed as a v0.2.0 candidate, alongside two suite-hygiene backlog items (a usage-tracked skills registry and a periodic cross-model configuration review).
+
+### The context-rightsizing pass (2026-07-29)
+
+The doc architecture absorbed the current context-engineering guidance for agent instruction files (a lightweight always-loaded CLAUDE.md, gotchas over inventories, progressive disclosure through skills): a CLAUDE.md earns its lines with gotchas, conventions, and source-of-truth rules, while everything derivable by inspecting the repo stays out. The doc-set spec gained the right-sized CLAUDE.md shape, including the no-status-bearing-content rule; scaffold's CLAUDE.md skeleton was cut to match; the document skill became the single owner of the NOTES/PROMPTS/FRICTION self-maintenance mechanics, which projects now point at instead of inlining; and this repo's own CLAUDE.md was trimmed to the shape it now prescribes, with its incident-backed gotchas preserved and its one live status fact relocated to TODOS.
+
 ## Origin and direction
 
 This section records the decisions that shaped the build, in the project's own voice.

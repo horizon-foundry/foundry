@@ -80,6 +80,16 @@ Run against the documentation and the externally-meaningful contracts a change t
 6. **Forever spec**, `PRODUCT.md` describes only what exists; unshipped work lives in `TODOS.md` and plan files.
 7. **Registry (only where one is claimed)**, if the docs maintain a file or component registry, every listed entry exists and every file is listed. Do not impose a filesystem-mirror registry on a project whose docs never claimed one.
 
+## Self-maintenance: NOTES.md, PROMPTS.md, and FRICTION.md
+
+This skill owns the mechanics of the working docs; the doc-set spec states the invariant (maintained as work happens, never in an end-of-session cleanup) and a project's `CLAUDE.md` needs only a one-line pointer here ("self-maintenance cadence: owned by the `document` skill"), never an inlined copy of this protocol.
+
+- **`NOTES.md`, decisions with reasoning.** Update in the same turn a judgment call is made that a future session would otherwise re-derive. Each entry carries the decision, the reasoning (including the constraints that forced it), and the rejected alternative(s): that last line is what stops the next session from proposing the rejected option as an improvement. A reversal gets its own entry and the original stays, because the history is part of the record. Routine work (file created, function written) belongs in git history, never here.
+- **`PROMPTS.md`, what happened, in order.** Three sections stay in sync: a Summary paragraph (the framing; update when the framing changes), Phases (chronological narrative; when a unit of work finishes, append a phase entry with what was built, decided, and deferred, and do not edit prior phases except to fix errors), and Origin and direction (the decisions that shaped the build, in the project's own voice). A raw verbatim prompt log is optional: a repo whose docs may render publicly can deliberately keep none (the Phases narrative carries the history), and that is a declared choice, not drift; once declared, verbatim prompts are never reintroduced.
+- **`FRICTION.md`, where the process hurt.** Process problems, never product bugs. Attribution is strict: entries the agent observes (three or more iterations on one prompt, consecutive drafts rejected for overlapping reasons, tool failures costing real session time) are added without waiting to be asked and flagged to the user so they can revise or remove; entries the user logs themselves stay theirs. Every entry has three fields: What happened, Likely cause, Candidate improvement. An entry without a candidate improvement is a complaint, not a log. Tone is neutral: facts, not blame.
+
+The cadence: a decision worth preserving updates `NOTES.md` before moving on; a finished unit of work appends a `PROMPTS.md` phase entry; observed friction lands in `FRICTION.md` when observed, not at session end; and finalizing any unit of work verifies all three are current (the truth-checklist run is the natural moment).
+
 ## Three modes: public, internal, reconcile
 
 A documentation *surface* serves one of two audiences, and those audiences want opposite things. The mode names which you are building.
