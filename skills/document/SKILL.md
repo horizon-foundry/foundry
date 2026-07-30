@@ -165,11 +165,4 @@ A fresh-context subagent is given only the repo and a terse continuation prompt 
 
 ## Red flags
 
-- A doc-vs-code disagreement rewritten silently when it might be a regression -> classify first; a failing test or an intent claim means flag it, do not document the bug as the contract.
-- Rendering `PROMPTS.md`, `NOTES.md`, or `FRICTION.md` on a public page -> wrong mode; raw logs are `internal` only.
-- A placeholder or empty section on the public hub -> fill it for a reader or leave it out.
-- Adding or renaming a skill and not re-running `document` -> the deck and showcase copy are where that rots; re-run to reconcile them.
-- Reading an arbitrary filename from a param -> whitelist the doc set; never let input reach the filesystem.
-- Imposing a filesystem-mirror registry on a repo that never claimed one -> document architectural boundaries, not every file.
-- Inventing impact, positioning, or customer evidence for the deck or showcase copy -> every claim traces to something real; absence of evidence is stated, not filled.
-- Building a public hub for an internal service or private repo -> the showcase is conditional; truth layer + internal portal is the complete job there.
+Symptoms that you skipped something above, not new rules: a doc-vs-code disagreement rewritten silently when it might be a regression; `PROMPTS.md`, `NOTES.md`, or `FRICTION.md` rendered on a public page; a placeholder or empty section on the public hub; a skill added or renamed without a reconcile pass; an arbitrary filename read from a param; a filesystem-mirror registry imposed on a repo that never claimed one; invented impact, positioning, or customer evidence; a public hub built for an internal service or private repo.

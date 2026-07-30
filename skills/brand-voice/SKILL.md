@@ -91,10 +91,4 @@ Marketing and UI copy track shipped reality. When a feature ships, changes, or i
 
 ## Red flags
 
-- Writing copy with no `BRAND.md` to check against -> draft the standard from approved inputs and get sign-off first.
-- Inventing personality or positioning to fill a blank `BRAND.md` -> the standard is declared by the human; unconfirmed entries are marked assumed and do not bind.
-- Enforcing copy against a `BRAND.md` the human never signed off -> it is a proposal, not a standard.
-- An error message that is on-brand but unclear -> clarity outranks the brand; fix the message, flag the rule.
-- Two surfaces use different words for the same thing -> glossary violation; pick the approved term.
-- Pasting a spec or notes doc onto a user-facing page -> rewrite in brand voice.
-- Copy describes a feature that is planned, not shipped -> remove it until it ships.
+Symptoms that you skipped something above, not new rules: copy written with no `BRAND.md` to check against; personality or positioning invented to fill a blank one; copy enforced against a `BRAND.md` nobody signed off; an error message that is on-brand but unclear; two surfaces using different words for the same thing; a spec or notes doc pasted onto a user-facing page; copy describing a feature that is planned rather than shipped.

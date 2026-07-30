@@ -153,14 +153,13 @@ so, not a workshop to produce the answer.
 
 ## Red flags
 
-- Asking the builder a sequence of discovery questions -> this skill audits
-  a declaration; see the non-goals.
-- Filling any entry the human did not state or confirm -> an invented user is
-  worse than a blank cell; blanks are honest findings.
+Two that nothing above states:
+
 - A frame longer than a page -> it has become a research document; the frame
   is the declaration, not the investigation.
-- Scaffolding or building started before the frame carries its `Confirmed`
-  stamp -> the suite's own failure mode: disciplined delivery of an
-  unexamined idea.
 - Editing the frame to match what got built -> the frame records intent; when
   reality diverges, the divergence is a finding to discuss, not to erase.
+
+Symptoms that you skipped something above: a sequence of discovery questions
+asked of the builder; an entry filled that the human never stated or
+confirmed; scaffolding or building started before the `Confirmed` stamp.

@@ -67,9 +67,4 @@ The written plan explains intent. The repo proves current state, and the repo wi
 
 ## Red flags
 
-- Wrote a plan file but did not touch `TODOS.md` -> it is invisible; index it now.
-- About to write over an existing plan file -> read it first; if it is a different plan, use a new file.
-- Closing a meaningful handoff (a phase, a resumable unit) with no indexed plan and no terminal entry -> the chain just went empty; write one before you move on. (A routine PR that leaves nothing to resume needs neither.)
-- Writing a filler plan because "the chain must not go empty" -> the chain accepts honest terminal entries; a vacuous plan poisons the next session.
-- Resuming from a plan without checking git state -> the plan may predate merged or abandoned work; reconcile first.
-- A plan file with no status line, or one still marked active after being replaced -> stamp it; a stale active plan is a trap.
+Symptoms that you skipped something above, not new rules: a plan file written without touching `TODOS.md`; an existing plan file about to be written over; a meaningful handoff closed with neither an indexed plan nor a terminal entry; a filler plan written because "the chain must not go empty"; a plan resumed without checking git state; a plan file with no status line, or one still marked active after being replaced.

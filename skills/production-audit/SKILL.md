@@ -119,7 +119,7 @@ Every Critical, High, and **verdict-driving** finding goes to a fresh subagent w
 
 ### Phase 4: Report
 
-Lead with posture, not problems. The report opens with the verdict, a one-line `posture` statement (how healthy is this, honestly), and a `strengths` list of the verified-safe controls the audit confirmed. Then the findings, in two groups: the **risks to weigh** (what the verdict rests on) first, then the **improvements** (safe today, robustness over time) second. A well-built app should read as well-built, with a short risk list and a longer betterment list, not as one undifferentiated pile of failures. `blockingFindingIds` may cite only risks: an improvement never drives the verdict, and `make validate` enforces it.
+Lead with posture, not problems. The report opens with the verdict, a one-line `posture` statement (how healthy is this, honestly), and a `strengths` list of the verified-safe controls the audit confirmed. Then the findings, in two groups: the **risks to weigh** (what the verdict rests on) first, then the **improvements** (safe today, robustness over time) second. A well-built app should read as well-built, with a short risk list and a longer betterment list, not as one undifferentiated pile of failures. `blockingFindingIds` may cite only risks.
 
 **The verdict names its evidence base.** Set `verdict.assessedScope` (`static` without `--runtime`, `static-plus-runtime` with it) and open the justification by naming that scope. `static-plus-runtime` means static analysis plus a browser pass, not that the runtime was verified end to end: real-device behavior, infrastructure state, capacity, backup and restore, and migration behavior stay `not-assessed` unless separately exercised. A static-only run that found nothing blocking gives the plain recommendation with its evidence base named beneath it ("static review, runtime not exercised"): the runtime checks it could not perform are listed in `notAssessed`, so the claim stops where the evidence stops without a jargon headline. Only the full invocation issues a whole-product release verdict at all; a single-dimension run reports scoped posture for that dimension, and `--quick` reports triage.
 
@@ -205,11 +205,8 @@ Contrast on rendered output, focus visibility, screen-reader behavior, multi-tab
 
 ## Common mistakes
 
-| Mistake | Correction |
-|---|---|
-| Auditing file-by-file | Audit flow-by-flow; files are visited because a flow passes through them |
-| One context does everything | Depth collapses after the first dimension; fan out per dimension |
-| Severity inflation | Justify against the rubric; a High must name the business control bypassed |
-| Confident browser claims from static code | Route to needs-verification or notAssessed |
-| Reporting a control as missing after checking one layer | Search middleware, handler, DB, and platform layers first |
-| Skipping verification because findings "look solid" | Plausible-but-wrong is the default failure mode of AI audits; verify Critical, High, and verdict-driving findings always |
+One that nothing above states:
+
+- **Skipping verification because findings "look solid."** Plausible-but-wrong is the default failure mode of AI audits; verify Critical, High, and verdict-driving findings always.
+
+Symptoms that you skipped something above: auditing file-by-file instead of flow-by-flow; one context running every dimension; severity inflation; confident browser claims from static code; a control reported as missing after checking only one layer.

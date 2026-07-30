@@ -80,12 +80,4 @@ When no template repo exists, create each file with these sections. The one-line
 
 ## Red flags
 
-- Scaffolding the full web-product shape onto an experiment or a library -> wrong profile; the doc set and deploy path should match what the thing is.
-- An experiment quietly gaining users and features without graduating -> re-run scaffold with the real profile; promotion is explicit, never accidental.
-- Defaulting a permissive license because "MIT is normal" -> ownership decides; ask when it is not the builder's own.
-- Imposing this suite's CI, branching, or deploy shapes on a repo that already has working ones -> existing standards win; fill gaps only.
-- Filling docs but leaving no ship path (deploy for products/services, publish for libraries) -> it is a prototype wearing product docs; add the path or use the experiment profile honestly.
-- Skipping `PRODUCT.md` because "it's obvious what this is" -> the forever spec is the first thing the next agent reads; fill it.
-- No security frame anywhere -> four declarative lines, recorded where the profile keeps them; silence is the only wrong answer.
-- No Master Plan block in `TODOS.md`, or no resume rule in `CLAUDE.md` -> a later session has nothing to read or no instruction to read it; seed both.
-- Treating the in-product docs hub as a later request -> stand it up at scaffold via `document`; a hub added months in is a hub that already drifted.
+Symptoms that you skipped something above, not new rules: the full web-product shape scaffolded onto an experiment or a library; an experiment quietly gaining users and features without graduating; a permissive license defaulted because "MIT is normal"; this suite's CI, branching, or deploy shapes imposed on a repo that already has working ones; docs filled with no ship path left behind; `PRODUCT.md` skipped because "it's obvious what this is"; no security frame anywhere; no Master Plan block in `TODOS.md` or no resume rule in `CLAUDE.md`; the in-product docs hub treated as a later request.
