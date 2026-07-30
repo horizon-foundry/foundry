@@ -1,6 +1,6 @@
 ---
 name: document
-description: Use to keep a project's documentation true to the code and current across every surface, or to turn the repo's own docs into a product surface. Covers docs-versus-code drift (repair the doc, flag a suspected regression) and presentation drift (deck, hub, showcase copy). Modes, public (curated external hub), internal (raw docs behind a gate), reconcile (idempotent, pull every surface and the docs-versus-code layer current). Safe to run as often as you like. Not for creating a doc set from nothing (that is scaffold) or judging release readiness (that is production-audit).
+description: Use to keep a project's documentation true to the code and current across every surface, or to turn the repo's own docs into a product surface. Modes, public, internal, reconcile; idempotent and safe to re-run. Not for creating a doc set from nothing (that is scaffold) or judging release readiness (that is production-audit).
 ---
 
 # document

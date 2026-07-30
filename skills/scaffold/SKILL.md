@@ -1,6 +1,6 @@
 ---
 name: scaffold
-description: Use when starting a new project, or when an existing project still has placeholder markers in its docs. Declares the project's profile (experiment, internal-tool, web-product, service, or library), then stands up the doc set, posture, and deploy or publish shape that profile actually needs, filled from the builder's answers, not a blank prototype. Not for maintaining docs on an already-scaffolded project (that is document) or deciding whether the idea is worth building (that is frame).
+description: Use when starting a new project, or when an existing project still has placeholder markers in its docs. Declares the project's profile (experiment, internal-tool, web-product, service, or library), then stands up what that profile needs. Not for maintaining docs on an already-scaffolded project (that is document) or deciding whether the idea is worth building (that is frame).
 ---
 
 # scaffold

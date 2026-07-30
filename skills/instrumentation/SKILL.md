@@ -1,6 +1,6 @@
 ---
 name: instrumentation
-description: Use when adding analytics or event tracking, instrumenting a funnel or an activation flow, wiring a product-analytics tool (PostHog, etc.), or when you need to measure whether a feature works. Covers defining events before building, one identity model across client and server (keyed on the right entity per event, not always the user), reliable server-side capture, operational governance (schema versioning, dedup, a named owner), and measuring activation over vanity. Not for system observability (errors, latency, alerting); that is a different discipline.
+description: Use when adding analytics or event tracking, instrumenting a funnel or an activation flow, wiring a product-analytics tool (PostHog, etc.), or when you need to measure whether a feature works. Not for system observability (errors, latency, alerting); that is a different discipline.
 ---
 
 # instrumentation

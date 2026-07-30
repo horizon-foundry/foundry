@@ -1,6 +1,6 @@
 ---
 name: mobile
-description: Use when building or fixing a mobile, touch, or small-screen experience, when a layout breaks on a phone, or when a feature was designed on desktop and needs to hold up on a real device. Covers touch vs pointer, the keyboard, overscroll, safe areas, viewport units, and the pressure-test loop that gets to a good mobile result. Not for products with no mobile surface; that gate resolves not-applicable, and no work is invented.
+description: Use when building or fixing a mobile, touch, or small-screen experience, when a layout breaks on a phone, or when a desktop-designed feature needs to hold up on a real device. Not for products with no mobile surface; that gate resolves not-applicable, and no work is invented.
 ---
 
 # mobile

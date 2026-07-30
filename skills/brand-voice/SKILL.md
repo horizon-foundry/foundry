@@ -1,6 +1,6 @@
 ---
 name: brand-voice
-description: Use when writing or reviewing any user-facing copy, marketing, landing pages, UI labels, error messages, empty states, docs prose, or when a project needs its brand voice defined. Enforces one voice from a single source of truth instead of ad-hoc tone per surface. Not for deciding what a surface may claim (the forever spec owns capability truth) or for visual design.
+description: Use when writing or reviewing any user-facing copy, marketing, landing pages, UI labels, error messages, empty states, docs prose, or when a project needs its brand voice defined. Not for deciding what a surface may claim (the forever spec owns capability truth) or for visual design.
 ---
 
 # brand-voice

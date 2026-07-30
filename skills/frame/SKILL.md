@@ -1,6 +1,6 @@
 ---
 name: frame
-description: Use before scaffolding or building anything new, or when a project cannot answer who it is for and why it will matter. The builder declares a one-page product frame (user, problem, alternatives, outcomes, evidence and assumptions, success measure, non-goals, risks, learn before investing) plus a four-line security frame (data classification, trust boundaries, authn/authz, secret handling); the skill audits the declaration the way the suite audits code, with blank or vague entries reported as findings. It never runs discovery, never questionnaires the builder, and never invents answers.
+description: Use before scaffolding or building anything new, or when a project cannot answer who it is for and why it matters. The builder declares a one-page product frame plus a four-line security frame; this skill audits it and reports blanks as findings. Never runs discovery, never questionnaires the builder, never invents answers.
 ---
 
 # frame
