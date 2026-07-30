@@ -17,7 +17,8 @@ description: Use when writing or reviewing any user-facing copy, marketing, land
 **Define path:**
 
 1. **Draft `BRAND.md` from what exists.** Fill the suite template
-   (`reference/templates/BRAND.md`, bundled in the repo; fallback:
+   (`BRAND.template.md`, bundled next to this SKILL.md in the installed skill
+   directory; if that copy is somehow missing, fetch
    https://raw.githubusercontent.com/horizon-foundry/foundry/main/reference/templates/BRAND.md)
    from what the builder already has or has approved, per "Define the voice
    first" below. Artifact: a draft `BRAND.md` opening with the approval
@@ -42,7 +43,7 @@ description: Use when writing or reviewing any user-facing copy, marketing, land
 
 ## Overview
 
-Copy drifts when every surface invents its own tone. This skill keeps one voice by making `BRAND.md` the single source of truth for identity, voice, glossary, and copy rules, then applying it. Model-invoked (runs when copy changes) or user-invoked. `BRAND.md` is defined by the doc set spec (`reference/doc-set-spec.md`, bundled in the repo; fallback: https://raw.githubusercontent.com/horizon-foundry/foundry/main/reference/doc-set-spec.md); it owns voice the way `DESIGN.md` owns visuals.
+Copy drifts when every surface invents its own tone. This skill keeps one voice by making `BRAND.md` the single source of truth for identity, voice, glossary, and copy rules, then applying it. Model-invoked (runs when copy changes) or user-invoked. `BRAND.md` is defined by the doc set spec, `reference/doc-set-spec.md` in the suite repo. An install ships only this skill's own directory, so read it at https://raw.githubusercontent.com/horizon-foundry/foundry/main/reference/doc-set-spec.md unless you are working inside the repo. It owns voice the way `DESIGN.md` owns visuals.
 
 ## When NOT to use
 

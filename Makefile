@@ -3,7 +3,7 @@
 SKILLS_DIR := $(CURDIR)/skills
 CLAUDE_SKILLS := $(HOME)/.claude/skills
 
-.PHONY: install uninstall validate sync-schema
+.PHONY: install uninstall validate sync-bundled
 
 # Symlink every skill in skills/ into the user-global skills directory. The
 # symlinks (not copies) keep the installed skills tracking git. Refuses to
@@ -31,22 +31,30 @@ uninstall:
 		fi; \
 	done
 
-# Installs ship only the skill directory, so production-audit carries a bundled
-# copy of the schema. The canonical file is schema/audit-report.schema.json;
-# this target re-copies it into the skill after any schema change.
-sync-schema:
+# Installs ship ONLY the skill's own directory (make install symlinks
+# skills/<name>/), so anything a skill tells the agent to read must live inside
+# it. Three files are therefore bundled copies of canonical originals, and this
+# target re-copies all three after any change to one.
+sync-bundled:
 	cp schema/audit-report.schema.json skills/production-audit/audit-report.schema.json
-	@echo "Synced schema into skills/production-audit/."
+	cp reference/templates/BRAND.md skills/brand-voice/BRAND.template.md
+	cp reference/templates/plan.md skills/phase-plan/plan.template.md
+	@echo "Synced bundled copies into skills/production-audit/, skills/brand-voice/, skills/phase-plan/."
 
 # Validate the schema example and any published reports against the contract.
-# Also fails if the bundled skill copy of the schema has diverged from the
-# canonical one (a fork here would split the report contract between the
-# installed skill and the site renderer), and enforces the cross-field report
-# invariants JSON Schema cannot express (the verification rule, scope honesty,
-# stats accuracy, no em dashes, no personal paths).
+# Also fails if any bundled skill copy has diverged from its canonical original
+# (a fork in the schema would split the report contract between the installed
+# skill and the site renderer; a fork in a template would hand adopters a
+# different artifact shape than the repo documents), and enforces the
+# cross-field report invariants JSON Schema cannot express (the verification
+# rule, scope honesty, stats accuracy, no em dashes, no personal paths).
 validate:
 	@cmp -s schema/audit-report.schema.json skills/production-audit/audit-report.schema.json || { \
-		echo "ERROR: skills/production-audit/audit-report.schema.json is out of sync with schema/audit-report.schema.json. Run 'make sync-schema'."; exit 1; }
+		echo "ERROR: skills/production-audit/audit-report.schema.json is out of sync with schema/audit-report.schema.json. Run 'make sync-bundled'."; exit 1; }
+	@cmp -s reference/templates/BRAND.md skills/brand-voice/BRAND.template.md || { \
+		echo "ERROR: skills/brand-voice/BRAND.template.md is out of sync with reference/templates/BRAND.md. Run 'make sync-bundled'."; exit 1; }
+	@cmp -s reference/templates/plan.md skills/phase-plan/plan.template.md || { \
+		echo "ERROR: skills/phase-plan/plan.template.md is out of sync with reference/templates/plan.md. Run 'make sync-bundled'."; exit 1; }
 	npx --yes ajv-cli validate --spec=draft2020 -s schema/audit-report.schema.json -d "schema/examples/sample-report.json"
 	node scripts/validate-report-invariants.mjs schema/examples/sample-report.json
 	@if ls reports/*.json >/dev/null 2>&1; then \

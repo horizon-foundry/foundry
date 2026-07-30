@@ -32,7 +32,7 @@ Plans live in one project-declared directory, named in the project's `CLAUDE.md`
 
 1. **Locate the index.** Open `TODOS.md`'s `### Phase Plans` list. It is the authoritative map of which file holds which plan; note whether the unit being planned already has an entry, because that decides the next step.
 2. **Choose the file, safely.** New phase, new file, with a clear name, in the project's plan directory (above). Before writing to any existing path, read it: if it holds a different phase's plan, stop and pick a new file, never overwrite a plan. Plan files are permanent records.
-3. **Write the handoff.** The plan is a handoff to a cold reader. Copy the bundled template, `reference/templates/plan.md` in the suite repo (fallback: https://raw.githubusercontent.com/horizon-foundry/foundry/main/reference/templates/plan.md), and fill every section. The shape:
+3. **Write the handoff.** The plan is a handoff to a cold reader. Copy the bundled template, `plan.template.md` next to this SKILL.md in the installed skill directory (if that copy is somehow missing, fetch https://raw.githubusercontent.com/horizon-foundry/foundry/main/reference/templates/plan.md), and fill every section. The shape:
 
    ```
    Status: active
