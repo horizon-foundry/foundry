@@ -54,6 +54,7 @@ The failure this prevents: an agent reads a stale doc, believes it, and acts on 
 
 - **Deterministic mismatch** (a renamed flag, a wrong path, a stale count, a moved file): repair the doc directly. This is the common case and it is safe.
 - **Suspected regression** (the doc-vs-code disagreement coincides with a failing test, a contradicted decision record in `NOTES.md`, or a doc that states the behavior as *designed intent*): do **not** silently rewrite the doc to document the new behavior. That would turn a bug into the product's contract. Flag it as a suspected regression and let a human decide which side is wrong.
+- **Recalled memory versus the record** (the harness surfaces a fact from an earlier session that the docs contradict): memory is not one of the five authorities. It is per-user, machine-local, and unreviewable, so it never outranks a declared record and never justifies a repair on its own. Treat the disagreement as a signal that one of the two is stale, and surface it rather than silently reconciling either side.
 
 Never change working behavior to satisfy a wrong doc; runtime changes require explicit instruction.
 
