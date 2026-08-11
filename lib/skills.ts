@@ -117,11 +117,12 @@ const SKILL_COPY: Record<string, SkillCopy> = {
   },
   readout: {
     tagline:
-      "Reviews the surfaces that display your numbers, so a reader acts on them and is not misled by a dashboard where every figure is individually correct.",
-    why: "Instrumentation makes numbers exist; readout makes them safe to read. This failure mode is quiet: every query returns, every test passes, and a ninety-day rate sitting beside a twenty-four-hour count still misleads on sight, because a right number in the wrong row is still wrong. readout puts a window and a population on every face, separates a failed read from a real zero from a stale cache, withholds a rate whose denominator cannot carry it, splits any window that spans a change to the thing being measured, and ends where these defects are actually found: in the rendered pixels, reviewed by someone who did not build them.",
+      "Reviews the surfaces that display your numbers, so a named reader acts on them at the depth they need and is not misled by figures that are each individually correct.",
+    why: "Instrumentation makes numbers exist; readout makes them worth reading. Two failures live here and both are quiet. The first misleads: every query returns, every test passes, and a ninety-day rate beside a twenty-four-hour count still misleads on sight, because a right number in the wrong row is still wrong. The second is duller and more common, a surface that is accurate and simply unread, where numbers accumulate because they can be computed, every block states a fact and none states a conclusion, and the same measure appears across the product wearing four different numbers. readout names the reader and pitches the elevation to them, keeps the detail one click down instead of in the way, puts a window and a population on every face, separates a failed read from a real zero from a stale cache, splits any window that spans a change to the thing being measured, and ends where these defects are actually found: in the rendered pixels, reviewed by someone who did not build them.",
     when: [
       "Building or reviewing a dashboard, a report, or a metrics email",
       "Someone says the numbers look wrong, or quietly stops trusting them",
+      "The numbers are right and nobody reads them, or nobody can dig past the summary",
       "An experiment read-out has to survive a decision being made on it",
     ],
   },

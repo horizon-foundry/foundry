@@ -1,6 +1,6 @@
 ---
 name: readout
-description: Use when building or reviewing a surface that DISPLAYS measurements (a dashboard, a report, an experiment read-out, a metrics email), or when someone doubts the numbers a surface is showing. Not for adding events or wiring capture, that is instrumentation; not for choosing what to measure, that is frame.
+description: Use when building or reviewing a surface that DISPLAYS measurements (a dashboard, a report, an experiment read-out, a metrics email), when someone doubts the numbers a surface is showing, or when a surface is accurate but nobody reads or acts on it. Not for adding events or wiring capture, that is instrumentation; not for choosing what to measure, that is frame.
 ---
 
 # readout
@@ -15,7 +15,9 @@ The two fail differently. Instrumentation fails loudly: an event never fires, a 
 
 This class is not findable in data. A payload is identical whether a comparison renders above or below the line it depends on. A card's height is not a field. A throttled source and a genuinely empty week are the same `null` unless something made them different. So the discipline is not another correctness pass: it is a composition pass and a rendered review, and it ends with someone looking at the pixels who did not build them.
 
-The bar is not "the numbers are right". The bar is **a reader acts on this and is not misled**.
+There is a second failure that survives every correctness fix: a surface can be accurate, legible, and still not tell anyone anything. Numbers accumulate because they can be computed rather than because a reader needs them, every block states a fact and none states a conclusion, and the same measure appears across the product wearing four different numbers. That surface is not wrong. It is just unread, and being unread is the outcome most dashboards actually reach.
+
+The bar is not "the numbers are right". The bar is **a named reader acts on this, at the depth they need, and is not misled**.
 
 ## When NOT to use
 
@@ -27,14 +29,40 @@ The bar is not "the numbers are right". The bar is **a reader acts on this and i
 
 ## Steps
 
-1. **Name the question each surface answers, and who decides on it.** Check: every block on the surface maps to one named question, or is listed for cutting.
-2. **Run the three gates over every block on primary real estate** (see "The three gates"). Check: each block reported as keep, fold, or cut, with the failing gate named.
-3. **Put the window and the population on every face** (see "Every number carries its window and its population"). Check: no row mixes windows without saying so on its own face; report each row.
-4. **Force every source to fail and look at what renders** (see "A gap is not a zero"). Check: for each source, the failed, empty, and stale renders are named, and none of them is a zero or a raw error.
-5. **State the evidence floor for every rate.** Check: each rate names its denominator, and a rate below its floor withholds rather than prints.
-6. **List every deploy and config change inside every window on display** (see "When the measured surface changes"). Check: each is classified as changing what is measured or not, and any window spanning such a change is either split or labelled.
-7. **Render and review, independently.** Screenshot every surface at a desktop and a phone width, then have someone who did not build it review the IMAGES against steps 2 to 6. Check: findings reported per surface, ranked, or an explicit statement that no independent reviewer was available (see "Read the render, not the payload").
-8. **Close with what remains unverified**, each with the exact check to run. Check: the closing report lists them.
+1. **Name each surface's reader, the decision they make, and the elevation that implies** (see "Name the reader, then pitch the elevation"). Check: every surface declares reader, decision, and elevation, and every block on it maps to that decision or is listed for cutting.
+2. **Trace the drill path.** Every headline number reaches its breakdown in one obvious step, and the breakdown reaches the grain it is computed from. Check: each headline traced to its detail, or the missing link named.
+3. **Run the three gates over every block on primary real estate** (see "The three gates"). Check: each block reported as keep, fold, or cut, with the failing gate named.
+4. **Put the window and the population on every face** (see "Every number carries its window and its population"). Check: no row mixes windows without saying so on its own face; report each row.
+5. **Force every source to fail and look at what renders** (see "A gap is not a zero"). Check: for each source, the failed, empty, and stale renders are named, and none of them is a zero or a raw error.
+6. **State the evidence floor for every rate.** Check: each rate names its denominator, and a rate below its floor withholds rather than prints.
+7. **List every deploy and config change inside every window on display** (see "When the measured surface changes"). Check: each is classified as changing what is measured or not, and any window spanning such a change is either split or labelled.
+8. **Render and review, independently.** Screenshot every surface at a desktop and a phone width, then have someone who did not build it review the IMAGES against steps 1 to 7. Check: findings reported per surface, ranked, or an explicit statement that no independent reviewer was available (see "Read the render, not the payload").
+9. **Read the set as one story** (see "The set tells one story"). Check: the arc is stated in order, its breaks are named, and every surface either ends in a decision or is reported as not doing so.
+10. **Close with what remains unverified**, each with the exact check to run. Check: the closing report lists them.
+
+## Name the reader, then pitch the elevation
+
+A surface with no declared reader gets built for everyone and lands for no one. Name the reader and the decision they make, and the elevation follows from it. The same measurement supports several, and they are not the same surface:
+
+- **A leader** needs the conclusion, the one number the conclusion rests on, and what to do. Working detail on this surface is noise that pushes the conclusion below the fold.
+- **An operator** needs the working detail: which segment, which day, which cohort moved, and enough to act this week.
+- **An analyst** needs the grain: the rows, the definitions, the query, enough to reconstruct the number and argue with it.
+
+**Elevation is layering, not deletion.** A surface pitched high is not one with the detail removed; it is one where the detail is a click away rather than in the way. Every headline number reaches its breakdown, and the breakdown reaches the grain it was computed from, so a reader can descend exactly as far as their doubt requires and no further. A summary with no path down is an assertion, and a wall of grain with no summary is homework: both fail, in opposite directions.
+
+The two mismatches to hunt, because they are the common ones:
+
+- **Too low for the reader.** Instrumentation health, source freshness, governance vocabulary, or reconciliation between two sources occupying prime real estate on a surface built for a decision. These are real and they belong on the surface that owns them, or one layer down, not in the space the conclusion needs.
+- **Too high for the reader.** A conclusion with nothing behind it, so the reader who asks "which segment?" has nowhere to go and stops trusting the conclusion rather than finding its basis.
+
+## The set tells one story
+
+Surfaces are read as a sequence, not in isolation, so the set carries a burden no single surface does.
+
+- **Order them along the path the business actually runs**, as the frame declares it (typically reach, then activation, then value, then what it costs and whether it holds up). Where the order does not match the path, say why or reorder.
+- **One fact, one number.** Where a measure appears on several surfaces, one canonical spelling leads everywhere a summary speaks and the variants are demoted to labelled lenses on their own surfaces. The same measure wearing several numbers across a product is the fastest way to lose a reader's trust in all of them, and each instance being individually correct is exactly why it survives review.
+- **Every surface ends in a so-what.** A surface whose every block states a fact and none states a conclusion or an action is a report nobody acts on. Where the surface computes the list a reader would act on, say so and link it, rather than leaving them to derive it.
+- **Cut what only reconciles.** A block that self-describes as never being read against the main story is a diagnostic wearing narrative clothes. It is often correct and worth keeping; it belongs behind a fold, not in the arc.
 
 ## The three gates
 
@@ -54,8 +82,7 @@ Two numbers side by side are read as comparable. If they are not, say so on the 
 
 - Every figure states its window and its population where it renders, as a chip if the label is long.
 - **No row mixes windows without saying so.** A row of cards whose windows differ is the most common lie on a dashboard, and it survives every automated check because each card is individually true.
-- Where one fact appears on more than one surface, either it is the same number, or the two are labelled distinctly enough that no reader tries to reconcile them. Enumerate the repeats and check them against each other; the same fact wearing several numbers across a product is the single fastest way to lose a reader's trust in all of them.
-- Prefer one canonical spelling of a headline measure everywhere a summary speaks, with the variants demoted to labelled lenses on their own surfaces.
+- Where one fact appears on more than one surface, either it is the same number, or the two are labelled distinctly enough that no reader tries to reconcile them. Enumerate the repeats and check them against each other (see "The set tells one story" for the canonical-spelling rule this feeds).
 
 ## A gap is not a zero, and a stale read is not a fresh one
 
@@ -102,4 +129,4 @@ A surface may state a judgment ("this is not a constraint", "this is healthy"), 
 
 ## Red flags
 
-Symptoms that you skipped something above, not new rules: a row of cards whose windows differ; a zero that nobody has proven is not a failed read; a cached value with no age on it; a rate printed on a denominator of one; a chart with no y-axis or a second series on a hidden scale; an error payload rendered as body text; a surface reviewed only from its data; a control whose scope does not match its position; a period boundary chosen because the numbers moved there; the same fact wearing two different numbers on two surfaces.
+Symptoms that you skipped something above, not new rules: a surface with no named reader; a headline number with no path to its detail, or a page of grain with no summary over it; a surface whose every block is a fact and none is a decision; source freshness or reconciliation occupying the space a conclusion needs; a row of cards whose windows differ; a zero that nobody has proven is not a failed read; a cached value with no age on it; a rate printed on a denominator of one; a chart with no y-axis or a second series on a hidden scale; an error payload rendered as body text; a surface reviewed only from its data; a control whose scope does not match its position; a period boundary chosen because the numbers moved there; the same fact wearing two different numbers on two surfaces.
