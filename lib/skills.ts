@@ -17,6 +17,7 @@ const USER_INVOKED = new Set([
   "document",
   "mobile",
   "instrumentation",
+  "readout",
 ]);
 
 // Display order: foundry (the one-command conductor / entry point) first, then
@@ -29,6 +30,7 @@ const ORDER = [
   "document",
   "mobile",
   "instrumentation",
+  "readout",
   "phase-plan",
   "brand-voice",
 ];
@@ -111,6 +113,16 @@ const SKILL_COPY: Record<string, SkillCopy> = {
       "Adding analytics or instrumenting a new funnel",
       "Wiring PostHog or a similar tool",
       "You could not currently say whether anyone uses the thing you shipped",
+    ],
+  },
+  readout: {
+    tagline:
+      "Reviews the surfaces that display your numbers, so a reader acts on them and is not misled by a dashboard where every figure is individually correct.",
+    why: "Instrumentation makes numbers exist; readout makes them safe to read. This failure mode is quiet: every query returns, every test passes, and a ninety-day rate sitting beside a twenty-four-hour count still misleads on sight, because a right number in the wrong row is still wrong. readout puts a window and a population on every face, separates a failed read from a real zero from a stale cache, withholds a rate whose denominator cannot carry it, splits any window that spans a change to the thing being measured, and ends where these defects are actually found: in the rendered pixels, reviewed by someone who did not build them.",
+    when: [
+      "Building or reviewing a dashboard, a report, or a metrics email",
+      "Someone says the numbers look wrong, or quietly stops trusting them",
+      "An experiment read-out has to survive a decision being made on it",
     ],
   },
   "phase-plan": {

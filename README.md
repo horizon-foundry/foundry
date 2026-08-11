@@ -43,6 +43,7 @@ Update from source with `git pull && make install`; remove with `make uninstall`
 | `document` | Keeps the docs true to the code: repairs drift, flags suspected regressions, and renders the docs as a live surface so they cannot rot unseen. |
 | `mobile` | Reproduces the broken state before fixing anything, then walks a real device matrix and leaves the filled matrix as the record. |
 | `instrumentation` | Defines the funnel before the feature, keys every event on one identity model, and measures activation with a guardrail beside it. |
+| `readout` | Reviews the surfaces that display your numbers: a window and a population on every face, a failed read that never renders as a zero, and a rendered review by someone who did not build it. |
 
 **Model-invoked (disciplines the agent applies itself):**
 

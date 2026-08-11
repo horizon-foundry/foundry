@@ -17,6 +17,7 @@ You cannot improve what you do not measure. Most instrumentation is added after 
 
 - System observability (errors, latency, saturation, alerting): a different question with its own discipline, assessed by `production-audit`'s operability dimension; never folded into the event plan (see "Product analytics is not observability").
 - Choosing the product's success measure: the frame declares it; this skill derives activation from it and instruments the path.
+- Building or reviewing the surface that DISPLAYS the numbers (a dashboard, a report, an experiment read-out): `readout`. This skill ends when reliable events exist; whether a reader can act on them without being misled is a separate discipline with its own failure mode.
 - Scoring the instrumentation gate or issuing a ship verdict: `foundry check` cites the records; `production-audit` judges.
 
 ## Steps
@@ -81,6 +82,8 @@ Two different questions, two disciplines. Product analytics answers **"did the i
 ## Measure activation, not vanity
 
 Pageviews and raw signups have their uses (traffic mix, reach, channel comparison), but they do not answer whether the feature works. For that, instrument the drop-offs: where does the funnel leak between intent and activation? What fraction of new actors reach value in the first session? Add a dashboard or a saved funnel for the path you instrumented, so the events are actually read.
+
+**Reliable events are half the job.** A funnel that emits perfectly can still be displayed in a way that misleads: a rate beside a count on a different window, a throttled source rendering as a zero, a period that spans the release which changed the very page it measures. That failure mode is quiet, because every number in it is individually correct. `readout` owns it, and it is where this skill hands off.
 
 ## The gate demands a decision, not necessarily telemetry
 
