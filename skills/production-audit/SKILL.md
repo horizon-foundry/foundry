@@ -1,7 +1,7 @@
 ---
 name: production-audit
 version: 0.1.0
-description: Use when a product is approaching launch, an invite wave, or a release decision and needs a whole-application readiness audit ending in a scope-qualified ship/no-ship verdict. Also for "is this safe to ship" or "audit the whole app". Not for reviewing a single diff or applying fixes; it reads the whole application and only reports.
+description: Use when a product is approaching launch, an invite wave, or a release decision and needs a whole-application readiness audit ending in a scope-qualified ship/no-ship verdict. Also for "is this safe to ship", "pre-launch review", or "audit the whole app", or to audit one dimension alone (security, concurrency, reliability, accessibility, ui, infra, operability, testing-confidence, data-migration-safety, release-safety, performance-capacity). Not for reviewing a single diff or applying fixes; it reads the whole application and only reports.
 ---
 
 # Production Audit
@@ -14,7 +14,7 @@ A whole-application audit that ends in a verdict: safe to ship; ready to ship, r
 
 **Every finding carries a `kind`: risk or improvement.** A **risk** has a path to harm in production (exposure, data or payment corruption, a crash or unavailability, abuse, or a hidden active failure). An **improvement** is safe today but makes the system more robust, observable, consistent, accessible, or faster. The distinction is load-bearing: **only risks drive the verdict; an improvement never caps it.** A report with no risks is clear within its assessed scope even if it lists a dozen improvements, because a punch list of betterments is not a reason to hold a release. This is what keeps the report honest and readable: risks to weigh first, improvements to schedule second, never one undifferentiated wall of problems. Think of it as bugs versus tech debt.
 
-Classify `kind` with two questions, in order (this is the field `make validate` gates on, so decide it deliberately):
+Classify `kind` with two questions, in order (in the suite repo this is the field `make validate` gates on, so decide it deliberately):
 
 | Question | Answer | `kind` |
 |---|---|---|
@@ -67,7 +67,7 @@ Run before any subagent spends tokens: dependency audit (`npm audit` or ecosyste
 
 ### Phase 2: Dimension fan-out
 
-One read-only subagent per dimension, in parallel, each given the Phase 0 artifacts. Every finding must cite file and line. If the harness cannot spawn parallel sub-agents (or requires a permission the run does not have), do not skip dimensions: run them sequentially as focused passes in the main context and open the report's verdict justification with a degraded-run line naming that fallback, or stop and ask the user to enable parallel work. Coverage is what matters; the fan-out is only a way to reach it faster.
+One read-only subagent per dimension, in parallel, each given the Phase 0 artifacts. Every finding must cite file and line. If the harness cannot spawn parallel sub-agents (or requires a permission the run does not have), do not skip dimensions: run them sequentially as focused passes in the main context and open the report's verdict justification with a degraded-run line naming that fallback, or stop and ask the user to enable parallel work. Coverage is what matters. But the fan-out buys depth, not just speed: in a single context, depth collapses after the first dimension, so a sequential fallback is a degraded run to declare, never an equivalent one.
 
 **The subagent contract.** The audit's depth is set by what each dimension agent is told, so the prompt is specified, not improvised. Each dimension subagent receives, verbatim: the flow inventory table, the trust-boundary map, the derived checklist for its dimension, the Phase 1 known issues, and this brief:
 
@@ -94,12 +94,12 @@ Every dimension returns two things: its findings, AND the **verified-safe contro
 - **concurrency**: idempotency judgment for every mutation (what happens on double-submit, retry, refresh, two tabs), TOCTOU in check-then-write paths, cleanup of effects/subscriptions/timers, races between background jobs and user actions.
 - **reliability**: a **failure-path table** per external dependency (LLM, storage, email, DB, analytics): timeout? retry? user-visible failure state? partial success? idempotent on retry? Empty cells are findings. Plus swallowed errors and stuck loading states.
 - **accessibility**: primitives first. Audit the shared UI primitives (modal, menu, form field, button) deeply before sampling feature screens; a primitive defect multiplies across the app. WCAG 2.2 AA is the bar for what static review can assess.
-- **ui**: token conformance against the project's design source of truth, a sweep for divergence across shared components, copy/terminology drift, state coverage (hover, focus, disabled, loading, error, empty).
+- **ui**: token conformance against the project's design source of truth, a sweep for divergence across shared components, copy/terminology drift, state coverage (hover, focus, disabled, loading, error, empty). On a surface that displays measurements, state coverage has a stricter bar than empty-versus-error, and `readout` owns it: a failed read, a genuine zero, and a stale value must stay distinguishable.
 - **infra**: deploy config, security headers/CSP, env handling, dependency audit triage, exposed dev/debug endpoints.
 
 The conditional dimensions (only the ones Phase 0 marked applicable):
 
-- **operability**: can the team tell the system is healthy and act when it is not? Logs/metrics/traces on the critical flows, a dashboard someone actually looks at, alerts with a named receiver, SLOs or at least an explicit "what is too slow/too broken", runbooks or failure notes for the known failure modes, and clear ownership. A system nobody can observe fails silently.
+- **operability**: can the team tell the system is healthy and act when it is not? Logs/metrics/traces on the critical flows, a dashboard that exists and has an owner, alerts with a named receiver, SLOs or at least an explicit "what is too slow/too broken", runbooks or failure notes for the known failure modes, and clear ownership. A system nobody can observe fails silently. This dimension audits whether the observability exists and is owned; whether the surface can actually be read and acted on (elevation, windows, a failed read rendering as a zero) is the `readout` skill's discipline, and a filled `readout` artifact is the record to cite where one exists.
 - **testing-confidence**: not coverage percentage, but whether the tests would catch the failures this report cares about. Are the critical flows exercised end to end? Do contract/integration tests cover the external seams? Crucially: do tests exercise the specific controls other findings rely on (the authz check, the idempotency guard)? A control this report calls verified-safe that no test pins down is one refactor away from silently vanishing.
 - **data-migration-safety**: migration ordering and reversibility (does the migration run before or after the code that needs it; what happens on rollback), backup existence AND restore path (an untested restore is a hope, not a control), deletion/retention behavior, and recovery from partial or corrupted writes.
 - **release-safety**: how a bad version reaches users and how it gets pulled back, and how anyone knows the good version arrived. Rollback path and its speed, feature flags or staged rollout for risky changes, forward/backward compatibility between the deployed version and its data/clients, and whether deploy and release are separable. Plus two ends of the pipeline that audits routinely skip: **artifact identity** (the artifact that was validated is the artifact that ships; a privileged rebuild between CI and deploy is a second, unproved artifact) and **post-deploy verification** (a named check that exercises the user-visible outcome on the primary surface after deploy; an uploaded artifact or a green workflow is not the user outcome).
@@ -134,7 +134,7 @@ Emit JSON to `<project>/tmp/audit-YYYY-MM-DD.json` conforming to the report cont
 
 Three schema fields worth stating here so the report does not fail validation late:
 
-- **`kind`** is `risk` or `improvement` on every finding (see the Overview). `make validate` rejects a report whose `blockingFindingIds` cite anything but a risk.
+- **`kind`** is `risk` or `improvement` on every finding (see the Overview). A `blockingFindingIds` citing anything but a risk is invalid, and the suite repo's `make validate` rejects it mechanically.
 - **Finding IDs** are dimension prefix + zero-padded ordinal, matching the schema's `findingId` pattern: `SEC` (security), `CON` (concurrency), `REL` (reliability), `A11Y` (accessibility), `UI` (ui), `INF` (infra), `OPS` (operability), `TEST` (testing-confidence), `DATA` (data-migration-safety), `SHIP` (release-safety), `PERF` (performance-capacity), e.g. `SEC-01`.
 - **`category`** is one of the schema's enum: `security`, `race-condition`, `reliability`, `accessibility`, `performance`, `visual-consistency`, `infra`, `operability`, `testing`, `data-safety`, `release-process`.
 

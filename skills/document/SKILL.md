@@ -1,7 +1,7 @@
 ---
 name: document
 version: 0.1.0
-description: Use to keep a project's documentation true to the code and current across every surface, or to turn the repo's own docs into a product surface. Modes, public, internal, reconcile; idempotent and safe to re-run. Not for creating a doc set from nothing (that is scaffold) or judging release readiness (that is production-audit).
+description: Use to keep a project's documentation true to the code and current across every surface, or to turn the repo's own docs into a product surface (the public hub, the overview deck, showcase copy). Modes, public, internal, reconcile; idempotent and safe to re-run. Not for creating a doc set from nothing (that is scaffold) or judging release readiness (that is production-audit).
 ---
 
 # document
@@ -12,7 +12,7 @@ description: Use to keep a project's documentation true to the code and current 
 
 Documenting a project is a lifecycle stage, not a favor you do when asked. The build sequence is scaffold, build, **document**, audit, ship. The document step is the one that silently gets skipped, because nobody is blocked without it. The cost lands later: a cold-start agent has no map, a stakeholder cannot see what was built, and worst, a wrong doc gets trusted and built on.
 
-This skill owns the project's words on two layers. **Truth**: the docs must agree with the running code (a wrong doc is worse than no doc). **Presentation**: the docs become a live surface (the overview deck, the "Behind the Build" hub) so they cannot rot unseen. User-invoked and idempotent: a run that finds everything current changes nothing. Assumes the doc set from `doc-set-spec`.
+This skill owns the project's words on two layers. **Truth**: the docs must agree with the running code (a wrong doc is worse than no doc). **Presentation**: the docs become a live surface (the overview deck, the "Behind the Build" hub) so they cannot rot unseen. User-invoked and idempotent: a run that finds everything current changes nothing. Assumes the doc set defined by the suite's doc-set spec, `reference/doc-set-spec.md` in the repo; an install ships only this skill's directory, so from anywhere else read it at https://raw.githubusercontent.com/horizon-foundry/foundry/main/reference/doc-set-spec.md.
 
 ## When NOT to use
 
