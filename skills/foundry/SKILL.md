@@ -1,6 +1,6 @@
 ---
 name: foundry
-description: Use when a project is approaching a release decision and you want one pass over its pre-ship gates instead of remembering each one. Resolves the project's release policy (which gates apply, given what the project is), then runs `check` (the read-only preview of prepare: cites the existing gate records, reports staleness, names what prepare would do) or `prepare` (invokes the modifying skills to close the gaps). The suite's only inspector is production-audit, and the authoritative verdict is one independent production-audit run afterward, never a duplicate.
+description: Use when a project is approaching a release decision and you want one pass over its pre-ship gates instead of remembering each one. Resolves the project's release policy, then runs `check` (read-only preview) or `prepare` (invokes the gate skills to close the gaps). Not an inspector; production-audit issues the authoritative verdict afterward.
 ---
 
 # foundry
@@ -100,13 +100,8 @@ After `prepare` and a passing build, run `/production-audit` as a fresh, read-on
 
 ## Red flags
 
-- Scoring gates from a hardcoded list instead of the project's release policy -> resolve the policy first; a CLI is not a web product.
-- Inspecting the code in `check` mode -> `check` cites records and previews `prepare`; `production-audit` is the suite's only inspector. An inspecting check is a second, shallower assessor, which is the failure this design removed.
-- Modifying anything in `check` mode -> `check` is read-only; if a gate needs work, that is `prepare`.
-- Letting `prepare` issue the verdict -> the pass that changed the code does not get to judge it; run an independent `/production-audit`.
-- Running `prepare` by default from a bare "run foundry" -> the default is `check`; modification is opt-in.
-- Running two identical full audits with nothing changed between them -> check cites the existing report as its record; the full audit runs once, as the verdict.
-- Reproducing a gate's work inline instead of invoking the skill -> you lose the sub-skill's process; invoke it as itself.
-- Emitting "ready" while a gate is blocked -> an un-run gate is an open risk, not a pass; say so.
-- Recording a failing gate as anything but not-met without the human's explicit acceptance -> accepted-risk is the human's call, on the record.
+One that nothing above states:
+
 - Turning the scorecard into an artifact -> it is a preview table in the run output, built from cited records; the audit's JSON is the suite's only report contract, and the scorecard never replaces or duplicates it.
+
+Symptoms that you skipped something above: gates scored from a hardcoded list instead of the project's release policy; code inspected in `check` mode; anything modified in `check` mode; `prepare` issuing the verdict; `prepare` run by default from a bare "run foundry"; two identical full audits with nothing changed between them; a gate's work reproduced inline instead of invoking its skill; "ready" emitted while a gate is blocked; a failing gate recorded as anything but not-met without the human's explicit acceptance.

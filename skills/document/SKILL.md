@@ -1,6 +1,6 @@
 ---
 name: document
-description: Use to keep a project's documentation true to the code and current across every surface, or to turn the repo's own docs into a product surface. Covers docs-versus-code drift (repair the doc, flag a suspected regression) and presentation drift (deck, hub, showcase copy). Modes, public (curated external hub), internal (raw docs behind a gate), reconcile (idempotent, pull every surface and the docs-versus-code layer current). Safe to run as often as you like. Not for creating a doc set from nothing (that is scaffold) or judging release readiness (that is production-audit).
+description: Use to keep a project's documentation true to the code and current across every surface, or to turn the repo's own docs into a product surface (the public hub, the overview deck, showcase copy). Modes, public, internal, reconcile; idempotent and safe to re-run. Not for creating a doc set from nothing (that is scaffold) or judging release readiness (that is production-audit).
 ---
 
 # document
@@ -11,7 +11,7 @@ description: Use to keep a project's documentation true to the code and current 
 
 Documenting a project is a lifecycle stage, not a favor you do when asked. The build sequence is scaffold, build, **document**, audit, ship. The document step is the one that silently gets skipped, because nobody is blocked without it. The cost lands later: a cold-start agent has no map, a stakeholder cannot see what was built, and worst, a wrong doc gets trusted and built on.
 
-This skill owns the project's words on two layers. **Truth**: the docs must agree with the running code (a wrong doc is worse than no doc). **Presentation**: the docs become a live surface (the overview deck, the "Behind the Build" hub) so they cannot rot unseen. User-invoked and idempotent: a run that finds everything current changes nothing. Assumes the doc set from `doc-set-spec`.
+This skill owns the project's words on two layers. **Truth**: the docs must agree with the running code (a wrong doc is worse than no doc). **Presentation**: the docs become a live surface (the overview deck, the "Behind the Build" hub) so they cannot rot unseen. User-invoked and idempotent: a run that finds everything current changes nothing. Assumes the doc set defined by the suite's doc-set spec, `reference/doc-set-spec.md` in the repo; an install ships only this skill's directory, so from anywhere else read it at https://raw.githubusercontent.com/horizon-foundry/foundry/main/reference/doc-set-spec.md.
 
 ## When NOT to use
 
@@ -54,6 +54,7 @@ The failure this prevents: an agent reads a stale doc, believes it, and acts on 
 
 - **Deterministic mismatch** (a renamed flag, a wrong path, a stale count, a moved file): repair the doc directly. This is the common case and it is safe.
 - **Suspected regression** (the doc-vs-code disagreement coincides with a failing test, a contradicted decision record in `NOTES.md`, or a doc that states the behavior as *designed intent*): do **not** silently rewrite the doc to document the new behavior. That would turn a bug into the product's contract. Flag it as a suspected regression and let a human decide which side is wrong.
+- **Recalled memory versus the record** (the harness surfaces a fact from an earlier session that the docs contradict): memory is not one of the five authorities. It is per-user, machine-local, and unreviewable, so it never outranks a declared record and never justifies a repair on its own. Treat the disagreement as a signal that one of the two is stale, and surface it rather than silently reconciling either side.
 
 Never change working behavior to satisfy a wrong doc; runtime changes require explicit instruction.
 
@@ -165,11 +166,4 @@ A fresh-context subagent is given only the repo and a terse continuation prompt 
 
 ## Red flags
 
-- A doc-vs-code disagreement rewritten silently when it might be a regression -> classify first; a failing test or an intent claim means flag it, do not document the bug as the contract.
-- Rendering `PROMPTS.md`, `NOTES.md`, or `FRICTION.md` on a public page -> wrong mode; raw logs are `internal` only.
-- A placeholder or empty section on the public hub -> fill it for a reader or leave it out.
-- Adding or renaming a skill and not re-running `document` -> the deck and showcase copy are where that rots; re-run to reconcile them.
-- Reading an arbitrary filename from a param -> whitelist the doc set; never let input reach the filesystem.
-- Imposing a filesystem-mirror registry on a repo that never claimed one -> document architectural boundaries, not every file.
-- Inventing impact, positioning, or customer evidence for the deck or showcase copy -> every claim traces to something real; absence of evidence is stated, not filled.
-- Building a public hub for an internal service or private repo -> the showcase is conditional; truth layer + internal portal is the complete job there.
+Symptoms that you skipped something above, not new rules: a doc-vs-code disagreement rewritten silently when it might be a regression; `PROMPTS.md`, `NOTES.md`, or `FRICTION.md` rendered on a public page; a placeholder or empty section on the public hub; a skill added or renamed without a reconcile pass; an arbitrary filename read from a param; a filesystem-mirror registry imposed on a repo that never claimed one; invented impact, positioning, or customer evidence; a public hub built for an internal service or private repo.

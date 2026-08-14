@@ -1,6 +1,6 @@
 ---
 name: phase-plan
-description: Use when a unit of work is finishing (a PR is about to merge, a phase is complete) and the next unit needs a plan, or when writing any plan file. Writes the next unit's plan while context is warm and indexes it so the next session can resume from it; when there is genuinely no next unit, indexes an honest terminal entry (decision required, awaiting evidence, or no next work selected) instead of a vacuous plan. Not for whole-product master planning or mid-execution task tracking; it writes the handoff at a close.
+description: Use when a unit of work is closing (a PR about to merge, a phase complete) and the next unit needs a plan, when a close has no next unit and the chain needs an honest terminal entry, or when writing any plan file. Writes the handoff while context is warm and indexes it so the next session can resume. Not for whole-product master planning or mid-execution task tracking.
 ---
 
 # phase-plan
@@ -32,7 +32,7 @@ Plans live in one project-declared directory, named in the project's `CLAUDE.md`
 
 1. **Locate the index.** Open `TODOS.md`'s `### Phase Plans` list. It is the authoritative map of which file holds which plan; note whether the unit being planned already has an entry, because that decides the next step.
 2. **Choose the file, safely.** New phase, new file, with a clear name, in the project's plan directory (above). Before writing to any existing path, read it: if it holds a different phase's plan, stop and pick a new file, never overwrite a plan. Plan files are permanent records.
-3. **Write the handoff.** The plan is a handoff to a cold reader. Copy the bundled template, `reference/templates/plan.md` in the suite repo (fallback: https://raw.githubusercontent.com/horizon-foundry/foundry/main/reference/templates/plan.md), and fill every section. The shape:
+3. **Write the handoff.** The plan is a handoff to a cold reader. Copy the bundled template, `plan.template.md` next to this SKILL.md in the installed skill directory (if that copy is somehow missing, fetch https://raw.githubusercontent.com/horizon-foundry/foundry/main/reference/templates/plan.md), and fill every section. The shape:
 
    ```
    Status: active
@@ -67,9 +67,4 @@ The written plan explains intent. The repo proves current state, and the repo wi
 
 ## Red flags
 
-- Wrote a plan file but did not touch `TODOS.md` -> it is invisible; index it now.
-- About to write over an existing plan file -> read it first; if it is a different plan, use a new file.
-- Closing a meaningful handoff (a phase, a resumable unit) with no indexed plan and no terminal entry -> the chain just went empty; write one before you move on. (A routine PR that leaves nothing to resume needs neither.)
-- Writing a filler plan because "the chain must not go empty" -> the chain accepts honest terminal entries; a vacuous plan poisons the next session.
-- Resuming from a plan without checking git state -> the plan may predate merged or abandoned work; reconcile first.
-- A plan file with no status line, or one still marked active after being replaced -> stamp it; a stale active plan is a trap.
+Symptoms that you skipped something above, not new rules: a plan file written without touching `TODOS.md`; an existing plan file about to be written over; a meaningful handoff closed with neither an indexed plan nor a terminal entry; a filler plan written because "the chain must not go empty"; a plan resumed without checking git state; a plan file with no status line, or one still marked active after being replaced.

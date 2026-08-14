@@ -1,6 +1,6 @@
 ---
 name: mobile
-description: Use when building or fixing a mobile, touch, or small-screen experience, when a layout breaks on a phone, or when a feature was designed on desktop and needs to hold up on a real device. Covers touch vs pointer, the keyboard, overscroll, safe areas, viewport units, and the pressure-test loop that gets to a good mobile result. Not for products with no mobile surface; that gate resolves not-applicable, and no work is invented.
+description: Use when building or fixing a mobile, touch, or small-screen experience, when a layout breaks on a phone, or when a desktop-designed feature needs to hold up on a real device. Not for products with no mobile surface; that gate resolves not-applicable, and no work is invented.
 ---
 
 # mobile
@@ -82,9 +82,4 @@ Anything the run could not cover is reported as unverified, with the check to ru
 
 ## Red flags
 
-- Fixing a symptom before reading `document.activeElement` / scroll position -> you are probably fixing the wrong mechanism.
-- Applying the suspect catalog as blanket rules (global `overscroll-behavior: none`, mechanical `100vw` bans) -> diagnose first; each fix has a named tradeoff and needs its mechanism confirmed.
-- A gesture or exit bound to `wheel`/`mouseover` only -> it is a trap on touch; add the parallel touch path.
-- Autofocus on mount -> keyboard-pop and page-scroll on coarse pointers.
-- "Works on mobile" after testing only headless Chromium or one width -> the matrix is the bar; say what was not covered.
-- Inventing mobile work for a product with no mobile surface -> declare the gate not-applicable with the reason.
+Symptoms that you skipped something above, not new rules: a symptom fixed before `document.activeElement` and scroll position were read; the suspect catalog applied as blanket rules (global `overscroll-behavior: none`, a mechanical `100vw` ban); a gesture or exit bound to `wheel`/`mouseover` only; autofocus on mount; "works on mobile" after one width or headless Chromium alone; mobile work invented for a product with no mobile surface.

@@ -1,6 +1,6 @@
 ---
 name: instrumentation
-description: Use when adding analytics or event tracking, instrumenting a funnel or an activation flow, wiring a product-analytics tool (PostHog, etc.), or when you need to measure whether a feature works. Covers defining events before building, one identity model across client and server (keyed on the right entity per event, not always the user), reliable server-side capture, operational governance (schema versioning, dedup, a named owner), and measuring activation over vanity. Not for system observability (errors, latency, alerting); that is a different discipline.
+description: Use when adding analytics or event tracking, instrumenting a funnel or an activation flow, wiring a product-analytics tool (PostHog, etc.), or when you need to measure whether a feature works. Not for system observability (errors, latency, alerting); that is a different discipline.
 ---
 
 # instrumentation
@@ -9,7 +9,7 @@ description: Use when adding analytics or event tracking, instrumenting a funnel
 
 ## Overview
 
-This is a ship gate, and its weight follows the project's declared release policy (the `foundry` skill owns the required/optional/waived semantics). Where the policy requires instrumentation, an uninstrumented activation funnel caps the `production-audit` verdict; where the policy marks it optional or waived, the gap is recorded, not a cap.
+This is a ship gate, and its weight follows the project's declared release policy. The `foundry` skill owns what required, optional, and waived each do to a release; this skill produces the record they are scored against.
 
 You cannot improve what you do not measure. Most instrumentation is added after the fact, as scattered `capture()` calls that never answer a real question. The discipline: decide what you need to learn first, instrument the whole path to it on one identity, make the capture reliable. Analytics that silently drops events or splits a user across two identities is worse than none: it produces confident, wrong funnels.
 
@@ -90,10 +90,4 @@ The gate is "you can answer whether it is working and you decided how", not "eve
 
 ## Red flags
 
-- Adding `capture()` calls without having named the funnel and the activation event first -> you will measure noise.
-- Mixed keys within one funnel (client stages on the user, server stages on the tenant) -> the funnel will not stitch; every stage of a funnel uses the same key from the identity model.
-- Server capture with no flush on a serverless host -> events silently lost.
-- The product breaks or blocks when the analytics key is missing -> env-gate it to no-op.
-- Tracking pageviews and calling it analytics -> instrument activation and the path to it.
-- Redefining an existing event's meaning in place -> history becomes uninterpretable; new name or explicit version.
-- A funnel nobody is named as owning -> it will silently die and keep looking authoritative; give it an owner and a cadence.
+Symptoms that you skipped something above, not new rules: `capture()` calls written before the funnel and activation moment are named; mixed keys within one funnel; server capture with no flush on an auto-stopping host; the product breaking when the analytics key is unset; pageviews reported as analytics; an event's meaning redefined in place; a funnel with no named owner.

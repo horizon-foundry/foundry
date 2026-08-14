@@ -1,6 +1,6 @@
 ---
 name: frame
-description: Use before scaffolding or building anything new, or when a project cannot answer who it is for and why it will matter. The builder declares a one-page product frame (user, problem, alternatives, outcomes, evidence and assumptions, success measure, non-goals, risks, learn before investing) plus a four-line security frame (data classification, trust boundaries, authn/authz, secret handling); the skill audits the declaration the way the suite audits code, with blank or vague entries reported as findings. It never runs discovery, never questionnaires the builder, and never invents answers.
+description: Use before scaffolding or building anything new, or when a project cannot answer who it is for and why it matters. The builder declares a one-page product frame plus a four-line security frame; this skill audits it and reports blank or vague entries as findings. Never runs discovery, never questionnaires the builder, never invents answers.
 ---
 
 # frame
@@ -153,14 +153,13 @@ so, not a workshop to produce the answer.
 
 ## Red flags
 
-- Asking the builder a sequence of discovery questions -> this skill audits
-  a declaration; see the non-goals.
-- Filling any entry the human did not state or confirm -> an invented user is
-  worse than a blank cell; blanks are honest findings.
+Two that nothing above states:
+
 - A frame longer than a page -> it has become a research document; the frame
   is the declaration, not the investigation.
-- Scaffolding or building started before the frame carries its `Confirmed`
-  stamp -> the suite's own failure mode: disciplined delivery of an
-  unexamined idea.
 - Editing the frame to match what got built -> the frame records intent; when
   reality diverges, the divergence is a finding to discuss, not to erase.
+
+Symptoms that you skipped something above: a sequence of discovery questions
+asked of the builder; an entry filled that the human never stated or
+confirmed; scaffolding or building started before the `Confirmed` stamp.
