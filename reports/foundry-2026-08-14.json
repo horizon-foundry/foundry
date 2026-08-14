@@ -1,0 +1,1122 @@
+{
+  "meta": {
+    "schemaVersion": 4,
+    "project": "Foundry",
+    "projectSlug": "foundry",
+    "date": "2026-08-14",
+    "auditedCommit": "81fec42",
+    "skillVersion": "0.1.0",
+    "public": true,
+    "scope": {
+      "dimensions": [
+        "security",
+        "concurrency",
+        "reliability",
+        "accessibility",
+        "ui",
+        "infra",
+        "operability",
+        "testing-confidence",
+        "release-safety",
+        "performance-capacity"
+      ],
+      "runtimePass": false,
+      "excludedDimensions": [
+        {
+          "dimension": "data-migration-safety",
+          "status": "not-applicable",
+          "reason": "The site owns no datastore: reports are JSON files committed to the repo and baked into the image, and Supabase is used for auth only, with no app tables or migrations."
+        }
+      ]
+    }
+  },
+  "verdict": {
+    "level": "safe-to-ship",
+    "assessedScope": "static",
+    "posture": "Healthy. Ten dimensions and six adversarial verifications found one risk, a vulnerable framework pin, and it was fixed in this branch before publication; what remains is a robustness punch list on a small, deliberately fail-closed surface.",
+    "justification": "Static review, runtime not exercised. Ten dimension reviews produced six risk candidates; adversarial verification confirmed one (a Next.js version in range for an unauthenticated Server Actions CPU-exhaustion advisory), which was fixed in the audited branch (next 16.3.1) and re-verified before this report was emitted. The five others were downgraded to improvements on the reachable-today rule, each with its reasoning recorded. The access-control, origin-pinning, and fail-closed auth surfaces verified clean at every layer checked. The runtime checks a static run cannot perform are listed under notAssessed.",
+    "blockingFindingIds": []
+  },
+  "shipGates": [
+    {
+      "gate": "mobile",
+      "status": "not-assessed",
+      "note": "Required by the declared release policy. Static review shows consistent responsive discipline (min-w-0 grid guards, wrap-tolerant paddings, 44px targets, per-container overflow scroll) and no known regressions since the last device pass; device-level verification is runtime evidence this run cannot supply. Check to run: the mobile skill's verification matrix on the current surface."
+    },
+    {
+      "gate": "instrumentation",
+      "status": "met",
+      "note": "Required by the declared release policy. The event plan table exists in CLAUDE.md and capture code conforms to it exactly (two funnels on one identity model plus the documented out-of-funnel skill_version_check with its identity exception and volume guardrail). The client-to-server identity stitch is asserted by code (alias on confirm) and remains runtime-unverified; see notAssessed."
+    }
+  ],
+  "mechanicalSweeps": [
+    {
+      "name": "dependency-audit",
+      "tool": "npm audit",
+      "outcome": "findings",
+      "summary": "Pre-fix: 9 high, 1 moderate. The one reachable advisory (next 16.2.9, unauthenticated Server Actions CPU exhaustion, GHSA-m99w-x7hq-7vfj) was confirmed by an adversarial skeptic and fixed in-branch (next 16.3.1, non-major), which also cleared the sharp, postcss, and server-function-disclosure advisories; npm audit fix swept the dev-only brace-expansion pair. Post-fix: 2 high remain, both in the ajv-cli devDependency chain (validation tooling, never shipped); npm's proposed fix is a breaking downgrade and was rejected on the record (see INF-03)."
+    },
+    {
+      "name": "secret-scan",
+      "tool": "pattern grep (gitleaks/trufflehog unavailable)",
+      "outcome": "clean",
+      "summary": "Fallback pattern grep over source and config found no secret material; the only committed key is the PostHog browser token, public by design. A real scanner over tracked history remains worth one run; see notAssessed."
+    },
+    {
+      "name": "typecheck",
+      "tool": "tsc --noEmit",
+      "outcome": "clean"
+    },
+    {
+      "name": "lint",
+      "tool": "eslint",
+      "outcome": "clean"
+    }
+  ],
+  "strengths": [
+    {
+      "area": "Authorization",
+      "dimension": "security",
+      "note": "The authz matrix closed with no gaps: every gated read enforces owner-or-admin in the data-access layer itself (lib/reports.ts canView/getReportFor/getPublicReport), generateMetadata goes through the same gate, non-owner and nonexistent slugs are indistinguishable 404s, and no state-mutating endpoint exists beyond auth itself."
+    },
+    {
+      "area": "Path traversal",
+      "dimension": "security",
+      "note": "All three dynamic slug routes are traversal-proof in the data layer (strict slug regex plus directory-prefix check in lib/reports.ts:92-94 and lib/skills.ts:193-195), and the Behind-the-Build fs reads are hard-whitelisted (lib/docs.ts ALLOWED set); NOTES/PROMPTS/FRICTION are unreachable through any route."
+    },
+    {
+      "area": "Auth flow integrity",
+      "dimension": "security",
+      "note": "No open redirect exists (fixed-path redirects built from a server-pinned origin; SITE_ORIGIN set in fly.toml so the emailed magic-link target is never derived from a spoofable forwarded host); session trust is JWT-validated via getUser() on every access decision; a failed confirm buffers no cookies and can never half-establish or clobber a session (lib/supabase.ts applyCookies)."
+    },
+    {
+      "area": "Fail-closed posture",
+      "dimension": "reliability",
+      "note": "Missing auth env locks the gated surface closed with a one-time ops log at every consumer; a malformed report file is logged and skipped rather than 500ing the index; the VERSION file read fails open to 0.0.0, the one direction that can never falsely tell an installed skill it is behind."
+    },
+    {
+      "area": "Analytics isolation",
+      "dimension": "reliability",
+      "note": "Client and server capture no-op without their keys, are never awaited in a request path, and never gate a response; the version endpoint validates against the canonical skill allowlist, disables person-profile processing on its synthetic actor, and serves Cache-Control: no-store."
+    },
+    {
+      "area": "Accessibility primitives",
+      "dimension": "accessibility",
+      "note": "Skip link, global focus-visible ring, blanket and per-effect reduced-motion kills, aria-live slide announcements, labeled form fields with described errors and aria-busy pending state, 44px targets throughout, and severity, verdict, and gate status always carried by text, never color alone."
+    },
+    {
+      "area": "Design-token fidelity",
+      "dimension": "ui",
+      "note": "globals.css matches DESIGN.md hex for hex including the AA-driven brightened faint tone; no raw hex outside documented mirrors; the display face ships in its single loaded weight; the report-excerpt color exception is honored at all four codified sites; glossary and no-em-dash rules hold across every surface swept including all eleven SKILL_COPY entries."
+    },
+    {
+      "area": "Runtime image completeness",
+      "dimension": "infra",
+      "note": "Every runtime fs-read target is explicitly COPYd into the standalone image (VERSION included), cross-checked against every readFileSync/readdirSync call site; build-arg keys never become runner env; security headers enforce on every route; no dev or debug endpoint exists."
+    },
+    {
+      "area": "Version-marker integrity",
+      "dimension": "release-safety",
+      "note": "The VERSION file is a single source of truth mechanically enforced: make validate fails on drift in any SKILL.md frontmatter or check URL, SECURITY.md, or a SKILL_SLUGS/skills mismatch in either direction, and CI runs it on every PR and push. The in-skill check command enforces its own opt-out, rate limit, timeout, and fail-silence."
+    },
+    {
+      "area": "Verified fix loop",
+      "dimension": "infra",
+      "note": "The one confirmed risk of this audit (next 16.2.9 in range for GHSA-m99w-x7hq-7vfj) was fixed in the audited branch and re-verified (next 16.3.1 resolved in the lockfile, build and typecheck green, advisory absent from the post-fix npm audit) before this report was published, alongside two skeptic-verified truth defects: the homepage verdict hue now derives from the verdict via a full-literal class map, and the CI comment now claims detection, not an enforcement no ruleset provides."
+    }
+  ],
+  "findings": [
+    {
+      "id": "SEC-01",
+      "kind": "improvement",
+      "severity": "medium",
+      "category": "security",
+      "dimension": "security",
+      "location": {
+        "file": "lib/reports.ts",
+        "line": 5
+      },
+      "issue": "Private-report confidentiality rests entirely on the site gate while report storage is a public git repository.",
+      "impact": "Both committed reports are public examples today, so no harm path exists now; but the first report committed with meta.public false and an owner would be world-readable in the repo and every clone, gate notwithstanding, and git history does not un-publish.",
+      "evidence": "lib/reports.ts:5 \"Reads published audit reports from reports/*.json. These files are committed\"; both reports/*.json carry \"public\": true and no owner field; the repo is public (horizon-foundry/foundry).",
+      "recommendedFix": "Add a publish-time control before any private report can land: make validate fails on a committed report whose meta.public is false, and private reports live outside the repo.",
+      "confidence": "configuration-confirmed",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "SEC-02",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "security",
+      "dimension": "security",
+      "location": {
+        "file": "app/unlock/actions.ts",
+        "line": 35
+      },
+      "issue": "The unauthenticated email-send action has no application-layer throttle; the effective limits are Supabase's.",
+      "impact": "With the recorded platform configuration (built-in SMTP, roughly two sign-in emails per hour project-wide, per-email cooldown) neither email-bombing nor quota-burn rises above nuisance; the mitigation is platform-config-dependent and silently disappears if custom SMTP raises the caps.",
+      "evidence": "app/unlock/actions.ts:35 \"const { error } = await supabase.auth.signInWithOtp({\"; NOTES.md:84 records the built-in email service \"allows only 2 sign-in emails per hour\".",
+      "recommendedFix": "Land an app-layer throttle on requestMagicLink in the same change that upgrades the email provider.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "downgraded",
+        "method": "fresh-subagent",
+        "refutationNotes": "Filed as a medium risk without checking the platform layer the kill list requires. Supabase enforces server-side OTP rate limits and the project's recorded email cap is 2/hour, collapsing both claimed harms to nuisance level; the rubric names this exact case (a low rate-limit gap mitigated upstream) as an improvement."
+      }
+    },
+    {
+      "id": "SEC-03",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "security",
+      "dimension": "security",
+      "location": {
+        "file": "app/unlock/actions.ts",
+        "line": 46
+      },
+      "issue": "The pre-auth analytics event is keyed on the raw email a visitor typed, which may be a third party's.",
+      "impact": "A stranger submitting victim@example.com places unconsented PII into the analytics store as a person-keyed distinct id; it joins the real owner's identity only if they later sign in.",
+      "evidence": "app/unlock/actions.ts:46 \"captureServer(email, \\\"magic_link_requested\\\");\"",
+      "recommendedFix": "Capture the pre-auth event with person-profile processing off, or key it on a hash and alias the hash on confirm.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "SEC-04",
+      "kind": "improvement",
+      "severity": "informational",
+      "category": "security",
+      "dimension": "security",
+      "location": {
+        "file": "next.config.ts",
+        "line": 24
+      },
+      "issue": "The CSP allows 'unsafe-inline' scripts, removing its value as an XSS backstop.",
+      "impact": "No XSS vector was found (React escaping throughout, raw HTML disabled in markdown), so this is defense in depth only.",
+      "evidence": "next.config.ts:24 \"script-src 'self' 'unsafe-inline' https://us-assets.i.posthog.com\"",
+      "recommendedFix": "Migrate to a nonce-based CSP when convenient.",
+      "confidence": "configuration-confirmed",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "SEC-05",
+      "kind": "improvement",
+      "severity": "informational",
+      "category": "security",
+      "dimension": "security",
+      "location": {
+        "file": "app/unlock/page.tsx",
+        "line": 36
+      },
+      "issue": "The ?sent= query value is reflected (React-escaped) into a trust-bearing confirmation sentence.",
+      "impact": "A crafted link renders a legitimate-looking \"link sent\" page for an address the site never emailed; a lure surface, not an injection.",
+      "evidence": "app/unlock/page.tsx:36-38 renders \"We emailed a one-time sign-in link to {sent}\".",
+      "recommendedFix": "Render a generic confirmation, or validate the reflected value's shape.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "REL-01",
+      "kind": "improvement",
+      "severity": "medium",
+      "category": "reliability",
+      "dimension": "reliability",
+      "location": {
+        "file": "app/auth/confirm/route.ts",
+        "line": 24
+      },
+      "issue": "Magic-link confirmation consumes the single-use token on a bare GET, so corporate mail scanners that prefetch links can spend it before the user clicks.",
+      "impact": "A report owner behind SafeLinks or Mimecast would land on error=expired on every attempt, including every resent link; no such user exists today (zero owned reports; the admin mailbox is not in that class), so the harm is to a future population and the fix belongs before the first corporate-mailbox owner is onboarded.",
+      "evidence": "app/auth/confirm/route.ts:24 \"export async function GET(request: NextRequest)\" and :65 verifyOtp on token_hash; Supabase's own troubleshooting doc confirms scanner prefetch \"consumed instantly\" behavior.",
+      "recommendedFix": "Add an interstitial confirm page so the consuming call is a POST behind a human action, per Supabase's guidance; verify with a SafeLinks test mailbox.",
+      "confidence": "needs-verification",
+      "assumption": "The deployed Supabase email template uses the token_hash link shape the route expects; the template is dashboard config, not in-repo.",
+      "verification": {
+        "status": "downgraded",
+        "method": "fresh-subagent",
+        "refutationNotes": "Mechanism confirmed real and vendor-documented, but the affected population does not exist today (both committed reports are public with no owner; ADMIN_EMAILS is a gmail mailbox), so the risk classification fails the reachable-today rule. Report as a medium improvement with a pre-onboarding mitigation."
+      }
+    },
+    {
+      "id": "REL-02",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "reliability",
+      "dimension": "reliability",
+      "location": {
+        "file": "app/auth/confirm/route.ts",
+        "line": 33
+      },
+      "issue": "Every confirmation failure, including a Supabase outage, is reported to the user as an expired link.",
+      "impact": "During an outage users are sent into a request-a-fresh-link retry loop that also fails, and the analytics reason field records the outage as user error.",
+      "evidence": "app/auth/confirm/route.ts:33 \"const failure = new URL(\\\"/unlock?error=expired\\\", origin);\" used for every error branch.",
+      "recommendedFix": "Distinguish an upstream failure from a consumed or expired token in both the user copy and the sign_in_failed reason.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "REL-03",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "reliability",
+      "dimension": "reliability",
+      "location": {
+        "file": "components/InstallBlock.tsx",
+        "line": 26
+      },
+      "issue": "The GitHub star fetch has no timeout.",
+      "impact": "A hung connection stalls the build or the hourly ISR revalidation up to undici defaults; per-request traffic is unaffected.",
+      "evidence": "components/InstallBlock.tsx:26 fetch with no AbortSignal.timeout.",
+      "recommendedFix": "AbortSignal.timeout on the fetch.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "REL-04",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "reliability",
+      "dimension": "reliability",
+      "location": {
+        "file": "lib/supabase.ts",
+        "line": 129
+      },
+      "issue": "No Supabase call carries an explicit timeout, and the failure envelope leans on platform defaults (one root cause; instances listed).",
+      "impact": "A hung upstream pins the unlock form in its pending state until the proxy gives up; sign-out ignores its revocation result; an error thrown inside the root layout escapes to Next's unstyled default page.",
+      "evidence": "lib/supabase.ts:129 \"await supabase.auth.getUser()\" (no timeout); app/auth/signout/route.ts:16 \"await ctx.supabase.auth.signOut();\" (result ignored).",
+      "recommendedFix": "AbortSignal timeouts on the auth calls, check the signOut result, add app/global-error.tsx.",
+      "confidence": "code-traced",
+      "instances": [
+        {
+          "file": "lib/supabase.ts",
+          "line": 129
+        },
+        {
+          "file": "app/unlock/actions.ts",
+          "line": 35
+        },
+        {
+          "file": "app/auth/confirm/route.ts",
+          "line": 65
+        },
+        {
+          "file": "app/auth/signout/route.ts",
+          "line": 16
+        },
+        {
+          "file": "app/layout.tsx",
+          "symbol": "app/layout.tsx (no global-error boundary)"
+        }
+      ],
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "CON-01",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "race-condition",
+      "dimension": "concurrency",
+      "location": {
+        "file": "app/unlock/actions.ts",
+        "line": 35
+      },
+      "issue": "A second magic-link request likely invalidates the first link's token, and the rate-limit retry copy understates the real window.",
+      "impact": "A double-requesting user who clicks email one lands on expired; a quota-limited user told to \"try again in a minute\" retries into an hour-scale window and burns more quota.",
+      "evidence": "app/unlock/page.tsx:11 \"The sign-in email could not be sent. Try again in a minute.\"",
+      "recommendedFix": "Align the retry copy with the provider's actual window; verify the token-invalidation behavior with two sequential requests.",
+      "confidence": "needs-verification",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "CON-02",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "race-condition",
+      "dimension": "concurrency",
+      "location": {
+        "file": "app/unlock/page.tsx",
+        "line": 1
+      },
+      "issue": "An already-signed-in visitor to /unlock (the loser tab of a two-tab confirm, or a stale-link click) is shown the sign-in form and an expired error instead of their session.",
+      "impact": "Confusion plus needless re-requests against the small email quota.",
+      "evidence": "app/unlock/page.tsx renders the form unconditionally; no session check exists in the page.",
+      "recommendedFix": "Check for an existing session on /unlock and redirect to /reports.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "A11Y-01",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "accessibility",
+      "dimension": "accessibility",
+      "location": {
+        "file": "components/SlideDeck.tsx",
+        "line": 186
+      },
+      "issue": "Focus is dropped when the deck's Prev/Next button disables under the keyboard user at either extreme.",
+      "impact": "Keyboard and switch users lose their place and the region-scoped arrow keys stop working until they re-tab from the top.",
+      "evidence": "components/SlideDeck.tsx:186 \"disabled={current === 0}\" and :215 \"disabled={current === total - 1}\".",
+      "recommendedFix": "Use aria-disabled with a no-op, or move focus to the sibling control before disabling.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "A11Y-02",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "accessibility",
+      "dimension": "accessibility",
+      "location": {
+        "file": "components/ReportScorecard.tsx",
+        "line": 35
+      },
+      "issue": "Scorecard jump controls scroll without moving focus, and zero-count cells remain focusable no-op buttons (one root cause: focus not managed on the scorecard's interactive grid).",
+      "impact": "A screen-reader user activating a count hears nothing happen; tabbing pauses on buttons that do nothing.",
+      "evidence": "components/ReportScorecard.tsx:35 \"el.scrollIntoView({ behavior: \\\"smooth\\\", block: \\\"start\\\" });\" with no focus move; :71 aria-disabled without disabled or tabIndex removal.",
+      "recommendedFix": "Focus the jump target (tabindex -1) on activation; take zero-count cells out of the tab order.",
+      "confidence": "code-traced",
+      "instances": [
+        {
+          "file": "components/ReportScorecard.tsx",
+          "line": 35
+        },
+        {
+          "file": "components/ReportScorecard.tsx",
+          "line": 54
+        },
+        {
+          "file": "components/ReportScorecard.tsx",
+          "line": 71
+        }
+      ],
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "A11Y-03",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "accessibility",
+      "dimension": "accessibility",
+      "location": {
+        "file": "app/globals.css",
+        "line": 16
+      },
+      "issue": "The hairline border tokens sit below the 3:1 non-text contrast minimum for component boundaries.",
+      "impact": "Low-vision users may not perceive input and control extents; softened by the focus ring, raised grounds, and high-contrast content inside each control.",
+      "evidence": "app/globals.css:16-17 \"--color-line: #334455;\" (1.77:1 on ink) and \"--color-line-strong: #45566a;\" (2.35:1).",
+      "recommendedFix": "Brighten the control-boundary token toward 3:1 where a control's extent is load-bearing (form fields first).",
+      "confidence": "configuration-confirmed",
+      "instances": [
+        {
+          "file": "app/unlock/page.tsx",
+          "line": 86
+        },
+        {
+          "file": "components/Terminal.tsx",
+          "line": 196
+        },
+        {
+          "file": "components/CopyButton.tsx",
+          "line": 41
+        },
+        {
+          "file": "components/InstallBlock.tsx",
+          "line": 44
+        }
+      ],
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "A11Y-04",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "accessibility",
+      "dimension": "accessibility",
+      "location": {
+        "file": "components/ReportScorecard.tsx",
+        "line": 74
+      },
+      "issue": "The scorecard's hovered cell drops its small labels below AA contrast (4.19:1 computed).",
+      "impact": "Low-vision users on the hover state; every other computed text pair on the site clears 4.5:1.",
+      "evidence": "components/ReportScorecard.tsx:74 \"hover:bg-ink-raised-2\" with text-bone-faint labels.",
+      "recommendedFix": "Brighten the label or lighten the hover ground; confirm with a contrast probe on the rendered state.",
+      "confidence": "configuration-confirmed",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "A11Y-05",
+      "kind": "improvement",
+      "severity": "informational",
+      "category": "accessibility",
+      "dimension": "accessibility",
+      "location": {
+        "file": "components/CopyButton.tsx",
+        "line": 40
+      },
+      "issue": "Screen-reader announcement polish across four small surfaces (grouped; each is an announcement or semantics nit).",
+      "impact": "Copy confirmation may be silent to SRs; the unlock input is never marked aria-invalid; the signed-out /reports page starts at h2; the terminal's output swap is visually rich, aurally silent.",
+      "evidence": "components/CopyButton.tsx:40 aria-label swap with no status region; app/unlock/page.tsx:85 aria-describedby without aria-invalid; app/reports/page.tsx:151 h2-first when signed out; components/Terminal.tsx:145 opacity-only reveal.",
+      "recommendedFix": "role=status on the copy confirmation, aria-invalid on error, an h1 in the signed-out branch, aria-live on the terminal output if it ever becomes more than demonstrative.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "UI-01",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "visual-consistency",
+      "dimension": "ui",
+      "location": {
+        "file": "app/layout.tsx",
+        "line": 9
+      },
+      "issue": "The meta descriptions still enumerate five promises; the site says six.",
+      "impact": "Search and social previews understate the suite; on-page copy is consistent everywhere.",
+      "evidence": "app/layout.tsx:9-10 and app/skills/page.tsx:8-9 both omit the design-checked-against-code promise.",
+      "recommendedFix": "Add the sixth promise to both descriptions.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "UI-02",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "visual-consistency",
+      "dimension": "ui",
+      "location": {
+        "file": "app/skills/page.tsx",
+        "line": 75
+      },
+      "issue": "The install slug is hardcoded on two surfaces past the single source of truth that exists for it.",
+      "impact": "A repo rename updates InstallBlock and leaves these two stale silently.",
+      "evidence": "app/skills/page.tsx:75 and app/behind/page.tsx:84 spell horizon-foundry/foundry literally; lib/site.ts:10 REPO_SLUG exists to own it.",
+      "recommendedFix": "Interpolate REPO_SLUG on both.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "UI-03",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "visual-consistency",
+      "dimension": "ui",
+      "location": {
+        "file": "components/SubmitButton.tsx",
+        "line": 22
+      },
+      "issue": "The unlock submit is the one primary CTA rendered all-caps against the brand's sentence-case button rule.",
+      "impact": "Inconsistency on a trust-bearing surface; every other CTA is sentence case.",
+      "evidence": "components/SubmitButton.tsx:22 \"uppercase tracking-wide\".",
+      "recommendedFix": "Drop the uppercase transform.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "UI-04",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "visual-consistency",
+      "dimension": "ui",
+      "location": {
+        "file": "app/unlock/page.tsx",
+        "line": 93
+      },
+      "issue": "A severity hue is used on non-report chrome (the unlock form error) where DESIGN.md licenses severity color only inside report excerpts.",
+      "impact": "The color system's one strict rule leaks; the likely right fix is codifying an error-state color rather than restyling.",
+      "evidence": "app/unlock/page.tsx:93 \"border border-critical/40 bg-critical/5 ... text-critical\".",
+      "recommendedFix": "Codify a form-error state in DESIGN.md (probably this exact treatment) or restyle within the licensed palette.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "UI-05",
+      "kind": "improvement",
+      "severity": "informational",
+      "category": "visual-consistency",
+      "dimension": "ui",
+      "location": {
+        "file": "components/SlideDeck.tsx",
+        "line": 159
+      },
+      "issue": "Deck chips render command tokens in body gray, the only invocation strings on the site outside the amber command color.",
+      "impact": "Minor divergence from the command-color convention on the Getting Started slide.",
+      "evidence": "components/SlideDeck.tsx:159 chips render text-bone-dim; the chip list mixes commands and non-commands, so the fix needs a per-chip flag.",
+      "recommendedFix": "Add a per-chip command flag and color those chips text-command.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "INF-01",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "infra",
+      "dimension": "infra",
+      "location": {
+        "file": "Dockerfile",
+        "line": 48
+      },
+      "issue": "The runtime container runs as root; no USER directive exists.",
+      "impact": "Defense-in-depth gap softened by Fly's microVM isolation and the absence of any write surface in the app.",
+      "evidence": "Dockerfile has no USER directive; CMD runs node directly.",
+      "recommendedFix": "chown the standalone COPYs and add USER node.",
+      "confidence": "configuration-confirmed",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "INF-02",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "infra",
+      "dimension": "infra",
+      "location": {
+        "file": ".dockerignore",
+        "line": 9
+      },
+      "issue": "The dockerignore excludes .env.local and .env.*.local but not a bare .env.",
+      "impact": "No .env exists today and the runner COPYs explicit paths only, so exposure needs two future mistakes; cheap to close now.",
+      "evidence": ".dockerignore:9-10 lists only the .local variants.",
+      "recommendedFix": "Add .env to .dockerignore.",
+      "confidence": "configuration-confirmed",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "INF-03",
+      "kind": "improvement",
+      "severity": "informational",
+      "category": "infra",
+      "dimension": "infra",
+      "location": {
+        "file": "Dockerfile",
+        "line": 42
+      },
+      "issue": "The image ships three docs nothing can read (NOTES, PROMPTS, FRICTION are outside the render whitelist), and the COPY comment plus the CLAUDE.md gotcha overstate the runtime-read set; the retained dev-only vulnerable ajv-cli chain also lives here as an accepted, documented exception.",
+      "impact": "About 110KB of dead image weight and a comment that will mislead the next editor; the dev-chain advisories never ship.",
+      "evidence": "Dockerfile:42 COPYs six docs; lib/docs.ts:13-17 whitelists three.",
+      "recommendedFix": "Trim the COPY list and fix the comment and gotcha in the same change; revisit the ajv-cli chain when a non-breaking fix exists.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "OPS-01",
+      "kind": "improvement",
+      "severity": "medium",
+      "category": "operability",
+      "dimension": "operability",
+      "location": {
+        "file": "fly.toml",
+        "line": 36
+      },
+      "issue": "No alerting path with a named receiver exists anywhere: the health check only proves the static homepage renders, logs are ephemeral stdout on auto-stop machines, and nothing distinguishes analytics-down from traffic-zero.",
+      "impact": "A Supabase lockout, a rotated PostHog key, or a dead version-check endpoint would each be invisible until a user complains or the maintainer happens to look; the failure modes are logged locally but land nowhere durable.",
+      "evidence": "fly.toml health check GET / only; no uptime monitor, alert, or log shipping exists in the repo; lib/posthog-server.ts capture is fire-and-forget with no error handler.",
+      "recommendedFix": "One external uptime check on /api/version (which exercises the dynamic path), one PostHog canary insight with a subscription, and the Operations runbook section TODOS already indexes.",
+      "confidence": "code-traced",
+      "instances": [
+        {
+          "file": "fly.toml",
+          "line": 36
+        },
+        {
+          "file": "lib/posthog-server.ts",
+          "line": 31
+        },
+        {
+          "file": "instrumentation-client.ts",
+          "line": 10
+        }
+      ],
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "OPS-02",
+      "kind": "improvement",
+      "severity": "medium",
+      "category": "operability",
+      "dimension": "operability",
+      "location": {
+        "file": "app/unlock/actions.ts",
+        "line": 40
+      },
+      "issue": "The magic-link request failure path is the one critical-flow failure with neither a log nor an event.",
+      "impact": "A Supabase outage at the request stage is invisible to the maintainer; the confirm route logs and captures its failures, the request stage silently redirects.",
+      "evidence": "app/unlock/actions.ts:40-42 \"if (error) { redirect(\\\"/unlock?error=failed\\\"); }\" with no console.error and no capture.",
+      "recommendedFix": "Log the error with context and fire a request-stage failure event, mirroring the confirm route's posture.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "OPS-03",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "operability",
+      "dimension": "operability",
+      "location": {
+        "file": "app/auth/confirm/route.ts",
+        "line": 58
+      },
+      "issue": "Failure diagnostics conflate causes: every verify error is captured as reason expired, and the version check's zero-events state is undocumented (broken endpoint and no adopters read identically).",
+      "impact": "The de facto dashboard misattributes outages to user error, and the one usage metric cannot distinguish silence from failure.",
+      "evidence": "app/auth/confirm/route.ts:58-60 captures reason \"expired\" for any error; CLAUDE.md's event plan documents the volume spike but not the zero case.",
+      "recommendedFix": "Split the failure reasons; document the zero-events ambiguity next to the spike guardrail.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "OPS-04",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "operability",
+      "dimension": "operability",
+      "location": {
+        "file": "TODOS.md",
+        "line": 117
+      },
+      "issue": "The ops runbook is scattered (fly.toml comments, CLAUDE.md gotchas, an error boundary whose \"was logged\" claim is only true of the server digest), and the consolidation is already indexed but unshipped.",
+      "impact": "Recovery from the two known auth failure modes depends on remembering where the notes live.",
+      "evidence": "TODOS.md:117 indexes the Operations section with rollback command and alerting confirmation as open work.",
+      "recommendedFix": "Ship the indexed Operations section.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "TEST-01",
+      "kind": "improvement",
+      "severity": "medium",
+      "category": "testing",
+      "dimension": "testing-confidence",
+      "location": {
+        "file": "package.json",
+        "line": 8
+      },
+      "issue": "Zero application tests exist and no runner is installed; the deterministic gates comprehensively pin the report contract and version markers while pinning nothing about the running site (one root cause; the unpinned controls are instanced).",
+      "impact": "Every authz, auth, origin-pinning, caching, and fs-boundary behavior is one uncaught refactor from silently changing. The sharpest edge: getPublicReport has a signature-identical ungated sibling in the same module, and only convention separates them; TypeScript catches the gated-route swap but not the example-route one. This converts to a medium risk the day a private report is committed.",
+      "evidence": "No test files or runner repo-wide; .github/workflows/ci.yml runs typecheck, lint, build, make validate only; lib/reports.ts exports getReport alongside getPublicReport/getReportFor.",
+      "recommendedFix": "Stop exporting getReport (or rename it unsafeGetReport); add a vitest pass pinning canView's matrix, getPublicReport's non-public rejection, slug traversal rejection, and the confirm route's cookie application; wire it into CI.",
+      "confidence": "code-traced",
+      "instances": [
+        {
+          "file": "lib/reports.ts",
+          "line": 90
+        },
+        {
+          "file": "app/auth/confirm/route.ts",
+          "line": 64
+        },
+        {
+          "file": "lib/supabase.ts",
+          "line": 66
+        },
+        {
+          "file": "app/api/version/route.ts",
+          "line": 40
+        },
+        {
+          "file": "middleware.ts",
+          "line": 24
+        },
+        {
+          "file": "lib/version.ts",
+          "line": 23
+        }
+      ],
+      "verification": {
+        "status": "downgraded",
+        "method": "fresh-subagent",
+        "refutationNotes": "Argued up to risk by the finder; the skeptic rejected the classification: the control works today, zero private reports exist to expose, one of the two swaps fails typecheck in CI, and the harm requires compound future events. Kept medium as the improvement's severity for the day the preconditions change."
+      }
+    },
+    {
+      "id": "TEST-02",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "testing",
+      "dimension": "testing-confidence",
+      "location": {
+        "file": "package.json",
+        "line": 12
+      },
+      "issue": "npm run validate:reports runs only the schema half of the gate, inviting a contributor to believe they ran make validate.",
+      "impact": "Invariants, bundled-copy, and version-marker drift pass silently until CI.",
+      "evidence": "package.json:12 maps validate:reports to ajv only.",
+      "recommendedFix": "Point the script at make validate or rename it validate:schema.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "SHIP-01",
+      "kind": "improvement",
+      "severity": "medium",
+      "category": "release-process",
+      "dimension": "release-safety",
+      "location": {
+        "file": ".github/workflows/ci.yml",
+        "line": 10
+      },
+      "issue": "main is the live npx install channel and carries no branch ruleset; CI detects but nothing blocks a direct push.",
+      "impact": "One bad push ships instantly to every new install. Reachability is tempered to process-hygiene: the org has exactly one member, a standing no-direct-push law, and red-CI-on-main detection; admin-account compromise would bypass a ruleset anyway.",
+      "evidence": "GitHub API queried live: branch protection 404, rulesets empty, sole collaborator with admin; ci.yml triggers on push to main (detection).",
+      "recommendedFix": "One ruleset requiring the verify check on main (a single gh api call, already on the launch-tail list awaiting go).",
+      "confidence": "configuration-confirmed",
+      "verification": {
+        "status": "downgraded",
+        "method": "fresh-subagent",
+        "refutationNotes": "Proposed medium risk; downgraded on reachability (single-writer org verified live, three-failure chain required, detection exists) and on the suite's own SHIP-01 precedent, which classified the strictly wider gap as an improvement. The CI comment that claimed enforced merging was a separate docs-truth defect, fixed in the audited branch."
+      }
+    },
+    {
+      "id": "SHIP-02",
+      "kind": "improvement",
+      "severity": "medium",
+      "category": "release-process",
+      "dimension": "release-safety",
+      "location": {
+        "file": "Dockerfile",
+        "line": 16
+      },
+      "issue": "The validated artifact is never the shipped artifact: deploy rebuilds from the local working tree, and the image carries no revision stamp.",
+      "impact": "An uncommitted local edit ships to production without CI seeing it, and nothing records which commit a deployed image came from.",
+      "evidence": "Dockerfile:16 \"COPY . .\" with .git dockerignored; deploy is manual fly deploy from a workstation; no clean-tree or on-main guard exists in any pipeline file.",
+      "recommendedFix": "A deploy guard (clean tree, on main) plus a GIT_SHA build arg surfaced in a header or the version endpoint.",
+      "confidence": "configuration-confirmed",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "SHIP-03",
+      "kind": "improvement",
+      "severity": "medium",
+      "category": "release-process",
+      "dimension": "release-safety",
+      "location": {
+        "file": "fly.toml",
+        "line": 36
+      },
+      "issue": "No named post-deploy verification exercises a user-visible outcome on either channel; the health check proves the homepage returns 200.",
+      "impact": "A deploy that breaks sign-in, report rendering, or the version endpoint reads as green; the endpoint the suite now ships is the natural named check and no doc requires it.",
+      "evidence": "fly.toml [[http_service.checks]] GET / only; the ship pipeline ends at deploy.",
+      "recommendedFix": "A post-deploy step: curl /api/version equals repo VERSION, one gated-route 200 with a session, one public report renders; write it into the ship skill's project overrides.",
+      "confidence": "configuration-confirmed",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "SHIP-04",
+      "kind": "improvement",
+      "severity": "medium",
+      "category": "release-process",
+      "dimension": "release-safety",
+      "location": {
+        "file": "TODOS.md",
+        "line": 117
+      },
+      "issue": "Rollback is undocumented on both channels, and a skill recall cannot reach existing installs without a forward version bump plus a site deploy.",
+      "impact": "Recalling a bad skill requires knowing an undocumented two-step (revert on main does nothing for installed copies until VERSION moves forward AND the endpoint serves it); the site rollback command is similarly unwritten.",
+      "evidence": "The check contract prompts only when the endpoint version is newer than the installed frontmatter; TODOS.md:117 indexes the rollback documentation as open.",
+      "recommendedFix": "Document both recall paths in the Operations section: fly releases rollback for the site, revert-plus-forward-bump-plus-deploy for skills.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "SHIP-05",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "release-process",
+      "dimension": "release-safety",
+      "location": {
+        "file": "CHANGELOG.md",
+        "line": 5
+      },
+      "issue": "The release protocol is designed but unexecuted: zero git tags exist, the procedure is not yet in CLAUDE.md, the changelog-touch CI check is absent, and the deployed endpoint can lag main for weeks, starving the update-prompt loop (grouped; all one protocol gap the repo already indexes as workstream A).",
+      "impact": "v0.1.0 was never tagged; two 0.1.0-labeled installs weeks apart can differ materially; after the next roll-up, existing installs learn nothing until someone remembers to deploy.",
+      "evidence": "git tag -l returns nothing; the v0.1.1 plan's workstream A holds the undone protocol steps; the update prompt depends on the deployed endpoint's version.",
+      "recommendedFix": "Execute workstream A at the v0.1.1 roll-up: tag, release procedure in CLAUDE.md, changelog CI check, and make fly deploy an explicit step of the roll-up.",
+      "confidence": "configuration-confirmed",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "PERF-01",
+      "kind": "improvement",
+      "severity": "medium",
+      "category": "performance",
+      "dimension": "performance-capacity",
+      "location": {
+        "file": "app/api/version/route.ts",
+        "line": 40
+      },
+      "issue": "The open version endpoint amplifies each valid unauthenticated hit into an immediate outbound PostHog TLS POST with no rate limit or backpressure bound.",
+      "impact": "A sustained burst degrades the single 512MB machine (outbound connection and promise growth) and junks the metric window; response delivery itself is never gated, and the identity and cardinality controls already cap the analytics blast radius, so the reachable consequence is degradation plus junk data, not loss.",
+      "evidence": "app/api/version/route.ts:40-47 capture inside the GET with lib/posthog-server.ts flushAt: 1, flushInterval: 0, never awaited.",
+      "recommendedFix": "An edge or in-process token bucket on capture (not on the response), or sampled capture; size it with a 30s load test against the Fly machine.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "PERF-02",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "performance",
+      "dimension": "performance-capacity",
+      "location": {
+        "file": "lib/supabase.ts",
+        "line": 119
+      },
+      "issue": "Session lookups are un-memoized per render: a gated report view makes up to four Supabase getUser round trips (middleware, layout, metadata, page).",
+      "impact": "The largest real latency term after cold start on the gated path; React.cache removes all but one per render.",
+      "evidence": "getSessionUser called independently at middleware.ts:38, app/reports/layout.tsx:20, app/reports/[slug]/page.tsx:15 and :36.",
+      "recommendedFix": "Wrap getSessionUser in React.cache.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "PERF-03",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "performance",
+      "dimension": "performance-capacity",
+      "location": {
+        "file": "lib/reports.ts",
+        "line": 107
+      },
+      "issue": "The reports index re-reads and re-parses every report file roughly three times per request, forever dynamic, with report count growing one file per audit.",
+      "impact": "Nothing at the current count; hundreds of milliseconds per request on this hardware as the set approaches a thousand.",
+      "evidence": "lib/reports.ts:107-114 double-parse in listPublicReports; app/reports/page.tsx:64 adds a per-card third parse; layout forces dynamic.",
+      "recommendedFix": "A per-request or process memo over the parsed report set before the collection grows.",
+      "confidence": "code-traced",
+      "verification": {
+        "status": "not-verified"
+      }
+    },
+    {
+      "id": "PERF-04",
+      "kind": "improvement",
+      "severity": "low",
+      "category": "performance",
+      "dimension": "performance-capacity",
+      "location": {
+        "file": "fly.toml",
+        "line": 31
+      },
+      "issue": "The version check's 10s timeout holds roughly a 2s margin over the measured cold start, and a timed-out check self-suppresses for the day.",
+      "impact": "Systematic undercount of exactly the low-frequency users whose first request is always cold; benign failure mode by design (no retry storm, user-invisible).",
+      "evidence": "fly.toml min_machines_running = 0; the check command stamps the rate-limit file whether or not curl succeeded.",
+      "recommendedFix": "min_machines_running = 1, or accept and note the undercount next to the event plan's other honesty notes.",
+      "confidence": "needs-verification",
+      "verification": {
+        "status": "not-verified"
+      }
+    }
+  ],
+  "remediationPlan": [
+    {
+      "title": "Close the report-confidentiality seam before any private report lands",
+      "findingIds": [
+        "SEC-01",
+        "TEST-01"
+      ],
+      "detail": "The publish-time validate control, the getReport unexport, and the first pinning tests are one small change set that converts the audit's two everything-depends-on-it improvements into enforced invariants."
+    },
+    {
+      "title": "Ship the Operations section and one external signal",
+      "findingIds": [
+        "OPS-01",
+        "OPS-02",
+        "OPS-03",
+        "OPS-04",
+        "SHIP-04"
+      ],
+      "detail": "The runbook TODOS already indexes, an uptime check on /api/version, the request-stage failure log, and the two documented recall paths."
+    },
+    {
+      "title": "Execute the release protocol at the v0.1.1 roll-up",
+      "findingIds": [
+        "SHIP-01",
+        "SHIP-02",
+        "SHIP-03",
+        "SHIP-05"
+      ],
+      "detail": "The main ruleset, the deploy guard with a revision stamp, the named post-deploy checks, tags, and the changelog CI gate are all already-designed workstream A items."
+    },
+    {
+      "title": "Pre-onboarding auth hardening",
+      "findingIds": [
+        "REL-01",
+        "REL-02",
+        "CON-01",
+        "CON-02",
+        "SEC-02",
+        "SEC-03"
+      ],
+      "detail": "The interstitial confirm page, honest failure copy, the signed-in /unlock redirect, and the pre-auth identity hygiene, all before the first external report owner."
+    },
+    {
+      "title": "Accessibility and polish pass",
+      "findingIds": [
+        "A11Y-01",
+        "A11Y-02",
+        "A11Y-03",
+        "A11Y-04",
+        "A11Y-05",
+        "UI-01",
+        "UI-02",
+        "UI-03",
+        "UI-04",
+        "UI-05"
+      ],
+      "detail": "Focus management on the deck and scorecard first; the rest is one short sweep."
+    }
+  ],
+  "quickWins": [
+    {
+      "title": "Add .env to .dockerignore",
+      "blastRadius": "One config line; no behavior change."
+    },
+    {
+      "title": "Wrap getSessionUser in React.cache",
+      "blastRadius": "One import and one wrapper; removes up to three network calls per gated render."
+    },
+    {
+      "title": "Sixth promise into the two meta descriptions",
+      "blastRadius": "Two strings; search previews only."
+    },
+    {
+      "title": "Interpolate REPO_SLUG on the two hardcoded install commands",
+      "blastRadius": "Two template literals."
+    },
+    {
+      "title": "AbortSignal.timeout on the GitHub star fetch",
+      "blastRadius": "One fetch option; build-time resilience only."
+    }
+  ],
+  "deeperInvestigation": [
+    {
+      "title": "Supabase dashboard configuration",
+      "detail": "The email rate limits, template link shape, and redirect allowlist all live in dashboard state the repo cannot show; SEC-02 and REL-01's mitigations and the cutover checklist depend on them."
+    },
+    {
+      "title": "Version-check endpoint under load",
+      "detail": "PERF-01's degradation shape (connection growth vs posthog-node's internal queue absorbing the burst) is only sizeable with a live load test against the Fly machine."
+    }
+  ],
+  "notAssessed": [
+    {
+      "check": "Device-level mobile verification matrix",
+      "howToVerify": "Run the mobile skill's matrix (widths, landscape, text zoom, keyboard, real devices) against the current surface."
+    },
+    {
+      "check": "Identity stitch end to end",
+      "howToVerify": "One magic-link sign-in with capture enabled; confirm PostHog shows one actor across the pre-auth and authed events."
+    },
+    {
+      "check": "Mail-scanner magic-link consumption",
+      "howToVerify": "Send a link to a Defender SafeLinks or Mimecast test mailbox; observe whether the human click lands expired."
+    },
+    {
+      "check": "Rendered contrast and screen-reader behavior",
+      "howToVerify": "axe plus VoiceOver/NVDA pass on the deck, scorecard, copy confirmation, and unlock error announcement."
+    },
+    {
+      "check": "Cold-start latency and the check's 10s margin",
+      "howToVerify": "Stop the machine, time five cold curls of /api/version, compare p95 to the timeout."
+    },
+    {
+      "check": "Secret scan with a real scanner over tracked history",
+      "howToVerify": "gitleaks or trufflehog across the repo history (the public history is a single orphan commit, so the surface is small)."
+    },
+    {
+      "check": "Deployed-artifact identity",
+      "howToVerify": "After the next deploy, confirm the live /api/version equals the repo VERSION and the image was built from a clean main checkout."
+    }
+  ],
+  "stats": {
+    "bySeverity": {
+      "critical": 0,
+      "high": 0,
+      "medium": 10,
+      "low": 24,
+      "informational": 5
+    },
+    "byDimension": {
+      "security": 5,
+      "concurrency": 2,
+      "reliability": 4,
+      "accessibility": 5,
+      "ui": 5,
+      "infra": 3,
+      "operability": 4,
+      "testing-confidence": 2,
+      "data-migration-safety": 0,
+      "release-safety": 5,
+      "performance-capacity": 4
+    },
+    "verification": {
+      "confirmed": 1,
+      "downgraded": 5,
+      "refuted": 0
+    }
+  }
+}
