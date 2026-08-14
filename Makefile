@@ -41,7 +41,9 @@ sync-bundled:
 	cp reference/templates/plan.md skills/phase-plan/plan.template.md
 	@echo "Synced bundled copies into skills/production-audit/, skills/brand-voice/, skills/phase-plan/."
 
-# Validate the schema example and any published reports against the contract.
+# First: every skill is visible on every public surface and every count claim
+# matches (scripts/check-skill-surfaces.mjs). Then the schema example and any
+# published reports against the contract.
 # Also fails if any bundled skill copy has diverged from its canonical original
 # (a fork in the schema would split the report contract between the installed
 # skill and the site renderer; a fork in a template would hand adopters a
@@ -49,6 +51,7 @@ sync-bundled:
 # cross-field report invariants JSON Schema cannot express (the verification
 # rule, scope honesty, stats accuracy, no em dashes, no personal paths).
 validate:
+	node scripts/check-skill-surfaces.mjs
 	@cmp -s schema/audit-report.schema.json skills/production-audit/audit-report.schema.json || { \
 		echo "ERROR: skills/production-audit/audit-report.schema.json is out of sync with schema/audit-report.schema.json. Run 'make sync-bundled'."; exit 1; }
 	@cmp -s reference/templates/BRAND.md skills/brand-voice/BRAND.template.md || { \

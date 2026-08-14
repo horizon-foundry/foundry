@@ -1,6 +1,6 @@
 ---
 name: phase-plan
-description: Use when a unit of work is closing (a PR about to merge, a phase complete) and the next unit needs a plan, or when writing any plan file. Writes the handoff while context is warm and indexes it so the next session can resume. Not for whole-product master planning or mid-execution task tracking.
+description: Use when a unit of work is closing (a PR about to merge, a phase complete) and the next unit needs a plan, when a close has no next unit and the chain needs an honest terminal entry, or when writing any plan file. Writes the handoff while context is warm and indexes it so the next session can resume. Not for whole-product master planning or mid-execution task tracking.
 ---
 
 # phase-plan
