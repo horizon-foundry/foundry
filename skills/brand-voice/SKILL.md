@@ -50,6 +50,7 @@ Copy drifts when every surface invents its own tone. This skill keeps one voice 
 - Deciding what capability a surface may claim: shipped truth comes from the forever spec, and unshipped features never appear, whatever the voice.
 - Visual identity (tokens, type, layout): `DESIGN.md` territory; this skill owns words, not looks.
 - Choosing which docs render on which surface: `document` owns the public/internal boundary; this skill checks the words once they are there.
+- The face copy on a surface that displays measurements (what a failed read, a genuine zero, a stale cache, or a withheld rate says): `readout`. The distinction there is semantic before it is stylistic, and well-voiced copy that collapses those four into one friendly line is the exact failure that skill exists to prevent.
 
 ## Define the voice first (from what already exists)
 

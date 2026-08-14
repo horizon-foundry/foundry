@@ -21,7 +21,7 @@ const SLIDES: Slide[] = [
     category: "The Suite",
     glyph: "suite",
     heading: "Five promises, each kept by a skill.",
-    body: "Foundry is nine Claude Code skills that turn fast, AI-built code into something you can ship. It is the outer loop: the gate at the end of the build cycle, composing with the inner-loop skills you use to write and review code rather than replacing them. Five promises carry the suite.",
+    body: "Foundry is ten Claude Code skills that turn fast, AI-built code into something you can ship. It is the outer loop: the gate at the end of the build cycle, composing with the inner-loop skills you use to write and review code rather than replacing them. Five promises carry the suite.",
     items: [
       "Product intent is declared and audited (frame).",
       "Execution context survives every session (phase-plan).",
@@ -91,7 +91,7 @@ export default function BehindOverview() {
       <SlideDeck
         slides={SLIDES}
         title="Foundry"
-        tagline="Nine Claude Code skills that turn fast, AI-built code into something you can ship."
+        tagline="Ten Claude Code skills that turn fast, AI-built code into something you can ship."
         statChips={[
           "Distill. Forge. Deliver.",
           "Docs as memory",

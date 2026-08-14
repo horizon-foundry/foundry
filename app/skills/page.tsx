@@ -94,14 +94,16 @@ export default function SkillsIndex() {
                   body={s.tagline}
                 />
               ))}
-              {user.length % 2 === 1 && (
-                <Tile
-                  href="/unlock"
-                  heading="Your reports"
-                  body="Published reports are private to their owner. Sign in to see any that belong to you."
-                  className="hidden sm:flex"
-                />
-              )}
+              {/* Always rendered. This is the only /unlock entry point outside
+                  the footer, so it is a functional tile, not a grid filler. It
+                  used to render only on an odd user-invoked count to keep the
+                  two-column grid square, which meant adding a tenth skill
+                  silently deleted the sign-in path from this page. */}
+              <Tile
+                href="/unlock"
+                heading="Your reports"
+                body="Published reports are private to their owner. Sign in to see any that belong to you."
+              />
             </div>
           </div>
         </section>

@@ -2,6 +2,16 @@
 
 Architectural and product judgment calls that shaped Production Audit. See [PROMPTS.md](PROMPTS.md) for the chronological prompt log and [FRICTION.md](FRICTION.md) for points of friction during the build.
 
+## 2026-08-14: readout is a discipline, not a release gate
+
+**Decision.** `readout` joins the suite as the tenth skill but gets no row in the release policy block, so `foundry check` does not score it and the audit's verdict does not turn on it. The gates stay document, mobile, instrumentation, and production-audit.
+
+**Reasoning.** A gate has to be answerable for every project the policy applies to, and readout's subject (a surface that displays measurements) does not exist on most of them: a library, a CLI, and a service with no console have nothing to read out, so the row would resolve not-applicable more often than not. The three existing gates each name a property every real audience needs. Instrumentation already gates whether the funnel is measurable at all, which is the part a release genuinely depends on; whether the resulting dashboard is well-pitched is a quality discipline, closer to `brand-voice` than to `mobile`.
+
+**Rejected alternative:** adding a conditional gate row that resolves not-applicable unless a metric surface exists. That is defensible and may be right later, but a gate nobody's release turns on trains people to skim the scorecard, and the scorecard's value is that every row means something. Revisit if a shipped readout defect ever reaches users, which would be the evidence this call lacks.
+
+**Consequence, recorded so it is not mistaken for an oversight:** `foundry check` can report the instrumentation gate met on a project whose read-out misleads. The audit's operability and ui dimensions cite `readout`'s artifact where one exists, which is the softer coverage chosen deliberately here.
+
 ## How I Worked
 
 _Populated once the project kicks off. Describe working style: plan-first, delegation boundaries, review cadence, correction patterns._

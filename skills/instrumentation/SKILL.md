@@ -29,7 +29,8 @@ Each topic section below is the reference a step points at; the steps carry the 
 3. **State the identity model as a short block above the table**: which entities exist, which entity keys each event (see "One identity model, everywhere"). Check: every event row's identity key names one of the declared entities.
 4. **Wire capture** per "Capture reliably on the server" and "Env-gate and stay out of the way". Check: the build passes and capture no-ops without a key.
 5. **Stitch QA**: fire one client stage and one server stage for the same actor and confirm the analytics tool shows one actor, not two. Check: the run report states the result.
-6. **Close with what remains unverified**, each item with the exact check to run. Check: the closing report lists them explicitly.
+6. **Hand the display side to `readout`.** Reliable events are half the job; whether a reader can act on them without being misled is a separate discipline (see "Reliable events are half the job"). Name the surface the funnel will be read on and hand it off. Check: the closing report names the surface and the handoff, or records that no surface is planned yet.
+7. **Close with what remains unverified**, each item with the exact check to run. Check: the closing report lists them explicitly.
 
 ## Define the events before you build the feature
 
@@ -81,7 +82,7 @@ Two different questions, two disciplines. Product analytics answers **"did the i
 
 ## Measure activation, not vanity
 
-Pageviews and raw signups have their uses (traffic mix, reach, channel comparison), but they do not answer whether the feature works. For that, instrument the drop-offs: where does the funnel leak between intent and activation? What fraction of new actors reach value in the first session? Add a dashboard or a saved funnel for the path you instrumented, so the events are actually read.
+Pageviews and raw signups have their uses (traffic mix, reach, channel comparison), but they do not answer whether the feature works. For that, instrument the drop-offs: where does the funnel leak between intent and activation? What fraction of new actors reach value in the first session? The path you instrumented needs a surface where it is actually read, but building that surface is `readout`'s job, not this one: hand it off rather than assembling a dashboard here.
 
 **Reliable events are half the job.** A funnel that emits perfectly can still be displayed in a way that misleads: a rate beside a count on a different window, a throttled source rendering as a zero, a period that spans the release which changed the very page it measures. That failure mode is quiet, because every number in it is individually correct. `readout` owns it, and it is where this skill hands off.
 
