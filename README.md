@@ -2,7 +2,7 @@
 
 **An open-source project from Horizon Foundry, created and maintained by [Craig Martin](https://github.com/cjmartin2).**
 
-Foundry is nine Claude Code skills that turn fast, AI-built code into something you can ship. The flagship, `production-audit`, audits the whole application across eleven dimensions and ends in one verdict: safe to ship; ready to ship, risks noted; or do not ship. Every finding cites the code that motivated it, and a static run never claims a runtime result.
+Foundry is ten Claude Code skills that turn fast, AI-built code into something you can ship. The flagship, `production-audit`, audits the whole application across eleven dimensions and ends in one verdict: safe to ship; ready to ship, risks noted; or do not ship. Every finding cites the code that motivated it, and a static run never claims a runtime result.
 
 The proof is public: we audited Foundry with Foundry, fixed the risks the report found, and published it. Read the [self-audit](https://foundry.thehorizonfoundry.com/reports) against this source.
 
@@ -43,6 +43,7 @@ Update from source with `git pull && make install`; remove with `make uninstall`
 | `document` | Keeps the docs true to the code: repairs drift, flags suspected regressions, and renders the docs as a live surface so they cannot rot unseen. |
 | `mobile` | Reproduces the broken state before fixing anything, then walks a real device matrix and leaves the filled matrix as the record. |
 | `instrumentation` | Defines the funnel before the feature, keys every event on one identity model, and measures activation with a guardrail beside it. |
+| `readout` | Reviews the surfaces that display your numbers: pitched at a named reader with the detail one click down, a window and a population on every face, a failed read that never renders as a zero, and a rendered review by someone who did not build it. |
 
 **Model-invoked (disciplines the agent applies itself):**
 
