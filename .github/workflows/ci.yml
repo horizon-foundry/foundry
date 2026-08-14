@@ -28,3 +28,19 @@ jobs:
       - run: npm run lint
       - run: npm run build
       - run: make validate
+
+  # A pull request that changes the shipped suite (skills/, schema/, reference/)
+  # must record what changed and why under CHANGELOG.md's [Unreleased], because
+  # the release rolls that body up verbatim. Pull requests only: a push to main
+  # is the merge, whose diff already carries whatever the PR did or waived.
+  changelog:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: node scripts/check-changelog.mjs
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}

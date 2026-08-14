@@ -2,6 +2,12 @@
 
 All notable changes to Foundry are recorded here. The format follows [Keep a Changelog](https://keepachangelog.com/), and the project aims to follow semantic versioning once it reaches 1.0.
 
+**How this file is kept.** Every change to the shipped suite (`skills/`, `schema/`, `reference/`) writes its own entry under `[Unreleased]` in the same pull request, saying what changed and why; CI fails a pull request that skips it. A release rolls `[Unreleased]` into a dated version heading that opens with a "why this release" paragraph, and the GitHub Release is published from that body. The notes get written while the context is warm, so a release is a roll-up rather than an archaeology dig.
+
+## [Unreleased]
+
+- Repo: the release procedure is written down (CLAUDE.md) and the changelog convention above is enforced mechanically. `scripts/check-changelog.mjs` runs in CI on every pull request and fails one that changes `skills/`, `schema/`, or `reference/` without touching this file, because release notes reconstructed months later are a worse record than the ones written in the pull request that earned them. The escape hatch is deliberate and visible: a `changelog-exempt` label, or a `Changelog-exempt: <reason>` commit trailer.
+
 ## [0.2.0] - 2026-08-14
 
 **Why this release:** v0.1.0 made the suite public; v0.2.0 makes it verifiable in execution and complete across the lifecycle. (A v0.1.1 was planned and never tagged; its content ships here.) A comparative audit against the strongest public practice of skill engineering surfaced one theme, the gap between a skill that reads well and a skill whose run can be checked from the outside, so every skill now anchors its opening gate to a numbered procedure, every step ends in a named check or artifact, degraded runs declare themselves, and the suite keeps exactly one inspector. Two skills joined: readout, the display side of measurement, and feature-design, the eleventh skill and the keeper of a sixth promise, auditing a declared design against the actual repository before any plan is written. The suite also learned to say what version it is and when it is behind: a repo-root VERSION stamped into every skill, a disclosed daily update check whose whole contract lives in the command that runs it, and public surfaces rewritten from comfortable absolutes to the precise claim. Both public audits were regenerated under the current method, with the one confirmed risk fixed in-branch before publication. The bar this release keeps: trust the transcript, not the prose.
