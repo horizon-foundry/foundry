@@ -159,7 +159,8 @@ export interface SkillMeta {
 }
 
 // Minimal YAML frontmatter parse for the two fields we render. Avoids a YAML
-// dependency; the skill frontmatter is flat name/description only.
+// dependency; the skill frontmatter is flat (name/version/description), and
+// unknown keys are ignored by the per-key match below.
 function parseFrontmatter(src: string): {
   name: string;
   description: string;

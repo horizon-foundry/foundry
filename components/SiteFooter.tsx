@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Wordmark } from "./Wordmark";
-import { REPO_URL, REPO_LICENSE_URL, VERSION } from "@/lib/site";
+import { REPO_URL, REPO_LICENSE_URL } from "@/lib/site";
+import { suiteVersion } from "@/lib/version";
 
 // Secondary navigation lives here (issue 5): Behind the Build and the private
 // reports are for people who already care, not the first thing a new visitor
@@ -19,7 +20,7 @@ export function SiteFooter() {
         <div className="flex flex-col gap-2">
           <Wordmark className="text-xs" />
           <p className="font-mono text-[0.68rem] uppercase tracking-wide text-bone-faint">
-            A Horizon Foundry project · v{VERSION}
+            A Horizon Foundry project · v{suiteVersion()}
           </p>
         </div>
         <nav className="flex flex-wrap gap-x-5 gap-y-2 font-mono text-[0.68rem] uppercase tracking-wide text-bone-faint">

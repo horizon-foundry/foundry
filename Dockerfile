@@ -39,7 +39,7 @@ COPY --from=builder /app/public ./public
 #  - reference/doc-set-spec.md : rendered on the /skills page
 #  - skills/*/SKILL.md         : rendered on the /skills pages
 #  - reports/*.json            : rendered by the gated /reports pages
-COPY --from=builder /app/PRODUCT.md /app/BRAND.md /app/DESIGN.md /app/NOTES.md /app/PROMPTS.md /app/FRICTION.md ./
+COPY --from=builder /app/PRODUCT.md /app/BRAND.md /app/DESIGN.md /app/NOTES.md /app/PROMPTS.md /app/FRICTION.md /app/VERSION ./
 COPY --from=builder /app/reference ./reference
 COPY --from=builder /app/skills ./skills
 COPY --from=builder /app/reports ./reports

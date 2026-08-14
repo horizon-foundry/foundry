@@ -13,6 +13,7 @@ A skill earns its place by being a reusable discipline, not a one-off or a perso
 - Opens with a mandatory "Using this skill" gate, so it resists being reproduced by hand instead of invoked.
 - Has a trigger-only `description` (when to use it, not a summary of its steps).
 - Documents a discipline that generalizes beyond one project or one stack.
+- Carries the two suite-wide fixtures: a `version:` frontmatter key (run `make sync-version` after adding the file; `make validate` fails without it) and the standard `## Version check` section at the end, copied from any shipped skill with your skill's name in the URL.
 
 Skills that prescribe a personal or team-specific workflow (for example, a particular git or deploy pipeline) are intentionally out of scope. The suite is a set of practices you adopt, not a workflow you inherit.
 
@@ -25,7 +26,7 @@ make install        # symlink the skills into ~/.claude/skills
 npm install         # site dependencies (only needed to run the site)
 npm run dev         # site at localhost:3000
 npm run typecheck && npm run lint && npm run build
-make validate       # validate reports against the schema
+make validate       # reports against the schema + bundled-copy and version-marker sync
 ```
 
 The site reads the skills and docs from disk, so adding a skill (`skills/<name>/SKILL.md`) and classifying it in `lib/skills.ts` makes it appear on the `/skills` pages automatically. The prose surfaces do not follow by themselves. A skill change is not done until `lib/skills.ts` (`ORDER`, `USER_INVOKED`, `SKILL_COPY`), the `README.md` table and its opening count, `PRODUCT.md`'s `## The suite` list, `CLAUDE.md`, the `CHANGELOG.md` `[Unreleased]` block, and the homepage and deck counts (`app/page.tsx`, `app/behind/page.tsx`) all agree. `make validate` fails the build on the mechanical half of that; run it before you push.

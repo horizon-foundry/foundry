@@ -1,5 +1,6 @@
 ---
 name: mobile
+version: 0.1.0
 description: Use when building or fixing a mobile, touch, or small-screen experience, when a layout breaks on a phone, or when a desktop-designed feature needs to hold up on a real device. Not for products with no mobile surface; that gate resolves not-applicable, and no work is invented.
 ---
 
@@ -83,3 +84,13 @@ Anything the run could not cover is reported as unverified, with the check to ru
 ## Red flags
 
 Symptoms that you skipped something above, not new rules: a symptom fixed before `document.activeElement` and scroll position were read; the suspect catalog applied as blanket rules (global `overscroll-behavior: none`, a mechanical `100vw` ban); a gesture or exit bound to `wheel`/`mouseover` only; autofocus on mount; "works on mobile" after one width or headless Chromium alone; mobile work invented for a product with no mobile surface.
+
+## Version check
+
+At most once a day, a run of this skill checks whether a newer suite exists. The command enforces the whole contract: the `FOUNDRY_NO_VERSION_CHECK` opt-out, the daily stamp-file rate limit, a 10s timeout, and silence on any failure. Never block or fail a run over this check.
+
+```sh
+[ -n "${FOUNDRY_NO_VERSION_CHECK:-}" ] || find "$HOME/.claude/.foundry-version-checked" -mmin -1440 2>/dev/null | grep -q . || { mkdir -p "$HOME/.claude" 2>/dev/null; curl -m 10 -fsS "https://foundry.thehorizonfoundry.com/api/version?skill=mobile&v=0.1.0"; touch "$HOME/.claude/.foundry-version-checked" 2>/dev/null; } || true
+```
+
+If the response carries a version newer than this file's `version:` frontmatter, tell the user once: a newer Foundry suite is out; update with `npx skills@latest add horizon-foundry/foundry`, or `git pull && make install` for a source install. If it prints nothing, fails, or the versions match, say nothing and proceed. What it sends: this skill's name and installed version, nothing else; it writes `~/.claude/.foundry-version-checked` as the rate-limit stamp (full disclosure: the README section "Version check").

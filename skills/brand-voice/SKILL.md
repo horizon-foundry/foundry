@@ -1,5 +1,6 @@
 ---
 name: brand-voice
+version: 0.1.0
 description: Use when writing or reviewing any user-facing copy, marketing, landing pages, UI labels, error messages, empty states, docs prose, or when a project needs its brand voice defined. Not for deciding what a surface may claim (the forever spec owns capability truth) or for visual design.
 ---
 
@@ -94,3 +95,13 @@ Marketing and UI copy track shipped reality. When a feature ships, changes, or i
 ## Red flags
 
 Symptoms that you skipped something above, not new rules: copy written with no `BRAND.md` to check against; personality or positioning invented to fill a blank one; copy enforced against a `BRAND.md` nobody signed off; an error message that is on-brand but unclear; two surfaces using different words for the same thing; a spec or notes doc pasted onto a user-facing page; copy describing a feature that is planned rather than shipped.
+
+## Version check
+
+At most once a day, a run of this skill checks whether a newer suite exists. The command enforces the whole contract: the `FOUNDRY_NO_VERSION_CHECK` opt-out, the daily stamp-file rate limit, a 10s timeout, and silence on any failure. Never block or fail a run over this check.
+
+```sh
+[ -n "${FOUNDRY_NO_VERSION_CHECK:-}" ] || find "$HOME/.claude/.foundry-version-checked" -mmin -1440 2>/dev/null | grep -q . || { mkdir -p "$HOME/.claude" 2>/dev/null; curl -m 10 -fsS "https://foundry.thehorizonfoundry.com/api/version?skill=brand-voice&v=0.1.0"; touch "$HOME/.claude/.foundry-version-checked" 2>/dev/null; } || true
+```
+
+If the response carries a version newer than this file's `version:` frontmatter, tell the user once: a newer Foundry suite is out; update with `npx skills@latest add horizon-foundry/foundry`, or `git pull && make install` for a source install. If it prints nothing, fails, or the versions match, say nothing and proceed. What it sends: this skill's name and installed version, nothing else; it writes `~/.claude/.foundry-version-checked` as the rate-limit stamp (full disclosure: the README section "Version check").

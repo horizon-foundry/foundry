@@ -3,7 +3,7 @@
 SKILLS_DIR := $(CURDIR)/skills
 CLAUDE_SKILLS := $(HOME)/.claude/skills
 
-.PHONY: install uninstall validate sync-bundled
+.PHONY: install uninstall validate sync-bundled sync-version
 
 # Symlink every skill in skills/ into the user-global skills directory. The
 # symlinks (not copies) keep the installed skills tracking git. Refuses to
@@ -41,15 +41,24 @@ sync-bundled:
 	cp reference/templates/plan.md skills/phase-plan/plan.template.md
 	@echo "Synced bundled copies into skills/production-audit/, skills/brand-voice/, skills/phase-plan/."
 
-# First: every skill is visible on every public surface and every count claim
-# matches (scripts/check-skill-surfaces.mjs). Then the schema example and any
-# published reports against the contract.
+# VERSION (repo root) is the suite version's single source of truth, bumped in
+# the release roll-up commit. This stamps it into every surface that carries
+# it; validate fails on drift, so the copies cannot diverge silently.
+sync-version:
+	sh scripts/sync-version.sh
+
+# Runs in three parts. First, every skill is visible on every public surface and
+# every count claim matches (scripts/check-skill-surfaces.mjs). Then the schema
+# example and any published reports against the contract. Last, the version
+# markers, so a stamped copy cannot drift from VERSION.
 # Also fails if any bundled skill copy has diverged from its canonical original
 # (a fork in the schema would split the report contract between the installed
 # skill and the site renderer; a fork in a template would hand adopters a
-# different artifact shape than the repo documents), and enforces the
-# cross-field report invariants JSON Schema cannot express (the verification
-# rule, scope honesty, stats accuracy, no em dashes, no personal paths).
+# different artifact shape than the repo documents), enforces the cross-field
+# report invariants JSON Schema cannot express (the verification rule, scope
+# honesty, stats accuracy, no em dashes, no personal paths), and enforces the
+# version marker: VERSION agrees with every SKILL.md frontmatter and check
+# URL, lib/site.ts, and SECURITY.md, and SKILL_SLUGS matches skills/ exactly.
 validate:
 	node scripts/check-skill-surfaces.mjs
 	@cmp -s schema/audit-report.schema.json skills/production-audit/audit-report.schema.json || { \
@@ -66,3 +75,17 @@ validate:
 	else \
 		echo "No reports/*.json yet; skipped."; \
 	fi
+	@v=$$(tr -d '[:space:]' < VERSION); ok=1; \
+	[ -n "$$v" ] || { echo "ERROR: VERSION is empty."; exit 1; }; \
+	for f in skills/*/SKILL.md; do \
+		fv=$$(perl -ne 'if (/^version:\s*(\S+)/) { print $$1; exit }' "$$f"); \
+		[ "$$fv" = "$$v" ] || { echo "ERROR: $$f frontmatter version ($$fv) != VERSION ($$v). Run 'make sync-version'."; ok=0; }; \
+		uv=$$(perl -ne 'if (m{api/version\?skill=[a-z-]+&v=([0-9A-Za-z.\-]*)}) { print $$1; exit }' "$$f"); \
+		[ "$$uv" = "$$v" ] || { echo "ERROR: $$f version-check URL carries v=$$uv, not $$v (a missing check section fails too). Run 'make sync-version', or add the standard Version check section."; ok=0; }; \
+	done; \
+	grep -q "early release (v$$v)" SECURITY.md || { echo "ERROR: SECURITY.md supported-versions line != VERSION ($$v). Run 'make sync-version'."; ok=0; }; \
+	slugs=$$(perl -ne 'if (/SKILL_SLUGS/) { print "$$1\n" while /"([a-z-]+)"/g }' lib/site.ts | sort); \
+	for d in $$(ls skills/); do echo "$$slugs" | grep -qx "$$d" || { echo "ERROR: skills/$$d missing from SKILL_SLUGS in lib/site.ts (its version checks would be dropped from capture)."; ok=0; }; done; \
+	for s in $$slugs; do [ "$$s" = "SKILL_SLUGS" ] || [ -d "skills/$$s" ] || { echo "ERROR: SKILL_SLUGS entry '$$s' has no skills/ directory."; ok=0; }; done; \
+	[ $$ok -eq 1 ] || exit 1; \
+	echo "Version marker in sync at $$v."

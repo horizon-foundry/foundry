@@ -51,7 +51,7 @@ const SLIDES: Slide[] = [
     category: "The Release Gates",
     glyph: "gates",
     heading: "The gates your launch needs, resolved and then enforced.",
-    body: "There is no universal gate list: a CLI is not a web product. foundry resolves the project's release policy (what it is, its risk tier, its audience), then scores every gate that policy names. mobile pressure-tests the real device experience where one exists. instrumentation wires the activation funnel on one identity model. A gate with no surface is marked not-applicable, with a reason. Skipping one silently is never allowed.",
+    body: "There is no universal gate list: a CLI is not a web product. foundry resolves the project's release policy (what it is, its risk tier, its audience), then scores every gate that policy names. mobile pressure-tests the real device experience where one exists. instrumentation wires the activation funnel on one identity model, and readout keeps the surfaces that display those numbers honest and actually read. A gate with no surface is marked not-applicable, with a reason. Skipping one silently is never allowed.",
     items: [
       "A phone-breaking core flow blocks a launch where the policy requires the mobile gate.",
       "A product you cannot measure is not ready to ship, unless you deliberately chose to waive measuring it.",
@@ -74,7 +74,7 @@ const SLIDES: Slide[] = [
     category: "The Guardrail",
     glyph: "guardrail",
     heading: "Skills that resist being ignored.",
-    body: "A named skill is invoked and followed, never hand-reproduced. Every skill opens with a gate anchored to its numbered steps, and every step ends in a named check or artifact, so a skipped process is visible in the transcript. Gates improve compliance; the invariants that must hold are enforced by schema and make validate, not by prose alone.",
+    body: "A named skill is invoked and followed, never hand-reproduced. Every skill opens with a gate anchored to its numbered steps, and every step ends in a named check or artifact, so a skipped process is visible in the transcript. Gates improve compliance; the invariants that must hold are enforced by schema and make validate, not by prose alone. The suite applies this to itself: each skill carries its version, and its disclosed daily update check enforces the opt-out and rate limit in the command that runs it.",
   },
   {
     category: "Getting Started",

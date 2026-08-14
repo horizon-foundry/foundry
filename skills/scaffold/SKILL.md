@@ -1,5 +1,6 @@
 ---
 name: scaffold
+version: 0.1.0
 description: Use when starting a new project, or when an existing project still has placeholder markers in its docs. Declares the project's profile (experiment, internal-tool, web-product, service, or library), then stands up what that profile needs. Not for maintaining docs on an already-scaffolded project (that is document) or deciding whether the idea is worth building (that is frame).
 ---
 
@@ -83,3 +84,13 @@ When no template repo exists, create each file with these sections. The one-line
 ## Red flags
 
 Symptoms that you skipped something above, not new rules: the full web-product shape scaffolded onto an experiment or a library; an experiment quietly gaining users and features without graduating; a permissive license defaulted because "MIT is normal"; this suite's CI, branching, or deploy shapes imposed on a repo that already has working ones; docs filled with no ship path left behind; `PRODUCT.md` skipped because "it's obvious what this is"; no security frame anywhere; no Master Plan block in `TODOS.md` or no resume rule in `CLAUDE.md`; the in-product docs hub treated as a later request.
+
+## Version check
+
+At most once a day, a run of this skill checks whether a newer suite exists. The command enforces the whole contract: the `FOUNDRY_NO_VERSION_CHECK` opt-out, the daily stamp-file rate limit, a 10s timeout, and silence on any failure. Never block or fail a run over this check.
+
+```sh
+[ -n "${FOUNDRY_NO_VERSION_CHECK:-}" ] || find "$HOME/.claude/.foundry-version-checked" -mmin -1440 2>/dev/null | grep -q . || { mkdir -p "$HOME/.claude" 2>/dev/null; curl -m 10 -fsS "https://foundry.thehorizonfoundry.com/api/version?skill=scaffold&v=0.1.0"; touch "$HOME/.claude/.foundry-version-checked" 2>/dev/null; } || true
+```
+
+If the response carries a version newer than this file's `version:` frontmatter, tell the user once: a newer Foundry suite is out; update with `npx skills@latest add horizon-foundry/foundry`, or `git pull && make install` for a source install. If it prints nothing, fails, or the versions match, say nothing and proceed. What it sends: this skill's name and installed version, nothing else; it writes `~/.claude/.foundry-version-checked` as the rate-limit stamp (full disclosure: the README section "Version check").

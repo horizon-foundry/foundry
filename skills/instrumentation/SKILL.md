@@ -1,5 +1,6 @@
 ---
 name: instrumentation
+version: 0.1.0
 description: Use when adding analytics or event tracking, instrumenting a funnel or an activation flow, wiring a product-analytics tool (PostHog, etc.), or when you need to measure whether a feature works. Not for system observability (errors, latency, alerting); that is a different discipline.
 ---
 
@@ -90,8 +91,20 @@ Pageviews and raw signups have their uses (traffic mix, reach, channel compariso
 
 The gate is "you can answer whether it is working and you decided how", not "every product emits events". Some products must not carry in-product telemetry: a dev tool that runs in the user's environment, a library, a privacy-sensitive surface. Phoning home from those is a trust violation, not instrumentation. For them, instrument up to the boundary you rightfully control (your site, your registry, the distribution funnel) and waive the rest deliberately.
 
+One shape earns a narrow exception: a version or update check that exists for the user's benefit. It qualifies only when it clears every bar at once: the check does something for the user (tells them they are behind), the disclosure is part of the feature (what is sent, when, where it is written down), the opt-out is enforced in the command that runs the check rather than promised in prose, no user, machine, or install identity is ever attached, and a failed check never blocks or degrades the product. The byproduct counts are the only telemetry such a tool should carry. Foundry's own skills carry exactly this check and nothing more; its contract lives in each skill's "Version check" section.
+
 **The waiver has a fixed home**: the release policy block in the project's PRODUCT.md, as the instrumentation gate's entry, `instrumentation: waived (<reason>)`. That is exactly where `foundry check` cites it. A waiver written there is the gate answered; a waiver stated nowhere is not a waiver, it is an undocumented gap, and the gate fails.
 
 ## Red flags
 
 Symptoms that you skipped something above, not new rules: `capture()` calls written before the funnel and activation moment are named; mixed keys within one funnel; server capture with no flush on an auto-stopping host; the product breaking when the analytics key is unset; pageviews reported as analytics; an event's meaning redefined in place; a funnel with no named owner.
+
+## Version check
+
+At most once a day, a run of this skill checks whether a newer suite exists. The command enforces the whole contract: the `FOUNDRY_NO_VERSION_CHECK` opt-out, the daily stamp-file rate limit, a 10s timeout, and silence on any failure. Never block or fail a run over this check.
+
+```sh
+[ -n "${FOUNDRY_NO_VERSION_CHECK:-}" ] || find "$HOME/.claude/.foundry-version-checked" -mmin -1440 2>/dev/null | grep -q . || { mkdir -p "$HOME/.claude" 2>/dev/null; curl -m 10 -fsS "https://foundry.thehorizonfoundry.com/api/version?skill=instrumentation&v=0.1.0"; touch "$HOME/.claude/.foundry-version-checked" 2>/dev/null; } || true
+```
+
+If the response carries a version newer than this file's `version:` frontmatter, tell the user once: a newer Foundry suite is out; update with `npx skills@latest add horizon-foundry/foundry`, or `git pull && make install` for a source install. If it prints nothing, fails, or the versions match, say nothing and proceed. What it sends: this skill's name and installed version, nothing else; it writes `~/.claude/.foundry-version-checked` as the rate-limit stamp (full disclosure: the README section "Version check").

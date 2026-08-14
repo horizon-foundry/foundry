@@ -18,7 +18,12 @@ it. We aim to acknowledge within a few days.
 ## Scope
 
 - **The skills** run locally inside your own Claude Code. They read your code
-  and report on it; they send nothing anywhere and require no account.
+  and report on it, and require no account. Their one network call is a
+  disclosed, rate-limited version check: at most daily, the skill name and its
+  installed version, nothing else, opt out with `FOUNDRY_NO_VERSION_CHECK`
+  (the README's "Version check" section is the full contract). Like any HTTPS
+  request, the connection itself carries your IP address to our server; we do
+  not record it or attach it to the event.
 - **The site** hosts published audit reports. A report is private to its owner
   behind Supabase magic-link sign-in; only the public example reports are
   ungated, and non-owner report URLs return 404.
