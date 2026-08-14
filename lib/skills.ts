@@ -13,6 +13,7 @@ const USER_INVOKED = new Set([
   "foundry",
   "production-audit",
   "frame",
+  "feature-design",
   "scaffold",
   "document",
   "mobile",
@@ -26,6 +27,7 @@ const ORDER = [
   "foundry",
   "production-audit",
   "frame",
+  "feature-design",
   "scaffold",
   "document",
   "mobile",
@@ -73,6 +75,16 @@ const SKILL_COPY: Record<string, SkillCopy> = {
       "Before scaffolding or building anything new",
       "A project cannot answer who it is for and why it will matter",
       "An assumption needs to graduate into stated truth, or be retired",
+    ],
+  },
+  "feature-design": {
+    tagline:
+      "You declare the feature (behavior, surfaces, decisions, non-goals, verification, scope); the skill audits that declaration against your actual repository and reports what the code contradicts or already provides, file and line cited.",
+    why: "The second feature onward is designed inside a codebase that already has opinions, and a design written from memory of it fails in repeatable ways: it proposes behavior the code already has (sometimes built and merely unreachable behind a flag or a missing route), names call sites that do not exist, and depends on values nothing produces. No interview catches these, because the answers are not in anyone's head. They are in the repository. feature-design grounds every proposed behavior and every named path in the actual code before the plan is written, and the grounding table it leaves behind tells you which parts of the feature are absent, partial, already present, or present but unreachable. The best finding it produces is the cheapest feature you will ever ship: the one that turns out to be a reachability fix.",
+    when: [
+      "A substantial feature is about to be designed inside an existing codebase",
+      "Before an implementation plan is written, while the design can still change",
+      "A design keeps assuming things about the code that nobody has verified",
     ],
   },
   scaffold: {

@@ -20,7 +20,7 @@ export const REPO_CONTRIBUTING_URL = `${REPO_URL}/blob/main/CONTRIBUTING.md`;
 // missing here silently vanishes from usage counts; that is why the check
 // exists.
 // prettier-ignore
-export const SKILL_SLUGS = ["brand-voice", "document", "foundry", "frame", "instrumentation", "mobile", "phase-plan", "production-audit", "readout", "scaffold"];
+export const SKILL_SLUGS = ["brand-voice", "document", "feature-design", "foundry", "frame", "instrumentation", "mobile", "phase-plan", "production-audit", "readout", "scaffold"];
 
 // The reports hub. Public: signed-out visitors see the public example audits
 // (Foundry's self-audit + the illustrative sample) and a sign-in prompt;

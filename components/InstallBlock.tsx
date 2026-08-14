@@ -177,7 +177,7 @@ export async function InstallBlock() {
                 </span>
               </div>
               <div className="mt-1 text-bone-dim">
-                0 critical, 0 high, 4 medium, every finding cited to file and line
+                0 critical, 0 high, 4 risks noted, every finding cited to file and line
               </div>
             </div>
           </div>

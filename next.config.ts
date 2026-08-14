@@ -27,6 +27,7 @@ const csp = [
 ].join("; ");
 
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
   output: "standalone",
   turbopack: {
     root: import.meta.dirname,

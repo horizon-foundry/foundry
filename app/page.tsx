@@ -127,7 +127,7 @@ export default function Home() {
                 from <span className="text-signal">AI-built code</span>.
               </h1>
               <p className="mt-6 max-w-2xl text-lg leading-relaxed text-bone-dim">
-                Foundry is ten Claude Code skills that turn fast, AI-built
+                Foundry is eleven Claude Code skills that turn fast, AI-built
                 code into something you can ship. The flagship audits the whole
                 application and ends in one verdict that names its evidence:
                 safe to ship; ready to ship, risks noted; or do not ship.
@@ -177,18 +177,19 @@ export default function Home() {
 
         <InstallBlock />
 
-        {/* The five promises: the suite's whole claim, each kept by a named
+        {/* The six promises: the suite's whole claim, each kept by a named
             skill. Placed after the install so the pitch never outranks the
             quick start. Delivery integrity, not product strategy. */}
         <section className="reveal border-b border-line">
           <div className="mx-auto max-w-[1180px] px-5 py-12 sm:px-8">
             <p className="font-mono text-xs uppercase tracking-[0.25em] text-bone-faint">
-              Five promises, each kept by a skill
+              Six promises, each kept by a skill
             </p>
             <ol className="mt-4 divide-y divide-line border-y border-line">
               {(
                 [
                   ["Product intent is declared and audited", "/frame"],
+                  ["The design is checked against the code before it is built", "/feature-design"],
                   ["Execution context survives every session", "/phase-plan"],
                   ["The intended outcome is instrumented", "/instrumentation"],
                   ["The documentation matches reality", "/document"],
@@ -386,15 +387,26 @@ export default function Home() {
                   <p className="mt-4 leading-relaxed text-bone-dim">
                     The same {"/production-audit"} this suite ships, run against
                     Foundry&apos;s own repository. Real code, real findings,
-                    nothing fictional. The core access controls, fail-closed
-                    auth, and security headers verified clean; the open risks are
-                    named and fixable. The repository is public, so you can read
-                    the report against its source and see exactly what the method
-                    checked and what it found.
+                    nothing fictional. What the audit verified clean and what it
+                    flagged are both on the record, finding by finding. The
+                    repository is public, so you can read the report against its
+                    source and see exactly what the method checked and what it
+                    found.
                   </p>
                   <p className="mt-4 font-mono text-sm text-bone-dim">
                     Verdict:{" "}
-                    <span className="text-verdict-risk">
+                    {/* Full-literal class map: the verdict hue must come from
+                        the verdict (DESIGN.md's core law), and Tailwind's JIT
+                        needs complete literals, so no template interpolation. */}
+                    <span
+                      className={
+                        {
+                          "safe-to-ship": "text-verdict-safe",
+                          "ship-with-known-risks": "text-verdict-risk",
+                          "do-not-ship": "text-verdict-noship",
+                        }[featured.verdictLevel]
+                      }
+                    >
                       {VERDICT_LABEL[featured.verdictLevel]}
                     </span>
                   </p>

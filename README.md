@@ -2,7 +2,7 @@
 
 **An open-source project from Horizon Foundry, created and maintained by [Craig Martin](https://github.com/cjmartin2).**
 
-Foundry is ten Claude Code skills that turn fast, AI-built code into something you can ship. The flagship, `production-audit`, audits the whole application across eleven dimensions and ends in one verdict: safe to ship; ready to ship, risks noted; or do not ship. Every finding cites the code that motivated it, and a static run never claims a runtime result.
+Foundry is eleven Claude Code skills that turn fast, AI-built code into something you can ship. The flagship, `production-audit`, audits the whole application across eleven dimensions and ends in one verdict: safe to ship; ready to ship, risks noted; or do not ship. Every finding cites the code that motivated it, and a static run never claims a runtime result.
 
 The proof is public: we audited Foundry with Foundry, fixed the risks the report found, and published it. Read the [self-audit](https://foundry.thehorizonfoundry.com/reports) against this source.
 
@@ -43,6 +43,7 @@ Each skill carries its version in its frontmatter, and at most once a day a skil
 | `foundry` | One pre-ship pass over the release gates your launch actually requires. `check` previews read-only, citing the records that exist; `prepare` closes the gaps; one independent audit delivers the verdict. |
 | `production-audit` | Audits the whole application, separates risks (which drive the verdict) from improvements (which never cap it), and ends in a verdict that names its evidence. |
 | `frame` | You declare the one-page product frame; the skill audits it like code. Blanks are findings, so a disciplined build cannot ship an unexamined idea. |
+| `feature-design` | You declare a feature's design; the skill audits it against the actual repository, file and line cited: behavior already built (or built and unreachable), call sites that do not exist, dependencies nothing produces. |
 | `scaffold` | Starts a project in the shape its profile needs, experiment through web product, and verifies no placeholder survives. |
 | `document` | Keeps the docs true to the code: repairs drift, flags suspected regressions, and renders the docs as a live surface so they cannot rot unseen. |
 | `mobile` | Reproduces the broken state before fixing anything, then walks a real device matrix and leaves the filled matrix as the record. |
@@ -60,7 +61,7 @@ Shared references: [`reference/doc-set-spec.md`](reference/doc-set-spec.md) (the
 
 ## How it fits
 
-Foundry is the outer loop: the release gate at the end of the build cycle. It composes with the inner-loop skills you already use to write and review code, and installs through the same channel. Five promises carry the suite, each kept by a skill: intent is declared and audited (`frame`), context survives every session (`phase-plan`), the outcome is instrumented (`instrumentation`), the docs match reality (`document`), and readiness is audited before real users arrive (`foundry` + `production-audit`).
+Foundry is the outer loop: the release gate at the end of the build cycle. It composes with the inner-loop skills you already use to write and review code, and installs through the same channel. Six promises carry the suite, each kept by a skill: intent is declared and audited (`frame`), the design is checked against the code before it is built (`feature-design`), context survives every session (`phase-plan`), the outcome is instrumented (`instrumentation`), the docs match reality (`document`), and readiness is audited before real users arrive (`foundry` + `production-audit`).
 
 You set the scope, not the bar. Which gates apply, the risk tier, and the risks you accept are your call, on the record. The severity rubric and the meaning of the verdict are fixed on purpose: a bar you could lower until it reads green is the false comfort an audit exists to replace.
 
