@@ -387,15 +387,26 @@ export default function Home() {
                   <p className="mt-4 leading-relaxed text-bone-dim">
                     The same {"/production-audit"} this suite ships, run against
                     Foundry&apos;s own repository. Real code, real findings,
-                    nothing fictional. The core access controls, fail-closed
-                    auth, and security headers verified clean; the open risks are
-                    named and fixable. The repository is public, so you can read
-                    the report against its source and see exactly what the method
-                    checked and what it found.
+                    nothing fictional. What the audit verified clean and what it
+                    flagged are both on the record, finding by finding. The
+                    repository is public, so you can read the report against its
+                    source and see exactly what the method checked and what it
+                    found.
                   </p>
                   <p className="mt-4 font-mono text-sm text-bone-dim">
                     Verdict:{" "}
-                    <span className="text-verdict-risk">
+                    {/* Full-literal class map: the verdict hue must come from
+                        the verdict (DESIGN.md's core law), and Tailwind's JIT
+                        needs complete literals, so no template interpolation. */}
+                    <span
+                      className={
+                        {
+                          "safe-to-ship": "text-verdict-safe",
+                          "ship-with-known-risks": "text-verdict-risk",
+                          "do-not-ship": "text-verdict-noship",
+                        }[featured.verdictLevel]
+                      }
+                    >
                       {VERDICT_LABEL[featured.verdictLevel]}
                     </span>
                   </p>
