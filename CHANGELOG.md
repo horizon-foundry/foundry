@@ -6,6 +6,7 @@ All notable changes to Foundry are recorded here. The format follows [Keep a Cha
 
 ## [Unreleased]
 
+- Skills: `phase-plan` and the plan template sharpen the handoff in three places. A phase that cannot start yet now says so in the index line itself (`gated: <what it waits on>`), because an unstarted phase and a blocked one looked identical to the reader the index exists for. The plan anatomy gains an owner-tagged `## Open questions` section, the unsettled half of Kickoff decisions, since a question nobody owes an answer to is how a plan stalls with nobody noticing. And a dependency may now be something that must be *proven*, a named hypothesis plus the proof that would clear it, which is the honest shape when the next unit rests on something still unverified.
 - Repo: the release procedure is written down (CLAUDE.md) and the changelog convention above is enforced mechanically. `scripts/check-changelog.mjs` runs in CI on every pull request and fails one that changes `skills/`, `schema/`, or `reference/` without touching this file, because release notes reconstructed months later are a worse record than the ones written in the pull request that earned them. The escape hatch is deliberate and visible: a `changelog-exempt` label, or a `Changelog-exempt: <reason>` commit trailer.
 
 ## [0.2.0] - 2026-08-14
