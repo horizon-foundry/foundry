@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { SKILL_SLUGS, VERSION } from "@/lib/site";
+import { SKILL_SLUGS } from "@/lib/site";
+import { suiteVersion } from "@/lib/version";
 import { captureServer } from "@/lib/posthog-server";
 
 /*
@@ -40,7 +41,7 @@ export function GET(request: NextRequest) {
     captureServer("foundry-suite", "skill_version_check", {
       skill,
       installed_version: installed,
-      current_version: VERSION,
+      current_version: suiteVersion(),
       $process_person_profile: false,
     });
   }
@@ -48,7 +49,7 @@ export function GET(request: NextRequest) {
   // no-store: a cached "current version" is the one answer this endpoint
   // exists to never give stale, and it would starve the capture besides.
   return NextResponse.json(
-    { suite: "foundry", version: VERSION },
+    { suite: "foundry", version: suiteVersion() },
     { headers: { "Cache-Control": "no-store" } },
   );
 }

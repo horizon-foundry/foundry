@@ -31,7 +31,8 @@ for f in skills/*/SKILL.md; do
     echo "ERROR: failed to stamp $f (no name: line in frontmatter?)." >&2; exit 1; }
 done
 
-perl -pi -e "s/^export const VERSION = \".*\";/export const VERSION = \"$v\";/" lib/site.ts
+# The site itself reads VERSION at runtime (lib/version.ts), so it carries no
+# stamped copy; SECURITY.md's supported-release line is prose and does.
 perl -pi -e "s/early release \(v[0-9A-Za-z.\-]*\)/early release (v$v)/" SECURITY.md
 
-echo "Stamped version $v into skills/*/SKILL.md, lib/site.ts, and SECURITY.md"
+echo "Stamped version $v into skills/*/SKILL.md and SECURITY.md"

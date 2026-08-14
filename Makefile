@@ -79,8 +79,6 @@ validate:
 		uv=$$(perl -ne 'if (m{api/version\?skill=[a-z-]+&v=([0-9A-Za-z.\-]*)}) { print $$1; exit }' "$$f"); \
 		[ "$$uv" = "$$v" ] || { echo "ERROR: $$f version-check URL carries v=$$uv, not $$v (a missing check section fails too). Run 'make sync-version', or add the standard Version check section."; ok=0; }; \
 	done; \
-	sv=$$(perl -ne 'print $$1 if /^export const VERSION = "([^"]+)";/' lib/site.ts); \
-	[ "$$sv" = "$$v" ] || { echo "ERROR: lib/site.ts VERSION ($$sv) != VERSION ($$v). Run 'make sync-version'."; ok=0; }; \
 	grep -q "early release (v$$v)" SECURITY.md || { echo "ERROR: SECURITY.md supported-versions line != VERSION ($$v). Run 'make sync-version'."; ok=0; }; \
 	slugs=$$(perl -ne 'if (/SKILL_SLUGS/) { print "$$1\n" while /"([a-z-]+)"/g }' lib/site.ts | sort); \
 	for d in $$(ls skills/); do echo "$$slugs" | grep -qx "$$d" || { echo "ERROR: skills/$$d missing from SKILL_SLUGS in lib/site.ts (its version checks would be dropped from capture)."; ok=0; }; done; \

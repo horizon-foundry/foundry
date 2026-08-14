@@ -7,8 +7,8 @@ import {
   REPO_ISSUES_URL,
   REPO_LICENSE_URL,
   REPO_CONTRIBUTING_URL,
-  VERSION,
 } from "@/lib/site";
+import { suiteVersion } from "@/lib/version";
 
 // The adoption path. This is the answer to "a visitor cannot actually adopt the
 // product": exact install commands, requirements, what install does, and how to
@@ -200,7 +200,7 @@ export async function InstallBlock() {
         {/* Version, license, source, contribution. */}
         <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-xs text-bone-faint">
           <span>
-            <span className="text-bone-dim">v{VERSION}</span> · pre-1.0
+            <span className="text-bone-dim">v{suiteVersion()}</span> · pre-1.0
           </span>
           <a href={REPO_LICENSE_URL} target="_blank" rel="noreferrer" className="transition-colors hover:text-bone-dim">
             MIT license
