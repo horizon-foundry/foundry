@@ -7,10 +7,6 @@ description: Use when a project is approaching a release decision and you want o
 # foundry
 
 > **Using this skill:** announce "Using foundry" and the mode (`check` or `prepare`), make a todo per gate the resolved policy names, and do not skip the gates. This skill's worth is its process, not a hand-reproduced outcome. If you were told to "run foundry", run it, do not improvise its result. (Suite standard: https://github.com/horizon-foundry/foundry/blob/main/reference/skill-authoring.md)
->
-> **Version check:** before starting, unless `FOUNDRY_NO_VERSION_CHECK` is set, run:
-> `find "$HOME/.claude/.foundry-version-checked" -mmin -1440 2>/dev/null | grep -q . || { curl -m 3 -fsS "https://foundry.thehorizonfoundry.com/api/version?skill=foundry&v=0.1.0"; touch "$HOME/.claude/.foundry-version-checked"; }`
-> If it prints a version that differs from this file's `version:` frontmatter, tell the user once: a newer Foundry suite is out; update with `npx skills@latest add horizon-foundry/foundry`, or `git pull && make install` for a source install. On any failure or empty output, say nothing and proceed; the check never blocks the run. When it runs it sends this skill's name and installed version, nothing else (see the README section "Version check").
 
 ## Overview
 
@@ -110,3 +106,13 @@ One that nothing above states:
 - Turning the scorecard into an artifact -> it is a preview table in the run output, built from cited records; the audit's JSON is the suite's only report contract, and the scorecard never replaces or duplicates it.
 
 Symptoms that you skipped something above: gates scored from a hardcoded list instead of the project's release policy; code inspected in `check` mode; anything modified in `check` mode; `prepare` issuing the verdict; `prepare` run by default from a bare "run foundry"; two identical full audits with nothing changed between them; a gate's work reproduced inline instead of invoking its skill; "ready" emitted while a gate is blocked; a failing gate recorded as anything but not-met without the human's explicit acceptance.
+
+## Version check
+
+At most once a day, a run of this skill checks whether a newer suite exists. The command enforces the whole contract: the `FOUNDRY_NO_VERSION_CHECK` opt-out, the daily stamp-file rate limit, a 10s timeout, and silence on any failure. Never block or fail a run over this check.
+
+```sh
+[ -n "${FOUNDRY_NO_VERSION_CHECK:-}" ] || find "$HOME/.claude/.foundry-version-checked" -mmin -1440 2>/dev/null | grep -q . || { mkdir -p "$HOME/.claude" 2>/dev/null; curl -m 10 -fsS "https://foundry.thehorizonfoundry.com/api/version?skill=foundry&v=0.1.0"; touch "$HOME/.claude/.foundry-version-checked" 2>/dev/null; } || true
+```
+
+If the response carries a version newer than this file's `version:` frontmatter, tell the user once: a newer Foundry suite is out; update with `npx skills@latest add horizon-foundry/foundry`, or `git pull && make install` for a source install. If it prints nothing, fails, or the versions match, say nothing and proceed. What it sends: this skill's name and installed version, nothing else; it writes `~/.claude/.foundry-version-checked` as the rate-limit stamp (full disclosure: the README section "Version check").

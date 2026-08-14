@@ -16,6 +16,14 @@ export const REPO_CONTRIBUTING_URL = `${REPO_URL}/blob/main/CONTRIBUTING.md`;
 
 export const VERSION = "0.1.0";
 
+// The canonical skill slugs, single line on purpose: make validate greps this
+// declaration and fails if it disagrees with the skills/ directory in either
+// direction. /api/version captures analytics only for these names, so a skill
+// missing here silently vanishes from usage counts; that is why the check
+// exists.
+// prettier-ignore
+export const SKILL_SLUGS = ["brand-voice", "document", "foundry", "frame", "instrumentation", "mobile", "phase-plan", "production-audit", "readout", "scaffold"];
+
 // The reports hub. Public: signed-out visitors see the public example audits
 // (Foundry's self-audit + the illustrative sample) and a sign-in prompt;
 // signed-in visitors also see the reports they own. Nav and CTAs link here so

@@ -51,9 +51,11 @@ sync-version:
 # Also fails if any bundled skill copy has diverged from its canonical original
 # (a fork in the schema would split the report contract between the installed
 # skill and the site renderer; a fork in a template would hand adopters a
-# different artifact shape than the repo documents), and enforces the
-# cross-field report invariants JSON Schema cannot express (the verification
-# rule, scope honesty, stats accuracy, no em dashes, no personal paths).
+# different artifact shape than the repo documents), enforces the cross-field
+# report invariants JSON Schema cannot express (the verification rule, scope
+# honesty, stats accuracy, no em dashes, no personal paths), and enforces the
+# version marker: VERSION agrees with every SKILL.md frontmatter and check
+# URL, lib/site.ts, and SECURITY.md, and SKILL_SLUGS matches skills/ exactly.
 validate:
 	@cmp -s schema/audit-report.schema.json skills/production-audit/audit-report.schema.json || { \
 		echo "ERROR: skills/production-audit/audit-report.schema.json is out of sync with schema/audit-report.schema.json. Run 'make sync-bundled'."; exit 1; }
@@ -69,15 +71,19 @@ validate:
 	else \
 		echo "No reports/*.json yet; skipped."; \
 	fi
-	@v=$$(cat VERSION); ok=1; \
+	@v=$$(tr -d '[:space:]' < VERSION); ok=1; \
+	[ -n "$$v" ] || { echo "ERROR: VERSION is empty."; exit 1; }; \
 	for f in skills/*/SKILL.md; do \
-		fv=$$(perl -ne 'print $$1 if /^version:\s*(\S+)/' "$$f"); \
+		fv=$$(perl -ne 'if (/^version:\s*(\S+)/) { print $$1; exit }' "$$f"); \
 		[ "$$fv" = "$$v" ] || { echo "ERROR: $$f frontmatter version ($$fv) != VERSION ($$v). Run 'make sync-version'."; ok=0; }; \
-		if grep -q 'api/version?skill=' "$$f"; then \
-			uv=$$(perl -ne 'print $$1 if m{api/version\?skill=[a-z-]+&v=([0-9A-Za-z.\-]+)}' "$$f"); \
-			[ "$$uv" = "$$v" ] || { echo "ERROR: $$f version-check URL carries v=$$uv, not $$v. Run 'make sync-version'."; ok=0; }; \
-		fi; \
+		uv=$$(perl -ne 'if (m{api/version\?skill=[a-z-]+&v=([0-9A-Za-z.\-]*)}) { print $$1; exit }' "$$f"); \
+		[ "$$uv" = "$$v" ] || { echo "ERROR: $$f version-check URL carries v=$$uv, not $$v (a missing check section fails too). Run 'make sync-version', or add the standard Version check section."; ok=0; }; \
 	done; \
 	sv=$$(perl -ne 'print $$1 if /^export const VERSION = "([^"]+)";/' lib/site.ts); \
 	[ "$$sv" = "$$v" ] || { echo "ERROR: lib/site.ts VERSION ($$sv) != VERSION ($$v). Run 'make sync-version'."; ok=0; }; \
-	[ $$ok -eq 1 ] && echo "Version marker in sync at $$v."
+	grep -q "early release (v$$v)" SECURITY.md || { echo "ERROR: SECURITY.md supported-versions line != VERSION ($$v). Run 'make sync-version'."; ok=0; }; \
+	slugs=$$(perl -ne 'if (/SKILL_SLUGS/) { print "$$1\n" while /"([a-z-]+)"/g }' lib/site.ts | sort); \
+	for d in $$(ls skills/); do echo "$$slugs" | grep -qx "$$d" || { echo "ERROR: skills/$$d missing from SKILL_SLUGS in lib/site.ts (its version checks would be dropped from capture)."; ok=0; }; done; \
+	for s in $$slugs; do [ "$$s" = "SKILL_SLUGS" ] || [ -d "skills/$$s" ] || { echo "ERROR: SKILL_SLUGS entry '$$s' has no skills/ directory."; ok=0; }; done; \
+	[ $$ok -eq 1 ] || exit 1; \
+	echo "Version marker in sync at $$v."

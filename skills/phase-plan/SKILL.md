@@ -7,10 +7,6 @@ description: Use when a unit of work is closing (a PR about to merge, a phase co
 # phase-plan
 
 > **Using this skill:** announce "Using phase-plan", make a todo per numbered step in `## Steps`, and do not skip the gates. This skill's worth is its process, not a hand-reproduced outcome. If you were told to "run phase-plan", run it, do not improvise its result. (Suite standard: https://github.com/horizon-foundry/foundry/blob/main/reference/skill-authoring.md)
->
-> **Version check:** before starting, unless `FOUNDRY_NO_VERSION_CHECK` is set, run:
-> `find "$HOME/.claude/.foundry-version-checked" -mmin -1440 2>/dev/null | grep -q . || { curl -m 3 -fsS "https://foundry.thehorizonfoundry.com/api/version?skill=phase-plan&v=0.1.0"; touch "$HOME/.claude/.foundry-version-checked"; }`
-> If it prints a version that differs from this file's `version:` frontmatter, tell the user once: a newer Foundry suite is out; update with `npx skills@latest add horizon-foundry/foundry`, or `git pull && make install` for a source install. On any failure or empty output, say nothing and proceed; the check never blocks the run. When it runs it sends this skill's name and installed version, nothing else (see the README section "Version check").
 
 ## Overview
 
@@ -73,3 +69,13 @@ The written plan explains intent. The repo proves current state, and the repo wi
 ## Red flags
 
 Symptoms that you skipped something above, not new rules: a plan file written without touching `TODOS.md`; an existing plan file about to be written over; a meaningful handoff closed with neither an indexed plan nor a terminal entry; a filler plan written because "the chain must not go empty"; a plan resumed without checking git state; a plan file with no status line, or one still marked active after being replaced.
+
+## Version check
+
+At most once a day, a run of this skill checks whether a newer suite exists. The command enforces the whole contract: the `FOUNDRY_NO_VERSION_CHECK` opt-out, the daily stamp-file rate limit, a 10s timeout, and silence on any failure. Never block or fail a run over this check.
+
+```sh
+[ -n "${FOUNDRY_NO_VERSION_CHECK:-}" ] || find "$HOME/.claude/.foundry-version-checked" -mmin -1440 2>/dev/null | grep -q . || { mkdir -p "$HOME/.claude" 2>/dev/null; curl -m 10 -fsS "https://foundry.thehorizonfoundry.com/api/version?skill=phase-plan&v=0.1.0"; touch "$HOME/.claude/.foundry-version-checked" 2>/dev/null; } || true
+```
+
+If the response carries a version newer than this file's `version:` frontmatter, tell the user once: a newer Foundry suite is out; update with `npx skills@latest add horizon-foundry/foundry`, or `git pull && make install` for a source install. If it prints nothing, fails, or the versions match, say nothing and proceed. What it sends: this skill's name and installed version, nothing else; it writes `~/.claude/.foundry-version-checked` as the rate-limit stamp (full disclosure: the README section "Version check").

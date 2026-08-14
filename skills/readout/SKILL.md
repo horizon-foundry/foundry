@@ -131,3 +131,13 @@ A surface may state a judgment ("this is not a constraint", "this is healthy"), 
 ## Red flags
 
 Symptoms that you skipped something above, not new rules: a surface with no named reader; a headline number with no path to its detail, or a page of grain with no summary over it; a surface whose every block is a fact and none is a decision; source freshness or reconciliation occupying the space a conclusion needs; a row of cards whose windows differ; a zero that nobody has proven is not a failed read; a cached value with no age on it; a rate printed on a denominator of one; a chart with no y-axis or a second series on a hidden scale; an error payload rendered as body text; a surface reviewed only from its data; a control whose scope does not match its position; a period boundary chosen because the numbers moved there; the same fact wearing two different numbers on two surfaces.
+
+## Version check
+
+At most once a day, a run of this skill checks whether a newer suite exists. The command enforces the whole contract: the `FOUNDRY_NO_VERSION_CHECK` opt-out, the daily stamp-file rate limit, a 10s timeout, and silence on any failure. Never block or fail a run over this check.
+
+```sh
+[ -n "${FOUNDRY_NO_VERSION_CHECK:-}" ] || find "$HOME/.claude/.foundry-version-checked" -mmin -1440 2>/dev/null | grep -q . || { mkdir -p "$HOME/.claude" 2>/dev/null; curl -m 10 -fsS "https://foundry.thehorizonfoundry.com/api/version?skill=readout&v=0.1.0"; touch "$HOME/.claude/.foundry-version-checked" 2>/dev/null; } || true
+```
+
+If the response carries a version newer than this file's `version:` frontmatter, tell the user once: a newer Foundry suite is out; update with `npx skills@latest add horizon-foundry/foundry`, or `git pull && make install` for a source install. If it prints nothing, fails, or the versions match, say nothing and proceed. What it sends: this skill's name and installed version, nothing else; it writes `~/.claude/.foundry-version-checked` as the rate-limit stamp (full disclosure: the README section "Version check").
