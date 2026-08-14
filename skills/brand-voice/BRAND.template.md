@@ -36,11 +36,11 @@ Approved on:
 
 ## Glossary
 
-{The pick-one vocabulary, enforced app-wide. Each term: the word to use, and the words never to use for it. This is where terminology drift is stopped.}
+{The pick-one vocabulary, enforced app-wide. Each term: the word to use, and the words never to use for it. This is where terminology drift is stopped. The terms are the ones already in use here, recorded as heard, so Why names where each was heard; a term with no provenance is one that was invented at branding time and will lose to the word people actually say.}
 
-| Use | Never | Why |
+| Use | Never | Why, and where it was heard |
 | --- | --- | --- |
-| {term} | {forbidden synonyms} | {reason} |
+| {term} | {forbidden synonyms} | {reason; source} |
 
 ## Anti-goals
 
