@@ -34,5 +34,5 @@ note is still welcome).
 
 ## Supported versions
 
-This is an early release (v0.1.0). The latest `main` is the supported version,
+This is an early release (v0.2.0). The latest `main` is the supported version,
 and fixes land there.

@@ -25,7 +25,8 @@
     },
     "skillVersion": "0.1.0",
     "loc": 18000,
-    "public": true
+    "public": true,
+    "version": "0.2.0"
   },
   "verdict": {
     "level": "ship-with-known-risks",

@@ -1,6 +1,6 @@
 ---
 name: production-audit
-version: 0.1.0
+version: 0.2.0
 description: Use when a product is approaching launch, an invite wave, or a release decision and needs a whole-application readiness audit ending in a scope-qualified ship/no-ship verdict. Also for "is this safe to ship", "pre-launch review", or "audit the whole app", or to audit one dimension alone (security, concurrency, reliability, accessibility, ui, infra, operability, testing-confidence, data-migration-safety, release-safety, performance-capacity). Not for reviewing a single diff or applying fixes; it reads the whole application and only reports.
 ---
 
@@ -217,7 +217,7 @@ Symptoms that you skipped something above: auditing file-by-file instead of flow
 At most once a day, a run of this skill checks whether a newer suite exists. The command enforces the whole contract: the `FOUNDRY_NO_VERSION_CHECK` opt-out, the daily stamp-file rate limit, a 10s timeout, and silence on any failure. Never block or fail a run over this check.
 
 ```sh
-[ -n "${FOUNDRY_NO_VERSION_CHECK:-}" ] || find "$HOME/.claude/.foundry-version-checked" -mmin -1440 2>/dev/null | grep -q . || { mkdir -p "$HOME/.claude" 2>/dev/null; curl -m 10 -fsS "https://foundry.thehorizonfoundry.com/api/version?skill=production-audit&v=0.1.0"; touch "$HOME/.claude/.foundry-version-checked" 2>/dev/null; } || true
+[ -n "${FOUNDRY_NO_VERSION_CHECK:-}" ] || find "$HOME/.claude/.foundry-version-checked" -mmin -1440 2>/dev/null | grep -q . || { mkdir -p "$HOME/.claude" 2>/dev/null; curl -m 10 -fsS "https://foundry.thehorizonfoundry.com/api/version?skill=production-audit&v=0.2.0"; touch "$HOME/.claude/.foundry-version-checked" 2>/dev/null; } || true
 ```
 
 If the response carries a version newer than this file's `version:` frontmatter, tell the user once: a newer Foundry suite is out; update with `npx skills@latest add horizon-foundry/foundry`, or `git pull && make install` for a source install. If it prints nothing, fails, or the versions match, say nothing and proceed. What it sends: this skill's name and installed version, nothing else; it writes `~/.claude/.foundry-version-checked` as the rate-limit stamp (full disclosure: the README section "Version check").
