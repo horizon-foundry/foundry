@@ -1,5 +1,6 @@
 ---
 name: brand-voice
+version: 0.1.0
 description: Use when writing or reviewing any user-facing copy, marketing, landing pages, UI labels, error messages, empty states, docs prose, or when a project needs its brand voice defined. Not for deciding what a surface may claim (the forever spec owns capability truth) or for visual design.
 ---
 

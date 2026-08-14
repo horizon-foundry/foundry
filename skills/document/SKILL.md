@@ -1,5 +1,6 @@
 ---
 name: document
+version: 0.1.0
 description: Use to keep a project's documentation true to the code and current across every surface, or to turn the repo's own docs into a product surface. Modes, public, internal, reconcile; idempotent and safe to re-run. Not for creating a doc set from nothing (that is scaffold) or judging release readiness (that is production-audit).
 ---
 

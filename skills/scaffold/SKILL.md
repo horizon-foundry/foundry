@@ -1,5 +1,6 @@
 ---
 name: scaffold
+version: 0.1.0
 description: Use when starting a new project, or when an existing project still has placeholder markers in its docs. Declares the project's profile (experiment, internal-tool, web-product, service, or library), then stands up what that profile needs. Not for maintaining docs on an already-scaffolded project (that is document) or deciding whether the idea is worth building (that is frame).
 ---
 

@@ -3,7 +3,7 @@
 SKILLS_DIR := $(CURDIR)/skills
 CLAUDE_SKILLS := $(HOME)/.claude/skills
 
-.PHONY: install uninstall validate sync-bundled
+.PHONY: install uninstall validate sync-bundled sync-version
 
 # Symlink every skill in skills/ into the user-global skills directory. The
 # symlinks (not copies) keep the installed skills tracking git. Refuses to
@@ -41,6 +41,12 @@ sync-bundled:
 	cp reference/templates/plan.md skills/phase-plan/plan.template.md
 	@echo "Synced bundled copies into skills/production-audit/, skills/brand-voice/, skills/phase-plan/."
 
+# VERSION (repo root) is the suite version's single source of truth, bumped in
+# the release roll-up commit. This stamps it into every surface that carries
+# it; validate fails on drift, so the copies cannot diverge silently.
+sync-version:
+	sh scripts/sync-version.sh
+
 # Validate the schema example and any published reports against the contract.
 # Also fails if any bundled skill copy has diverged from its canonical original
 # (a fork in the schema would split the report contract between the installed
@@ -63,3 +69,15 @@ validate:
 	else \
 		echo "No reports/*.json yet; skipped."; \
 	fi
+	@v=$$(cat VERSION); ok=1; \
+	for f in skills/*/SKILL.md; do \
+		fv=$$(perl -ne 'print $$1 if /^version:\s*(\S+)/' "$$f"); \
+		[ "$$fv" = "$$v" ] || { echo "ERROR: $$f frontmatter version ($$fv) != VERSION ($$v). Run 'make sync-version'."; ok=0; }; \
+		if grep -q 'api/version?skill=' "$$f"; then \
+			uv=$$(perl -ne 'print $$1 if m{api/version\?skill=[a-z-]+&v=([0-9A-Za-z.\-]+)}' "$$f"); \
+			[ "$$uv" = "$$v" ] || { echo "ERROR: $$f version-check URL carries v=$$uv, not $$v. Run 'make sync-version'."; ok=0; }; \
+		fi; \
+	done; \
+	sv=$$(perl -ne 'print $$1 if /^export const VERSION = "([^"]+)";/' lib/site.ts); \
+	[ "$$sv" = "$$v" ] || { echo "ERROR: lib/site.ts VERSION ($$sv) != VERSION ($$v). Run 'make sync-version'."; ok=0; }; \
+	[ $$ok -eq 1 ] && echo "Version marker in sync at $$v."

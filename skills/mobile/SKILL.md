@@ -1,5 +1,6 @@
 ---
 name: mobile
+version: 0.1.0
 description: Use when building or fixing a mobile, touch, or small-screen experience, when a layout breaks on a phone, or when a desktop-designed feature needs to hold up on a real device. Not for products with no mobile surface; that gate resolves not-applicable, and no work is invented.
 ---
 

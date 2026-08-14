@@ -1,5 +1,6 @@
 ---
 name: readout
+version: 0.1.0
 description: Use when building or reviewing a surface that DISPLAYS measurements (a dashboard, a report, an experiment read-out, a metrics email), when someone doubts the numbers a surface is showing, or when a surface is accurate but nobody reads or acts on it. Not for adding events or wiring capture, that is instrumentation; not for choosing what to measure, that is frame.
 ---
 

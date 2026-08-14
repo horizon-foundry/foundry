@@ -1,5 +1,6 @@
 ---
 name: foundry
+version: 0.1.0
 description: Use when a project is approaching a release decision and you want one pass over its pre-ship gates instead of remembering each one. Resolves the project's release policy, then runs `check` (read-only preview) or `prepare` (invokes the gate skills to close the gaps). Not an inspector; production-audit issues the authoritative verdict afterward.
 ---
 

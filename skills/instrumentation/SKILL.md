@@ -1,5 +1,6 @@
 ---
 name: instrumentation
+version: 0.1.0
 description: Use when adding analytics or event tracking, instrumenting a funnel or an activation flow, wiring a product-analytics tool (PostHog, etc.), or when you need to measure whether a feature works. Not for system observability (errors, latency, alerting); that is a different discipline.
 ---
 

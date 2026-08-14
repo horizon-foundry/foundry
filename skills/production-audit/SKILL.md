@@ -1,5 +1,6 @@
 ---
 name: production-audit
+version: 0.1.0
 description: Use when a product is approaching launch, an invite wave, or a release decision and needs a whole-application readiness audit ending in a scope-qualified ship/no-ship verdict. Also for "is this safe to ship" or "audit the whole app". Not for reviewing a single diff or applying fixes; it reads the whole application and only reports.
 ---
 
