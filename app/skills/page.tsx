@@ -6,7 +6,7 @@ import { listSkills } from "@/lib/skills";
 export const metadata = {
   title: "Skills",
   description:
-    "Software delivery integrity, as Claude Code skills: declared intent, preserved context, an instrumented outcome, docs that match reality, and an audited release.",
+    "Software delivery integrity, as Claude Code skills: declared intent, a design checked against the code before it is built, preserved context, an instrumented outcome, docs that match reality, and an audited release.",
 };
 
 // One tile shape for the whole directory: a full-surface link, an amber

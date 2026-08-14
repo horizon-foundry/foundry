@@ -7,7 +7,7 @@ import "./globals.css";
 const SITE_URL = "https://foundry.thehorizonfoundry.com";
 const TITLE = "Foundry: skills that keep an AI-built codebase honest";
 const DESCRIPTION =
-  "Software delivery integrity, as Claude Code skills: declared product intent, execution context that survives every session, an instrumented outcome, docs that match reality, and a pre-launch audit that ends in a scope-honest verdict. By Horizon Foundry.";
+  "Software delivery integrity, as Claude Code skills: declared product intent, a design checked against the code before it is built, execution context that survives every session, an instrumented outcome, docs that match reality, and a pre-launch audit that ends in a scope-honest verdict. By Horizon Foundry.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
