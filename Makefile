@@ -47,7 +47,10 @@ sync-bundled:
 sync-version:
 	sh scripts/sync-version.sh
 
-# Validate the schema example and any published reports against the contract.
+# Runs in three parts. First, every skill is visible on every public surface and
+# every count claim matches (scripts/check-skill-surfaces.mjs). Then the schema
+# example and any published reports against the contract. Last, the version
+# markers, so a stamped copy cannot drift from VERSION.
 # Also fails if any bundled skill copy has diverged from its canonical original
 # (a fork in the schema would split the report contract between the installed
 # skill and the site renderer; a fork in a template would hand adopters a
@@ -57,6 +60,7 @@ sync-version:
 # version marker: VERSION agrees with every SKILL.md frontmatter and check
 # URL, lib/site.ts, and SECURITY.md, and SKILL_SLUGS matches skills/ exactly.
 validate:
+	node scripts/check-skill-surfaces.mjs
 	@cmp -s schema/audit-report.schema.json skills/production-audit/audit-report.schema.json || { \
 		echo "ERROR: skills/production-audit/audit-report.schema.json is out of sync with schema/audit-report.schema.json. Run 'make sync-bundled'."; exit 1; }
 	@cmp -s reference/templates/BRAND.md skills/brand-voice/BRAND.template.md || { \

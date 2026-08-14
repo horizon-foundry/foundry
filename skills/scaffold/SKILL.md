@@ -10,7 +10,7 @@ description: Use when starting a new project, or when an existing project still 
 
 ## Overview
 
-A project starts in the shape it will need at the end of its life. That shape depends on what the project is. This skill first declares the project's **profile**. Then it stands up the doc set, posture, and deploy or publish path that profile needs, filled from a few setup answers the builder supplies. User-invoked. The doc set is defined by `reference/doc-set-spec.md`. The skill is self-contained: no external template repo is required (the skeletons below are the normative fallback).
+A project starts in the shape it will need at the end of its life. That shape depends on what the project is. This skill first declares the project's **profile**. Then it stands up the doc set, posture, and deploy or publish path that profile needs, filled from a few setup answers the builder supplies. User-invoked. The doc set is defined by the suite's doc-set spec, `reference/doc-set-spec.md` in the repo; an install ships only this skill's directory, so from anywhere else read it at https://raw.githubusercontent.com/horizon-foundry/foundry/main/reference/doc-set-spec.md. The skill is self-contained: no external template repo is required (the skeletons below are the normative fallback).
 
 An existing project is also in a "scaffold needed" state if its docs still contain `{placeholder}` markers. The same flow applies.
 
@@ -34,6 +34,8 @@ One question decides most of the rest: **what is this?**
 | library | Be consumed as code | README **is** the product surface (install, API, examples) + CLAUDE, NOTES, PROMPTS, TODOS, LICENSE; no DESIGN | Load-bearing: consumers need one; always ask | No deploy config; a publish path instead (registry, semver, changelog) |
 
 **The rigor is "never accidentally promote a prototype", not "never prototype."** An experiment is allowed to be light. What it is not allowed to do is quietly gain users and features while still shaped like an experiment. Its README says what it is. Graduation is explicit: re-run scaffold with the real profile. That is when the license, the deploy path, and the full doc set arrive.
+
+The correction runs both ways. A project wearing product docs with no ship path behind them has two honest resolutions, not one: add the path, or move it to the experiment profile and say so. Choosing the smaller shape on purpose is not a failure; leaving the mismatch is.
 
 ## Build like it ships (for the profiles that ship)
 
@@ -65,12 +67,12 @@ When you scaffold into an existing team, org, or repo context, the existing stan
 
 ## Doc-set skeletons (normative fallback)
 
-When no template repo exists, create each file with these sections. The one-line ownership rule per file comes from `reference/doc-set-spec.md`. These skeletons are the minimum viable shape, not a ceiling. Use `{placeholder}` markers for anything the interview has not answered yet.
+When no template repo exists, create each file with these sections. The one-line ownership rule per file comes from the doc-set spec (linked in the Overview). These skeletons are the minimum viable shape, not a ceiling. Use `{placeholder}` markers for anything the interview has not answered yet.
 
 - **`CLAUDE.md`**: project heading; Additional Context pointer ("Read README.md and TODOS.md for backlog and planned work"); brief Project Overview; the project's gotchas, conventions, and source-of-truth rules (grown as they are earned; see the doc-set spec's "CLAUDE.md is gotchas, not inventory"); the resume rule (step 6 above); Commit Workflow overrides. Anything derivable by inspecting the repo (file trees, stack tables, command inventories) stays out; the README owns the human-facing versions of those. The self-maintenance cadence for NOTES/PROMPTS/FRICTION is a one-line pointer to the `document` skill, never an inlined protocol.
 - **`README.md`**: heading + one-line description; Tech Stack table; Requirements; Local Development commands; Building and Deployment (or Publishing); Project Structure; License line.
 - **`PRODUCT.md`**: what the product is (present tense), who it serves, why it exists; the security frame (step 4); core flows; explicit non-goals. Opens with the frame if `frame` has run.
-- **`ARCHITECTURE.md`** (web-product and service profiles): stack, topology, data model, decisions. Other profiles omit it and fold the data model into `PRODUCT.md` or `CLAUDE.md`, per `reference/doc-set-spec.md`.
+- **`ARCHITECTURE.md`** (web-product and service profiles): stack, topology, data model, decisions. Other profiles omit it and fold the data model into `PRODUCT.md` or `CLAUDE.md`, per the doc-set spec.
 - **`DESIGN.md`**: token table (color, type, spacing), component inventory, motion rules. Only if the project has a visual surface.
 - **`BRAND.md`**: purpose, positioning, personality, voice and tone, glossary, copy rules. Only if the project has an outward voice.
 - **`NOTES.md`**: dated decision entries: the decision, the reasoning, the rejected alternative(s).
