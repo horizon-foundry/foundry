@@ -68,6 +68,8 @@ Each SKILL.md carries this near the top, so the gate is the first thing read:
 
 > **Using this skill:** announce "Using [name]" (and the mode, where the skill has modes), make a todo per numbered step in `## Steps`, and do not skip the gates. This skill's worth is its process, not a hand-reproduced outcome. If you were told to "run [name]", run it, do not improvise its result.
 
+Two suite-wide fixtures ride alongside the gate, and every skill carries both. The frontmatter includes a `version:` key, stamped from the repo-root `VERSION` file by `make sync-version` and enforced by `make validate`; never hand-edit it. And the file ends with the standard `## Version check` section (copy it from any shipped skill, with this skill's name in the URL's `skill=` param): the disclosed, rate-limited, opt-out-enforced update check. The gate itself stays one paragraph; the check lives in its own section so the gate reads as the gate.
+
 Where a skill resolves its own work list (gates from a policy, entries from a frame), the gate binds the todos to that resolved list instead, which is stronger: the todos then cannot exist unless the resolution step ran.
 
 ## Every skill names its boundary (the "When NOT to use" section)

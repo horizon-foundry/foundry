@@ -20,7 +20,8 @@ primary_region = "iad"
   # Browser analytics key, inlined into the client bundle at build time (a phc
   # key is public by design; it ships in the served JS regardless). Empty
   # means the site builds with analytics off. The server reads POSTHOG_KEY at
-  # runtime (fly secrets) with this as fallback.
+  # runtime (fly secrets); build args are NOT runtime env in the runner stage,
+  # so that secret is the ONLY thing enabling server capture in production.
   [build.args]
     NEXT_PUBLIC_POSTHOG_KEY = "phc_vGUC95F5jJhJ5QANyz9qqTzBqAQkHjAkHibJCdqWytby"
 

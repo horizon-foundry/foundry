@@ -32,7 +32,7 @@ Update from source with `git pull && make install`; remove with `make uninstall`
 
 ### Version check
 
-Each skill carries its version in its frontmatter, and at most once a day a skill run asks `foundry.thehorizonfoundry.com/api/version` whether a newer suite exists, telling you to re-run the install command if so. What is sent: the skill's name and its installed version, nothing else. No user, machine, or install identity is attached, and the request is never allowed to block or fail a skill run. Opt out entirely by setting `FOUNDRY_NO_VERSION_CHECK` (any value) in your environment; the skills then never call out at all.
+Each skill carries its version in its frontmatter, and at most once a day a skill run asks `foundry.thehorizonfoundry.com/api/version` for the current released version, telling you to re-run the install command when yours is older. The whole contract is enforced in the check command itself, in every skill's "Version check" section, not just promised here: the `FOUNDRY_NO_VERSION_CHECK` opt-out (set it to any value and the command exits before any network call), the daily rate limit via a stamp file at `~/.claude/.foundry-version-checked` (the one file the skills write outside the skills directory; `make uninstall` does not remove it), a 10s timeout, and silence on any failure, so the check can never block a skill run. What the event records: the skill's name and its installed version, nothing else, with no user, machine, or install identity attached. Like any HTTPS request, the connection carries your IP address to the server; it is not recorded or attached to the event.
 
 ## The skills
 
@@ -90,7 +90,7 @@ Honest limits, stated plainly: the audit reads code and traces flows; it is not 
 # Install every skill user-global (symlinks into ~/.claude/skills)
 make install
 
-# Validate the sample report and any published reports against the schema
+# Validate reports against the schema, bundled copies, and the version marker
 make validate
 
 # Site (Node 22+)
@@ -129,7 +129,8 @@ foundry/
 ├── skills/        # the suite (each dir symlinks into ~/.claude/skills/<name>;
 │                  # production-audit bundles its schema copy)
 ├── schema/        # audit-report.schema.json (canonical) + examples/
-├── scripts/       # validate-report-invariants.mjs (run by make validate)
+├── scripts/       # validate-report-invariants.mjs + sync-version.sh
+├── VERSION        # suite version, single source of truth (make sync-version)
 ├── reports/       # published audit JSON; public ones at /example, owned at /reports (public index)
 ├── app/ · components/ · lib/           # Next.js site
 ├── Dockerfile · fly.toml

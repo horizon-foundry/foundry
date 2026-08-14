@@ -59,7 +59,7 @@ function StarButton({ stars }: { stars: number | null }) {
 const DETAIL = [
   {
     k: "Requirements",
-    d: "For npx: Node and Claude Code. For the from-source path: git, make, and Claude Code. No account, no telemetry.",
+    d: "For npx: Node and Claude Code. For the from-source path: git, make, and Claude Code. No account; the skills' only network call is the disclosed daily version check.",
   },
   {
     k: "What it installs",
@@ -67,7 +67,7 @@ const DETAIL = [
   },
   {
     k: "Upgrade and uninstall",
-    d: "npx: re-run the add command to update. From source: git pull && make install to update, make uninstall to remove the symlinks. Nothing else touches your system.",
+    d: "npx: re-run the add command to update; a skill run tells you when a newer suite is out. From source: git pull && make install to update, make uninstall to remove the symlinks. Beyond the skills directory, the one file the skills touch is the version-check stamp at ~/.claude/.foundry-version-checked.",
   },
 ];
 
@@ -84,8 +84,10 @@ export async function InstallBlock() {
             </h2>
             <p className="mt-2 max-w-2xl text-sm leading-relaxed text-bone-dim">
               One command adds the skills to Claude Code. No build step, no
-              account required, and the skills contain no telemetry: they run
-              entirely in your environment.
+              account. One disclosed call home: at most once a day, a skill
+              asks this site for the current version so it can tell you when
+              you are behind. It sends the skill name and installed version,
+              nothing else, and FOUNDRY_NO_VERSION_CHECK turns it off.
             </p>
           </div>
           <StarButton stars={stars} />

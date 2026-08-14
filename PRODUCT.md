@@ -31,7 +31,7 @@ Declared 2026-07-13, first `/frame` run (Phase 12.9 dogfood). Assembled from thi
 **Security frame.**
 
 - **Data classification:** published audit reports carry vulnerability findings for live products (confidential to their owner); sign-in emails; the skills themselves hold no user data and run locally.
-- **Trust boundaries:** anonymous web visitors, magic-link signed-in users, Supabase as identity provider; skill execution happens inside the user's own Claude Code, nothing phones home.
+- **Trust boundaries:** anonymous web visitors, magic-link signed-in users, Supabase as identity provider; skill execution happens inside the user's own Claude Code. The one outbound call a skill makes is the disclosed daily version check (skill name and installed version, no identity, opt-out enforced in the command; amended 2026-08-13).
 - **Authn/authz:** Supabase magic link proves the email; a report is visible only to its `meta.owner` or an admin (`ADMIN_EMAILS`); non-owner slugs 404; the skills never require an account.
 - **Secret handling:** Fly secrets and `.env.local`, fail-closed when unset, never committed; the PostHog browser key is public by design.
 
@@ -47,6 +47,8 @@ Declared 2026-07-13, first `/frame` run (Phase 12.9 dogfood). Assembled from thi
 The maintainer resolves these by confirming or correcting the assumed entries, declaring entries 6 and 9, or explicitly accepting the gaps (the acceptance stays visible here).
 
 **Resolution, 2026-07-16.** Entries 6 and 9 are now declared (above): the success measure is a stranger completing one full `/production-audit` run on their own project, and the learn-before-investing threshold is whether anyone beyond the maintainer runs a skill in the first weeks after the public flip. Both are the same signal at two moments (activation, then early retention), and both are honest about the standing assumption that external adoption is unproven. The two findings from the first run are closed.
+
+**Amendment, 2026-08-13.** Activation gains its declared instrument. The 2026-07-13 audit recorded that a skill run was "outside the site's reach and has no declared signal"; the version check closes that gap. Each skill run may ask the site for the current suite version (at most daily per machine, fully disclosed, opt-out enforced in the command, no identity), and the server counts those checks as `skill_version_check`. The count is run activity per version, never unique users. The trust boundary above carries the matching exception, and the `instrumentation` skill's doctrine states the general rule this instance follows.
 
 ## The suite
 
