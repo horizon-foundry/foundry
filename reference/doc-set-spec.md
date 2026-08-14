@@ -73,6 +73,8 @@ A present-tense spec answers *what*; a future agent (or maintainer) also needs *
 
 A reversal later gets its own entry; the original stays, because the history is part of the record. `document`'s authority model treats these entries as the "accepted constraints" source: a doc-vs-code disagreement that contradicts a NOTES.md decision is a suspected regression, not a doc repair.
 
+A confirmed feature-design declaration (the `feature-design` skill's artifact) deliberately has no standing file of its own in this doc set: it folds into the next unit's plan via `phase-plan` (goal, kickoff decisions, non-goals, acceptance criteria), and its decisions with their rejected alternatives land here in NOTES.md. A project may declare a dedicated design-records location instead; absent that declaration, this fold-in IS the declared home, so the skill's undeclared-home finding does not fire on a doc set following this spec.
+
 ## The plan chain (never close work without planning the next)
 
 The resume rule (a standing instruction in a scaffolded `CLAUDE.md`: read the indexed plan before acting on a terse continuation) solves cold starts from the reading side. This rule solves them from the writing side:
