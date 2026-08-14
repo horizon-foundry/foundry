@@ -2,7 +2,7 @@
 
 **An open-source project from Horizon Foundry, created and maintained by [Craig Martin](https://github.com/cjmartin2).**
 
-Foundry is nine Claude Code skills that turn fast, AI-built code into something you can ship. The flagship, `production-audit`, audits the whole application across eleven dimensions and ends in one verdict: safe to ship; ready to ship, risks noted; or do not ship. Every finding cites the code that motivated it, and a static run never claims a runtime result.
+Foundry is ten Claude Code skills that turn fast, AI-built code into something you can ship. The flagship, `production-audit`, audits the whole application across eleven dimensions and ends in one verdict: safe to ship; ready to ship, risks noted; or do not ship. Every finding cites the code that motivated it, and a static run never claims a runtime result.
 
 The proof is public: we audited Foundry with Foundry, fixed the risks the report found, and published it. Read the [self-audit](https://foundry.thehorizonfoundry.com/reports) against this source.
 
@@ -32,7 +32,7 @@ Update from source with `git pull && make install`; remove with `make uninstall`
 
 ### Version check
 
-Each skill carries its version in its frontmatter, and at most once a day a skill run asks `foundry.thehorizonfoundry.com/api/version` for the current released version, telling you to re-run the install command when yours is older. The whole contract is enforced in the check command itself, in every skill's "Version check" section, not just promised here: the `FOUNDRY_NO_VERSION_CHECK` opt-out (set it to any value and the command exits before any network call), the daily rate limit via a stamp file at `~/.claude/.foundry-version-checked` (the one file the skills write outside the skills directory; `make uninstall` does not remove it), a 10s timeout, and silence on any failure, so the check can never block a skill run. What the event records: the skill's name and its installed version, nothing else, with no user, machine, or install identity attached. Like any HTTPS request, the connection carries your IP address to the server; it is not recorded or attached to the event.
+Each skill carries its version in its frontmatter, and at most once a day a skill run asks `foundry.thehorizonfoundry.com/api/version` for the current released version, telling you to re-run the install command when yours is older. The whole contract is enforced in the check command itself, in every skill's "Version check" section, not just promised here: the `FOUNDRY_NO_VERSION_CHECK` opt-out (set it to any non-empty value and the command exits before any network call), the daily rate limit via a stamp file at `~/.claude/.foundry-version-checked` (the one file the skills write outside the skills directory; `make uninstall` does not remove it), a 10s timeout, and silence on any failure, so the check can never block a skill run. What the event records: the skill's name and its installed version, nothing else, with no user, machine, or install identity attached. Like any HTTPS request, the connection carries your IP address to the server; it is not recorded or attached to the event.
 
 ## The skills
 

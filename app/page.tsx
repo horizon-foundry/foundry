@@ -127,7 +127,7 @@ export default function Home() {
                 from <span className="text-signal">AI-built code</span>.
               </h1>
               <p className="mt-6 max-w-2xl text-lg leading-relaxed text-bone-dim">
-                Foundry is nine Claude Code skills that turn fast, AI-built
+                Foundry is ten Claude Code skills that turn fast, AI-built
                 code into something you can ship. The flagship audits the whole
                 application and ends in one verdict that names its evidence:
                 safe to ship; ready to ship, risks noted; or do not ship.
