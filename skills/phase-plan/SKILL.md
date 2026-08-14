@@ -40,6 +40,7 @@ Plans live in one project-declared directory, named in the project's `CLAUDE.md`
 
    ## Goal
    ## Kickoff decisions
+   ## Open questions
    ## Steps
    ## Acceptance criteria
    ## Dependencies
@@ -48,9 +49,9 @@ Plans live in one project-declared directory, named in the project's `CLAUDE.md`
    ## Current state
    ```
 
-   Current state is the **objective anchor**: the base commit and branch the plan was written from, the verification state at that point (build, tests, and any audit passing or not), what is done, and what is next. The anchor is what lets the next session reconcile the plan against `git` (below) instead of trusting the narrative. A missing section is a defect: fill it or write "none", never drop the heading.
+   Current state is the **objective anchor**: the base commit and branch the plan was written from, the verification state at that point (build, tests, and any audit passing or not), what is done, and what is next. The anchor is what lets the next session reconcile the plan against `git` (below) instead of trusting the narrative. Kickoff decisions and open questions are the settled and unsettled halves of the same fact, and each open question names **who owes the answer** (the human, a named review, an external party), because an unowned question is how a plan stalls with nobody noticing. Dependencies are what must merge, exist, be answered, or be **proven** first; a dependency may be a named hypothesis plus the proof that would clear it, which is the honest shape when the next unit rests on something still unverified. A missing section is a defect: fill it or write "none", never drop the heading.
 4. **Stamp the status.** The plan file opens with the template's status line: `Status: active`. The other values are `completed`, `superseded (by <file>)`, and `abandoned (<why>)`. Update the line when the plan transitions, so a reader never executes a plan that has already been replaced.
-5. **Index it in the same action.** Add `- [ ] Phase N, <name> -> <path>` to the Phase Plans list. Keep the checkboxes current: check the box when that phase's PR merges. A superseded plan's entry points at its successor.
+5. **Index it in the same action.** Add `- [ ] Phase N, <name> -> <path>` to the Phase Plans list. Keep the checkboxes current: check the box when that phase's PR merges. A superseded plan's entry points at its successor. A phase that cannot start yet says so in the index line itself, `(gated: <what it waits on>)`, so a reader sees the chain is blocked without opening the plan; clear the marker when the blocker clears. An unstarted phase and a blocked one look identical otherwise, and the difference is the whole question a reader came to the index with.
 
 ## Honest terminal outcomes
 
@@ -68,7 +69,7 @@ The written plan explains intent. The repo proves current state, and the repo wi
 
 ## Red flags
 
-Symptoms that you skipped something above, not new rules: a plan file written without touching `TODOS.md`; an existing plan file about to be written over; a meaningful handoff closed with neither an indexed plan nor a terminal entry; a filler plan written because "the chain must not go empty"; a plan resumed without checking git state; a plan file with no status line, or one still marked active after being replaced.
+Symptoms that you skipped something above, not new rules: a plan file written without touching `TODOS.md`; an existing plan file about to be written over; a meaningful handoff closed with neither an indexed plan nor a terminal entry; a filler plan written because "the chain must not go empty"; a plan resumed without checking git state; a plan file with no status line, or one still marked active after being replaced; a plan whose dependencies say it cannot start yet indexed as an ordinary open phase; an open question with no owner.
 
 ## Version check
 

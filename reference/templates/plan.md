@@ -11,6 +11,10 @@ Status: active
 
 *Decisions already made; carry them forward, do not re-litigate them.*
 
+## Open questions
+
+*What is still undecided, each tagged with who owes the answer (the human, a review, an external party). An unowned question is how a plan stalls without anyone noticing.*
+
 ## Steps
 
 *The work in order, each step ending in something checkable.*
@@ -21,7 +25,7 @@ Status: active
 
 ## Dependencies
 
-*What must merge, exist, or be answered before this unit can start.*
+*What must merge, exist, be answered, or be proven before this unit can start. A dependency may be a named hypothesis plus the proof that would clear it.*
 
 ## Non-goals
 

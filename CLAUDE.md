@@ -39,6 +39,18 @@ The shape: eleven skills under `skills/` (production-audit is the flagship inspe
 - **PROMPTS.md carries no raw verbatim prompt log.** The de-personalization pass before the public flip removed it, because the file may render publicly. Never reintroduce verbatim prompts; record what happened in the Phases narrative instead.
 - Doc separation (one owner per fact, reference instead of copy) and the self-maintenance cadence for NOTES.md, PROMPTS.md, and FRICTION.md are owned by `reference/doc-set-spec.md` and the `document` skill. Keep those files current as work happens, per that skill; duplication between docs is drift.
 
+## Release procedure
+
+A release is a roll-up, not an archaeology dig: every PR that changed the shipped suite already wrote its what-and-why under `CHANGELOG.md`'s `[Unreleased]`, and CI enforces that (below). The release itself, in order:
+
+1. Roll `[Unreleased]` into a dated `## [0.x.y]` heading opening with the "why this release" paragraph, and leave a fresh `[Unreleased]` behind it.
+2. Bump `VERSION` (the only commit that ever does), then `make sync-version && make validate` so every stamped copy moves with it. `package.json`'s version is the site's own concern and stays outside this net.
+3. Regenerate the published self-audit when the suite materially changed (the source-of-truth rule above). Shipping new skill behavior against a report describing the old suite is the drift that rule exists to stop.
+4. Merge, then tag `v0.x.y` on the merge commit and publish the GitHub Release from the changelog body.
+5. `fly deploy` (manual, there is no CD), then the post-deploy checks: `/api/version` answers the new version on both hosts, the footer shows it, and the report pages render.
+
+**The changelog gate.** `scripts/check-changelog.mjs` runs in CI on every pull request and fails one that touches `skills/`, `schema/`, or `reference/` without touching `CHANGELOG.md`. Its escape hatch is deliberately visible rather than silent: a `changelog-exempt` label on the PR, or a `Changelog-exempt: <reason>` trailer on a commit in the range. It lives in CI and not in `make validate` because it needs the PR's base ref, which a local working copy has no equivalent of; run it by hand as `node scripts/check-changelog.mjs <base-ref>`.
+
 ## Commit Workflow Overrides
 
 The maintainer's standard workflow applies: all work on feature branches, commit messages via temp file and `git commit -F`, every unit of work ends in a PR. Project-specific steps:

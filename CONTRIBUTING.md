@@ -41,6 +41,8 @@ The site reads the skills and docs from disk, so adding a skill (`skills/<name>/
 
 Work on a feature branch and open a PR. Keep each PR to one coherent unit of work. Describe what changed and why. If you added or changed a skill, note how you verified it behaves as the skill describes.
 
+A PR that changes `skills/`, `schema/`, or `reference/` writes its own entry under `CHANGELOG.md`'s `[Unreleased]`, saying what changed and why; CI fails a PR that skips it, because a release publishes that section verbatim and nobody can reconstruct your reasoning from the diff months later. If a change genuinely ships nothing (a typo in a comment, a file move with no behavior), waive it visibly with a `Changelog-exempt: <reason>` trailer on one of your commits.
+
 ## License
 
 By contributing, you agree that your contributions are licensed under the [MIT License](LICENSE).
