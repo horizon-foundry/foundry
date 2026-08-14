@@ -60,11 +60,13 @@ export default function SkillsIndex() {
             </h1>
             <p className="mt-4 max-w-2xl leading-relaxed text-bone-dim">
               For people who build products with an AI in the loop. The suite
-              makes five promises between an idea and its release. Product
-              intent is declared and audited. Execution context survives every
-              session. The intended outcome is instrumented. The documentation
-              matches reality. Technical readiness is audited before real users
-              arrive. Each promise is kept by a skill you can run.
+              makes six promises between an idea and its release. Product
+              intent is declared and audited. A feature&apos;s design is checked
+              against the code before it is built. Execution context survives
+              every session. The intended outcome is instrumented. The
+              documentation matches reality. Technical readiness is audited
+              before real users arrive. Each promise is kept by a skill you can
+              run.
             </p>
             <div className="mt-7 inline-flex items-center gap-3 border border-line bg-ink-raised px-4 py-2.5">
               <span className="font-mono text-xs uppercase tracking-wide text-bone-faint">

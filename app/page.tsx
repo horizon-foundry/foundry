@@ -127,7 +127,7 @@ export default function Home() {
                 from <span className="text-signal">AI-built code</span>.
               </h1>
               <p className="mt-6 max-w-2xl text-lg leading-relaxed text-bone-dim">
-                Foundry is ten Claude Code skills that turn fast, AI-built
+                Foundry is eleven Claude Code skills that turn fast, AI-built
                 code into something you can ship. The flagship audits the whole
                 application and ends in one verdict that names its evidence:
                 safe to ship; ready to ship, risks noted; or do not ship.
@@ -177,18 +177,19 @@ export default function Home() {
 
         <InstallBlock />
 
-        {/* The five promises: the suite's whole claim, each kept by a named
+        {/* The six promises: the suite's whole claim, each kept by a named
             skill. Placed after the install so the pitch never outranks the
             quick start. Delivery integrity, not product strategy. */}
         <section className="reveal border-b border-line">
           <div className="mx-auto max-w-[1180px] px-5 py-12 sm:px-8">
             <p className="font-mono text-xs uppercase tracking-[0.25em] text-bone-faint">
-              Five promises, each kept by a skill
+              Six promises, each kept by a skill
             </p>
             <ol className="mt-4 divide-y divide-line border-y border-line">
               {(
                 [
                   ["Product intent is declared and audited", "/frame"],
+                  ["The design is checked against the code before it is built", "/feature-design"],
                   ["Execution context survives every session", "/phase-plan"],
                   ["The intended outcome is instrumented", "/instrumentation"],
                   ["The documentation matches reality", "/document"],
