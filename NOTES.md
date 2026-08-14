@@ -2,6 +2,26 @@
 
 Architectural and product judgment calls that shaped Production Audit. See [PROMPTS.md](PROMPTS.md) for the chronological prompt log and [FRICTION.md](FRICTION.md) for points of friction during the build.
 
+## 2026-08-14: the changelog gate checks the touch, not the text
+
+**Decision.** `scripts/check-changelog.mjs` fails a pull request that changes `skills/`, `schema/`, or `reference/` without changing `CHANGELOG.md`. It asserts nothing about what was written there. It runs as its own CI job on pull requests only, never inside `make validate`.
+
+**Reasoning.** The release publishes `[Unreleased]` verbatim, so that section is the release's only source, and the person who can write an entry honestly is the one making the change, not whoever runs the roll-up months later. A touch check is the strongest assertion that stays true at every moment in the cycle: the one pull request that absolutely must pass is the release roll-up itself, which empties `[Unreleased]` into a dated heading while stamping every `SKILL.md` with the new version. A content check ("an added line under `[Unreleased]`") would fail exactly that pull request. The check lives in CI because it needs the pull request's base ref, which a local working copy has no equivalent of, and a broken ref exits 2 rather than passing, because a gate that opens when its own machinery breaks is not a gate.
+
+**Rejected alternatives.** (1) A content check, for the roll-up reason above. (2) Folding it into `make validate` for symmetry with the other mechanical rules; it would have to invent a base ref, and inventing one silently is worse than not running. (3) Blocking the waiver behind maintainer-only labels: the `Changelog-exempt:` trailer is self-service on purpose. This is a record-keeping gate, not a security boundary, and a waiver sitting in the commit log is precisely what a reviewer needs in order to disagree with it.
+
+**Consequence, recorded so it is not mistaken for an oversight:** a pull request can satisfy the gate by fixing a typo in an old release section. That is accepted; the honest entry is a review question, and the gate exists to make the omission impossible to miss, not to grade prose.
+
+## 2026-08-14: two calls inside the peer-framework sharpenings
+
+**Decision 1.** The gated index state (`gated: <what it waits on>` on a Phase Plans line) is defined in `phase-plan` only, although the workstream that specified it named `phase-plan` and `reference/doc-set-spec.md` together.
+
+**Reasoning.** The doc-set spec already states the plan-chain invariant and explicitly defers the chain's mechanics to `phase-plan`, per its own one-owner-per-fact rule. Restating the marker in both would create the drift the spec was written to prevent, and the spec's sentence is still true unchanged: what happens next is written down and indexed, whether or not the next thing can start yet.
+
+**Decision 2.** Foundry's own approved `BRAND.md` keeps its six glossary rows exactly as they are, while the template's glossary column now asks where each term was heard.
+
+**Reasoning.** The new rule is that glossary terms are observed and recorded as heard. Back-filling provenance for terms adopted months ago would mean writing down sources from memory, which is the invention the rule forbids, on the file the suite dogfoods. The field binds terms recorded from here on. The alternative, holding the rule back until the repo could demonstrate it, would have kept a real improvement out of adopters' hands to protect a cosmetic consistency.
+
 ## 2026-08-14: readout is a discipline, not a release gate
 
 **Decision.** `readout` joins the suite as the tenth skill but gets no row in the release policy block, so `foundry check` does not score it and the audit's verdict does not turn on it. The gates stay document, mobile, instrumentation, and production-audit.

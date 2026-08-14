@@ -11,6 +11,11 @@ name: CI
 on:
   pull_request:
     branches: [main]
+    # labeled/unlabeled are here for the changelog job's `changelog-exempt`
+    # waiver: without them, adding the label leaves the failed check red until
+    # someone pushes, and a waiver that does not clear the gate is not a waiver.
+    # The cost is that verify re-runs on a label change, which is cheap here.
+    types: [opened, synchronize, reopened, labeled, unlabeled]
   push:
     branches: [main]
 
@@ -40,6 +45,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
       - run: node scripts/check-changelog.mjs
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}

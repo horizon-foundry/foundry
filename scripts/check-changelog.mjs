@@ -15,7 +15,15 @@
 //
 // The escape hatch is visible, never silent: a `changelog-exempt` label on the
 // pull request, or a `Changelog-exempt: <reason>` trailer on any commit in the
-// range. Both leave a record of who waived it.
+// range. Both leave a record of who waived it. The trailer is self-service, so
+// a contributor can waive their own pull request; that is deliberate. This is a
+// record-keeping gate, not a security boundary, and the waiver it leaves in the
+// log is precisely what the reviewer needs to disagree with it.
+//
+// It checks that CHANGELOG.md was TOUCHED, not what was written in it. A
+// content check (an added line under [Unreleased]) would fail the one pull
+// request that must pass: a release roll-up empties [Unreleased] into a dated
+// heading and stamps every SKILL.md with the new version.
 //
 // It runs in CI rather than in `make validate` because it needs the pull
 // request's base ref, which a local working copy has no equivalent of.
