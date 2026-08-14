@@ -99,7 +99,7 @@ Report: `reports/foundry-2026-08-14.json` (auditedCommit 81fec42). The one risk 
 - [ ] **[Release]** Execute the release protocol at the v0.1.1 roll-up: main ruleset, deploy guard with a revision stamp, named post-deploy checks, tags, changelog CI gate (SHIP-01, SHIP-02, SHIP-03, SHIP-05)
 - [ ] **[Auth]** Pre-onboarding auth hardening before the first external report owner: interstitial confirm page, honest failure copy, signed-in /unlock redirect, pre-auth identity hygiene (REL-01, REL-02, CON-01, CON-02, SEC-02, SEC-03)
 - [ ] **[A11y/UI]** Accessibility and polish pass, deck and scorecard focus management first (A11Y-01 to A11Y-05, UI-01 to UI-05)
-- [ ] **[Decision]** Three flagged by the sweep, Craig's call: meta.version stamp on foundry-2026-08-14.json (0.1.0 now vs 0.1.1 at roll-up); trim the unread NOTES/PROMPTS/FRICTION Dockerfile COPYs (INF-03); repo description refresh to name the design-check promise
+- [ ] **[Decision]** Two remaining flagged by the sweep, Craig's call: trim the unread NOTES/PROMPTS/FRICTION Dockerfile COPYs (INF-03); repo description refresh to name the design-check promise. (The third, meta.version, was resolved at the v0.2.0 roll-up: both public reports stamped 0.2.0.)
 
 ### From the 2026-07-22 harness audit (deferred beyond v0.1.1)
 

@@ -28,7 +28,8 @@
           "reason": "The site owns no datastore: reports are JSON files committed to the repo and baked into the image, and Supabase is used for auth only, with no app tables or migrations."
         }
       ]
-    }
+    },
+    "version": "0.2.0"
   },
   "verdict": {
     "level": "safe-to-ship",
