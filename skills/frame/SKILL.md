@@ -18,7 +18,9 @@ description: Use before scaffolding or building anything new, or when a project 
    every drafted entry marked "assumed, unconfirmed". Check: no entry exists
    that the human did not state and the draft did not mark assumed.
 3. **Audit it.** Artifact: a findings list against the entry numbers, per
-   "The audit" section below.
+   "The audit" section below. Check: the list covers every entry, plus one
+   pass across entries for contradictions, which a per-entry pass cannot
+   see.
 4. **Human resolves and confirms.** Revisions or explicitly accepted gaps.
    On confirmation, write a `Confirmed: <date>` line at the top of the frame
    section in `PRODUCT.md`; confirmation is that lookup, never a memory. If
@@ -118,6 +120,14 @@ Like the audit's matrices, the frame is checkable and blanks are findings:
 - A blank or unconsidered security declaration (a considered "no sensitive
   data, no accounts" is fine; silence is not).
 - Any entry the human did not author or confirm.
+- **Two entries that disagree**, cited as a pair. Coherence is a property of
+  the page, not of any single line, so entry-by-entry checks pass a frame
+  that contradicts itself: a non-goal that excludes the user entry 1 names,
+  a success measure that cannot move even if the problem in entry 2 is
+  solved, an alternative described as adequate while the problem says people
+  are stuck, a learn-before-investing entry asking for evidence entry 5
+  already claims. Report the pair and what would resolve it, never pick a
+  winner: which entry is wrong is the builder's call, not the auditor's.
 
 Report findings as a short list against the entry numbers. The human resolves
 them by revising the frame or by explicitly accepting the gap ("user segment
