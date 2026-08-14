@@ -28,7 +28,7 @@ npm run typecheck && npm run lint && npm run build
 make validate       # validate reports against the schema
 ```
 
-The site reads the skills and docs from disk, so adding a skill (`skills/<name>/SKILL.md`) and classifying it in `lib/skills.ts` makes it appear on the `/skills` pages automatically. A new skill is not done until the site, `README.md`, and `CLAUDE.md` all show it.
+The site reads the skills and docs from disk, so adding a skill (`skills/<name>/SKILL.md`) and classifying it in `lib/skills.ts` makes it appear on the `/skills` pages automatically. The prose surfaces do not follow by themselves. A skill change is not done until `lib/skills.ts` (`ORDER`, `USER_INVOKED`, `SKILL_COPY`), the `README.md` table and its opening count, `PRODUCT.md`'s `## The suite` list, `CLAUDE.md`, the `CHANGELOG.md` `[Unreleased]` block, and the homepage and deck counts (`app/page.tsx`, `app/behind/page.tsx`) all agree. `make validate` fails the build on the mechanical half of that; run it before you push.
 
 ## House rules
 

@@ -122,7 +122,8 @@ foundry/
 ├── CLAUDE.md · TODOS.md · README.md · LICENSE
 ├── reference/     # doc-set-spec.md + skill-authoring.md + templates/
 ├── skills/        # the suite (each dir symlinks into ~/.claude/skills/<name>;
-│                  # production-audit bundles its schema copy)
+│                  # three carry bundled copies: the report schema,
+│                  # BRAND.template.md, plan.template.md)
 ├── schema/        # audit-report.schema.json (canonical) + examples/
 ├── scripts/       # validate-report-invariants.mjs (run by make validate)
 ├── reports/       # published audit JSON; public ones at /example, owned at /reports (public index)
