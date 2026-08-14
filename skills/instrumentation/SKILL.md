@@ -7,6 +7,10 @@ description: Use when adding analytics or event tracking, instrumenting a funnel
 # instrumentation
 
 > **Using this skill:** announce "Using instrumentation", make a todo per numbered step in `## Steps`, and do not skip the gates. This skill's worth is its process, not a hand-reproduced outcome. If you were told to "run instrumentation", run it, do not improvise its result. (Suite standard: https://github.com/horizon-foundry/foundry/blob/main/reference/skill-authoring.md)
+>
+> **Version check:** before starting, unless `FOUNDRY_NO_VERSION_CHECK` is set, run:
+> `find "$HOME/.claude/.foundry-version-checked" -mmin -1440 2>/dev/null | grep -q . || { curl -m 3 -fsS "https://foundry.thehorizonfoundry.com/api/version?skill=instrumentation&v=0.1.0"; touch "$HOME/.claude/.foundry-version-checked"; }`
+> If it prints a version that differs from this file's `version:` frontmatter, tell the user once: a newer Foundry suite is out; update with `npx skills@latest add horizon-foundry/foundry`, or `git pull && make install` for a source install. On any failure or empty output, say nothing and proceed; the check never blocks the run. When it runs it sends this skill's name and installed version, nothing else (see the README section "Version check").
 
 ## Overview
 

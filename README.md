@@ -28,7 +28,11 @@ cd foundry
 make install
 ```
 
-Update from source with `git pull && make install`; remove with `make uninstall`. Requirements: Claude Code, and Node for `npx skills` (or git + make for the source path).
+Update from source with `git pull && make install`; remove with `make uninstall`. An `npx skills` install is a one-time copy, so update it by re-running the install command. Requirements: Claude Code, and Node for `npx skills` (or git + make for the source path).
+
+### Version check
+
+Each skill carries its version in its frontmatter, and at most once a day a skill run asks `foundry.thehorizonfoundry.com/api/version` whether a newer suite exists, telling you to re-run the install command if so. What is sent: the skill's name and its installed version, nothing else. No user, machine, or install identity is attached, and the request is never allowed to block or fail a skill run. Opt out entirely by setting `FOUNDRY_NO_VERSION_CHECK` (any value) in your environment; the skills then never call out at all.
 
 ## The skills
 
