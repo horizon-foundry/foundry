@@ -37,6 +37,7 @@ Plans live in one project-declared directory, named in the project's `CLAUDE.md`
 
    ```
    Status: active
+   Written: YYYY-MM-DD
 
    ## Goal
    ## Kickoff decisions
@@ -49,8 +50,8 @@ Plans live in one project-declared directory, named in the project's `CLAUDE.md`
    ```
 
    Current state is the **objective anchor**: the base commit and branch the plan was written from, the verification state at that point (build, tests, and any audit passing or not), what is done, and what is next. The anchor is what lets the next session reconcile the plan against `git` (below) instead of trusting the narrative. A missing section is a defect: fill it or write "none", never drop the heading.
-4. **Stamp the status.** The plan file opens with the template's status line: `Status: active`. The other values are `completed`, `superseded (by <file>)`, and `abandoned (<why>)`. Update the line when the plan transitions, so a reader never executes a plan that has already been replaced.
-5. **Index it in the same action.** Add `- [ ] Phase N, <name> -> <path>` to the Phase Plans list. Keep the checkboxes current: check the box when that phase's PR merges. A superseded plan's entry points at its successor.
+4. **Stamp the status and the date.** The plan file carries the template's two header lines: `Status: active` and `Written: YYYY-MM-DD`, the absolute date the plan was authored (never a relative date, and never updated afterward). The other status values are `completed`, `superseded (by <file>)`, and `abandoned (<why>)`. Update the status line when the plan transitions, so a reader never executes a plan that has already been replaced; when it transitions, mirror the change to the index entry in the same action (next step).
+5. **Index it in the same action.** The form is `- [ ] YYYY-MM-DD Phase N, <name> -> <path>`, the date copied from the plan's `Written:` line. Which of the two branches from step 1 applies decides where it goes: a unit with no entry yet is APPENDED to the END of the list, and a unit that already has one is UPDATED IN PLACE, never appended a second time, because a unit appears exactly once. Appending keeps the list in chronological order of writing, so the last line is the most recently written plan and a cold session sees the current frontier without opening a single file. The checkbox means the plan is closed, for any reason: check it when the phase's PR merges, and also when the status leaves `active`, with a short annotation naming why (`(superseded by <file>)`, `(abandoned: <why>)`). An unchecked entry therefore always means live work, which is what a resume reads (below); the newest line and the newest LIVE line are different lines whenever the latest plan has already closed, and both readings are wanted.
 
 ## Honest terminal outcomes
 
@@ -60,15 +61,25 @@ Not every close has a next unit. A vacuous plan written just to satisfy the rule
 - **Awaiting evidence.** The next unit depends on something not yet observable (user behavior, a metric maturing, an external reply). Name the evidence and where it will arrive.
 - **No next work selected.** A deliberate stop (project complete, paused, or handed off). Say which.
 
+A terminal entry has no plan file, so it takes its date from the day it is written and carries no path: `- [ ] YYYY-MM-DD Decision required, <the decision> (<who decides>)`. The checkbox follows the same meaning as everywhere else, live work is unchecked. Decision required and Awaiting evidence stay UNCHECKED, because each is blocked work still waiting on something. No next work selected is written CHECKED, because a deliberate stop is not pending work and must not read as live forever.
+
 The chain never goes empty and never goes vacuous: the reading side always finds either a real plan or an honest statement of why there is none.
 
+## Meeting an index that predates these rules
+
+Most existing indexes have no dates, sit in no particular order, and carry closed work still unchecked. That is a file written under the older rules, not a defect to repair on sight, and a Phase Plans list is a permanent record: never mass-reformat one, and never reorder history to manufacture chronology, which destroys the sequence the entries were actually written in.
+
+Apply the rules going forward instead. New entries are dated and appended; an entry you touch for another reason gets its date backfilled when the date is recoverable from the entry's own text, the plan file's `Written:` line, or the merge that closed it, and gets its checkbox corrected when the entry plainly describes closed work. Never invent a date that no evidence supports, and leave the rest alone. A whole-index backfill is real work: plan it as its own unit rather than smuggling it into an unrelated commit. Until then a mixed index is expected, and the red flags below apply to entries written under these rules.
+
 ## Resuming: reconcile the plan against the repo
+
+When the continuation prompt names no phase ("resume", "pick up where we left off"), the default candidate is the last unchecked entry in the dated index, because the list is chronological and unchecked means live. Confirm against the entries above it before acting: an older unchecked entry may be the real blocker.
 
 The written plan explains intent. The repo proves current state, and the repo wins. Before acting on a resumed plan, check `git status`, the current branch, and the recent commits, then reconcile: steps that already merged get checked off, work the plan does not mention gets surfaced, and a plan that reality has diverged from is amended before any new work starts. A handoff is a map, not the territory. Never execute it against a repo you have not looked at.
 
 ## Red flags
 
-Symptoms that you skipped something above, not new rules: a plan file written without touching `TODOS.md`; an existing plan file about to be written over; a meaningful handoff closed with neither an indexed plan nor a terminal entry; a filler plan written because "the chain must not go empty"; a plan resumed without checking git state; a plan file with no status line, or one still marked active after being replaced.
+Symptoms that you skipped something above, not new rules: a plan file written without touching `TODOS.md`; an existing plan file about to be written over; a meaningful handoff closed with neither an indexed plan nor a terminal entry; a filler plan written because "the chain must not go empty"; a plan resumed without checking git state; a plan file with no status line, or one still marked active after being replaced; an index entry with no date, or entries out of chronological order; a status change stamped in the plan file but never mirrored to its index entry.
 
 ## Version check
 
