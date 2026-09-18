@@ -1,12 +1,16 @@
 # Brand
 
+<!-- internal:start -->
 Status: approved
 Approved by: Craig Martin
 Approved on: 2026-07-16
+<!-- internal:end -->
 
 The identity and voice source of truth for Foundry. Distinct from [DESIGN.md](DESIGN.md) (how it looks) and [PRODUCT.md](PRODUCT.md) (what it is and who for). Copy, marketing, and UI strings reference this file.
 
-The three lines above are the machine-readable sign-off the `brand-voice` skill reads: this brand is `approved`, so its glossary and copy rules are enforced, not merely suggested.
+<!-- internal:start -->
+The three lines above are the machine-readable sign-off the `brand-voice` skill reads: this brand is `approved`, so its glossary and copy rules are enforced, not merely suggested. They and this note are wrapped in internal markers because the public brand tab renders this file, and a visitor has no use for either (lib/docs.ts, stripInternalBlocks). The header stays at the top of the file, in this shape, because that is where the skill looks for it.
+<!-- internal:end -->
 
 Inherits the Horizon Foundry parent brand (the horizon-foundry/horizon-foundry repo's BRAND.md); Archivo Black display, decided 2026-07-24 (revised from the initial Big Shoulders pick on 2026-07-23, reversed on letterform grounds before any merge). Type is [DESIGN.md](DESIGN.md)'s fact, not duplicated here.
 
