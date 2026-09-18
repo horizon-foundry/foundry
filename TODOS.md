@@ -3,7 +3,9 @@
 ## Master Plan
 
 > **Always look here first for project context.** The master development plan covers all phases:
-> `~/.claude/plans/i-came-across-this-keen-gadget.md` (deleted in the plans purge; transcript recovery attempted 2026-09-17 found no surviving copy, so the Phase Plans index below is the surviving roadmap)
+> `~/.claude/plans/foundry-master-plan.md` (written 2026-09-18 for the v0.3.x arc; thesis: the disciplines are built, the evidence that they run is not)
+>
+> The original, `~/.claude/plans/i-came-across-this-keen-gadget.md`, was deleted in the plans purge and transcript recovery on 2026-09-17 found no surviving copy. The replacement is not a reconstruction of it: it was written fresh from the shipped suite, this index, the public surfaces, and the two live plans. Phases 0 through 17 below are the record of the arc the lost file covered.
 
 ### Phase Plans
 
@@ -65,6 +67,13 @@ That audit was much fresher than the prior one; its #1 "blocker" (retired /commi
 - [x] 2026-09-02 Phase Plans index backfill (apply the dated-index rules to this file; they shipped 2026-09-02 and this index predates them) -> `~/.claude/plans/foundry-phase-plans-index-backfill.md` (closed: merged 2026-09-17 as PR #20. The backfill shipped the work but left its own entry unchecked and its plan file at `Status: active`, which is exactly the index-versus-plan drift the 2026-09-02 rules named; both corrected by the 2026-09-17 reconcile.)
 - [ ] 2026-09-03 Design-quality boundary (cut the `document` kicker mandate that impeccable bans; copy-provenance check in `brand-voice`; `not-assessed` exit in `production-audit` ui; optional `design:` row in `foundry check` citing impeccable) -> `~/.claude/plans/foundry-design-quality-boundary.md` (sub-plan of the workspace design-quality wave; no critic loop, no design tooling in Foundry)
 - [ ] 2026-08-27 Skills pressure-test learnings, per-skill improvement items written back from a deep adversarial audit of a live household product (the skills ran as review instruments) -> `~/.claude/plans/foundry-savor-pressure-test-learnings.md` (orphan plan indexed by the 2026-09-17 backfill; plan Status: active, queued for a Foundry improvements PR)
+- [ ] 2026-09-18 Phase 18, Read the verdict (answer the frame's entry-9 learn-before-investing threshold from `skill_version_check`, two months overdue; blocked on PostHog access for this project, and the answer gets written into the frame either way) -> `~/.claude/plans/foundry-master-plan.md`
+- [ ] 2026-09-18 Phase 19, The suite proves its own gates run (skill-behavior tests asserting on the tool-call trace across two model families; absorbs the gate-regression harness and the seeded-target eval, which are one idea at two altitudes; promotes the degraded-run and evidence-validity invariants off prose) -> `~/.claude/plans/foundry-master-plan.md`
+- [ ] 2026-09-18 Phase 20, Close the coverage gap (the escalation-path data-layer/authorization lens plus the shared audit-stance convention, from the 2026-08-27 pressure test where a direct-read isolation test passed while the escalation path was open; the argued exception to "do not add more skills yet", shape audited by feature-design first) -> `~/.claude/plans/foundry-master-plan.md`
+- [ ] 2026-09-18 Phase 21, The promise spine covers the suite (four of eleven skills keep no promise: scaffold, mobile, readout, brand-voice; grow the promises or restate the claim, plus the four-surface promise wording drift and the Big Shoulders vs Archivo Black CHANGELOG defect) -> `~/.claude/plans/foundry-master-plan.md`
+- [ ] 2026-09-18 Phase 22, The design-quality boundary (already planned in full; cut the kicker mandate this suite currently requires and impeccable bans) -> `~/.claude/plans/foundry-design-quality-boundary.md`
+- [ ] 2026-09-18 Phase 23, Progressive disclosure for the flagship (supersedes Phase 17 and its Backlog duplicate, which describe one piece of work; sequenced after Phase 19 because that is what would catch a silent behavior change) -> `~/.claude/plans/foundry-master-plan.md`
+- [ ] 2026-09-18 Phase 24, Distribution (conditional: do not open until Phase 18 has an answer) -> `~/.claude/plans/foundry-master-plan.md`
 
 ## Launch sequence (do in this order)
 
