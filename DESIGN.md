@@ -1,17 +1,20 @@
 ---
 name: Foundry
 colors:
-  ink: '#14191F'
+  ink: '#14191F'           # the Horizon Foundry ink, inherited
   ink-raised: '#1E2530'
   ink-raised-2: '#283340'
-  line: '#334455'
+  line: '#334455'          # the hairline: this site's use of the inherited slate
   line-strong: '#45566A'
-  bone: '#E8ECF0'
+  bone: '#E8ECF0'          # the Horizon Foundry bone, inherited
   bone-dim: '#A2ABB8'
   bone-faint: '#8B94A4'
   signal: '#FFFFFF'
-  brand-slate: '#334455'
-  command: '#D99A2E'
+  # The two inherited values, under this product's own names. Renaming them
+  # would churn every token reference for a naming preference, so the names
+  # stay and the parentage is stated instead.
+  brand-slate: '#334455'   # the Horizon Foundry slate, inherited
+  command: '#D99A2E'       # the Horizon Foundry amber, inherited
   critical: '#FF5C5C'
   high: '#FF9F45'
   medium: '#F5CE4B'
@@ -38,6 +41,8 @@ spacing:
 ---
 
 Inherits the Horizon Foundry parent brand (the horizon-foundry/horizon-foundry repo's BRAND.md); Archivo Black display, decided 2026-07-24 (revised from the initial Big Shoulders pick on 2026-07-23, reversed on letterform grounds before any merge).
+
+**What this file owns, and what it borrows** (decision of record, parent BRAND.md's "Inheritance", 2026-09-21). Four colour values are the PARENT's and are inherited, never redefined here: ink `#14191F`, bone `#E8ECF0`, slate `#334455`, amber `#D99A2E`. The design kit's `MARK.md` is the authority on which of them the mark may take on which ground. Everything else in the block above is this product's own extension for its own dark surface: the ink ramp, the bone tints, the severity scale, the verdict colours, and `signal`. Two of this repo's names are aliases of inherited values rather than definitions of them, and the frontmatter says so at each one: `command` is the parent's amber, `brand-slate` is the parent's slate. This repo therefore claims no source of truth over the brand palette, the mark, or the display face; it claims its own implementation and its own extensions.
 
 ## Brand & Style
 
