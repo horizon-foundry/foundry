@@ -59,6 +59,18 @@ You cannot enforce a voice no one has written down, so when there is no `BRAND.m
 
 Draft the `BRAND.md` from what the builder already has or has approved: the frame, the forever spec, copy they have written and liked, preferences they have stated. Fill its shape (purpose, positioning, personality, voice and tone, glossary, anti-goals) from those sources. Mark anything you inferred rather than heard as "assumed, unconfirmed." Leave blanks the builder has not filled visibly blank.
 
+**The glossary is observed, not invented.** Its entries are the builder's own
+words for their own concepts, collected from where they already appear: the
+frame, the forever spec, copy they wrote and liked, what they said in this
+session. Record each term as heard, with a pointer to where it was heard, and
+mark any term you supplied rather than observed as "assumed, unconfirmed" like
+every other drafted entry. A vocabulary invented at branding time teaches the
+product a language nobody speaks: the builder keeps using their own word, the
+surfaces drift back to it, and the glossary becomes the thing everyone
+overrules. This stays observation, never elicitation. You read what is already
+written and listen to what is already said; you do not run a session to extract
+vocabulary from the builder.
+
 Two limits keep the draft honest. **Do not invent brand rules the builder never approved:** no made-up personality, no manufactured positioning, and no discovery interview to pull them out of the builder. And **the draft binds only after the builder signs off.** Until then it is a proposal, and copy is not enforced against it.
 
 Make that sign-off **machine-readable**, so "is this approved?" is a lookup, not a judgment. `BRAND.md` opens with an approval header the agent reads before enforcing anything:
@@ -94,7 +106,7 @@ Marketing and UI copy track shipped reality. When a feature ships, changes, or i
 
 ## Red flags
 
-Symptoms that you skipped something above, not new rules: copy written with no `BRAND.md` to check against; personality or positioning invented to fill a blank one; copy enforced against a `BRAND.md` nobody signed off; an error message that is on-brand but unclear; two surfaces using different words for the same thing; a spec or notes doc pasted onto a user-facing page; copy describing a feature that is planned rather than shipped.
+Symptoms that you skipped something above, not new rules: copy written with no `BRAND.md` to check against; personality or positioning invented to fill a blank one; a glossary term nobody here was ever heard using; copy enforced against a `BRAND.md` nobody signed off; an error message that is on-brand but unclear; two surfaces using different words for the same thing; a spec or notes doc pasted onto a user-facing page; copy describing a feature that is planned rather than shipped.
 
 ## Version check
 
