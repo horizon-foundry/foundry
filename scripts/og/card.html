@@ -1,0 +1,111 @@
+<!doctype html>
+<!--
+  Share card source for public/og.png (1200x630).
+
+  The card that shipped with v0.1.0 had no recipe: it existed only as a PNG,
+  which is why it still carried the retired mark and a pre-Archivo display face
+  months after both had been replaced everywhere a test could see. This file is
+  the recipe, so the next brand change is a re-render rather than an archaeology
+  problem.
+
+  Same tokens as app/globals.css and DESIGN.md: the ink ground, the 56px
+  hairline grid masked from the top, Archivo Black display over IBM Plex Mono.
+  The mark is a copy of the design kit's canonical cut (kit v1.3), pinned by
+  reference/brand-kit.json; when the kit changes, this card is re-cut and
+  re-rendered in the same pass.
+
+  No ambient glow here, deliberately. DESIGN.md codifies the amber forge glow
+  behind the HERO, and its Anti-goals ban glows outright; a share card is not
+  the hero, so the card takes the flat ink ground and the grid and nothing
+  else. Two independent critics, one seeing only this image and the anti-goals,
+  read the glow as decoration.
+
+  Regenerate after a mark or copy change (fonts load from Google Fonts, so the
+  render needs network; a first run on a new machine needs
+  `npx --yes playwright install chromium-headless-shell`):
+
+    make og-card
+
+  That records BOTH digests in scripts/og/rendered.json, this file's and the
+  PNG's, and prints the version token to paste into app/layout.tsx's og:image
+  URL. `make validate` checks all three, so editing this file without
+  re-rendering fails, replacing or deleting the PNG fails, and re-rendering
+  without bumping the URL fails. Mtimes cannot do any of that, because git does
+  not preserve them.
+
+  The token is not decoration: X and LinkedIn cache og:image by URL for weeks
+  and ignore cache headers, so a new card at the same URL reaches nobody who
+  already shared a link.
+
+  The host in the footer line is the canonical one (SITE_URL in app/layout.tsx),
+  not fly.toml's SITE_ORIGIN. The two deliberately disagree (CLAUDE.md says
+  why), and the card that shipped with v0.1.0 carried the fly.dev host on the
+  site's most-shared surface.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=IBM+Plex+Mono:wght@400;500&display=block" rel="stylesheet">
+<style>
+  html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; }
+  body {
+    background: #14191f;
+    color: #e8ecf0;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    position: relative;
+  }
+  /* The hero's ground, reproduced: .grid-field from app/globals.css at this
+     card's scale. */
+  .grid-field {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(to right, #334455 1px, transparent 1px),
+      linear-gradient(to bottom, #334455 1px, transparent 1px);
+    background-size: 56px 56px;
+    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #14191f 20%, transparent 75%);
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #14191f 20%, transparent 75%);
+  }
+  .card {
+    position: absolute; inset: 0;
+    padding: 80px;
+    box-sizing: border-box;
+    display: flex; flex-direction: column; justify-content: center;
+    gap: 40px;
+  }
+  /* The chrome lockup, at the card's scale: the mark plus live-text
+     "Foundry" in Archivo Black, uppercase at 0.02em (DESIGN.md). This is the
+     Foundry sub-brand lockup, not the kit's HORIZON FOUNDRY one. At 56px tall
+     the mark is 86px wide, clear of the kit's 48px floor, so it takes the
+     canonical cut. */
+  .lockup { display: flex; align-items: center; gap: 28px; }
+  .lockup svg { height: 56px; width: auto; fill: #e8ecf0; }
+  .lockup span {
+    font-family: "Archivo Black", sans-serif;
+    font-size: 40px; line-height: 1;
+    text-transform: uppercase; letter-spacing: 0.02em;
+  }
+  h1 {
+    font-family: "Archivo Black", sans-serif;
+    font-size: 62px; line-height: 1.05; letter-spacing: 0;
+    margin: 0;
+  }
+  h1 .signal { color: #ffffff; }
+  .foot {
+    font-size: 19px; color: #8b94a4;
+    text-transform: uppercase; letter-spacing: 0.14em;
+  }
+</style>
+</head>
+<body>
+<div class="grid-field"></div>
+<div class="card">
+  <div class="lockup">
+    <svg viewBox="0 0 378.19 246" aria-hidden="true"><path d="M0 246 L67.03 170.59 L194.58 142.25 L235.69 96 L378.19 246 L303.7 246 L237.01 175.79 L174.6 246 L102.35 246 L158.27 183.1 L120.75 191.43 L72.25 246 Z M82.92 152.72 L218.67 0 L255.99 39.29 L172.95 132.71 Z M245.02 85.5 L286.1 39.29 L378.19 136.23 L328.53 136.23 L286.98 92.49 L269.9 111.69 Z"/></svg>
+    <span>Foundry</span>
+  </div>
+  <h1>Forge shippable software<br>from <span class="signal">AI-built code</span>.</h1>
+  <p class="foot">Claude Code skills · Audit · Verdict · foundry.thehorizonfoundry.com</p>
+</div>
+</body>
+</html>

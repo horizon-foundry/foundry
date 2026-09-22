@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "all-caps-body",
+        "value": "*",
+        "files": [
+          "scripts/og/card.html"
+        ],
+        "createdAt": "2026-09-22T11:48:15.071Z",
+        "reason": "The only uppercase on the card is one mono metadata line and the wordmark. DESIGN.md sets the Foundry lockup uppercase, and the tracked mono caps label is the site's standing pattern (app/page.tsx kicker, SiteFooter); this is a short label, which the rule itself exempts. Copy is unchanged from the card this replaces."
+      }
+    ]
+  }
+}

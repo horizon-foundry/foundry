@@ -91,14 +91,21 @@ Honest limits, stated plainly: the audit reads code and traces flows; it is not 
 # Install every skill user-global (symlinks into ~/.claude/skills)
 make install
 
-# Validate reports against the schema, bundled copies, and the version marker
-make validate
-
 # Site (Node 22+)
 npm install
 npm run dev          # localhost:3000
 npm run lint
 npm run build
+
+# Validate reports against the schema, bundled copies, the version marker, and
+# the brand assets. The last check reads the BUILT site, so build first.
+npm run build && make validate
+
+# Brand assets: re-render the share card (this records both digests and prints
+# the og:image token), and check the design-kit pin against a checkout of the
+# kit, which lives in the parent brand repo and is not vendored here.
+make og-card
+make check-kit KIT=<path to logo/horizon-foundry-kit>
 
 # Local /reports testing needs the Supabase env (see .env.example); copy it to
 # .env.local and add http://localhost:3000/auth/confirm to the Supabase
@@ -126,12 +133,14 @@ foundry/
 ├── PRODUCT.md · BRAND.md · DESIGN.md   # forever spec · voice · looks
 ├── NOTES.md · PROMPTS.md · FRICTION.md # why · what happened · friction
 ├── CLAUDE.md · TODOS.md · README.md · LICENSE
-├── reference/     # doc-set-spec.md + skill-authoring.md + templates/
+├── reference/     # doc-set-spec.md + skill-authoring.md + templates/ +
+│                  # brand-kit.json (which design kit the brand copies came from)
 ├── skills/        # the suite (each dir symlinks into ~/.claude/skills/<name>;
 │                  # three carry bundled copies: the report schema,
 │                  # BRAND.template.md, plan.template.md)
 ├── schema/        # audit-report.schema.json (canonical) + examples/
-├── scripts/       # validate-report-invariants.mjs + sync-version.sh
+├── scripts/       # validate-report-invariants.mjs + sync-version.sh +
+│                  # the brand gates + og/card.html (the share card's recipe)
 ├── VERSION        # suite version, single source of truth (make sync-version)
 ├── reports/       # published audit JSON; public ones at /example, owned at /reports (public index)
 ├── app/ · components/ · lib/           # Next.js site

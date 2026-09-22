@@ -3,7 +3,7 @@
 SKILLS_DIR := $(CURDIR)/skills
 CLAUDE_SKILLS := $(HOME)/.claude/skills
 
-.PHONY: install uninstall validate sync-bundled sync-version
+.PHONY: install uninstall validate sync-bundled sync-version og-card check-kit
 
 # Symlink every skill in skills/ into the user-global skills directory. The
 # symlinks (not copies) keep the installed skills tracking git. Refuses to
@@ -41,16 +41,42 @@ sync-bundled:
 	cp reference/templates/plan.md skills/phase-plan/plan.template.md
 	@echo "Synced bundled copies into skills/production-audit/, skills/brand-voice/, skills/phase-plan/."
 
+# Re-render the share card from its source and record both digests. The card
+# is a PNG, so nothing downstream can read what it says; scripts/og/rendered.json
+# is how `make validate` knows the PNG is the render of the committed source and
+# not something restored, replaced or deleted. Needs network (Google Fonts) and,
+# on a fresh machine, `npx --yes playwright install chromium-headless-shell`.
+og-card:
+	npx --yes playwright screenshot --viewport-size=1200,630 \
+		--wait-for-timeout=2500 "file://$(CURDIR)/scripts/og/card.html" public/og.png
+	@node -e 'const c=require("crypto"),f=require("fs");const h=p=>c.createHash("sha256").update(f.readFileSync(p)).digest("hex");const r={source:h("scripts/og/card.html"),render:h("public/og.png")};f.writeFileSync("scripts/og/rendered.json",JSON.stringify(r,null,2)+"\n");console.log("Recorded. Point og:image at /og.png?v="+r.render.slice(0,8)+" in app/layout.tsx.")'
+
+# Check the pin against a real design-kit checkout. CI cannot do this (the kit
+# is in another repo and on nobody's CI disk), so it is a named target rather
+# than a silent part of validate: the default `make validate` compares this
+# repo to a file in this repo, and only this target compares that file to the
+# kit. Run it whenever the kit moves, and before claiming a kit version.
+check-kit:
+	@test -n "$(KIT)" || { echo "usage: make check-kit KIT=<path to logo/horizon-foundry-kit>"; exit 2; }
+	node scripts/check-brand-assets.mjs --kit "$(KIT)"
+
 # VERSION (repo root) is the suite version's single source of truth, bumped in
 # the release roll-up commit. This stamps it into every surface that carries
 # it; validate fails on drift, so the copies cannot diverge silently.
 sync-version:
 	sh scripts/sync-version.sh
 
-# Runs in three parts. First, every skill is visible on every public surface and
-# every count claim matches (scripts/check-skill-surfaces.mjs). Then the schema
-# example and any published reports against the contract. Last, the version
-# markers, so a stamped copy cannot drift from VERSION.
+# Runs in four parts. First, every skill is visible on every public surface and
+# every count claim matches (scripts/check-skill-surfaces.mjs). Then the brand
+# assets: the copies of the design kit against the pin, and the BUILT output
+# against the retired mark (scripts/check-brand-assets.mjs,
+# scripts/check-built-mark.mjs). Then the schema example and any published
+# reports against the contract. Last, the version markers, so a stamped copy
+# cannot drift from VERSION.
+#
+# The built-output sweep means `npm run build` has to precede this target, and
+# it FAILS rather than skipping when .next/ is missing or stale: a gate that
+# quietly skips is a gate that is green for the wrong reason.
 # Also fails if any bundled skill copy has diverged from its canonical original
 # (a fork in the schema would split the report contract between the installed
 # skill and the site renderer; a fork in a template would hand adopters a
@@ -61,6 +87,8 @@ sync-version:
 # URL, lib/site.ts, and SECURITY.md, and SKILL_SLUGS matches skills/ exactly.
 validate:
 	node scripts/check-skill-surfaces.mjs
+	node scripts/check-brand-assets.mjs
+	node scripts/check-built-mark.mjs
 	@cmp -s schema/audit-report.schema.json skills/production-audit/audit-report.schema.json || { \
 		echo "ERROR: skills/production-audit/audit-report.schema.json is out of sync with schema/audit-report.schema.json. Run 'make sync-bundled'."; exit 1; }
 	@cmp -s reference/templates/BRAND.md skills/brand-voice/BRAND.template.md || { \

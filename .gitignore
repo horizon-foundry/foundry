@@ -44,5 +44,15 @@ venv/
 # TypeScript incremental build info
 *.tsbuildinfo
 
-# Internal design-critique logs (impeccable); never publish
-.impeccable/
+# impeccable: the scratch is ignored, the design record is not. Critique logs
+# and local build/live state never publish. config.json (the detector
+# suppressions, each with the reason it was granted) and design.json (the
+# tokens DESIGN.md's frontmatter cannot carry, if this repo ever grows one)
+# are the design record and belong in review, so they are not listed here.
+.impeccable/critique/
+.impeccable/live/
+.impeccable/build/
+.impeccable/bin/
+.impeccable/dist/
+.impeccable/hook.*.json
+.impeccable/config.local.json
