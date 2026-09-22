@@ -51,7 +51,7 @@ export const metadata: Metadata = {
         // LinkedIn cache og:image by URL for weeks and ignore cache headers,
         // so a re-rendered card at an unchanged URL reaches nobody who has
         // already shared a link. `make og-card` prints the new token.
-        url: "/og.png?v=3e2a34e4",
+        url: "/og.png?v=84f096a3",
         width: 1200,
         height: 630,
         alt: "Foundry: forge shippable software from AI-built code. Claude Code skills, audit, verdict.",
@@ -62,7 +62,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
-    images: ["/og.png?v=3e2a34e4"],
+    images: ["/og.png?v=84f096a3"],
   },
   robots: {
     index: true,

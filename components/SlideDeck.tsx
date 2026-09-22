@@ -92,7 +92,7 @@ export function SlideDeck({ slides, title, tagline, statChips }: Props) {
                 gets the same uppercase, open-tracking treatment as the
                 header/footer Wordmark, not the sentence-case display
                 heading style used elsewhere in this deck. */}
-            <h2 className="font-display text-4xl uppercase tracking-[0.02em] text-bone">
+            <h2 className="font-display text-4xl uppercase tracking-[0.04em] text-bone">
               {title}
             </h2>
             <p className="mx-auto max-w-xl leading-relaxed text-bone-dim">

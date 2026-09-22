@@ -367,8 +367,8 @@ for (const f of pin.files) {
     "public/site.webmanifest: scope should be /. Without it, scope follows whichever page the visitor installed from, and under display: standalone every other route then opens in the in-app browser bar.",
   );
   check(
-    ours.name === "Foundry" && ours.short_name === "Foundry",
-    'public/site.webmanifest: the product is named "Foundry" on every other surface of this site (applicationName, the title template, the chrome lockup). The kit ships a placeholder name.',
+    ours.name === "Foundry Skills" && ours.short_name === "Foundry",
+    'public/site.webmanifest: the long name says what the product is ("Foundry Skills"), because an install prompt carries no site around it and "Foundry" alone collides with a well-known Ethereum toolchain among exactly this audience; the short name under the icon is the brand ("Foundry"). The kit ships a placeholder for both.',
   );
   for (const k of ["display", "theme_color", "background_color"]) {
     check(
