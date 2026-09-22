@@ -1,4 +1,14 @@
-@import "tailwindcss";
+/* source(none) plus explicit sources, because auto-detection scans the whole
+   repository including prose. That put `.backdrop-blur` and `.bg-ink/85` in the
+   shipped stylesheet, regenerated from the changelog entry describing their
+   REMOVAL, and `.text-red-600` from a published audit report quoting another
+   product's Tailwind classes: a numbered palette colour in production CSS,
+   which the monochrome rule forbids, while the source stayed clean. A
+   source-only sweep cannot see that class of defect, which is why it survived
+   two audits. */
+@import "tailwindcss" source(none);
+@source "../app";
+@source "../components";
 @plugin "@tailwindcss/typography";
 
 /*
@@ -51,10 +61,21 @@
      Reduced motion drops spatial movement and keeps the state change (see the
      prefers-reduced-motion blocks below). DESIGN.md's Motion section is the
      record; these are its implementation. */
-  --duration-tick: 120ms; /* a press, a tick landing: acknowledgement */
-  --duration-quick: 220ms; /* hover and focus state changes, a chip lifting */
-  --duration-settle: 420ms; /* an element arriving, the crosshair settling */
-  --duration-draw: 600ms; /* a rule or the hero grid drawing itself in, once */
+  /* The --transition-duration-* namespace, not --duration-*: Tailwind v4
+     resolves the `duration-*` utility against this one, so naming them
+     anything else makes `class="duration-quick"` emit nothing, silently. The
+     first cut of these tokens did exactly that, and DESIGN.md documented the
+     utility as working. `var(--transition-duration-quick)` still resolves in
+     plain CSS, so the rename costs nothing. */
+  --transition-duration-tick: 120ms; /* a press, a hover-out, a tick landing */
+  --transition-duration-quick: 220ms; /* a hover or focus state arriving, a card lifting */
+  --transition-duration-settle: 420ms; /* an element arriving, the crosshair settling */
+  --transition-duration-draw: 600ms; /* a rule or the hero field drawing itself in, once */
+  /* Every bare `transition-*` utility in the codebase (51 of them) runs at
+     Tailwind's 150ms default, which matches no token. Pointing the default at
+     a token retargets all of them without touching a component. Tailwind's
+     default easing is already bit-identical to --ease-exit. */
+  --default-transition-duration: var(--transition-duration-quick);
   --ease-entrance: cubic-bezier(0.22, 1, 0.36, 1); /* overshoot: entrances only */
   --ease-exit: cubic-bezier(0.4, 0, 0.2, 1); /* no overshoot on the way out */
 
@@ -84,8 +105,17 @@ html {
   *::before,
   *::after {
     animation-duration: 0.001ms !important;
+    /* Was missing, so staggered children still arrived in sequence under a
+       preference that asks for no sequence. */
+    animation-delay: 0s !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
+    /* NOT a blanket transition kill. DESIGN.md's Motion section says reduced
+       motion drops spatial movement and keeps the meaning, and the blanket
+       version contradicted it: a colour or border change carries no movement
+       at all and is often the only thing confirming an action. Spatial
+       properties simply leave the transition list. */
+    transition-property: color, background-color, border-color, outline-color,
+      opacity, fill, stroke !important;
   }
 }
 
@@ -156,6 +186,15 @@ body::before {
     display: block;
   }
 }
+/* Forced colours drop background-image, so the lattice disappears while the
+   tick's borders are forced to a system colour and survive: a lone mark in
+   empty space with nothing to read it against. The band is decoration, and
+   when its scale cannot render it has nothing to say. */
+@media (forced-colors: active) {
+  .hero-field {
+    display: none;
+  }
+}
 
 /* Hairline-grid backdrop utility for hero/section grounds. */
 .grid-field {
@@ -168,19 +207,12 @@ body::before {
      against a fluid column, which is how the graduations ended up 10 to 12px
      off the thing sitting on them. */
   background-size: calc(100% / 9) 3.5rem;
-  /* Alpha mask: only opacity matters, so the token's hue is irrelevant: any
-     fully-opaque value fades the grid the same way. Use the token, not a raw
-     literal. */
-  -webkit-mask-image: radial-gradient(
-    ellipse 80% 60% at 50% 0%,
-    var(--color-ink) 20%,
-    transparent 75%
-  );
-  mask-image: radial-gradient(
-    ellipse 80% 60% at 50% 0%,
-    var(--color-ink) 20%,
-    transparent 75%
-  );
+  /* Deliberately unmasked. It carried a radial fade from when this lattice ran
+     full-bleed behind the whole hero; inside a 168px band that fade left it
+     drawn for the top 60px and gone for the rest, so a reading in the lower two
+     thirds landed on a graduation that was not there, and the bottom edge the
+     band is aligned to dissolved before reaching the panel. A scale that fades
+     out is not a scale. */
 }
 
 /* Staggered entrance for slide content and hero. Children rise in sequence. */
@@ -194,7 +226,9 @@ body::before {
     transform: translateY(0);
   }
 }
-.stagger-rise > * {
+/* 500ms and this curve match no token: a staggered arrival is its own job and
+   is left alone rather than forced into --transition-duration-settle. */
+.stagger-rise > *:not(.hero-field) {
   opacity: 0;
   animation: rise 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
 }
@@ -231,7 +265,8 @@ body::before {
 }
 .draw-rule {
   transform-origin: left;
-  animation: draw-line 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) 0.2s both;
+  animation: draw-line var(--transition-duration-draw) cubic-bezier(0.2, 0.7, 0.2, 1)
+    0.2s both;
 }
 
 /* Long-form rendered doc prose (Behind-the-Build tabs). IBM Plex Serif,
@@ -416,10 +451,12 @@ body::before {
 .grid-crosshair {
   position: absolute;
   inset: 0;
-  z-index: 1;
   z-index: 0;
   opacity: 0;
-  transition: opacity var(--duration-quick) var(--ease-exit);
+  /* Out on the tick, in on the quick: a close runs faster and quieter than an
+     open (DESIGN.md, Motion). The first cut ran both at 220ms and overrode only
+     the easing, which is the symmetry the rule says must be declared. */
+  transition: opacity var(--transition-duration-tick) var(--ease-exit);
   /* Deliberately NOT masked like the grid. The first pass gave it the grid's
      radial fade for tidiness and the reading disappeared through most of the
      hero, which is where the pointer actually is: the scale may fade into the
@@ -427,12 +464,12 @@ body::before {
 }
 .grid-crosshair[data-live="true"] {
   opacity: 1;
-  transition-timing-function: var(--ease-entrance);
+  transition: opacity var(--transition-duration-quick) var(--ease-entrance);
 }
 .grid-crosshair span {
   position: absolute;
   background: var(--color-line-strong);
-  transition: transform var(--duration-settle) var(--ease-entrance);
+  transition: transform var(--transition-duration-settle) var(--ease-entrance);
 }
 .grid-crosshair .gx {
   top: 0;
@@ -485,20 +522,23 @@ body::before {
   }
 }
 .grid-field {
-  animation: grid-raise var(--duration-draw) var(--ease-entrance) both;
+  animation: grid-raise var(--transition-duration-draw) var(--ease-entrance) both;
 }
 
 /* Command micro-interaction: the amber tokens warm slightly and lift on hover,
    reinforcing "this is executable". */
+/* The hover warms the colour and nothing else. It used to add a 14px amber
+   text-shadow, which is a glow (banned in Anti-goals), animated as a paint
+   property, making it the last paint-driven animation on the site after the
+   hero rewrite removed two others for that reason. It was live on /skills and
+   unreachable on the home page, so it was simultaneously a violation and a
+   promise the page never kept. Emphasis reads by luminance here, per Colors. */
 .text-command {
-  transition:
-    color 0.18s ease,
-    text-shadow 0.18s ease;
+  transition: color var(--transition-duration-tick) var(--ease-exit);
 }
 a:hover .text-command,
 .group:hover .text-command {
-  text-shadow: 0 0 14px
-    color-mix(in srgb, var(--color-command) 40%, transparent);
+  color: color-mix(in srgb, var(--color-command) 82%, white);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -533,36 +573,40 @@ a:hover .text-command,
      overshoot, because a card settling back should not draw the eye it is
      giving up (DESIGN.md, Motion: asymmetry is the default). */
   transition:
-    transform var(--duration-tick) var(--ease-exit),
-    border-color var(--duration-tick) var(--ease-exit),
-    background-color var(--duration-tick) var(--ease-exit);
+    transform var(--transition-duration-tick) var(--ease-exit),
+    border-color var(--transition-duration-tick) var(--ease-exit),
+    background-color var(--transition-duration-tick) var(--ease-exit);
 }
 .lift:hover,
 .lift:focus-visible {
   transform: translateY(-2px);
   transition:
-    transform var(--duration-quick) var(--ease-entrance),
-    border-color var(--duration-quick) var(--ease-entrance),
-    background-color var(--duration-quick) var(--ease-entrance);
+    transform var(--transition-duration-quick) var(--ease-entrance),
+    border-color var(--transition-duration-quick) var(--ease-entrance),
+    background-color var(--transition-duration-quick) var(--ease-entrance);
 }
 
 /* CTAs acknowledge the press. */
 .press {
-  transition: transform var(--duration-tick) var(--ease-exit);
+  transition: transform var(--transition-duration-tick) var(--ease-exit);
 }
 .press:active {
   transform: translateY(1px);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .lift,
-  .press {
-    transition: none !important;
-  }
+  /* The movement goes; the acknowledgement stays. Killing the transition
+     outright left a press with nothing at all to confirm it, which is the off
+     switch DESIGN.md's Motion section explicitly disclaims. The border does the
+     confirming instead, on the tick, with no spatial change. */
   .lift:hover,
   .lift:focus-visible,
   .press:active {
     transform: none !important;
+  }
+  .press:active {
+    border-color: var(--color-line-strong);
+    background-color: var(--color-ink-raised);
   }
 }
 
@@ -577,7 +621,10 @@ a:hover .text-command,
 .glyph-draw :is(path, line, rect, circle, polygon) {
   stroke-dasharray: 220;
   stroke-dashoffset: 220;
-  animation: glyph-stroke 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.25s forwards;
+  /* 900ms matches no token and is left alone deliberately: a token is matched
+     by the job, never by the nearest number. The curve was a hand-written copy
+     of --ease-entrance and is now the token. */
+  animation: glyph-stroke 0.9s var(--ease-entrance) 0.25s forwards;
 }
 @media (prefers-reduced-motion: reduce) {
   .glyph-draw :is(path, line, rect, circle, polygon) {

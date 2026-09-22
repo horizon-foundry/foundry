@@ -422,6 +422,29 @@ check(
   }
 }
 
+// 4. The monochrome rule, asserted in the ARTIFACT rather than in source.
+//    DESIGN.md allows no colour that is not a severity, a verdict or an
+//    invocable command, and source obeyed it while the shipped stylesheet did
+//    not: Tailwind auto-detection scanned the repo's prose, so `.text-red-600`
+//    was regenerated from a published audit report quoting another product's
+//    classes, and `.backdrop-blur` from the changelog entry describing its own
+//    removal. No source sweep can see that, which is why it survived two
+//    audits. Source scanning is now scoped (app/globals.css), and this is the
+//    check that says so.
+{
+  const PALETTE =
+    /\.(?:text|bg|border|ring|from|via|to|fill|stroke|outline|decoration|shadow|accent|caret|divide|placeholder)-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-\d{2,3}(?![\w-])/g;
+  const sheets = filesUnder(join(ROOT, ".next/static"), (n) => n.endsWith(".css"));
+  check(sheets.length > 0, "no built stylesheet found to check.");
+  for (const f of sheets) {
+    const found = [...new Set(readFileSync(f, "utf8").match(PALETTE) ?? [])];
+    check(
+      found.length === 0,
+      `${f.replace(`${ROOT}/`, "")} ships numbered Tailwind palette classes (${found.join(", ")}). The brand layer is monochrome; colour means a severity, a verdict or an invocable command. If these came from prose rather than from a component, the source scope in app/globals.css is what to fix.`,
+    );
+  }
+}
+
 if (fail.length) {
   console.error("Built-output check FAILED:");
   for (const m of fail) console.error(`  - ${m}`);

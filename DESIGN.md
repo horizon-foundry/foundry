@@ -34,6 +34,15 @@ typography:
     fontFamily: 'IBM Plex Mono'
   serif:
     fontFamily: 'IBM Plex Serif'
+motion:
+  # Named for the job, never a range. app/globals.css's @theme is the
+  # implementation; this block is the machine-readable record of it.
+  transition-duration-tick: '120ms'     # a press, a hover-out, a tick landing
+  transition-duration-quick: '220ms'    # a hover or focus state arriving
+  transition-duration-settle: '420ms'   # an element arriving, the crosshair settling
+  transition-duration-draw: '600ms'     # a rule or the hero field drawing in, once
+  ease-entrance: 'cubic-bezier(0.22, 1, 0.36, 1)'
+  ease-exit: 'cubic-bezier(0.4, 0, 0.2, 1)'
 spacing:
   unit: '4px'
   gutter: '24px'
@@ -91,16 +100,16 @@ job matches no token is left alone rather than forced into one.
 
 | Token | Value | What it is for |
 | --- | --- | --- |
-| `--duration-tick` | 120ms | A press, a hover-out, a tick landing: acknowledgement |
-| `--duration-quick` | 220ms | A hover or focus state arriving, a card lifting |
-| `--duration-settle` | 420ms | An element arriving, the hero crosshair settling on its graduation |
-| `--duration-draw` | 600ms | A rule or the hero field drawing itself in, once |
+| `--transition-duration-tick` | 120ms | A press, a hover-out, a tick landing: acknowledgement |
+| `--transition-duration-quick` | 220ms | A hover or focus state arriving, a card lifting |
+| `--transition-duration-settle` | 420ms | An element arriving, the hero crosshair settling on its graduation |
+| `--transition-duration-draw` | 600ms | A rule or the hero field drawing itself in, once |
 | `--ease-entrance` | `cubic-bezier(0.22, 1, 0.36, 1)` | Entrances and settles; the only easing with overshoot |
 | `--ease-exit` | `cubic-bezier(0.4, 0, 0.2, 1)` | Exits and hover-outs; no overshoot on the way out |
 
-They live in `app/globals.css`'s `@theme` block, so Tailwind utilities reach
-them (`duration-quick`, `ease-entrance`). A raw millisecond value in a
-component is drift.
+The durations sit in the `--transition-duration-*` namespace because that is the one Tailwind v4 resolves the `duration-*` utility against. Named anything else, `class="duration-quick"` emits nothing at all, silently, which is what shipped on 2026-09-22 with this document asserting the opposite.
+
+They live in `app/globals.css`'s `@theme` block, so Tailwind utilities reach them (`duration-quick`, `ease-entrance`), and `--default-transition-duration` points at `--transition-duration-quick`, so a bare `transition-colors` in a component is already on a token rather than on Tailwind's untokenized 150ms. A raw millisecond value in a component is drift. A raw value in the stylesheet is drift too, unless its job matches no token and it says so: `.stagger-rise` (500ms) and `.glyph-draw` (900ms) are the two that do.
 
 **Asymmetry is the default.** A close runs faster and quieter than an open: a
 card lifts in `--duration-quick` with the entrance easing and settles back in

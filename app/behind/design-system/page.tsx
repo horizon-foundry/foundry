@@ -18,6 +18,15 @@ const NEUTRALS = [
   ["bone", "#E8ECF0", "bg-bone"],
 ] as const;
 
+// Mirrors the @theme block and DESIGN.md's motion frontmatter; when a token
+// changes, change it in the same commit (same rule the hex labels follow).
+const MOTION = [
+  ["tick", "120ms", "A press, a hover-out, a tick landing"],
+  ["quick", "220ms", "A hover or focus state arriving, a card lifting"],
+  ["settle", "420ms", "An element arriving, the hero crosshair settling"],
+  ["draw", "600ms", "A rule or the hero field drawing itself in, once"],
+] as const;
+
 const SEVERITIES: Severity[] = [
   "critical",
   "high",
@@ -129,6 +138,34 @@ export default function DesignSystem() {
               </p>
             </div>
           </div>
+        </Section>
+
+        <Section label="Motion: named for the job, never a range">
+          <div className="divide-y divide-line border-y border-line">
+            {MOTION.map(([name, value, job]) => (
+              <div
+                key={name}
+                className="flex flex-col gap-1 py-3 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6"
+              >
+                <span className="font-mono text-xs text-bone">
+                  duration-{name}
+                  <span className="ml-3 text-bone-faint">{value}</span>
+                </span>
+                <span className="text-sm leading-relaxed text-bone-dim sm:text-right">
+                  {job}
+                </span>
+              </div>
+            ))}
+          </div>
+          <p className="mt-5 max-w-2xl text-sm leading-relaxed text-bone-dim">
+            A value is matched to a token by what the motion does, never by the
+            nearest number, and a duration whose job matches no token is left
+            alone. Two easings: <code className="font-mono text-xs">ease-entrance</code>{" "}
+            carries overshoot and belongs to entrances,{" "}
+            <code className="font-mono text-xs">ease-exit</code> has none. A close
+            runs faster and quieter than an open. Under reduced motion the
+            spatial half drops and the state change stays.
+          </p>
         </Section>
 
         <Section label="The mark: two cuts, chosen by rendered width">

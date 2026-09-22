@@ -53,19 +53,36 @@ export function HeroForge() {
     // No hovering cursor to read on a touch screen, so there is no coordinate
     // to report and no work worth doing (see the mobile skill).
     const coarse = window.matchMedia("(pointer: coarse)");
+    // The third gate, and the one the first cut forgot: below this the band is
+    // display:none, so there is nothing to read. Without it the listeners
+    // attached anyway and a zero-width rect made the column zero, which wrote
+    // `--cx: NaNpx`. It mirrors the media query in app/globals.css.
+    const wide = window.matchMedia("(min-width: 64rem)");
 
     let raf = 0;
     let rect: DOMRect | null = null;
+    let stale = true;
     let px = 0;
     let py = 0;
+    let lastCx = "";
+    let lastCy = "";
 
     const measure = () => {
       rect = field.getBoundingClientRect();
+      stale = false;
     };
 
     const apply = () => {
       raf = 0;
-      if (!rect) return;
+      // The one place a layout read happens, and it is inside the frame.
+      // Scroll and resize only mark the rect stale. The first cut measured
+      // synchronously in the scroll handler, which traded a forced layout per
+      // pointermove for one per scroll event: paid on every visit rather than
+      // on hover.
+      if (stale) measure();
+      // A zero rect means the band is not rendered, and dividing by it is what
+      // produced `--cx: NaNpx` below the breakpoint.
+      if (!rect || !rect.width || !rect.height) return;
       const x = px - rect.left;
       const y = py - rect.top;
       // Off the surface, there is no scale and so no reading. On it, snap to
@@ -76,8 +93,18 @@ export function HeroForge() {
       crosshair.dataset.live = on ? "true" : "false";
       if (!on) return;
       const column = rect.width / COLUMNS;
-      crosshair.style.setProperty("--cx", `${Math.round(x / column) * column}px`);
-      crosshair.style.setProperty("--cy", `${Math.round(y / ROW) * ROW}px`);
+      const cx = `${Math.round(x / column) * column}px`;
+      const cy = `${Math.round(y / ROW) * ROW}px`;
+      // Only on change: snapping leaves the value identical for 55 of every 56
+      // pixels of travel, and each write invalidates style on three children.
+      if (cx !== lastCx) {
+        crosshair.style.setProperty("--cx", cx);
+        lastCx = cx;
+      }
+      if (cy !== lastCy) {
+        crosshair.style.setProperty("--cy", cy);
+        lastCy = cy;
+      }
     };
 
     const schedule = () => {
@@ -89,21 +116,26 @@ export function HeroForge() {
       py = e.clientY;
       schedule();
     };
-    const onEnter = () => {
-      measure();
-      crosshair.dataset.live = "true";
+    const onEnter = (e: PointerEvent) => {
+      // Seeds the coordinate and schedules; it does NOT assert live. The first
+      // cut set live unconditionally, which lit the crosshair at the PREVIOUS
+      // reading's coordinates before this entry had produced one.
+      px = e.clientX;
+      py = e.clientY;
+      stale = true;
+      schedule();
     };
     const onLeave = () => {
       crosshair.dataset.live = "false";
     };
     const onViewportChange = () => {
-      measure();
+      stale = true;
       schedule();
     };
 
     let attached = false;
     const attach = () => {
-      if (attached || reduced.matches || coarse.matches) return;
+      if (attached || reduced.matches || coarse.matches || !wide.matches) return;
       attached = true;
       section.addEventListener("pointerenter", onEnter);
       section.addEventListener("pointermove", onMove);
@@ -126,17 +158,19 @@ export function HeroForge() {
     // turning reduced motion on, or plugging in a mouse, changed nothing until
     // the next navigation.
     const onPreferenceChange = () => {
-      if (reduced.matches || coarse.matches) detach();
+      if (reduced.matches || coarse.matches || !wide.matches) detach();
       else attach();
     };
     reduced.addEventListener("change", onPreferenceChange);
     coarse.addEventListener("change", onPreferenceChange);
+    wide.addEventListener("change", onPreferenceChange);
     onPreferenceChange();
 
     return () => {
       detach();
       reduced.removeEventListener("change", onPreferenceChange);
       coarse.removeEventListener("change", onPreferenceChange);
+      wide.removeEventListener("change", onPreferenceChange);
       if (raf) cancelAnimationFrame(raf);
     };
   }, []);
