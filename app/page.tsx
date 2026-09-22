@@ -147,7 +147,22 @@ export default function Home() {
                 </Link>
               </div>
             </div>
-            <div className="stagger-rise">
+            <div className="stagger-rise relative">
+              {/* The measuring band sits ON the instrument, not behind it: it
+                  is rendered here, as a sibling of the panel, so its width IS
+                  the panel's width and its bottom edge IS the panel's top
+                  border. Positioned anywhere else it floated, and a critic
+                  given only the screenshots read its unaligned edges as a
+                  rendering artifact rather than as an element. HeroForge
+                  drives the reading; the geometry is the layout's. */}
+              <div className="hero-field" aria-hidden="true">
+                <div className="grid-field absolute inset-0" />
+                <div className="grid-crosshair" data-live="false">
+                  <span className="gx" />
+                  <span className="gy" />
+                  <span className="tick" />
+                </div>
+              </div>
               <Terminal />
             </div>
             </div>

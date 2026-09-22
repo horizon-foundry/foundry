@@ -64,7 +64,7 @@ The **wordmark** pairs the mark with "Foundry", the suite. The parent's own HORI
 
 Steel is the ground: a dark blue-gray anchored on the Brand Slate `#334455` (which doubles as the hairline). It layers `ink` -> `ink-raised` -> `ink-raised-2`. Text is `bone`, `bone-dim`, `bone-faint` (`bone-faint` was brightened from `#6C7684` to `#8B94A4` so small metadata clears WCAG AA 4.5:1 on the steel grounds; the hairline tokens `line`/`line-strong` are RULES, never text). The brand layer is monochrome: emphasis is pure white `#FFFFFF` (`signal`) against the steel ground and bone body text, an accent of luminance rather than hue.
 
-One functional accent breaks the monochrome: **amber `#D99A2E`, the forge glow**, the forge. It appears as a faint ambient glow behind the hero (the heat of the foundry), on the commands you fire (`/production-audit`, `make install`, install and invocation tokens), and as the heading token of a directory tile on `/skills` (codified 2026-07-13). On the skills directory, amber marks the actionable heading of each entry-point tile, so it reads as one consistent set; this includes the non-command "Your reports" tile that shares the grid. That tile always renders, because it is the only `/unlock` entry point outside the footer; it was previously conditional on an odd skill count to keep the two-column grid square, which meant adding a skill could silently remove the sign-in path. An even user-invoked count therefore leaves one blank cell in the last row, which is the accepted cost of not hiding a functional link (revisited 2026-08-14). Outside that directory grid, amber stays strictly the command signal. It is distinct from the brand (monochrome) and from the severity and verdict hues (which live only in the reports).
+One functional accent breaks the monochrome: **amber `#D99A2E`**. It marks the commands you fire (`/production-audit`, `make install`, install and invocation tokens), and as the heading token of a directory tile on `/skills` (codified 2026-07-13). On the skills directory, amber marks the actionable heading of each entry-point tile, so it reads as one consistent set; this includes the non-command "Your reports" tile that shares the grid. That tile always renders, because it is the only `/unlock` entry point outside the footer; it was previously conditional on an odd skill count to keep the two-column grid square, which meant adding a skill could silently remove the sign-in path. An even user-invoked count therefore leaves one blank cell in the last row, which is the accepted cost of not hiding a functional link (revisited 2026-08-14). Outside that directory grid, amber stays strictly the command signal. It is distinct from the brand (monochrome) and from the severity and verdict hues (which live only in the reports).
 
 The severity ramp (critical red, high orange, medium amber-yellow, low steel-blue, informational gray) and the three verdict colors (green safe, amber-yellow risk, red no-ship) belong to the instrument layer and mean exactly severity and verdict. Because the brand layer carries no hue, any saturated color a reader sees is unambiguously a severity or a verdict.
 
@@ -81,6 +81,55 @@ A strict 4px unit. Generous negative space around dense, high-signal content. Ha
 ## Elevation & Depth
 
 Depth comes from tonal steel layering and hairlines, never drop shadows. A focused element gains a `line-strong` border or a 1px white edge, not a glow. A faint film grain over the ground gives the screen the texture of milled stock.
+
+## Motion (codified 2026-09-22)
+
+Motion is a token system, not a set of numbers each component picked for
+itself. Every duration below is named for what the motion DOES, and a value is
+matched to a token by its job, never by the nearest number. A duration whose
+job matches no token is left alone rather than forced into one.
+
+| Token | Value | What it is for |
+| --- | --- | --- |
+| `--duration-tick` | 120ms | A press, a hover-out, a tick landing: acknowledgement |
+| `--duration-quick` | 220ms | A hover or focus state arriving, a card lifting |
+| `--duration-settle` | 420ms | An element arriving, the hero crosshair settling on its graduation |
+| `--duration-draw` | 600ms | A rule or the hero field drawing itself in, once |
+| `--ease-entrance` | `cubic-bezier(0.22, 1, 0.36, 1)` | Entrances and settles; the only easing with overshoot |
+| `--ease-exit` | `cubic-bezier(0.4, 0, 0.2, 1)` | Exits and hover-outs; no overshoot on the way out |
+
+They live in `app/globals.css`'s `@theme` block, so Tailwind utilities reach
+them (`duration-quick`, `ease-entrance`). A raw millisecond value in a
+component is drift.
+
+**Asymmetry is the default.** A close runs faster and quieter than an open: a
+card lifts in `--duration-quick` with the entrance easing and settles back in
+`--duration-tick` with the exit easing. Overshoot belongs to entrances only.
+Motion that feels late loses duration before it gains delay, and a hover-out is
+never delayed. Same-both-ways is a real choice, so it gets named as one.
+
+**Reduced motion drops spatial movement and keeps the meaning.** It is not an
+off switch: feedback that confirms an action still has to read. The hero's
+crosshair is the one thing that disappears entirely under it, and that is
+correct rather than lazy, because it exists to report pointer movement and
+there is no movement left to report.
+
+**The hero's motion is an instrument, not an atmosphere.** The field's grid is
+a scale; the pointer's position on it is a reading, snapped to the nearest
+graduation with a registration mark at the crossing. It is monochrome, it
+animates transform and opacity only, it is bounded to the field (a reading
+off the scale is not a reading), and it is absent on coarse pointers, where
+there is no hovering cursor to report.
+
+### Motion anti-goals
+
+- No ambient loop. Nothing breathes, pulses, or drifts forever. The hero ran a
+  7s amber breathe until 2026-09-22; it was atmosphere pretending to be life.
+- No motion that animates a layout property, and none that animates a gradient
+  position (the hero's spotlight repainted the whole hero, every frame).
+- No parallax, no scroll-jacking, no cursor-follower. A line that follows the
+  cursor is decoration; one that snaps to a graduation is a measurement.
+- No motion carrying information that is not also carried by something static.
 
 ## Shapes
 
