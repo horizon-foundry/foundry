@@ -369,3 +369,53 @@ The approval header stays exactly where it is, at the top of `BRAND.md` in its d
 The sibling sweep found one latent instance of the same bug: `DESIGN.md` is whitelisted in `readDoc`'s ALLOWED set and carries its design tokens as YAML frontmatter, so the first public page to render it would have printed the raw token map as a paragraph. No page renders it today, so this was a landmine rather than a live defect; `stripFrontmatter` now handles it in the same place. The skill detail pages were checked and are clean, since they already parse frontmatter through `parseFrontmatter`.
 
 Verified against the running build, not the source: both tabs rendered from a production server, the brand page now goes straight from the heading to the identity sentence, the product page is unchanged, and neither page's HTML contains a marker or the word "Approved". The two strip functions were unit-exercised separately, including the no-frontmatter, horizontal-rule, and unterminated cases, because the frontmatter path has no page exercising it yet.
+
+## 2026-09-22: What the motion layer taught, and what a critic argued that the fix does not answer
+
+The hero's glow came out this morning and a measuring band went in. By the
+afternoon the second audit had cost the site a point, and eleven of its
+seventeen findings were the morning's work. Three of those are worth keeping,
+because each one is a class of defect rather than a slip.
+
+**A token that names the wrong namespace is worse than no token.** DESIGN.md
+told the next agent to write `class="duration-quick"`. Tailwind v4 resolves
+`duration-*` against `--transition-duration-*`, and the tokens were declared as
+`--duration-*`, so the class emitted nothing at all: no error, no warning, an
+element that simply does not transition. The design record was actively
+instructing a dead write. Two lessons, and the second is the sharper one.
+First, a token's name is an interface with the framework, not a label, so it is
+verified by using it and looking at the emitted rule. Second, the check that
+"proved" the class existed was itself the bug: Tailwind was scanning the whole
+repo including the TODOS entry describing the class, so grepping the built CSS
+for `.duration-quick` found a rule generated from the prose complaining that
+the rule did not exist. A build that reads its own documentation as source can
+confirm any claim made about it. The real check was a probe page under the
+scoped source list.
+
+**The default is the value that ships.** Naming four durations moved three
+rules. The other fifty-one transitions kept running at Tailwind's untokenized
+150ms, which matched no token and which no one had chosen. A token system whose
+tokens are opt-in documents an intention; `--default-transition-duration`
+pointing at a token is what makes it the behaviour. One line, fifty-one
+elements, no component touched.
+
+**A leftover fade is a lie about where a thing ends.** The lattice carried a
+radial mask from when it ran full-bleed. Inside a 168px band the mask left it
+drawn for the top 60px and faded to the ground for the rest, so a reading in
+the lower two thirds snapped to a graduation that was not there, and the bottom
+edge the design record claims lands on the panel dissolved before reaching it.
+Nothing in the source said so; it took measuring the brightest pixel per row
+down the band (203 at the top, 88 by y=70) to see it. When an element is
+re-bounded, every softening that existed to fake a boundary is now a defect.
+
+**And the part the fixes do not answer.** A fresh critic, given only the
+screenshots and the anti-goals, argued that the band is decoration in better
+clothes: nine columns by three rows graduate no quantity, so the crosshair
+reports the pointer's position back to the pointer, and the honest tell is that
+the band is dropped below 1024 with nothing lost. The earlier defence here was
+that snapping to a graduation is a measurement rather than an ambient wash.
+That defence answers the wrong objection. Snapping is a measurement only if the
+graduation graduates something, and on this page it does not. The decision is
+recorded in TODOS as Craig's, with the two shapes a fix could take, because the
+choice between cutting the band and making it plot the audit's own dimensions
+is a product-thesis call and not a defect to quietly resolve.

@@ -6,9 +6,7 @@
    which the monochrome rule forbids, while the source stayed clean. A
    source-only sweep cannot see that class of defect, which is why it survived
    two audits. */
-@import "tailwindcss" source(none);
-@source "../app";
-@source "../components";
+@import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
 /*
