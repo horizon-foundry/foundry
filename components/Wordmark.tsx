@@ -86,7 +86,7 @@ export function Wordmark({ className = "" }: { className?: string }) {
       {/* h-5 is 20px tall, 31px wide: under the kit's 48px floor, so the
           small cut. */}
       <BrandMark small className="h-5 w-auto" />
-      <span className="font-display uppercase tracking-[0.02em]">
+      <span className="font-display uppercase tracking-[0.04em]">
         Foundry
       </span>
     </Link>
