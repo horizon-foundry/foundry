@@ -11,23 +11,33 @@ import { useEffect, useRef } from "react";
 // jumps to the nearest graduation is an instrument reading a coordinate, which
 // is what this product is about. The motion is a settle, not a chase.
 //
-// What this replaced: an amber radial glow with a 28px blur on a 7s breathe,
+// What this replaced: an amber radial glow softened by 28px on a 7s breathe,
 // plus a bone spotlight that transitioned a gradient POSITION under the cursor.
+// (The word for that softening is deliberately not the Tailwind utility's name:
+// Tailwind scans this file's whole text, comments included, so writing it here
+// shipped a `.blur` rule generated from the sentence recording its removal.
+// Same shape as the `.backdrop-blur` regenerated from the changelog entry that
+// described deleting it, one directory in.)
 // Both are glows, which DESIGN.md's anti-goals ban, and the amber one put hue
 // on the brand layer where only an invocable command belongs. Two rendered
 // critics that saw nothing but a screenshot and the anti-goals called it
 // decoration, and the kicker measured 2.94:1 against AA's 4.5:1 underneath it.
 //
 // Everything here writes CSS custom properties that drive `transform` only, so
-// the motion composites. The pointer handler performs no layout read: the
-// rect is cached on enter and refreshed on resize and scroll, because reading
-// it per event forced a synchronous layout on the hero's hot path.
+// the motion composites. The pointer handler performs no layout read of its
+// own: every read happens inside the rAF, which is what keeps a synchronous
+// layout off the hero's hot path. Scroll and resize schedule that frame and
+// measure nothing themselves.
 
-// The lattice fits the band rather than the band fitting a fixed cell: nine
-// columns across its width, rows of one module (app/globals.css). Both numbers
-// live here too, and the crosshair lands on nothing if they drift apart.
+// The lattice fits the band rather than the band fitting a fixed cell, so what
+// lives here is how MANY graduations there are, never how many pixels apart
+// they sit. The pixels come from the measured box every frame. A hardcoded 56
+// here against `3.5rem` in app/globals.css agreed only at a 16px root font
+// size; at Chrome's "Large" the two drifted and the reading landed between
+// graduations, which is exactly the failure the comment it replaced warned
+// about while causing it.
 const COLUMNS = 9;
-const ROW = 56;
+const ROWS = 3;
 
 export function HeroForge() {
   const ref = useRef<HTMLDivElement>(null);
@@ -60,41 +70,63 @@ export function HeroForge() {
     const wide = window.matchMedia("(min-width: 64rem)");
 
     let raf = 0;
-    let rect: DOMRect | null = null;
-    let stale = true;
+    let inside = false;
     let px = 0;
     let py = 0;
     let lastCx = "";
     let lastCy = "";
 
-    const measure = () => {
-      rect = field.getBoundingClientRect();
-      stale = false;
-    };
-
     const apply = () => {
       raf = 0;
-      // The one place a layout read happens, and it is inside the frame.
-      // Scroll and resize only mark the rect stale. The first cut measured
-      // synchronously in the scroll handler, which traded a forced layout per
-      // pointermove for one per scroll event: paid on every visit rather than
-      // on hover.
-      if (stale) measure();
+      // Measured every frame, deliberately, having tried the alternative. A
+      // cached rect with a stale flag set from enter/resize/scroll is one read
+      // per frame cheaper and wrong in two ways that a rAF read is not. Coming
+      // back across the breakpoint, the last pre-crossing measure had cached
+      // the display:none band's ZERO rect and cleared the flag, so the guard
+      // below returned on every frame afterwards and the crosshair was dead
+      // until a scroll. And a font swap moves the band 8px with no resize and
+      // no scroll, so nothing marked the rect stale and the reading sat a whole
+      // row from the cursor while still landing on a graduation, which is the
+      // worse failure for something whose claim is that it measures. This read
+      // is inside the frame, before any write, and only while hovering: the
+      // property the first cut broke (a forced layout per scroll event, paid on
+      // every visit rather than on hover) is preserved by the scheduling, not
+      // by the cache.
+      const rect = field.getBoundingClientRect();
       // A zero rect means the band is not rendered, and dividing by it is what
       // produced `--cx: NaNpx` below the breakpoint.
-      if (!rect || !rect.width || !rect.height) return;
+      if (!rect.width || !rect.height) return;
       const x = px - rect.left;
       const y = py - rect.top;
       // Off the surface, there is no scale and so no reading. On it, snap to
       // the nearest graduation: a line that follows the cursor is a
       // cursor-follower, one that lands on a graduation is a measurement.
-      // Off the band there is no scale, so there is no reading.
-      const on = x >= 0 && y >= 0 && x <= rect.width && y <= rect.height;
+      //
+      // `inside` is why the leave sticks. The flag used to be derived from the
+      // coordinate alone, so a pointerleave that shared a task with the last
+      // pointermove (every tap on a touch laptop, and a fast mouse exit) set
+      // live=false and then this frame recomputed it as true from coordinates
+      // that were still in the band. The crosshair latched on with no pointer
+      // on the page until the next scroll.
+      const on = inside && x >= 0 && y >= 0 && x <= rect.width && y <= rect.height;
       crosshair.dataset.live = on ? "true" : "false";
       if (!on) return;
       const column = rect.width / COLUMNS;
-      const cx = `${Math.round(x / column) * column}px`;
-      const cy = `${Math.round(y / ROW) * ROW}px`;
+      // The row comes from the box, not from a constant. `3.5rem` and a
+      // hardcoded 56 agree only at a 16px root font size; at Chrome's "Large"
+      // (20px) the band is 210px of three 70px rows while the snap still
+      // stepped by 56, putting the reading up to 28px off a drawn line. The
+      // band's height is exactly ROWS rows by construction (10.5rem / 3.5rem),
+      // so dividing is exact at any font size and there is one source of truth.
+      const row = rect.height / ROWS;
+      // Clamped to the LAST drawn graduation. Rounding admitted one index past
+      // it at each axis (9 and 3), which land exactly on the field's own
+      // clipping edge, so the line vanished in the right 5.6% and the bottom
+      // 17% of the band. The bottom strip is precisely where a pointer heading
+      // for the terminal sits, so the reading disappeared at the moment it was
+      // being read.
+      const cx = `${Math.min(Math.round(x / column), COLUMNS - 1) * column}px`;
+      const cy = `${Math.min(Math.round(y / row), ROWS - 1) * row}px`;
       // Only on change: snapping leaves the value identical for 55 of every 56
       // pixels of travel, and each write invalidates style on three children.
       if (cx !== lastCx) {
@@ -112,6 +144,14 @@ export function HeroForge() {
     };
 
     const onMove = (e: PointerEvent) => {
+      // A move on the section IS the pointer being inside it, so this does not
+      // depend on having seen the pointerenter. It matters after the band is
+      // re-attached on the way back across the breakpoint: attach() cannot know
+      // whether the pointer is already in the section, no pointerenter is
+      // coming for a pointer that never left, and deriving `inside` from the
+      // enter alone left the crosshair dead until the visitor exited the whole
+      // hero and came back.
+      inside = true;
       px = e.clientX;
       py = e.clientY;
       schedule();
@@ -120,16 +160,22 @@ export function HeroForge() {
       // Seeds the coordinate and schedules; it does NOT assert live. The first
       // cut set live unconditionally, which lit the crosshair at the PREVIOUS
       // reading's coordinates before this entry had produced one.
+      inside = true;
       px = e.clientX;
       py = e.clientY;
-      stale = true;
       schedule();
     };
     const onLeave = () => {
+      inside = false;
+      // Cancelled, not just overwritten: a frame already scheduled would
+      // otherwise run after this and decide for itself.
+      if (raf) {
+        cancelAnimationFrame(raf);
+        raf = 0;
+      }
       crosshair.dataset.live = "false";
     };
     const onViewportChange = () => {
-      stale = true;
       schedule();
     };
 
@@ -146,6 +192,11 @@ export function HeroForge() {
     const detach = () => {
       if (!attached) return;
       attached = false;
+      inside = false;
+      if (raf) {
+        cancelAnimationFrame(raf);
+        raf = 0;
+      }
       crosshair.dataset.live = "false";
       section.removeEventListener("pointerenter", onEnter);
       section.removeEventListener("pointermove", onMove);

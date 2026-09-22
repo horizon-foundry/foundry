@@ -6,8 +6,14 @@
    which the monochrome rule forbids, while the source stayed clean. A
    source-only sweep cannot see that class of defect, which is why it survived
    two audits. */
-@import "tailwindcss";
-@plugin "@tailwindcss/typography";
+@import "tailwindcss" source(none);
+@source "../app";
+@source "../components";
+/* lib/ too: lib/report-types.ts holds full class strings precisely because the
+   scanner is the only thing keeping them alive (the fragments are composed at
+   runtime). All four survive today only because each happens to be duplicated
+   in app/ or components/, which is luck, not design. */
+@source "../lib";
 
 /*
   Instrument design system. Tokens mirror DESIGN.md frontmatter; when the
@@ -54,8 +60,9 @@
 
   /* Motion. Named by what the motion DOES, never given as a range: matching a
      value to a token by the nearest number is how a system drifts. A close
-     runs faster and quieter than an open, so exits take --duration-tick or
-     --duration-quick with --ease-exit, and entrances take --ease-entrance.
+     runs faster and quieter than an open, so exits take
+     --transition-duration-tick or -quick with --ease-exit, and entrances take
+     --ease-entrance (or --ease-draw where the end point is fixed).
      Reduced motion drops spatial movement and keeps the state change (see the
      prefers-reduced-motion blocks below). DESIGN.md's Motion section is the
      record; these are its implementation. */
@@ -76,6 +83,12 @@
   --default-transition-duration: var(--transition-duration-quick);
   --ease-entrance: cubic-bezier(0.22, 1, 0.36, 1); /* overshoot: entrances only */
   --ease-exit: cubic-bezier(0.4, 0, 0.2, 1); /* no overshoot on the way out */
+  /* A third easing, declared rather than left loose in two rules. Its job is
+     the entrance whose END POINT IS FIXED: a rule reaching exactly its full
+     width, a row landing exactly on its resting line. --ease-entrance would
+     overshoot past that and snap back, which reads as a bounce on a hairline.
+     Used by .draw-rule and .stagger-rise. */
+  --ease-draw: cubic-bezier(0.2, 0.7, 0.2, 1);
 
   /* Two distinct variable names: next/font's generated rule is unlayered CSS
      and would always beat this @theme-layer declaration in the cascade if
@@ -113,7 +126,10 @@ html {
        at all and is often the only thing confirming an action. Spatial
        properties simply leave the transition list. */
     transition-property: color, background-color, border-color, outline-color,
-      opacity, fill, stroke !important;
+      text-decoration-color, opacity, fill, stroke !important;
+    /* The duration survives on purpose (a colour change still reads as a
+       change), but a DELAY under this preference is only a wait. */
+    transition-delay: 0s !important;
   }
 }
 
@@ -172,8 +188,15 @@ body::before {
   bottom: 100%;
   left: 0;
   right: 0;
+  /* Exactly three rows of one module. HeroForge derives the row height by
+     dividing this by 3, so the two cannot drift at a non-default root font
+     size the way a hardcoded pixel row did. */
   height: 10.5rem;
   overflow: hidden;
+  /* An aria-hidden decoration should not be a hit-test target. Nothing
+     interactive sits under the band today, so this is latent rather than live,
+     but elementFromPoint returned the crosshair at all four of its corners. */
+  pointer-events: none;
 }
 /* Only where the hero is two columns. Below lg the copy runs full width and
    the panel stacks under it, so a band above the panel would sit across the
@@ -224,13 +247,17 @@ body::before {
     transform: translateY(0);
   }
 }
-/* 500ms and this curve match no token: a staggered arrival is its own job and
-   is left alone rather than forced into --transition-duration-settle. */
+/* 500ms matches no token: a staggered arrival is its own job and is left alone
+   rather than forced into --transition-duration-settle. The curve IS a token,
+   --ease-draw, because these rows land on a fixed resting line. */
 .stagger-rise > *:not(.hero-field) {
   opacity: 0;
-  animation: rise 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+  animation: rise 0.5s var(--ease-draw) forwards;
 }
-.stagger-rise > *:nth-child(1) {
+/* The exclusion belongs on the delays too. Without it .hero-field spends the
+   first slot on an element that has no stagger animation, and the panel that
+   should arrive at 40ms arrives at 100ms instead. */
+.stagger-rise > *:not(.hero-field):nth-child(1) {
   animation-delay: 0.04s;
 }
 .stagger-rise > *:nth-child(2) {
@@ -263,8 +290,7 @@ body::before {
 }
 .draw-rule {
   transform-origin: left;
-  animation: draw-line var(--transition-duration-draw) cubic-bezier(0.2, 0.7, 0.2, 1)
-    0.2s both;
+  animation: draw-line var(--transition-duration-draw) var(--ease-draw) 0.2s both;
 }
 
 /* Long-form rendered doc prose (Behind-the-Build tabs). IBM Plex Serif,
@@ -557,9 +583,9 @@ a:hover .text-command,
     opacity: 1 !important;
     transform: none !important;
   }
-  .text-command {
-    transition: none !important;
-  }
+  /* .text-command used to animate a text-shadow and was killed outright here.
+     It is colour-only now, which is exactly what this preference keeps, so the
+     kill is gone. */
 }
 
 
@@ -602,9 +628,15 @@ a:hover .text-command,
   .press:active {
     transform: none !important;
   }
+  /* The border takes the command colour, which is a real change on both plate
+     buttons (they sit at --color-line-strong) and cannot touch the label's
+     contrast. The first cut of this rule set the background to
+     --color-ink-raised on .press globally, which put #14191f text on #1e2530 at
+     1.15:1 on the two bone CTAs: an acknowledgement that erased the word it was
+     acknowledging, for reduced-motion users only. SignOutButton carries no
+     border width and no plate; its own colour change to bone confirms it. */
   .press:active {
-    border-color: var(--color-line-strong);
-    background-color: var(--color-ink-raised);
+    border-color: var(--color-command);
   }
 }
 

@@ -41,8 +41,14 @@ motion:
   transition-duration-quick: '220ms'    # a hover or focus state arriving
   transition-duration-settle: '420ms'   # an element arriving, the crosshair settling
   transition-duration-draw: '600ms'     # a rule or the hero field drawing in, once
-  ease-entrance: 'cubic-bezier(0.22, 1, 0.36, 1)'
-  ease-exit: 'cubic-bezier(0.4, 0, 0.2, 1)'
+  ease-entrance: 'cubic-bezier(0.22, 1, 0.36, 1)'   # overshoot; entrances only
+  ease-exit: 'cubic-bezier(0.4, 0, 0.2, 1)'         # none; exits
+  ease-draw: 'cubic-bezier(0.2, 0.7, 0.2, 1)'       # an entrance with a fixed end point
+  # The declaration that actually governs the site: it puts every bare
+  # transition-* utility on a token instead of Tailwind's untokenized 150ms,
+  # which is 50 of the 51 in the codebase. Left out of this block once, which
+  # made the record list the tokens and omit the one line that applies them.
+  default-transition-duration: 'var(--transition-duration-quick)'
 spacing:
   unit: '4px'
   gutter: '24px'
@@ -106,14 +112,18 @@ job matches no token is left alone rather than forced into one.
 | `--transition-duration-draw` | 600ms | A rule or the hero field drawing itself in, once |
 | `--ease-entrance` | `cubic-bezier(0.22, 1, 0.36, 1)` | Entrances and settles; the only easing with overshoot |
 | `--ease-exit` | `cubic-bezier(0.4, 0, 0.2, 1)` | Exits and hover-outs; no overshoot on the way out |
+| `--ease-draw` | `cubic-bezier(0.2, 0.7, 0.2, 1)` | An entrance whose end point is fixed: a rule reaching exactly its width, a row landing exactly on its line, where overshoot would read as a bounce |
+| `--default-transition-duration` | `var(--transition-duration-quick)` | Every bare `transition-*` utility, which is 50 of the 51 in the codebase |
 
 The durations sit in the `--transition-duration-*` namespace because that is the one Tailwind v4 resolves the `duration-*` utility against. Named anything else, `class="duration-quick"` emits nothing at all, silently, which is what shipped on 2026-09-22 with this document asserting the opposite.
 
 They live in `app/globals.css`'s `@theme` block, so Tailwind utilities reach them (`duration-quick`, `ease-entrance`), and `--default-transition-duration` points at `--transition-duration-quick`, so a bare `transition-colors` in a component is already on a token rather than on Tailwind's untokenized 150ms. A raw millisecond value in a component is drift. A raw value in the stylesheet is drift too, unless its job matches no token and it says so: `.stagger-rise` (500ms) and `.glyph-draw` (900ms) are the two that do.
 
+One caveat about verifying that first sentence, because it cost a review round. Tailwind generates utilities from whatever text its source list covers, and an unscoped build covers this document, so grepping the built stylesheet for `.duration-quick` finds a rule generated from the sentence you are reading. Source detection is scoped now (`app/`, `components/`, `lib/`), and inside that scope a utility exists only if a component uses it. The way to check this claim is a probe page that uses the class.
+
 **Asymmetry is the default.** A close runs faster and quieter than an open: a
-card lifts in `--duration-quick` with the entrance easing and settles back in
-`--duration-tick` with the exit easing. Overshoot belongs to entrances only.
+card lifts in `--transition-duration-quick` with the entrance easing and
+settles back in `--transition-duration-tick` with the exit easing. Overshoot belongs to entrances only.
 Motion that feels late loses duration before it gains delay, and a hover-out is
 never delayed. Same-both-ways is a real choice, so it gets named as one.
 

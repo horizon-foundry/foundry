@@ -27,6 +27,16 @@ const MOTION = [
   ["draw", "600ms", "A rule or the hero field drawing itself in, once"],
 ] as const;
 
+/* The default is the value that ships: naming durations moved three rules while
+   51 bare transition-* utilities kept Tailwind's untokenized 150ms. This row is
+   the one that put them on a token, so it belongs on the page that documents
+   the system rather than only in the stylesheet. */
+const MOTION_DEFAULT = [
+  "default-transition-duration",
+  "= quick",
+  "Every bare transition-* utility, without touching a component",
+] as const;
+
 const SEVERITIES: Severity[] = [
   "critical",
   "high",
@@ -156,15 +166,28 @@ export default function DesignSystem() {
                 </span>
               </div>
             ))}
+            <div className="flex flex-col gap-1 py-3 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
+              <span className="font-mono text-xs text-bone">
+                {MOTION_DEFAULT[0]}
+                <span className="ml-3 text-bone-faint">{MOTION_DEFAULT[1]}</span>
+              </span>
+              <span className="text-sm leading-relaxed text-bone-dim sm:text-right">
+                {MOTION_DEFAULT[2]}
+              </span>
+            </div>
           </div>
           <p className="mt-5 max-w-2xl text-sm leading-relaxed text-bone-dim">
             A value is matched to a token by what the motion does, never by the
             nearest number, and a duration whose job matches no token is left
-            alone. Two easings: <code className="font-mono text-xs">ease-entrance</code>{" "}
-            carries overshoot and belongs to entrances,{" "}
-            <code className="font-mono text-xs">ease-exit</code> has none. A close
-            runs faster and quieter than an open. Under reduced motion the
-            spatial half drops and the state change stays.
+            alone. Three easings:{" "}
+            <code className="font-mono text-xs">ease-entrance</code> carries
+            overshoot and belongs to entrances,{" "}
+            <code className="font-mono text-xs">ease-exit</code> has none, and{" "}
+            <code className="font-mono text-xs">ease-draw</code> is the entrance
+            whose end point is fixed, where overshoot would read as a bounce. A
+            close runs faster and quieter than an open. Under reduced motion the
+            spatial half drops and the state change stays: a press still
+            confirms, in colour rather than in movement.
           </p>
         </Section>
 

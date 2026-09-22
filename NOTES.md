@@ -419,3 +419,79 @@ graduation graduates something, and on this page it does not. The decision is
 recorded in TODOS as Craig's, with the two shapes a fix could take, because the
 choice between cutting the band and making it plot the audit's own dimensions
 is a product-thesis call and not a defect to quietly resolve.
+
+## 2026-09-22, later: what the review pass caught that four passes before it had not
+
+Units A to C went in with gates green, measurements taken, and a rendered critic
+run. Then three fresh sub-agents, one angle each, found twelve real defects,
+two of them regressions those very units had introduced hours earlier. That
+ratio is the argument for the pass, so the mechanics are worth recording.
+
+**A `git add -A` with a sub-agent running is a footgun.** The reviewer auditing
+the build had write access and reverted three lines in `app/globals.css` to
+build the unscoped comparison. A docs commit ran `git add -A` a hundred seconds
+later and swept the transient edit in, so the branch tip shipped unscoped
+Tailwind, shipped a numbered palette class again, and failed the gate the same
+branch had just added. Two agents found it independently; the one that caused it
+worked out the interleaving from timestamps and, notably, refused to run `git
+checkout --` to satisfy its own clean-tree instruction, on the grounds that a
+clean tree would have left the branch definitively broken with nothing to
+notice. Leaving the file modified meant the next `git add -A` would restore it.
+The rule this earns: while a sub-agent with write access is running, stage
+explicit paths, never `-A`. The deeper point is that the gate is what caught it.
+A claim in a commit message survived; the artifact check did not.
+
+**An acknowledgement can erase the thing it acknowledges.** Unit A replaced a
+blanket reduced-motion transition kill with a substitute acknowledgement, on the
+argument that removing the confirmation of a press is the off switch the design
+record disclaims. The substitute set `.press:active`'s background to
+`--color-ink-raised` globally. On the two bone CTAs that is `#14191f` text on
+`#1e2530`: **1.15:1**, a label invisible while pressed, for reduced-motion users
+only. The other half of the same rule, a border change, was a no-op because
+those buttons already sat at that border colour. A rule written for one surface
+and applied to a class used on three is the whole story, and the specific trap
+is that `.press` was doing double duty for a light plate button and a bare text
+button, which cannot share a background change.
+
+**Deleting the optimisation fixed two bugs and shrank the file.** Unit B had
+moved the layout read off the scroll handler behind a cached rect and a stale
+flag. The cache was wrong twice: crossing below 64rem cached the
+`display: none` band's zero rect and cleared the flag, so the crosshair was dead
+after any window maximise; and a font swap moved the band 8px with no resize and
+no scroll, so the reading sat a whole row from the cursor while still landing on
+a graduation, which for an instrument is worse than landing on nothing. Both
+vanish if `apply()` simply measures inside the frame every time. The property
+the optimisation existed to protect (no synchronous layout on the scroll path)
+comes from the rAF scheduling, not from the cache: 20 scroll events still
+produce zero synchronous reads and one read in the following frame.
+
+**Two sources of truth for one lattice is the band's recurring defect.**
+`ROW = 56` in JS against `3.5rem` in CSS agree only at a 16px root font size. At
+Chrome's "Large" the band held three 70px rows while the snap stepped by 56, so
+the reading landed up to 28px off a drawn line. The comment above the constant
+warned that the crosshair "lands on nothing if they drift apart" while being the
+thing that made them drift. The fix is to derive the row from the measured box,
+so CSS owns the pixels. Same class: the snap range admitted one index past the
+last drawn graduation, which put the line on the field's own clipping edge, so
+the crosshair vanished in the bottom strip of the band, exactly where a pointer
+heading for the terminal sits.
+
+**Nineteen percent of the stylesheet was a plugin nothing used.** Nothing
+references `prose` or any `prose-*` utility; the only real class is the
+hand-written `doc-prose`. The entire `@tailwindcss/typography` block was being
+generated from the English word "prose" in two page strings, and it carried the
+one shadow left in the build, a `kbd` `box-shadow` the anti-goals ban outright.
+Removing the plugin took the stylesheet from 70,685 to 58,683 bytes. The general
+lesson is the one unit C was already about, one turn deeper: scoping source
+detection shrinks prose-generated CSS but cannot close it, because Tailwind
+reads whole file text, comments included. A comment recording that a blur was
+removed ships a `.blur` rule. Naming the removal is enough to reinstate it.
+
+**And a gate is only as good as the forms it was attacked with.** The new
+palette check was defeated by 13 of 16 real emitted forms, because a palette
+class is bare only in the simplest case: every variant prefixes it and several
+utilities infix it. All of them resolve to `var(--color-<palette>-<n>)`, so the
+variable is the assertion that holds. The class pattern stays because it names
+the offending selector in the failure message, which is what makes the failure
+actionable. Writing the check was not the work; generating the sixteen real
+forms through the installed Tailwind and injecting each one was.

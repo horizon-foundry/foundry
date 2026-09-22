@@ -142,7 +142,7 @@ function Screen({ cmd }: { cmd: Cmd }) {
         )}
       </div>
       <div
-        className={`mt-3 space-y-1.5 transition-opacity duration-300 ${showOut ? "opacity-100" : "opacity-0"}`}
+        className={`mt-3 space-y-1.5 transition-opacity duration-settle ${showOut ? "opacity-100" : "opacity-0"}`}
       >
         {cmd.out.map((line, i) => (
           <div key={i} className="leading-relaxed">
