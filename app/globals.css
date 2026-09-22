@@ -21,8 +21,11 @@
      on the ink and ink-raised grounds (was ~3.8:1). */
   --color-bone-faint: #8b94a4;
 
-  /* The brand is monochrome (Horizon Foundry palette: slate + white). The
-     "signal" emphasis is pure white, so brand emphasis reads by luminance. */
+  /* The brand layer is monochrome, on the inherited Horizon Foundry values:
+     ink, bone and slate. Not white: the parent's light value is bone #E8ECF0
+     and has been since before the design kit existed. `signal` below is this
+     product's own extension, a pure white used for emphasis, so emphasis in
+     the brand layer reads by luminance rather than by hue. See DESIGN.md. */
   --color-signal: #ffffff;
 
   /* Amber is the forge glow: reserved for the invoke/run layer (commands you

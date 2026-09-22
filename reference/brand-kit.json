@@ -1,0 +1,139 @@
+{
+  "kit": "1.3",
+  "source": "horizon-foundry/horizon-foundry, logo/horizon-foundry-kit",
+  "note": "Which design kit this repo's brand copies came from, and what was taken. The kit is not a package and is not vendored here, so this pin stands in for it: scripts/check-brand-assets.mjs checks the repo against this file on every `make validate`, and checks this file against a real kit checkout when given --kit <path>. Regenerate with `node scripts/check-brand-assets.mjs --update --kit <path>`.",
+  "geometry": {
+    "canonical": {
+      "from": "web/HfSymbol.tsx",
+      "viewBox": "0 0 378.19 246",
+      "d": "M0 246 L67.03 170.59 L194.58 142.25 L235.69 96 L378.19 246 L303.7 246 L237.01 175.79 L174.6 246 L102.35 246 L158.27 183.1 L120.75 191.43 L72.25 246 Z M82.92 152.72 L218.67 0 L255.99 39.29 L172.95 132.71 Z M245.02 85.5 L286.1 39.29 L378.19 136.23 L328.53 136.23 L286.98 92.49 L269.9 111.69 Z"
+    },
+    "small": {
+      "from": "svg/mark/hf-symbol-small-ink.svg",
+      "viewBox": "0 0 384.21 246",
+      "d": "M0 246 L65.55 172.26 L200.6 142.25 L241.71 96 L384.21 246 L309.72 246 L243.03 175.79 L180.62 246 L108.37 246 L159.75 188.2 L114.73 198.21 L72.25 246 Z M92.78 141.62 L218.67 0 L255.99 39.29 L182.82 121.61 Z M257.71 78 L292.12 39.29 L384.21 136.23 L323.52 136.23 L293.19 104.31 L288.12 110.01 Z"
+    }
+  },
+  "files": [
+    {
+      "path": "public/icon.svg",
+      "from": "web/foundry/icon.svg",
+      "sha256": "839d808f2ae79db2923eeb03e3f4309dee9de73eeb90a3af4c8fb9621a64e376"
+    },
+    {
+      "path": "public/favicon.ico",
+      "from": "web/foundry/favicon.ico",
+      "sha256": "f587b050a502e82e9066ce7855516131f810855a8aaa3b2ed4ef3b9c558609a4"
+    },
+    {
+      "path": "public/favicon-16x16.png",
+      "from": "web/foundry/favicon-16x16.png",
+      "sha256": "86abea999af2d1cdab131c0fe4ca4dd51960dd5ead4b205dde418cde7cd2ea6b"
+    },
+    {
+      "path": "public/favicon-32x32.png",
+      "from": "web/foundry/favicon-32x32.png",
+      "sha256": "8001fceac43b3b4801d728763bf4546ca1f370ea64295a9c2ea77587f60902c9"
+    },
+    {
+      "path": "public/favicon-48x48.png",
+      "from": "web/foundry/favicon-48x48.png",
+      "sha256": "734ed5d14044c1f8673e22a4d2ea6a34b586a8ecc36a0056c62d675132847e61"
+    },
+    {
+      "path": "public/apple-touch-icon.png",
+      "from": "web/foundry/apple-touch-icon.png",
+      "sha256": "e9033e0882a51dcf12ea7893036506d1f2301ee7269fc0084ce1cf8bd11b7c68"
+    },
+    {
+      "path": "public/android-chrome-192x192.png",
+      "from": "web/foundry/android-chrome-192x192.png",
+      "sha256": "c7b81c91942fbf3b76efaa3a9281ddd3be65339928bf860911b7aa261375a98d"
+    },
+    {
+      "path": "public/android-chrome-512x512.png",
+      "from": "web/foundry/android-chrome-512x512.png",
+      "sha256": "05dfea18494ba55191fb530154ee7e1f47dc2c0202831effb9797a557f47a304"
+    },
+    {
+      "path": "public/maskable-icon-512x512.png",
+      "from": "web/foundry/maskable-icon-512x512.png",
+      "sha256": "225392256adbf6f3465255167602ebcfb786a60c73a19fd37314a9a5f16a5ab8"
+    },
+    {
+      "path": "public/safari-pinned-tab.svg",
+      "from": "web/safari-pinned-tab.svg",
+      "sha256": "2d6b6b9f13d945a59dbe0f9bd0392803ae17cbffb9324e1fb84ef41020f9c0d2"
+    }
+  ],
+  "diverged": [
+    {
+      "path": "public/site.webmanifest",
+      "from": "web/foundry/site.webmanifest",
+      "sha256": "32909e6b1d8594e7ab2eaba2c6fd3c8e98d7b045c771d03c1f828e74bf5419dd",
+      "why": "Declared divergences only: the product name (the kit ships a placeholder), and id/start_url/scope, which the kit omits. Without scope, an install from any page but the root scopes the app to that page and every other route opens in the in-app browser bar under display: standalone. Everything else still tracks the kit and is asserted to."
+    }
+  ],
+  "kitManifest": {
+    "name": "Horizon Foundry Skills",
+    "short_name": "HF Skills",
+    "icons": [
+      {
+        "src": "/android-chrome-192x192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "/android-chrome-512x512.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      },
+      {
+        "src": "/maskable-icon-512x512.png",
+        "sizes": "512x512",
+        "type": "image/png",
+        "purpose": "maskable"
+      }
+    ],
+    "theme_color": "#14191F",
+    "background_color": "#14191F",
+    "display": "standalone"
+  },
+  "reference": [
+    {
+      "from": "web/foundry/head-snippet.html",
+      "sha256": "0964c52376e9f23c23d69a268468a129768a7ae35dd28b88fcbaf61463e2f95a",
+      "why": "The kit's own declaration of the <head>, pinned but NOT copied: this site's head diverges from it deliberately (the share card is /og.png with a version token rather than /og-image.png, a mask-icon link is added for Safari, and the 16/32/48 pngs ship without link tags because favicon.ico already embeds all three sizes). Pinned so a kit revision to the head declaration is visible rather than silent."
+    }
+  ],
+  "kitSet": {
+    "brand.css": "9966a84228b9028614807dfd066a3506d0f348ffe67f195b20938242face94e1",
+    "foundry/android-chrome-192x192.png": "c7b81c91942fbf3b76efaa3a9281ddd3be65339928bf860911b7aa261375a98d",
+    "foundry/android-chrome-512x512.png": "05dfea18494ba55191fb530154ee7e1f47dc2c0202831effb9797a557f47a304",
+    "foundry/apple-touch-icon.png": "e9033e0882a51dcf12ea7893036506d1f2301ee7269fc0084ce1cf8bd11b7c68",
+    "foundry/favicon-16x16.png": "86abea999af2d1cdab131c0fe4ca4dd51960dd5ead4b205dde418cde7cd2ea6b",
+    "foundry/favicon-32x32.png": "8001fceac43b3b4801d728763bf4546ca1f370ea64295a9c2ea77587f60902c9",
+    "foundry/favicon-48x48.png": "734ed5d14044c1f8673e22a4d2ea6a34b586a8ecc36a0056c62d675132847e61",
+    "foundry/favicon.ico": "f587b050a502e82e9066ce7855516131f810855a8aaa3b2ed4ef3b9c558609a4",
+    "foundry/head-snippet.html": "0964c52376e9f23c23d69a268468a129768a7ae35dd28b88fcbaf61463e2f95a",
+    "foundry/icon.svg": "839d808f2ae79db2923eeb03e3f4309dee9de73eeb90a3af4c8fb9621a64e376",
+    "foundry/maskable-icon-512x512.png": "225392256adbf6f3465255167602ebcfb786a60c73a19fd37314a9a5f16a5ab8",
+    "foundry/og-image-amber.png": "808b2d4d816b28cccebebc0f524fb34ea1d952e6dd4767028d21ec3853497077",
+    "foundry/og-image.png": "466a5b94720bef55086cf9428d088e1e074fcc1a6f1524f098ae72edfbdf645b",
+    "foundry/site.webmanifest": "32909e6b1d8594e7ab2eaba2c6fd3c8e98d7b045c771d03c1f828e74bf5419dd",
+    "HfSymbol.tsx": "6a884ca893f5b4f68e4cc1d8be4792e18f8da33d9fcddb915d1c3f1aea225aec",
+    "safari-pinned-tab.svg": "2d6b6b9f13d945a59dbe0f9bd0392803ae17cbffb9324e1fb84ef41020f9c0d2",
+    "studio/android-chrome-192x192.png": "d33456e46b9394f2696ceef177d940120da5a35c52a7563c891edf2057daeb0c",
+    "studio/android-chrome-512x512.png": "8ace3e5c5be98f8b96736f54fbf4139556c9b6986da60520b62f84010bbd5207",
+    "studio/apple-touch-icon.png": "0f10c572f2c1773db95fce4770bb4f4174bde904f9b4b435a32d1a9ebf9fdf68",
+    "studio/favicon-16x16.png": "d7d280c153d441b6fed9622c625d7248e21ba72432f475ada7fc5e64e08ba704",
+    "studio/favicon-32x32.png": "32dea73f5059d22e63e62fa475a7f2292c90a77ba09e96a902dc52ec1e9cf79c",
+    "studio/favicon-48x48.png": "6d3d0681911f20920486e3f25740b1a4f48abad3c4dd4a8bce053ea8b95d9f8c",
+    "studio/favicon.ico": "a694216e4c6d1e251cbd622e63952d9f414a7ce1c90df014c93bfb3e1bd491a5",
+    "studio/head-snippet.html": "af1b9cd159e83730e1e9b9efb48d9d6e296ae0ed173509f634a709ac6c2afed5",
+    "studio/icon.svg": "cdf67065d011b36a93b1731f4825474dc164ecd07274e9af8b563ddfbb62e619",
+    "studio/maskable-icon-512x512.png": "9690744507577c86cdb9411a7863d5b320c0b881a9984ae43998493bc767bb31",
+    "studio/og-image.png": "6029ca2c4df093611520688e2c5e41fa6c72190a178435e2f03658264cb604a8",
+    "studio/site.webmanifest": "b45be905a53ebf82c73505e3a4efa09347c2151ca47d585236af758eec04a506"
+  }
+}

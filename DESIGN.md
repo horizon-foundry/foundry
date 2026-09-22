@@ -1,17 +1,20 @@
 ---
 name: Foundry
 colors:
-  ink: '#14191F'
+  ink: '#14191F'           # the Horizon Foundry ink, inherited
   ink-raised: '#1E2530'
   ink-raised-2: '#283340'
-  line: '#334455'
+  line: '#334455'          # the hairline: this site's use of the inherited slate
   line-strong: '#45566A'
-  bone: '#E8ECF0'
+  bone: '#E8ECF0'          # the Horizon Foundry bone, inherited
   bone-dim: '#A2ABB8'
   bone-faint: '#8B94A4'
   signal: '#FFFFFF'
-  brand-slate: '#334455'
-  command: '#D99A2E'
+  # The two inherited values, under this product's own names. Renaming them
+  # would churn every token reference for a naming preference, so the names
+  # stay and the parentage is stated instead.
+  brand-slate: '#334455'   # the Horizon Foundry slate, inherited
+  command: '#D99A2E'       # the Horizon Foundry amber, inherited
   critical: '#FF5C5C'
   high: '#FF9F45'
   medium: '#F5CE4B'
@@ -39,19 +42,23 @@ spacing:
 
 Inherits the Horizon Foundry parent brand (the horizon-foundry/horizon-foundry repo's BRAND.md); Archivo Black display, decided 2026-07-24 (revised from the initial Big Shoulders pick on 2026-07-23, reversed on letterform grounds before any merge).
 
+**What this file owns, and what it borrows** (decision of record, parent BRAND.md's "Inheritance", 2026-09-21). Four colour values are the PARENT's and are inherited, never redefined here: ink `#14191F`, bone `#E8ECF0`, slate `#334455`, amber `#D99A2E`. The design kit's `MARK.md` is the authority on which of them the mark may take on which ground. Everything else in the block above is this product's own extension for its own dark surface: the ink ramp, the bone tints, the severity scale, the verdict colours, and `signal`. Two of this repo's names are aliases of inherited values rather than definitions of them, and the frontmatter says so at each one: `command` is the parent's amber, `brand-slate` is the parent's slate. This repo therefore claims no source of truth over the brand palette, the mark, or the display face; it claims its own implementation and its own extensions.
+
 ## Brand & Style
 
 Foundry is Horizon Foundry's suite, and the site wears the Horizon Foundry identity: a dark blue-gray steel ground, the angular Horizon Foundry mark, and a monochrome palette. The register is a working foundry, industrial and precise, software forged with craft rather than announced with hype.
 
 Two layers share one screen. The **brand layer** (chrome, the suite pages, the mark and wordmark) is steel and white in an industrial condensed gothic. The **instrument layer** (the audit reports and other technical surfaces) keeps a monospace, ledger character and the severity palette. The instrument is the tool; the brand is the foundry it was made in.
 
-The organizing color rule holds throughout: the brand is monochrome, so color means a severity or a verdict, nothing else. A screen is steel and bone until a finding or a verdict speaks; emphasis in the brand layer reads by luminance (bright white on steel), not by hue.
+The organizing color rule holds throughout: the brand is monochrome, so color means a severity, a verdict, or the one named exception below (the amber command accent, under Colors), and nothing else. A screen is steel and bone until a finding or a verdict speaks; emphasis in the brand layer reads by luminance (bright white on steel), not by hue.
 
 ## Wordmark and mark
 
-The **mark** is the Horizon Foundry symbol: an angular geometric mark (inlined from the brand SVG). It is monochrome and takes the surrounding text color, so it reads bone on the dark ground and slate on light. Minimum height 20px, clear space equal to the mark's cap height.
+The **mark** is the Horizon Foundry symbol, the angular mountain: a tall left blade and a lighter echo ridge over a notched lower mass. It is monochrome and takes the surrounding text color, so it reads bone on this site's dark ground. It is the parent brand's, not this product's: the geometry comes from the Horizon Foundry design kit (kit v1.3, the mark as revised 2026-09-19), and `components/Wordmark.tsx` and `scripts/og/card.html` carry copies of it with no build-time link back, so a kit revision is a change here in the same pass. `reference/brand-kit.json` records which kit was taken and `make validate` fails if a copy drifts from it.
 
-The **wordmark** pairs the mark with "Foundry" (the suite) in Archivo Black, or "Horizon Foundry" (the parent brand) in the fuller lockup. Set the wordmark only in Archivo Black, never the mono or serif, uppercase with slightly open tracking (0.02em), matching the studio site's lockup treatment so the two surfaces read as one brand.
+The kit ships the mark in **two cuts, chosen by rendered WIDTH**, and the mark is about 1.54 times as wide as it is tall (the canonical cut is 1.537, the small cut 1.562). The canonical cut is for 48px wide and up, where its channels hold; the small cut (wider channels, a heavier echo ridge) is for below that, down to 16px and favicons only, where the silhouette still reads but the channels merge. Never set the mark near body text at 16px. In height classes the line falls between `h-7` (43px wide, small) and `h-8` (49px, canonical), so the chrome lockup at `h-5` takes the small cut and the deck's title slide at `h-12` takes the canonical one. Each cut has its own viewBox and they are not interchangeable. Clear space is a quarter of the mark's height on every side; favicons and app icons are exempt, because at 16 to 48px size matters more than air.
+
+The **wordmark** pairs the mark with "Foundry", the suite. The parent's own HORIZON FOUNDRY lockup is the kit's, ships outlined, and is never re-typeset here or substituted into this site's chrome: what this site sets in live text is its own sub-brand lockup. Set it only in Archivo Black, never the mono or serif, uppercase, at 0.02em tracking. That is deliberately tighter than the parent's 0.04em (the kit's +40, which its rollout checklist asks each site to confirm), so the two lockups are close relatives rather than the same setting; whether Foundry should adopt 0.04em is an open question in TODOS, not a drift to be quietly corrected.
 
 ## Colors
 
@@ -99,7 +106,7 @@ The audit report is read by a detail-oriented but time-poor senior or principal 
 ## Anti-goals
 
 - No drop shadows, glows, rounded-pill buttons, or gradient meshes.
-- No color that does not mean a severity or a verdict. The brand layer is monochrome.
+- No color that does not mean a severity, a verdict, or an invocable command. The brand layer is otherwise monochrome, and the one amber accent is defined under Colors, not opened up here (corrected 2026-09-22; see NOTES).
 - No hype or marketing warmth; this is a foundry, not a SaaS splash.
 - Never set the identity in anything but Archivo Black and the Horizon Foundry mark.
 - No em dashes in any copy.

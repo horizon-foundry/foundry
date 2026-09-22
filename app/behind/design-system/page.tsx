@@ -1,3 +1,4 @@
+import { BrandMark } from "@/components/Wordmark";
 import { SeverityChip, VerdictStamp } from "@/components/report-ui";
 import type { Severity } from "@/lib/report-types";
 
@@ -60,7 +61,11 @@ export default function DesignSystem() {
           <div className="grid grid-cols-2 gap-px border border-line bg-line sm:grid-cols-4">
             {NEUTRALS.map(([name, hex, bg]) => (
               <div key={name} className="bg-ink p-3">
-                <div className={`h-12 border border-line ${bg}`} />
+                {/* line-strong, not line: the ink and ink-raised stops are
+                    within a shade of the card they sit on, so a #334455
+                    hairline left the darkest samples reading as empty boxes
+                    rather than as filled chips. */}
+                <div className={`h-12 border border-line-strong ${bg}`} />
                 <div className="mt-2 font-mono text-[0.65rem] text-bone">
                   {name}
                 </div>
@@ -124,6 +129,35 @@ export default function DesignSystem() {
               </p>
             </div>
           </div>
+        </Section>
+
+        <Section label="The mark: two cuts, chosen by rendered width">
+          <div className="flex flex-wrap items-end gap-10 text-bone">
+            <div>
+              <BrandMark className="h-12 w-auto" />
+              <p className="mt-3 font-mono text-[0.65rem] uppercase tracking-wide text-bone-faint">
+                Canonical · 48px wide and up
+              </p>
+            </div>
+            <div>
+              <BrandMark small className="h-5 w-auto" />
+              <p className="mt-3 font-mono text-[0.65rem] uppercase tracking-wide text-bone-faint">
+                Small cut · below 48px wide
+              </p>
+            </div>
+          </div>
+          {/* Both specimens render at a size their own cut is correct for, so
+              the page cannot demonstrate the rule by breaking it. What the
+              small cut changes is not visible at 20px, which is the point of
+              having it, so the difference is stated instead of shown. */}
+          <p className="mt-5 max-w-2xl text-sm leading-relaxed text-bone-dim">
+            The parent brand&rsquo;s mark, taken from the Horizon Foundry design
+            kit. The small cut widens the channels and thickens the echo ridge
+            so they survive rasterizing: the canonical cut holds at 48px wide
+            and above, and closes up as it gets smaller. The rule is the
+            rendered width, not the class, and the mark is about half again as
+            wide as it is tall.
+          </p>
         </Section>
 
         <Section label="The command accent: amber">

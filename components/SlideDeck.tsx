@@ -81,6 +81,8 @@ export function SlideDeck({ slides, title, tagline, statChips }: Props) {
         >
           <div className="stagger-rise space-y-5 text-center">
             <div className="flex justify-center text-bone">
+              {/* h-12 is 48px tall, 74px wide: clear of the kit's 48px floor,
+                  so the canonical cut, not the small one the chrome uses. */}
               <BrandMark className="h-12 w-auto" />
             </div>
             <p className="font-mono text-xs uppercase tracking-[0.2em] text-bone-faint">

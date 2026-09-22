@@ -56,6 +56,45 @@ export async function getSupabaseServer() {
   });
 }
 
+// A Supabase client that carries NO session: cookies are never read, so nothing
+// a caller sends can make this client act as a user. Built for the public,
+// unauthenticated /api/health keep-alive, which must reach Supabase but has no
+// business reading anyone's session.
+//
+// SEC: the cookie-reading clients above resolve an access token before every
+// request, and an EXPIRED session triggers a refresh against Supabase's most
+// rate-limited endpoint (a limit shared with real /reports sign-ins) and logs a
+// full AuthApiError stack trace. On a public endpoint that is an unauthenticated
+// amplifier and a log-flood vector: one inbound GET became two outbound Supabase
+// requests plus two stack traces. Reading no cookies removes the whole class.
+//
+// REL: also bounds the request. The Supabase client installs no timeout of its
+// own, so a hung connection would otherwise hold the handler until undici's
+// 300s ceiling. (The three cookie-reading constructions still want the same
+// treatment; tracked in TODOS as REL-01.)
+const ANON_FETCH_TIMEOUT_MS = 10_000;
+
+export function getSupabaseAnonymous() {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_ANON_KEY;
+  if (!url || !key) return null;
+
+  return createServerClient(url, key, {
+    cookies: { getAll: () => [], setAll: () => {} },
+    global: {
+      fetch: (input: RequestInfo | URL, init?: RequestInit) =>
+        fetch(input, {
+          ...init,
+          // Compose rather than replace: a caller-supplied signal must not
+        // silently un-bound the request the comment above promises to bound.
+        signal: init?.signal
+          ? AbortSignal.any([init.signal, AbortSignal.timeout(ANON_FETCH_TIMEOUT_MS)])
+          : AbortSignal.timeout(ANON_FETCH_TIMEOUT_MS),
+        }),
+    },
+  });
+}
+
 // The public origin of a request, used to build the magic-link redirect target.
 // Prefer a pinned, server-only origin so that target is never derived from a
 // client-influenceable forwarded host (SEC: a spoofed X-Forwarded-Host could

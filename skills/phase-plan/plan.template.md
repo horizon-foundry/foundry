@@ -1,7 +1,9 @@
 <!-- Plan-file template: the handoff a next session resumes from. Copy, fill every section, and index the path in TODOS.md (the phase-plan skill owns the mechanics). -->
 
 Status: active
+Written: YYYY-MM-DD
 <!-- Status enum: active | completed | superseded (by <file>) | abandoned (<why>) -->
+<!-- Written is the absolute date the plan was authored. It never changes after that; the same date leads the plan's index entry in TODOS.md. -->
 
 ## Goal
 
