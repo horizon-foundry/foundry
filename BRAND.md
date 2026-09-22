@@ -6,13 +6,13 @@ Approved by: Craig Martin
 Approved on: 2026-07-16
 <!-- internal:end -->
 
-The identity and voice source of truth for Foundry. Distinct from [DESIGN.md](DESIGN.md) (how it looks) and [PRODUCT.md](PRODUCT.md) (what it is and who for). Copy, marketing, and UI strings reference this file.
+The voice source of truth for Foundry, and the record of what its identity inherits. The identity itself is the parent's: the mark, the four palette values, the display face and the attribution line are owned in Horizon Foundry's own BRAND.md (the horizon-foundry/horizon-foundry repo) and are never redefined here. Distinct from [DESIGN.md](DESIGN.md) (how it looks, including which of the inherited values this product extends and how) and [PRODUCT.md](PRODUCT.md) (what it is and who for). Copy, marketing, and UI strings reference this file.
 
 <!-- internal:start -->
 The three lines above are the machine-readable sign-off the `brand-voice` skill reads: this brand is `approved`, so its glossary and copy rules are enforced, not merely suggested. They and this note are wrapped in internal markers because the public brand tab renders this file, and a visitor has no use for either (lib/docs.ts, stripInternalBlocks). The header stays at the top of the file, in this shape, because that is where the skill looks for it.
 <!-- internal:end -->
 
-Inherits the Horizon Foundry parent brand (the horizon-foundry/horizon-foundry repo's BRAND.md); Archivo Black display, decided 2026-07-24 (revised from the initial Big Shoulders pick on 2026-07-23, reversed on letterform grounds before any merge). Type is [DESIGN.md](DESIGN.md)'s fact, not duplicated here.
+The inherited display face is Archivo Black, decided 2026-07-24 (revised from the initial Big Shoulders pick on 2026-07-23, reversed on letterform grounds before any merge). Type is [DESIGN.md](DESIGN.md)'s fact, not duplicated here.
 
 The mark is the parent's too, and it was redrawn: this site carries the revision of 2026-09-19, taken from the parent's design kit (kit v1.3). The drawing before it is retired, and no surface here may still show it. The kit permits the mark bone on ink or slate, ink on bone or white, and slate on white or bone, never slate with ink either way; it also draws one amber alternate, an outline on a full ink ground at 96px and up, which this site does not use because amber here means a command. How the mark is set, in which cut and at which sizes, is again [DESIGN.md](DESIGN.md)'s fact.
 
