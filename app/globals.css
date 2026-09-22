@@ -44,6 +44,20 @@
   --color-verdict-risk: #f5ce4b;
   --color-verdict-noship: #ff5c5c;
 
+  /* Motion. Named by what the motion DOES, never given as a range: matching a
+     value to a token by the nearest number is how a system drifts. A close
+     runs faster and quieter than an open, so exits take --duration-tick or
+     --duration-quick with --ease-exit, and entrances take --ease-entrance.
+     Reduced motion drops spatial movement and keeps the state change (see the
+     prefers-reduced-motion blocks below). DESIGN.md's Motion section is the
+     record; these are its implementation. */
+  --duration-tick: 120ms; /* a press, a tick landing: acknowledgement */
+  --duration-quick: 220ms; /* hover and focus state changes, a chip lifting */
+  --duration-settle: 420ms; /* an element arriving, the crosshair settling */
+  --duration-draw: 600ms; /* a rule or the hero grid drawing itself in, once */
+  --ease-entrance: cubic-bezier(0.22, 1, 0.36, 1); /* overshoot: entrances only */
+  --ease-exit: cubic-bezier(0.4, 0, 0.2, 1); /* no overshoot on the way out */
+
   /* Two distinct variable names: next/font's generated rule is unlayered CSS
      and would always beat this @theme-layer declaration in the cascade if
      they shared a name, silently dropping the fallback chain below. See
@@ -111,12 +125,49 @@ body::before {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
+/* The measuring band: the surface the grid and its crosshair live on. It is
+   positioned directly above the instrument panel and spans exactly its width
+   (see app/page.tsx), so its bottom edge is the panel's top border and its
+   sides are the panel's sides. Nothing here is placed by eye.
+
+   Two earlier placements failed, both for the same reason. Running the grid
+   under the hero's copy put the kicker at 3.27:1 against AA's 4.5:1. Floating
+   it in the upper right gave it four edges that aligned with nothing, a
+   near-miss against the panel's borders, and readings taken below the row
+   where the lattice was still drawn: a bright rule in empty ink with nothing
+   to measure against, which is the decoration the anti-goals are written
+   against. A near-miss reads as a mistake; landing on the panel reads as a
+   choice. */
+.hero-field {
+  display: none;
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  height: 10.5rem;
+  overflow: hidden;
+}
+/* Only where the hero is two columns. Below lg the copy runs full width and
+   the panel stacks under it, so a band above the panel would sit across the
+   copy instead of beside it. A composition that needs two columns is not
+   shown to one. */
+@media (min-width: 64rem) {
+  .hero-field {
+    display: block;
+  }
+}
+
 /* Hairline-grid backdrop utility for hero/section grounds. */
 .grid-field {
   background-image:
     linear-gradient(to right, var(--color-line) 1px, transparent 1px),
     linear-gradient(to bottom, var(--color-line) 1px, transparent 1px);
-  background-size: 56px 56px;
+  /* Nine columns across the band exactly, and rows of one module: the last
+     column edge is the panel's right border and the last row is its top
+     border, at every width the band renders. A fixed cell cannot do that
+     against a fluid column, which is how the graduations ended up 10 to 12px
+     off the thing sitting on them. */
+  background-size: calc(100% / 9) 3.5rem;
   /* Alpha mask: only opacity matters, so the token's hue is irrelevant: any
      fully-opaque value fades the grid the same way. Use the token, not a raw
      literal. */
@@ -346,64 +397,95 @@ body::before {
     opacity: 1 !important;
     transform: none !important;
   }
-  .forge-glow,
-  .hero-spotlight {
-    display: none !important;
-  }
+
 }
 
-/* The forge glow: an ambient amber radial behind the hero, the foundry's heat.
-   Slow breathe, very low opacity, purely atmospheric. Amber here is ambient
-   brand atmosphere, not an interactive command, so it stays faint. */
-/* Opacity-only breathe, so the element's transform is free for pointer drift. */
-@keyframes forge-breathe {
-  0%,
-  100% {
-    opacity: 0.5;
-  }
-  50% {
-    opacity: 0.85;
-  }
-}
-/* The forge glow drifts toward the cursor. --gx/--gy are px offsets set by
-   HeroForge (rAF-throttled); the transform is GPU-friendly and eased so the
-   heat follows with a slow, molten lag. */
-.forge-glow {
-  position: absolute;
-  left: 34%;
-  top: 44%;
-  width: 42rem;
-  height: 42rem;
-  pointer-events: none;
-  border-radius: 9999px;
-  background: radial-gradient(
-    circle,
-    color-mix(in srgb, var(--color-command) 16%, transparent) 0%,
-    transparent 62%
-  );
-  filter: blur(28px);
-  transform: translate(
-    calc(-50% + var(--gx, 0px)),
-    calc(-50% + var(--gy, 0px))
-  );
-  transition: transform 0.55s var(--ease-out-quint, ease-out);
-  animation: forge-breathe 7s ease-in-out infinite;
-  z-index: 0;
-}
+/* The hero's grid is a measuring surface, so the pointer reads as a coordinate
+   ON it rather than as a light source over it. Two hairlines snap to the
+   nearest graduation and a registration tick marks the crossing, the same tick
+   the verdict stamp uses. Snapping is the whole idea: a line that follows the
+   cursor is a cursor-follower, and a line that jumps to the nearest graduation
+   is a measurement.
 
-/* A soft light under the cursor brightens the hairline grid, the forge
-   reacting to your presence. --mx/--my (in %) are set by HeroForge. */
-.hero-spotlight {
+   What this replaced: an amber radial with a 28px blur and a 7s breathe, plus
+   a bone spotlight that transitioned a gradient POSITION (a paint over the
+   whole hero, every frame the cursor moved). Both were glows, which this
+   site's own anti-goals ban, and the amber one put hue on the brand layer
+   where only an invocable command may go. Everything here rides transform and
+   opacity, so it composites. */
+.grid-crosshair {
   position: absolute;
   inset: 0;
-  pointer-events: none;
+  z-index: 1;
   z-index: 0;
-  background: radial-gradient(
-    18rem 18rem at var(--mx, 50%) var(--my, 40%),
-    color-mix(in srgb, var(--color-bone) 7%, transparent) 0%,
-    transparent 65%
-  );
-  transition: background 0.2s linear;
+  opacity: 0;
+  transition: opacity var(--duration-quick) var(--ease-exit);
+  /* Deliberately NOT masked like the grid. The first pass gave it the grid's
+     radial fade for tidiness and the reading disappeared through most of the
+     hero, which is where the pointer actually is: the scale may fade into the
+     dark, the needle may not. */
+}
+.grid-crosshair[data-live="true"] {
+  opacity: 1;
+  transition-timing-function: var(--ease-entrance);
+}
+.grid-crosshair span {
+  position: absolute;
+  background: var(--color-line-strong);
+  transition: transform var(--duration-settle) var(--ease-entrance);
+}
+.grid-crosshair .gx {
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  transform: translate3d(var(--cx, 0px), 0, 0);
+}
+.grid-crosshair .gy {
+  left: 0;
+  right: 0;
+  height: 1px;
+  transform: translate3d(0, var(--cy, 0px), 0);
+}
+/* The crossing is the READING, so it is the bright thing: the graduations stay
+   quiet and the mark that says "here" is in bone. A first pass had the tick at
+   bone-faint and the whole crosshair read as one more grid line, which is the
+   failure mode of drawing an instrument in the same weight as its scale. */
+.grid-crosshair .tick {
+  top: -8px;
+  left: -8px;
+  width: 17px;
+  height: 17px;
+  background: none;
+  border-left: 1px solid var(--color-bone);
+  border-top: 1px solid var(--color-bone);
+  transform: translate3d(var(--cx, 0px), var(--cy, 0px), 0);
+}
+/* A second arm, so the mark reads as a registration cross rather than as a
+   stray corner. Drawn on the same element to keep the moving parts at three. */
+.grid-crosshair .tick::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 7px;
+  height: 7px;
+  border-right: 1px solid var(--color-bone);
+  border-bottom: 1px solid var(--color-bone);
+}
+
+/* The field arrives once, rather than looping forever. */
+@keyframes grid-raise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -8px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.grid-field {
+  animation: grid-raise var(--duration-draw) var(--ease-entrance) both;
 }
 
 /* Command micro-interaction: the amber tokens warm slightly and lift on hover,
@@ -426,42 +508,47 @@ a:hover .text-command,
     opacity: 1 !important;
     transform: none !important;
   }
-  .forge-glow {
-    animation: none !important;
-    opacity: 0.55 !important;
-    transform: translate(-50%, -50%) !important;
-    transition: none !important;
-  }
-  .hero-spotlight {
+  /* No crosshair at all: it is a response to movement, and there is nothing
+     here it needs to keep conveying once the movement is gone. The grid stays,
+     simply present rather than arriving. */
+  .grid-crosshair {
     display: none !important;
+  }
+  .grid-field {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
   }
   .text-command {
     transition: none !important;
   }
 }
 
-/* Refined easing (animate skill: no bounce/elastic). */
-:root {
-  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
-}
 
 /* Feedback layer: interactive cards lift slightly on hover/focus (transform +
    border only, GPU-friendly). Applied ONLY to genuinely interactive cards, not
    decorative ones. */
 .lift {
+  /* The hover-OUT is the default: quicker, and without the entrance easing's
+     overshoot, because a card settling back should not draw the eye it is
+     giving up (DESIGN.md, Motion: asymmetry is the default). */
   transition:
-    transform 0.22s var(--ease-out-quint),
-    border-color 0.22s var(--ease-out-quint),
-    background-color 0.22s var(--ease-out-quint);
+    transform var(--duration-tick) var(--ease-exit),
+    border-color var(--duration-tick) var(--ease-exit),
+    background-color var(--duration-tick) var(--ease-exit);
 }
 .lift:hover,
 .lift:focus-visible {
   transform: translateY(-2px);
+  transition:
+    transform var(--duration-quick) var(--ease-entrance),
+    border-color var(--duration-quick) var(--ease-entrance),
+    background-color var(--duration-quick) var(--ease-entrance);
 }
 
-/* CTAs acknowledge the press (quick, <150ms). */
+/* CTAs acknowledge the press. */
 .press {
-  transition: transform 0.12s var(--ease-out-quint);
+  transition: transform var(--duration-tick) var(--ease-exit);
 }
 .press:active {
   transform: translateY(1px);

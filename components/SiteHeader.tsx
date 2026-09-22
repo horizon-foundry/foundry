@@ -18,7 +18,7 @@ const NAV = [
 
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-20 border-b border-line bg-ink/85 backdrop-blur">
+    <header className="sticky top-0 z-20 border-b border-line bg-ink">
       <div className="mx-auto max-w-[1180px] px-5 sm:px-8">
         <div className="flex min-h-14 items-center justify-between gap-4">
           <Wordmark className="text-sm" />
