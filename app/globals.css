@@ -5,15 +5,28 @@
    product's Tailwind classes: a numbered palette colour in production CSS,
    which the monochrome rule forbids, while the source stayed clean. A
    source-only sweep cannot see that class of defect, which is why it survived
-   two audits. */
+   two audits.
+
+   Note for whoever edits these comments: naming a utility in the prose of a
+   SCANNED file mints it, so the sentence above would be a hazard if it lived in
+   a .ts or .tsx file. It does not. Measured rather than assumed: with this file
+   inside the scanned app/ directory and naming both utilities, neither is
+   emitted, because Tailwind v4 processes a .css file as CSS and never scans it
+   for class candidates. An `@source not` excluding stylesheets was written here
+   first and removed after a build proved it changed not one selector. The .tsx
+   comment in HeroForge that named the same two utilities DID mint them. */
 @import "tailwindcss" source(none);
 @source "../app";
 @source "../components";
-/* lib/ too: lib/report-types.ts holds full class strings precisely because the
-   scanner is the only thing keeping them alive (the fragments are composed at
-   runtime). All four survive today only because each happens to be duplicated
-   in app/ or components/, which is luck, not design. */
-@source "../lib";
+/* One file in lib/, named explicitly rather than by directory: report-types.ts
+   holds full class strings precisely because the scanner is the only thing
+   keeping them alive (the fragments are composed at runtime), and all four
+   survive today only because each happens to be duplicated in app/ or
+   components/, which is luck. Scanning all of lib/ was the first attempt and it
+   minted `font-bold` out of a sentence in fonts.ts, so the scope is the file
+   that needs it. */
+@source "../lib/report-types.ts";
+
 
 /*
   Instrument design system. Tokens mirror DESIGN.md frontmatter; when the

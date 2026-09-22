@@ -483,9 +483,22 @@ generated from the English word "prose" in two page strings, and it carried the
 one shadow left in the build, a `kbd` `box-shadow` the anti-goals ban outright.
 Removing the plugin took the stylesheet from 70,685 to 58,683 bytes. The general
 lesson is the one unit C was already about, one turn deeper: scoping source
-detection shrinks prose-generated CSS but cannot close it, because Tailwind
-reads whole file text, comments included. A comment recording that a blur was
-removed ships a `.blur` rule. Naming the removal is enough to reinstate it.
+detection shrinks prose-generated CSS but does not by itself close it, because
+Tailwind reads a scanned file's whole text, comments included. A code comment
+recording that a softening was removed ships the rule back. Naming the removal
+is enough to reinstate it, which is a genuinely funny way to be wrong and took
+three builds to see, because the comment explaining the defect was causing it.
+
+Two corrections came out of closing it, and both are the same discipline as the
+rest of this wave. Scanning all of `lib/` to keep one file's class strings alive
+minted `font-bold` out of a sentence in `fonts.ts`, so the scope is the file,
+not the directory. And an `@source not` excluding stylesheets, written on the
+assumption that `app/globals.css`'s own comments were minting rules, changed not
+one selector when a build was diffed against it: Tailwind v4 processes a `.css`
+file as CSS and never scans it for candidates. The line was removed rather than
+kept as harmless belt-and-braces, because a directive that does nothing is a
+claim the artifact disproves, which is the exact failure this wave exists to
+stop. The prose in a stylesheet is safe; the prose in a `.tsx` is not.
 
 **And a gate is only as good as the forms it was attacked with.** The new
 palette check was defeated by 13 of 16 real emitted forms, because a palette

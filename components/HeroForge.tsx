@@ -13,11 +13,11 @@ import { useEffect, useRef } from "react";
 //
 // What this replaced: an amber radial glow softened by 28px on a 7s breathe,
 // plus a bone spotlight that transitioned a gradient POSITION under the cursor.
-// (The word for that softening is deliberately not the Tailwind utility's name:
-// Tailwind scans this file's whole text, comments included, so writing it here
-// shipped a `.blur` rule generated from the sentence recording its removal.
-// Same shape as the `.backdrop-blur` regenerated from the changelog entry that
-// described deleting it, one directory in.)
+// Neither utility is named here, deliberately. Tailwind scans this file's whole
+// text, comments included, so naming a utility in a sentence about DELETING it
+// regenerates it: the first cut of this comment shipped two such rules, which is
+// the defect the source scoping in app/globals.css exists to fix. The full story
+// is in NOTES.md under 2026-09-22, where prose costs nothing.
 // Both are glows, which DESIGN.md's anti-goals ban, and the amber one put hue
 // on the brand layer where only an invocable command belongs. Two rendered
 // critics that saw nothing but a screenshot and the anti-goals called it
