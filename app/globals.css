@@ -205,7 +205,17 @@ body::before {
      dividing this by 3, so the two cannot drift at a non-default root font
      size the way a hardcoded pixel row did. */
   height: 10.5rem;
-  overflow: hidden;
+  /* NOT clipped, deliberately, and this is load-bearing. The lattice cannot
+     overflow (it is a background on an inset-0 child), so the only thing this
+     ever clipped was the crosshair's own 1px line at the last graduation of
+     each axis. Those graduations are real: the last column edge IS the panel's
+     right border and the last row IS its top border, in the same
+     --color-line the lattice is drawn in. Clipping them made the reading
+     vanish at the band's far edges, and the first fix for that clamped the snap
+     to the second-to-last graduation instead, which made the bottom HALF of the
+     band report one value and drew the reading 56px from a pointer sitting 1px
+     above a line that was right there. Unclipping restores a uniform half-cell
+     zone at each end, which is what "snaps to the nearest graduation" means. */
   /* An aria-hidden decoration should not be a hit-test target. Nothing
      interactive sits under the band today, so this is latent rather than live,
      but elementFromPoint returned the crosshair at all four of its corners. */
@@ -262,15 +272,18 @@ body::before {
 }
 /* 500ms matches no token: a staggered arrival is its own job and is left alone
    rather than forced into --transition-duration-settle. The curve IS a token,
-   --ease-draw, because these rows land on a fixed resting line. */
-.stagger-rise > *:not(.hero-field) {
+   --ease-draw, because these rows land on a fixed resting line.
+   No .hero-field exclusion any more, and that is the fix rather than an
+   omission: the band was a child of a stagger container and an exclusion on the
+   animation cannot be mirrored onto the delays, because :nth-child() counts ALL
+   children regardless of :not(). The band is out of the container now (see
+   app/page.tsx), so every child of a stagger container is a thing that
+   staggers. */
+.stagger-rise > * {
   opacity: 0;
   animation: rise 0.5s var(--ease-draw) forwards;
 }
-/* The exclusion belongs on the delays too. Without it .hero-field spends the
-   first slot on an element that has no stagger animation, and the panel that
-   should arrive at 40ms arrives at 100ms instead. */
-.stagger-rise > *:not(.hero-field):nth-child(1) {
+.stagger-rise > *:nth-child(1) {
   animation-delay: 0.04s;
 }
 .stagger-rise > *:nth-child(2) {

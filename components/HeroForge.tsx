@@ -68,6 +68,11 @@ export function HeroForge() {
     // attached anyway and a zero-width rect made the column zero, which wrote
     // `--cx: NaNpx`. It mirrors the media query in app/globals.css.
     const wide = window.matchMedia("(min-width: 64rem)");
+    // The fourth gate, mirroring the last media query in app/globals.css that
+    // decides whether the band exists at all. Without it the component measured
+    // the band once per frame while hovering, in a mode where it is display:none
+    // and can never render.
+    const forced = window.matchMedia("(forced-colors: active)");
 
     let raf = 0;
     let inside = false;
@@ -119,14 +124,18 @@ export function HeroForge() {
       // band's height is exactly ROWS rows by construction (10.5rem / 3.5rem),
       // so dividing is exact at any font size and there is one source of truth.
       const row = rect.height / ROWS;
-      // Clamped to the LAST drawn graduation. Rounding admitted one index past
-      // it at each axis (9 and 3), which land exactly on the field's own
-      // clipping edge, so the line vanished in the right 5.6% and the bottom
-      // 17% of the band. The bottom strip is precisely where a pointer heading
-      // for the terminal sits, so the reading disappeared at the moment it was
-      // being read.
-      const cx = `${Math.min(Math.round(x / column), COLUMNS - 1) * column}px`;
-      const cy = `${Math.min(Math.round(y / row), ROWS - 1) * row}px`;
+      // Unclamped, on purpose. Rounding admits one index past the last lattice
+      // line on each axis (9 and 3), and those are real graduations: the panel's
+      // right border and its top border, drawn in the same colour the lattice
+      // uses. Clamping them away was the first fix for a CLIPPING problem, and
+      // it cost the instrument its meaning: the bottom half of the band all
+      // reported one value, and a pointer 1px above the panel's border had its
+      // reading drawn 56px away from it. The band is no longer clipped
+      // (app/globals.css), so the line can land on those two borders and every
+      // zone is a half-cell at the ends and a full cell in between, which is
+      // what snapping to the NEAREST graduation means.
+      const cx = `${Math.round(x / column) * column}px`;
+      const cy = `${Math.round(y / row) * row}px`;
       // Only on change: snapping leaves the value identical for 55 of every 56
       // pixels of travel, and each write invalidates style on three children.
       if (cx !== lastCx) {
@@ -181,11 +190,23 @@ export function HeroForge() {
 
     let attached = false;
     const attach = () => {
-      if (attached || reduced.matches || coarse.matches || !wide.matches) return;
+      if (
+        attached ||
+        reduced.matches ||
+        coarse.matches ||
+        forced.matches ||
+        !wide.matches
+      )
+        return;
       attached = true;
       section.addEventListener("pointerenter", onEnter);
       section.addEventListener("pointermove", onMove);
       section.addEventListener("pointerleave", onLeave);
+      // A cancel ends the interaction as surely as a leave does. A real one is
+      // followed by pointerleave anyway, so this is for the scripted case, where
+      // `inside` would otherwise stay true and the next scheduled frame would
+      // light the crosshair with no pointer present.
+      section.addEventListener("pointercancel", onLeave);
       window.addEventListener("resize", onViewportChange, { passive: true });
       window.addEventListener("scroll", onViewportChange, { passive: true });
     };
@@ -201,6 +222,7 @@ export function HeroForge() {
       section.removeEventListener("pointerenter", onEnter);
       section.removeEventListener("pointermove", onMove);
       section.removeEventListener("pointerleave", onLeave);
+      section.removeEventListener("pointercancel", onLeave);
       window.removeEventListener("resize", onViewportChange);
       window.removeEventListener("scroll", onViewportChange);
     };
@@ -209,12 +231,14 @@ export function HeroForge() {
     // turning reduced motion on, or plugging in a mouse, changed nothing until
     // the next navigation.
     const onPreferenceChange = () => {
-      if (reduced.matches || coarse.matches || !wide.matches) detach();
+      if (reduced.matches || coarse.matches || forced.matches || !wide.matches)
+        detach();
       else attach();
     };
     reduced.addEventListener("change", onPreferenceChange);
     coarse.addEventListener("change", onPreferenceChange);
     wide.addEventListener("change", onPreferenceChange);
+    forced.addEventListener("change", onPreferenceChange);
     onPreferenceChange();
 
     return () => {
@@ -222,6 +246,7 @@ export function HeroForge() {
       reduced.removeEventListener("change", onPreferenceChange);
       coarse.removeEventListener("change", onPreferenceChange);
       wide.removeEventListener("change", onPreferenceChange);
+      forced.removeEventListener("change", onPreferenceChange);
       if (raf) cancelAnimationFrame(raf);
     };
   }, []);

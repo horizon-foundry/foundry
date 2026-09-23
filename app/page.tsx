@@ -147,7 +147,7 @@ export default function Home() {
                 </Link>
               </div>
             </div>
-            <div className="stagger-rise relative">
+            <div className="relative">
               {/* The measuring band sits ON the instrument, not behind it: it
                   is rendered here, as a sibling of the panel, so its width IS
                   the panel's width and its bottom edge IS the panel's top
@@ -163,7 +163,16 @@ export default function Home() {
                   <span className="tick" />
                 </div>
               </div>
-              <Terminal />
+              {/* The panel is the stagger container's only child. The band used
+                  to be a child of it too, which quietly cost the panel its first
+                  slot: `:nth-child()` does not renumber under `:not()`, so a
+                  `:not(.hero-field):nth-child(1)` delay rule matched nothing
+                  here and the panel kept arriving at 100ms while the record said
+                  40ms. Taking the decoration out of the container is the fix
+                  that needs no selector to be clever. */}
+              <div className="stagger-rise">
+                <Terminal />
+              </div>
             </div>
             </div>
 
