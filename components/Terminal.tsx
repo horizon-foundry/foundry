@@ -9,8 +9,13 @@ import { useEffect, useRef, useState } from "react";
 // the conductor and the individual skills. This is
 // also where the landing's color lives, all of it meaningful: the command is
 // amber (the forge), the output carries the report's verdict and severity hues
-// and a pass-green. Nothing decorative. Reduced-motion shows the run instantly;
-// the command chips are 44px touch targets (the mobile discipline).
+// and a pass-green. Nothing decorative. Under reduced motion the TYPING is
+// instant (measured: the reveal starts at 65ms rather than 1113ms) while the
+// output still fades in over the settle token, because opacity is exactly what
+// that preference keeps; an earlier version of this line said "shows the run
+// instantly", which was already loose at 300ms and got 40% looser when the
+// literal became a token. The command chips are 44px touch targets (the mobile
+// discipline).
 
 type Span = { t: string; c: string };
 

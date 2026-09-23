@@ -24,7 +24,16 @@
    survive today only because each happens to be duplicated in app/ or
    components/, which is luck. Scanning all of lib/ was the first attempt and it
    minted `font-bold` out of a sentence in fonts.ts, so the scope is the file
-   that needs it. */
+   that needs it.
+   This line emits nothing today: compiled with and without it the output is
+   byte-identical, because all four classes happen to be duplicated elsewhere.
+   It stays anyway, and the distinction from the `@source not` that was deleted
+   for emitting nothing is the point. That one guarded a mechanism which does not
+   exist (a stylesheet is never scanned), so it could never do anything. This one
+   guards a hazard that is real and dated: the fifth class added to that map
+   ships unstyled on /reports/[slug] and /example/[slug], silently, and this is
+   the line that stops it. A guard for a future defect is not the same as a
+   claim about a present one. */
 @source "../lib/report-types.ts";
 
 
@@ -140,8 +149,12 @@ html {
        properties simply leave the transition list. */
     transition-property: color, background-color, border-color, outline-color,
       text-decoration-color, opacity, fill, stroke !important;
-    /* The duration survives on purpose (a colour change still reads as a
-       change), but a DELAY under this preference is only a wait. */
+    /* A forward guard, not a fix for anything observed: there is no
+       transition-delay anywhere in this repo today, so this reaches nothing.
+       The duration survives on purpose (a colour change still reads as a
+       change); a DELAY under this preference would only be a wait. The same is
+       true of text-decoration-color above, which Tailwind's own
+       transition-colors already includes. */
     transition-delay: 0s !important;
   }
 }
@@ -659,9 +672,24 @@ a:hover .text-command,
      contrast. The first cut of this rule set the background to
      --color-ink-raised on .press globally, which put #14191f text on #1e2530 at
      1.15:1 on the two bone CTAs: an acknowledgement that erased the word it was
-     acknowledging, for reduced-motion users only. SignOutButton carries no
-     border width and no plate; its own colour change to bone confirms it. */
-  .press:active {
+     acknowledging, for reduced-motion users only.
+     `:not(:disabled)` because the amber is this brand's invocable-command
+     colour and the /unlock submit is disabled while a request is in flight, so
+     without it a press registered on a control that cannot be invoked.
+     Measured, and recorded because it is the marginal number here rather than
+     the one that reads well: amber against the bone plate is 2.05:1 and against
+     the page ground 7.25:1, and the idle-to-active change is 3.08:1. That
+     passes WCAG 1.4.11 on both readings, with 0.08 of headroom and nothing
+     guarding it, so a future nudge to --color-command or --color-line-strong
+     drops it below 3:1 silently.
+     The third call site is NOT covered here and does not try to be: a
+     borderless, plateless button has no border to change, and an earlier
+     version of this comment claimed its `hover:text-bone` confirmed the press,
+     which is wrong twice over (hover is pointing, not pressing, and a keyboard
+     activation never matches :hover). It carries its own `active:text-bone`
+     instead, which brightens rather than dims and is the brand's luminance
+     rule. */
+  .press:active:not(:disabled) {
     border-color: var(--color-command);
   }
 }

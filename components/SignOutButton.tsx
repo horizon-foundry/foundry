@@ -16,7 +16,13 @@ export function SignOutButton() {
     >
       <button
         type="submit"
-        className="press font-mono text-xs uppercase tracking-wide text-bone-faint transition-colors hover:text-bone"
+        /* active:text-bone, not only hover: this is the one .press call site with
+           no border and no plate, so the reduced-motion border acknowledgement in
+           globals.css cannot reach it, and a hover state confirms pointing rather
+           than pressing and never matches a keyboard activation at all. Measured
+           before this: holding Space on the focused button produced a
+           pixel-identical frame under reduced motion. */
+        className="press font-mono text-xs uppercase tracking-wide text-bone-faint transition-colors hover:text-bone active:text-bone"
       >
         Sign out
       </button>

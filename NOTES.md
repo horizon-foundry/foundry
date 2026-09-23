@@ -500,6 +500,24 @@ kept as harmless belt-and-braces, because a directive that does nothing is a
 claim the artifact disproves, which is the exact failure this wave exists to
 stop. The prose in a stylesheet is safe; the prose in a `.tsx` is not.
 
+And then the claim that came out of all that, "zero prose-minted classes", was
+itself false, which is worth more than the fix. It was checked against the list
+of sixteen names the audit had named, not against the artifact, so it verified
+the instance and missed the invariant, which is the error this wave has now made
+in three different places. The next review round extracted all 526 class tokens
+from the built stylesheet and checked each against every `className` in the
+repo: twelve ship that nothing uses, and three of them are `.ease-entrance`,
+`.ease-exit` and `.ease-draw`, minted from the `<code>` tags this wave added to
+`/behind/design-system` to document those very tokens. One of the twelve settles
+the strategy question for good. `.resize` comes partly from
+`window.addEventListener("resize", ...)`, which is live code and cannot be
+reworded, so rewording closes single cases and can never close the mechanism.
+The lesson is the one this wave already learned about the palette and then
+declined to apply to its sibling: a property you want to hold is asserted by a
+gate, not by a sweep, because the sweep is only ever as wide as the list you
+thought to write down. The gate here is mechanisable and is now the next unit,
+paired with the unenforced token-mirror check, which has the same shape.
+
 **And a gate is only as good as the forms it was attacked with.** The new
 palette check was defeated by 13 of 16 real emitted forms, because a palette
 class is bare only in the simplest case: every variant prefixes it and several
