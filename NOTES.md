@@ -526,3 +526,46 @@ variable is the assertion that holds. The class pattern stays because it names
 the offending selector in the failure message, which is what makes the failure
 actionable. Writing the check was not the work; generating the sixteen real
 forms through the installed Tailwind and injecting each one was.
+
+## 2026-09-22, third round: the same mistake, three times, in three disguises
+
+The band took three review rounds after its own fix wave, and the interesting
+part is that all three rounds caught the same error wearing different clothes.
+
+Round one: a defect was verified against the sixteen class names the audit had
+named, rather than against the built stylesheet. Twelve prose-minted utilities
+were missed, three of them minted by the page this wave added to document the
+motion tokens.
+
+Round two: a stagger-delay fix was verified by reading the selector and
+believing it. `:nth-child()` counts every child regardless of `:not()`, so
+`:not(.hero-field):nth-child(1)` matched nothing in the container it was written
+for, and the panel kept arriving at 100ms while a commit message and a checked
+TODOS entry both said 40ms.
+
+Round three: the far-edge reading was verified by checking `--cy` and
+`getBoundingClientRect`. Both were correct. The pixel was not. The line landed
+exactly on the panel's top border, and the panel is a stacking context through
+its own entrance transform, so it painted over the reading. Geometry is blind to
+occlusion in precisely the way it is blind to clipping, which is what the same
+measurement had already failed to see one round earlier.
+
+**The rule: verify in the medium the defect lives in.** A CSS class that ships is
+checked in the emitted stylesheet, not in a list of names. A selector's effect is
+checked on the rendered element, not by reading the selector. A line a person is
+supposed to SEE is checked by sampling the pixel, not by reading the rectangle it
+claims to occupy. Each of those is one step further from the source than feels
+necessary, and each is exactly where the defect was sitting.
+
+Round three also killed a justification that sounded airtight. "The lattice
+cannot overflow, it is a background on an inset-0 child" ignores that the child
+is transformed by its own entrance animation, and a transformed element paints
+its background wherever it has been transformed to. Unclipping the band on that
+reasoning let the lattice fringe 8px above it for 200ms on every load, let the
+registration tick hang 444px outside the far corner, and falsified DESIGN.md's
+"bounded to the field" without touching DESIGN.md. The fix that works keeps the
+snap unclamped, so the instrument still reports the nearest graduation, and
+clamps the DRAWN position to the band's last pixel instead, so the line lands on
+the panel's edge from inside a box that is still clipped. The two axes differ by
+one pixel, and that is a border-box fact rather than a bug: the panel's right
+border sits inside its width while its top border sits on the band's bottom edge.

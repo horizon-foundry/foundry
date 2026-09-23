@@ -124,18 +124,30 @@ export function HeroForge() {
       // band's height is exactly ROWS rows by construction (10.5rem / 3.5rem),
       // so dividing is exact at any font size and there is one source of truth.
       const row = rect.height / ROWS;
-      // Unclamped, on purpose. Rounding admits one index past the last lattice
-      // line on each axis (9 and 3), and those are real graduations: the panel's
-      // right border and its top border, drawn in the same colour the lattice
-      // uses. Clamping them away was the first fix for a CLIPPING problem, and
-      // it cost the instrument its meaning: the bottom half of the band all
-      // reported one value, and a pointer 1px above the panel's border had its
-      // reading drawn 56px away from it. The band is no longer clipped
-      // (app/globals.css), so the line can land on those two borders and every
-      // zone is a half-cell at the ends and a full cell in between, which is
-      // what snapping to the NEAREST graduation means.
-      const cx = `${Math.round(x / column) * column}px`;
-      const cy = `${Math.round(y / row) * row}px`;
+      // The SNAP is unclamped: rounding admits one index past the last lattice
+      // line on each axis (9 and 3), and those are real graduations, being the
+      // panel's right and top borders in the same colour the lattice uses. That
+      // keeps every zone a half-cell at the ends and a full cell between, which
+      // is what snapping to the NEAREST graduation means. Clamping the INDEX
+      // was the first attempt and it cost the instrument its meaning: the bottom
+      // half of the band all reported one value and a pointer 1px above the
+      // panel's border had its reading drawn 56px from it.
+      //
+      // The DRAWN position is clamped instead, to the band's last pixel, because
+      // the band is clipped (and has to be: see app/globals.css). Both axes land
+      // on the panel's edge, and they differ by a pixel for a border-box reason
+      // worth stating rather than rediscovering. The panel's right border
+      // occupies [R-1, R] and the band's right edge is R, so a line drawn at
+      // width-1 is EXACTLY that border. The panel's top border occupies [T, T+1]
+      // where T is the band's bottom edge, so a line drawn at height-1 sits
+      // directly above it and the two together read as one 2px rule. Drawing at
+      // the unclamped value instead put the vertical line 1px outside the panel,
+      // a near-miss of exactly the kind the band's placement exists to avoid,
+      // and made the horizontal line invisible: it landed on the panel's border
+      // and the panel, being a stacking context via its own entrance transform,
+      // paints over it.
+      const cx = `${Math.min(Math.round(x / column) * column, rect.width - 1)}px`;
+      const cy = `${Math.min(Math.round(y / row) * row, rect.height - 1)}px`;
       // Only on change: snapping leaves the value identical for 55 of every 56
       // pixels of travel, and each write invalidates style on three children.
       if (cx !== lastCx) {
