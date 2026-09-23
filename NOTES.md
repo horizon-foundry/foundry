@@ -481,7 +481,7 @@ references `prose` or any `prose-*` utility; the only real class is the
 hand-written `doc-prose`. The entire `@tailwindcss/typography` block was being
 generated from the English word "prose" in two page strings, and it carried the
 one shadow left in the build, a `kbd` `box-shadow` the anti-goals ban outright.
-Removing the plugin took the stylesheet from 70,685 to 58,683 bytes. The general
+Removing the plugin dropped 12,002 bytes from the emitted stylesheet, measured immediately before and after that one change. The general
 lesson is the one unit C was already about, one turn deeper: scoping source
 detection shrinks prose-generated CSS but does not by itself close it, because
 Tailwind reads a scanned file's whole text, comments included. A code comment
