@@ -36,7 +36,6 @@
    claim about a present one. */
 @source "../lib/report-types.ts";
 
-
 /*
   Instrument design system. Tokens mirror DESIGN.md frontmatter; when the
   frontmatter changes, change these in the same commit. The rule of the system:
@@ -96,7 +95,7 @@
      plain CSS, so the rename costs nothing. */
   --transition-duration-tick: 120ms; /* a press, a hover-out, a tick landing */
   --transition-duration-quick: 220ms; /* a hover or focus state arriving, a card lifting */
-  --transition-duration-settle: 420ms; /* an element arriving, the crosshair settling */
+  --transition-duration-settle: 420ms; /* an element arriving, a panel's output revealing */
   --transition-duration-draw: 600ms; /* a rule or the hero field drawing itself in, once */
   /* Every bare `transition-*` utility in the codebase (51 of them) runs at
      Tailwind's 150ms default, which matches no token. Pointing the default at
@@ -195,88 +194,6 @@ body::before {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* The measuring band: the surface the grid and its crosshair live on. It is
-   positioned directly above the instrument panel and spans exactly its width
-   (see app/page.tsx), so its bottom edge is the panel's top border and its
-   sides are the panel's sides. Nothing here is placed by eye.
-
-   Two earlier placements failed, both for the same reason. Running the grid
-   under the hero's copy put the kicker at 3.27:1 against AA's 4.5:1. Floating
-   it in the upper right gave it four edges that aligned with nothing, a
-   near-miss against the panel's borders, and readings taken below the row
-   where the lattice was still drawn: a bright rule in empty ink with nothing
-   to measure against, which is the decoration the anti-goals are written
-   against. A near-miss reads as a mistake; landing on the panel reads as a
-   choice. */
-.hero-field {
-  display: none;
-  position: absolute;
-  bottom: 100%;
-  left: 0;
-  right: 0;
-  /* Exactly three rows of one module. HeroForge derives the row height by
-     dividing this by 3, so the two cannot drift at a non-default root font
-     size the way a hardcoded pixel row did. */
-  height: 10.5rem;
-  /* Clipped, and the argument for briefly removing it was wrong on its facts.
-     "The lattice is a background on an inset-0 child so it cannot overflow" is
-     false: .grid-field is TRANSFORMED by grid-raise, and a transformed child
-     paints its background wherever it is transformed to, so unclipped the
-     lattice fringed up to 8px above the band for the first ~200ms of every
-     default-motion page load (measured: a full-width hairline 3px above the
-     band at t=120ms). Unclipping also let the registration tick hang outside
-     every corner, 33px of paint at the origin and 444px at the far corner, which
-     falsifies DESIGN.md's "bounded to the field (a reading off the scale is not
-     a reading)"; and it let a --cx held over from a wider layout paint 39px
-     outside the band for the 120ms fade after a resize.
-     What unclipping was trying to fix is real and is fixed in HeroForge
-     instead: the DRAWN position is pulled one pixel inside the band at the last
-     graduation of each axis, so the line lands on the panel's edge from within
-     the box. See the note there for why the two axes differ by a pixel. */
-  overflow: hidden;
-  /* An aria-hidden decoration should not be a hit-test target. Nothing
-     interactive sits under the band today, so this is latent rather than live,
-     but elementFromPoint returned the crosshair at all four of its corners. */
-  pointer-events: none;
-}
-/* Only where the hero is two columns. Below lg the copy runs full width and
-   the panel stacks under it, so a band above the panel would sit across the
-   copy instead of beside it. A composition that needs two columns is not
-   shown to one. */
-@media (min-width: 64rem) {
-  .hero-field {
-    display: block;
-  }
-}
-/* Forced colours drop background-image, so the lattice disappears while the
-   tick's borders are forced to a system colour and survive: a lone mark in
-   empty space with nothing to read it against. The band is decoration, and
-   when its scale cannot render it has nothing to say. */
-@media (forced-colors: active) {
-  .hero-field {
-    display: none;
-  }
-}
-
-/* Hairline-grid backdrop utility for hero/section grounds. */
-.grid-field {
-  background-image:
-    linear-gradient(to right, var(--color-line) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--color-line) 1px, transparent 1px);
-  /* Nine columns across the band exactly, and rows of one module: the last
-     column edge is the panel's right border and the last row is its top
-     border, at every width the band renders. A fixed cell cannot do that
-     against a fluid column, which is how the graduations ended up 10 to 12px
-     off the thing sitting on them. */
-  background-size: calc(100% / 9) 3.5rem;
-  /* Deliberately unmasked. It carried a radial fade from when this lattice ran
-     full-bleed behind the whole hero; inside a 168px band that fade left it
-     drawn for the top 60px and gone for the rest, so a reading in the lower two
-     thirds landed on a graduation that was not there, and the bottom edge the
-     band is aligned to dissolved before reaching the panel. A scale that fades
-     out is not a scale. */
-}
-
 /* Staggered entrance for slide content and hero. Children rise in sequence. */
 @keyframes rise {
   from {
@@ -291,12 +208,12 @@ body::before {
 /* 500ms matches no token: a staggered arrival is its own job and is left alone
    rather than forced into --transition-duration-settle. The curve IS a token,
    --ease-draw, because these rows land on a fixed resting line.
-   No .hero-field exclusion any more, and that is the fix rather than an
-   omission: the band was a child of a stagger container and an exclusion on the
-   animation cannot be mirrored onto the delays, because :nth-child() counts ALL
-   children regardless of :not(). The band is out of the container now (see
-   app/page.tsx), so every child of a stagger container is a thing that
-   staggers. */
+   Every child of a stagger container is a thing that staggers, with no
+   exclusions. There used to be one, for a decorative element that was a child
+   of this container, and it could not be mirrored onto the delays because
+   :nth-child() counts ALL children regardless of :not(). The right answer was
+   that a decoration had no business being in the container; the decoration is
+   gone entirely now. */
 .stagger-rise > * {
   opacity: 0;
   animation: rise 0.5s var(--ease-draw) forwards;
@@ -503,96 +420,6 @@ body::before {
 
 }
 
-/* The hero's grid is a measuring surface, so the pointer reads as a coordinate
-   ON it rather than as a light source over it. Two hairlines snap to the
-   nearest graduation and a registration tick marks the crossing, the same tick
-   the verdict stamp uses. Snapping is the whole idea: a line that follows the
-   cursor is a cursor-follower, and a line that jumps to the nearest graduation
-   is a measurement.
-
-   What this replaced: an amber radial with a 28px blur and a 7s breathe, plus
-   a bone spotlight that transitioned a gradient POSITION (a paint over the
-   whole hero, every frame the cursor moved). Both were glows, which this
-   site's own anti-goals ban, and the amber one put hue on the brand layer
-   where only an invocable command may go. Everything here rides transform and
-   opacity, so it composites. */
-.grid-crosshair {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  opacity: 0;
-  /* Out on the tick, in on the quick: a close runs faster and quieter than an
-     open (DESIGN.md, Motion). The first cut ran both at 220ms and overrode only
-     the easing, which is the symmetry the rule says must be declared. */
-  transition: opacity var(--transition-duration-tick) var(--ease-exit);
-  /* Deliberately NOT masked like the grid. The first pass gave it the grid's
-     radial fade for tidiness and the reading disappeared through most of the
-     hero, which is where the pointer actually is: the scale may fade into the
-     dark, the needle may not. */
-}
-.grid-crosshair[data-live="true"] {
-  opacity: 1;
-  transition: opacity var(--transition-duration-quick) var(--ease-entrance);
-}
-.grid-crosshair span {
-  position: absolute;
-  background: var(--color-line-strong);
-  transition: transform var(--transition-duration-settle) var(--ease-entrance);
-}
-.grid-crosshair .gx {
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  transform: translate3d(var(--cx, 0px), 0, 0);
-}
-.grid-crosshair .gy {
-  left: 0;
-  right: 0;
-  height: 1px;
-  transform: translate3d(0, var(--cy, 0px), 0);
-}
-/* The crossing is the READING, so it is the bright thing: the graduations stay
-   quiet and the mark that says "here" is in bone. A first pass had the tick at
-   bone-faint and the whole crosshair read as one more grid line, which is the
-   failure mode of drawing an instrument in the same weight as its scale. */
-.grid-crosshair .tick {
-  top: -8px;
-  left: -8px;
-  width: 17px;
-  height: 17px;
-  background: none;
-  border-left: 1px solid var(--color-bone);
-  border-top: 1px solid var(--color-bone);
-  transform: translate3d(var(--cx, 0px), var(--cy, 0px), 0);
-}
-/* A second arm, so the mark reads as a registration cross rather than as a
-   stray corner. Drawn on the same element to keep the moving parts at three. */
-.grid-crosshair .tick::after {
-  content: "";
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 7px;
-  height: 7px;
-  border-right: 1px solid var(--color-bone);
-  border-bottom: 1px solid var(--color-bone);
-}
-
-/* The field arrives once, rather than looping forever. */
-@keyframes grid-raise {
-  from {
-    opacity: 0;
-    transform: translate3d(0, -8px, 0);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-.grid-field {
-  animation: grid-raise var(--transition-duration-draw) var(--ease-entrance) both;
-}
-
 /* Command micro-interaction: the amber tokens warm slightly and lift on hover,
    reinforcing "this is executable". */
 /* The hover warms the colour and nothing else. It used to add a 14px amber
@@ -616,22 +443,10 @@ a:hover .text-command,
     opacity: 1 !important;
     transform: none !important;
   }
-  /* No crosshair at all: it is a response to movement, and there is nothing
-     here it needs to keep conveying once the movement is gone. The grid stays,
-     simply present rather than arriving. */
-  .grid-crosshair {
-    display: none !important;
-  }
-  .grid-field {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
-  }
   /* .text-command used to animate a text-shadow and was killed outright here.
      It is colour-only now, which is exactly what this preference keeps, so the
      kill is gone. */
 }
-
 
 /* Feedback layer: interactive cards lift slightly on hover/focus (transform +
    border only, GPU-friendly). Applied ONLY to genuinely interactive cards, not

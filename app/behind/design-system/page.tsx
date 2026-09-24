@@ -23,7 +23,7 @@ const NEUTRALS = [
 const MOTION = [
   ["tick", "120ms", "A press, a hover-out, a tick landing"],
   ["quick", "220ms", "A hover or focus state arriving, a card lifting"],
-  ["settle", "420ms", "An element arriving, the hero crosshair settling"],
+  ["settle", "420ms", "An element arriving: the hero terminal revealing its output"],
   ["draw", "600ms", "A rule or the hero field drawing itself in, once"],
 ] as const;
 

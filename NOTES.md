@@ -569,3 +569,36 @@ clamps the DRAWN position to the band's last pixel instead, so the line lands on
 the panel's edge from inside a box that is still clipped. The two axes differ by
 one pixel, and that is a border-box fact rather than a bug: the panel's right
 border sits inside its width while its top border sits on the band's bottom edge.
+
+## 2026-09-23: the crosshair is cut, and why the craft argument lost
+
+The measuring band went in on 2026-09-22 to replace an ambient amber glow the
+anti-goals banned, and it survived four review rounds of hardening: the mask,
+the scroll path, the breakpoint gate, the latch, the row derivation, the snap
+range, the clipping, the stacking context. Every one of those was a real defect
+and every fix made it more defensible against the anti-goals as written.
+
+It was cut anyway, and the two reasons are worth keeping because neither is in
+any anti-goal list.
+
+**A crosshair is a gunsight.** That association attaches to the mark regardless
+of what the geometry means, and it is not one this product should carry. No
+amount of correctness in the snapping answers it, because the objection is not
+about whether the instrument works. Every critique this surface received was
+argued on craft terms and none of them raised this, which is the tell: a review
+loop optimises the thing it is pointed at and cannot tell you the thing should
+not exist.
+
+**It lived in one corner of one breakpoint.** Below 64rem the band was
+`display: none` and nothing was lost. Three rendered critics kept saying a
+version of this and the session kept answering the narrower question. An element
+that can vanish on a phone with no loss is carrying nothing at 1440 either.
+
+What replaced it is what was already there: the terminal types a real command
+and ends on a verdict. That is motion that argues the product's claim rather
+than decorating it, and it works at every width.
+
+**The lesson, and it generalises past this surface: an element that has to be
+argued for is usually decoration with a good lawyer.** The effort spent
+defending the band is the signal that should have been read earlier. The cut
+also took 2,197 bytes of CSS and an entire component with it.
