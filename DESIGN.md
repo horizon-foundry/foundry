@@ -34,6 +34,21 @@ typography:
     fontFamily: 'IBM Plex Mono'
   serif:
     fontFamily: 'IBM Plex Serif'
+motion:
+  # Named for the job, never a range. app/globals.css's @theme is the
+  # implementation; this block is the machine-readable record of it.
+  transition-duration-tick: '120ms'     # a press, a hover-out, a tick landing
+  transition-duration-quick: '220ms'    # a hover or focus state arriving
+  transition-duration-settle: '420ms'   # an element arriving, a panel's output revealing
+  transition-duration-draw: '600ms'     # a rule or the hero field drawing in, once
+  ease-entrance: 'cubic-bezier(0.22, 1, 0.36, 1)'   # overshoot; entrances only
+  ease-exit: 'cubic-bezier(0.4, 0, 0.2, 1)'         # none; exits
+  ease-draw: 'cubic-bezier(0.2, 0.7, 0.2, 1)'       # an entrance with a fixed end point
+  # The declaration that actually governs the site: it puts every bare
+  # transition-* utility on a token instead of Tailwind's untokenized 150ms,
+  # which is 50 of the 51 in the codebase. Left out of this block once, which
+  # made the record list the tokens and omit the one line that applies them.
+  default-transition-duration: 'var(--transition-duration-quick)'
 spacing:
   unit: '4px'
   gutter: '24px'
@@ -91,35 +106,49 @@ job matches no token is left alone rather than forced into one.
 
 | Token | Value | What it is for |
 | --- | --- | --- |
-| `--duration-tick` | 120ms | A press, a hover-out, a tick landing: acknowledgement |
-| `--duration-quick` | 220ms | A hover or focus state arriving, a card lifting |
-| `--duration-settle` | 420ms | An element arriving, the hero crosshair settling on its graduation |
-| `--duration-draw` | 600ms | A rule or the hero field drawing itself in, once |
+| `--transition-duration-tick` | 120ms | A press, a hover-out, a tick landing: acknowledgement |
+| `--transition-duration-quick` | 220ms | A hover or focus state arriving, a card lifting |
+| `--transition-duration-settle` | 420ms | An element arriving: the hero terminal's output revealing after the command types |
+| `--transition-duration-draw` | 600ms | A rule or the hero field drawing itself in, once |
 | `--ease-entrance` | `cubic-bezier(0.22, 1, 0.36, 1)` | Entrances and settles; the only easing with overshoot |
 | `--ease-exit` | `cubic-bezier(0.4, 0, 0.2, 1)` | Exits and hover-outs; no overshoot on the way out |
+| `--ease-draw` | `cubic-bezier(0.2, 0.7, 0.2, 1)` | An entrance whose end point is fixed: a rule reaching exactly its width, a row landing exactly on its line, where overshoot would read as a bounce |
+| `--default-transition-duration` | `var(--transition-duration-quick)` | Every bare `transition-*` utility, which is 50 of the 51 in the codebase |
 
-They live in `app/globals.css`'s `@theme` block, so Tailwind utilities reach
-them (`duration-quick`, `ease-entrance`). A raw millisecond value in a
-component is drift.
+The durations sit in the `--transition-duration-*` namespace because that is the one Tailwind v4 resolves the `duration-*` utility against. Named anything else, `class="duration-quick"` emits nothing at all, silently, which is what shipped on 2026-09-22 with this document asserting the opposite.
+
+They live in `app/globals.css`'s `@theme` block, so Tailwind utilities reach them (`duration-quick`, `ease-entrance`), and `--default-transition-duration` points at `--transition-duration-quick`, so a bare `transition-colors` in a component is already on a token rather than on Tailwind's untokenized 150ms. A raw millisecond value in a component is drift. A raw value in the stylesheet is drift too, unless its job matches no token and it says so: `.stagger-rise` (500ms) and `.glyph-draw` (900ms) are the two that do.
+
+One caveat about verifying that first sentence, because it cost a review round. Tailwind generates utilities from whatever text its source list covers, and an unscoped build covers this document, so grepping the built stylesheet for `.duration-quick` finds a rule generated from the sentence you are reading. Source detection is scoped now (`app/`, `components/`, `lib/`), and inside that scope a utility exists only if a component uses it. The way to check this claim is a probe page that uses the class.
 
 **Asymmetry is the default.** A close runs faster and quieter than an open: a
-card lifts in `--duration-quick` with the entrance easing and settles back in
-`--duration-tick` with the exit easing. Overshoot belongs to entrances only.
+card lifts in `--transition-duration-quick` with the entrance easing and
+settles back in `--transition-duration-tick` with the exit easing. Overshoot belongs to entrances only.
 Motion that feels late loses duration before it gains delay, and a hover-out is
 never delayed. Same-both-ways is a real choice, so it gets named as one.
 
 **Reduced motion drops spatial movement and keeps the meaning.** It is not an
-off switch: feedback that confirms an action still has to read. The hero's
-crosshair is the one thing that disappears entirely under it, and that is
-correct rather than lazy, because it exists to report pointer movement and
-there is no movement left to report.
+off switch: feedback that confirms an action still has to read. Under it the
+hero's terminal stops typing and shows its run at once, and a press is
+acknowledged in colour rather than in movement.
 
-**The hero's motion is an instrument, not an atmosphere.** The field's grid is
-a scale; the pointer's position on it is a reading, snapped to the nearest
-graduation with a registration mark at the crossing. It is monochrome, it
-animates transform and opacity only, it is bounded to the field (a reading
-off the scale is not a reading), and it is absent on coarse pointers, where
-there is no hovering cursor to report.
+**The hero's motion is the product demonstrating itself.** The terminal types a
+real command and ends on a verdict. That is the whole of it, and it is enough:
+the motion carries the same thing the copy beside it claims, so it is an
+argument rather than an atmosphere.
+
+There was more, and cutting it is the decision worth recording. From
+2026-09-22 a measuring band sat above the panel: a nine-by-three lattice that
+read the pointer as a coordinate and snapped a crosshair to the nearest
+graduation. It was built to replace an ambient amber glow the anti-goals
+banned, and it was defensible on every axis the anti-goals name. It still went,
+on 2026-09-23, for two reasons no amount of craft answers. A crosshair is a
+gunsight, and that association is not something this brand should carry
+whatever the geometry means. And the band existed only above 64rem in one
+corner of one page: an element that can vanish on a phone with nothing lost was
+carrying nothing at 1440 either. Three rendered critics said the second part
+before the first was decided. **The lesson for the next surface: an element
+that has to be argued for is usually decoration with a good lawyer.**
 
 ### Motion anti-goals
 
@@ -127,8 +156,12 @@ there is no hovering cursor to report.
   7s amber breathe until 2026-09-22; it was atmosphere pretending to be life.
 - No motion that animates a layout property, and none that animates a gradient
   position (the hero's spotlight repainted the whole hero, every frame).
-- No parallax, no scroll-jacking, no cursor-follower. A line that follows the
-  cursor is decoration; one that snaps to a graduation is a measurement.
+- No parallax, no scroll-jacking, no cursor-follower, and no pointer-driven
+  reticle either. The distinction this line used to draw, that a line following
+  the cursor is decoration while one snapping to a graduation is a measurement,
+  is true and was not sufficient: snapping to a graduation is a measurement only
+  if the graduation graduates something, and a scale that measures nothing is
+  decoration with better manners.
 - No motion carrying information that is not also carried by something static.
 
 ## Shapes

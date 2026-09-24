@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { HeroForge } from "@/components/HeroForge";
 import { Terminal } from "@/components/Terminal";
 import { ReportSpecimen } from "@/components/ReportSpecimen";
 import { getPublicReport, listPublicReports } from "@/lib/reports";
@@ -114,7 +113,6 @@ export default function Home() {
       <main id="main">
         {/* Hero */}
         <section className="relative overflow-hidden border-b border-line">
-          <HeroForge />
           <div className="relative mx-auto max-w-[1180px] px-5 pb-20 pt-16 sm:px-8 sm:pt-24">
             <div className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
             <div className="stagger-rise">
@@ -147,22 +145,16 @@ export default function Home() {
                 </Link>
               </div>
             </div>
-            <div className="stagger-rise relative">
-              {/* The measuring band sits ON the instrument, not behind it: it
-                  is rendered here, as a sibling of the panel, so its width IS
-                  the panel's width and its bottom edge IS the panel's top
-                  border. Positioned anywhere else it floated, and a critic
-                  given only the screenshots read its unaligned edges as a
-                  rendering artifact rather than as an element. HeroForge
-                  drives the reading; the geometry is the layout's. */}
-              <div className="hero-field" aria-hidden="true">
-                <div className="grid-field absolute inset-0" />
-                <div className="grid-crosshair" data-live="false">
-                  <span className="gx" />
-                  <span className="gy" />
-                  <span className="tick" />
-                </div>
-              </div>
+            {/* The panel is the hero's only moving part, and that is the
+                point: it types out a real run and ends on a verdict, so the
+                motion is the product demonstrating itself. A measuring band
+                with a crosshair used to sit above it, snapping a reading to a
+                lattice. Three rendered critics called it decoration, and the
+                last word was Craig's on 2026-09-23: a crosshair is a gunsight,
+                which is the wrong mark for this brand at any level of craft,
+                and it occupied one small region of one breakpoint. Cut whole
+                rather than redesigned. */}
+            <div className="stagger-rise">
               <Terminal />
             </div>
             </div>

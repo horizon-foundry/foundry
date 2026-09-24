@@ -369,3 +369,236 @@ The approval header stays exactly where it is, at the top of `BRAND.md` in its d
 The sibling sweep found one latent instance of the same bug: `DESIGN.md` is whitelisted in `readDoc`'s ALLOWED set and carries its design tokens as YAML frontmatter, so the first public page to render it would have printed the raw token map as a paragraph. No page renders it today, so this was a landmine rather than a live defect; `stripFrontmatter` now handles it in the same place. The skill detail pages were checked and are clean, since they already parse frontmatter through `parseFrontmatter`.
 
 Verified against the running build, not the source: both tabs rendered from a production server, the brand page now goes straight from the heading to the identity sentence, the product page is unchanged, and neither page's HTML contains a marker or the word "Approved". The two strip functions were unit-exercised separately, including the no-frontmatter, horizontal-rule, and unterminated cases, because the frontmatter path has no page exercising it yet.
+
+## 2026-09-22: What the motion layer taught, and what a critic argued that the fix does not answer
+
+The hero's glow came out this morning and a measuring band went in. By the
+afternoon the second audit had cost the site a point, and eleven of its
+seventeen findings were the morning's work. Three of those are worth keeping,
+because each one is a class of defect rather than a slip.
+
+**A token that names the wrong namespace is worse than no token.** DESIGN.md
+told the next agent to write `class="duration-quick"`. Tailwind v4 resolves
+`duration-*` against `--transition-duration-*`, and the tokens were declared as
+`--duration-*`, so the class emitted nothing at all: no error, no warning, an
+element that simply does not transition. The design record was actively
+instructing a dead write. Two lessons, and the second is the sharper one.
+First, a token's name is an interface with the framework, not a label, so it is
+verified by using it and looking at the emitted rule. Second, the check that
+"proved" the class existed was itself the bug: Tailwind was scanning the whole
+repo including the TODOS entry describing the class, so grepping the built CSS
+for `.duration-quick` found a rule generated from the prose complaining that
+the rule did not exist. A build that reads its own documentation as source can
+confirm any claim made about it. The real check was a probe page under the
+scoped source list.
+
+**The default is the value that ships.** Naming four durations moved three
+rules. The other fifty-one transitions kept running at Tailwind's untokenized
+150ms, which matched no token and which no one had chosen. A token system whose
+tokens are opt-in documents an intention; `--default-transition-duration`
+pointing at a token is what makes it the behaviour. One line, fifty-one
+elements, no component touched.
+
+**A leftover fade is a lie about where a thing ends.** The lattice carried a
+radial mask from when it ran full-bleed. Inside a 168px band the mask left it
+drawn for the top 60px and faded to the ground for the rest, so a reading in
+the lower two thirds snapped to a graduation that was not there, and the bottom
+edge the design record claims lands on the panel dissolved before reaching it.
+Nothing in the source said so; it took measuring the brightest pixel per row
+down the band (203 at the top, 88 by y=70) to see it. When an element is
+re-bounded, every softening that existed to fake a boundary is now a defect.
+
+**And the part the fixes do not answer.** A fresh critic, given only the
+screenshots and the anti-goals, argued that the band is decoration in better
+clothes: nine columns by three rows graduate no quantity, so the crosshair
+reports the pointer's position back to the pointer, and the honest tell is that
+the band is dropped below 1024 with nothing lost. The earlier defence here was
+that snapping to a graduation is a measurement rather than an ambient wash.
+That defence answers the wrong objection. Snapping is a measurement only if the
+graduation graduates something, and on this page it does not. The decision is
+recorded in TODOS as Craig's, with the two shapes a fix could take, because the
+choice between cutting the band and making it plot the audit's own dimensions
+is a product-thesis call and not a defect to quietly resolve.
+
+## 2026-09-22, later: what the review pass caught that four passes before it had not
+
+Units A to C went in with gates green, measurements taken, and a rendered critic
+run. Then three fresh sub-agents, one angle each, found twelve real defects,
+two of them regressions those very units had introduced hours earlier. That
+ratio is the argument for the pass, so the mechanics are worth recording.
+
+**A `git add -A` with a sub-agent running is a footgun.** The reviewer auditing
+the build had write access and reverted three lines in `app/globals.css` to
+build the unscoped comparison. A docs commit ran `git add -A` a hundred seconds
+later and swept the transient edit in, so the branch tip shipped unscoped
+Tailwind, shipped a numbered palette class again, and failed the gate the same
+branch had just added. Two agents found it independently; the one that caused it
+worked out the interleaving from timestamps and, notably, refused to run `git
+checkout --` to satisfy its own clean-tree instruction, on the grounds that a
+clean tree would have left the branch definitively broken with nothing to
+notice. Leaving the file modified meant the next `git add -A` would restore it.
+The rule this earns: while a sub-agent with write access is running, stage
+explicit paths, never `-A`. The deeper point is that the gate is what caught it.
+A claim in a commit message survived; the artifact check did not.
+
+**An acknowledgement can erase the thing it acknowledges.** Unit A replaced a
+blanket reduced-motion transition kill with a substitute acknowledgement, on the
+argument that removing the confirmation of a press is the off switch the design
+record disclaims. The substitute set `.press:active`'s background to
+`--color-ink-raised` globally. On the two bone CTAs that is `#14191f` text on
+`#1e2530`: **1.15:1**, a label invisible while pressed, for reduced-motion users
+only. The other half of the same rule, a border change, was a no-op because
+those buttons already sat at that border colour. A rule written for one surface
+and applied to a class used on three is the whole story, and the specific trap
+is that `.press` was doing double duty for a light plate button and a bare text
+button, which cannot share a background change.
+
+**Deleting the optimisation fixed two bugs and shrank the file.** Unit B had
+moved the layout read off the scroll handler behind a cached rect and a stale
+flag. The cache was wrong twice: crossing below 64rem cached the
+`display: none` band's zero rect and cleared the flag, so the crosshair was dead
+after any window maximise; and a font swap moved the band 8px with no resize and
+no scroll, so the reading sat a whole row from the cursor while still landing on
+a graduation, which for an instrument is worse than landing on nothing. Both
+vanish if `apply()` simply measures inside the frame every time. The property
+the optimisation existed to protect (no synchronous layout on the scroll path)
+comes from the rAF scheduling, not from the cache: 20 scroll events still
+produce zero synchronous reads and one read in the following frame.
+
+**Two sources of truth for one lattice is the band's recurring defect.**
+`ROW = 56` in JS against `3.5rem` in CSS agree only at a 16px root font size. At
+Chrome's "Large" the band held three 70px rows while the snap stepped by 56, so
+the reading landed up to 28px off a drawn line. The comment above the constant
+warned that the crosshair "lands on nothing if they drift apart" while being the
+thing that made them drift. The fix is to derive the row from the measured box,
+so CSS owns the pixels. Same class: the snap range admitted one index past the
+last drawn graduation, which put the line on the field's own clipping edge, so
+the crosshair vanished in the bottom strip of the band, exactly where a pointer
+heading for the terminal sits.
+
+**Nineteen percent of the stylesheet was a plugin nothing used.** Nothing
+references `prose` or any `prose-*` utility; the only real class is the
+hand-written `doc-prose`. The entire `@tailwindcss/typography` block was being
+generated from the English word "prose" in two page strings, and it carried the
+one shadow left in the build, a `kbd` `box-shadow` the anti-goals ban outright.
+Removing the plugin dropped 12,002 bytes from the emitted stylesheet, measured immediately before and after that one change. The general
+lesson is the one unit C was already about, one turn deeper: scoping source
+detection shrinks prose-generated CSS but does not by itself close it, because
+Tailwind reads a scanned file's whole text, comments included. A code comment
+recording that a softening was removed ships the rule back. Naming the removal
+is enough to reinstate it, which is a genuinely funny way to be wrong and took
+three builds to see, because the comment explaining the defect was causing it.
+
+Two corrections came out of closing it, and both are the same discipline as the
+rest of this wave. Scanning all of `lib/` to keep one file's class strings alive
+minted `font-bold` out of a sentence in `fonts.ts`, so the scope is the file,
+not the directory. And an `@source not` excluding stylesheets, written on the
+assumption that `app/globals.css`'s own comments were minting rules, changed not
+one selector when a build was diffed against it: Tailwind v4 processes a `.css`
+file as CSS and never scans it for candidates. The line was removed rather than
+kept as harmless belt-and-braces, because a directive that does nothing is a
+claim the artifact disproves, which is the exact failure this wave exists to
+stop. The prose in a stylesheet is safe; the prose in a `.tsx` is not.
+
+And then the claim that came out of all that, "zero prose-minted classes", was
+itself false, which is worth more than the fix. It was checked against the list
+of sixteen names the audit had named, not against the artifact, so it verified
+the instance and missed the invariant, which is the error this wave has now made
+in three different places. The next review round extracted all 526 class tokens
+from the built stylesheet and checked each against every `className` in the
+repo: twelve ship that nothing uses, and three of them are `.ease-entrance`,
+`.ease-exit` and `.ease-draw`, minted from the `<code>` tags this wave added to
+`/behind/design-system` to document those very tokens. One of the twelve settles
+the strategy question for good. `.resize` comes partly from
+`window.addEventListener("resize", ...)`, which is live code and cannot be
+reworded, so rewording closes single cases and can never close the mechanism.
+The lesson is the one this wave already learned about the palette and then
+declined to apply to its sibling: a property you want to hold is asserted by a
+gate, not by a sweep, because the sweep is only ever as wide as the list you
+thought to write down. The gate here is mechanisable and is now the next unit,
+paired with the unenforced token-mirror check, which has the same shape.
+
+**And a gate is only as good as the forms it was attacked with.** The new
+palette check was defeated by 13 of 16 real emitted forms, because a palette
+class is bare only in the simplest case: every variant prefixes it and several
+utilities infix it. All of them resolve to `var(--color-<palette>-<n>)`, so the
+variable is the assertion that holds. The class pattern stays because it names
+the offending selector in the failure message, which is what makes the failure
+actionable. Writing the check was not the work; generating the sixteen real
+forms through the installed Tailwind and injecting each one was.
+
+## 2026-09-22, third round: the same mistake, three times, in three disguises
+
+The band took three review rounds after its own fix wave, and the interesting
+part is that all three rounds caught the same error wearing different clothes.
+
+Round one: a defect was verified against the sixteen class names the audit had
+named, rather than against the built stylesheet. Twelve prose-minted utilities
+were missed, three of them minted by the page this wave added to document the
+motion tokens.
+
+Round two: a stagger-delay fix was verified by reading the selector and
+believing it. `:nth-child()` counts every child regardless of `:not()`, so
+`:not(.hero-field):nth-child(1)` matched nothing in the container it was written
+for, and the panel kept arriving at 100ms while a commit message and a checked
+TODOS entry both said 40ms.
+
+Round three: the far-edge reading was verified by checking `--cy` and
+`getBoundingClientRect`. Both were correct. The pixel was not. The line landed
+exactly on the panel's top border, and the panel is a stacking context through
+its own entrance transform, so it painted over the reading. Geometry is blind to
+occlusion in precisely the way it is blind to clipping, which is what the same
+measurement had already failed to see one round earlier.
+
+**The rule: verify in the medium the defect lives in.** A CSS class that ships is
+checked in the emitted stylesheet, not in a list of names. A selector's effect is
+checked on the rendered element, not by reading the selector. A line a person is
+supposed to SEE is checked by sampling the pixel, not by reading the rectangle it
+claims to occupy. Each of those is one step further from the source than feels
+necessary, and each is exactly where the defect was sitting.
+
+Round three also killed a justification that sounded airtight. "The lattice
+cannot overflow, it is a background on an inset-0 child" ignores that the child
+is transformed by its own entrance animation, and a transformed element paints
+its background wherever it has been transformed to. Unclipping the band on that
+reasoning let the lattice fringe 8px above it for 200ms on every load, let the
+registration tick hang 444px outside the far corner, and falsified DESIGN.md's
+"bounded to the field" without touching DESIGN.md. The fix that works keeps the
+snap unclamped, so the instrument still reports the nearest graduation, and
+clamps the DRAWN position to the band's last pixel instead, so the line lands on
+the panel's edge from inside a box that is still clipped. The two axes differ by
+one pixel, and that is a border-box fact rather than a bug: the panel's right
+border sits inside its width while its top border sits on the band's bottom edge.
+
+## 2026-09-23: the crosshair is cut, and why the craft argument lost
+
+The measuring band went in on 2026-09-22 to replace an ambient amber glow the
+anti-goals banned, and it survived four review rounds of hardening: the mask,
+the scroll path, the breakpoint gate, the latch, the row derivation, the snap
+range, the clipping, the stacking context. Every one of those was a real defect
+and every fix made it more defensible against the anti-goals as written.
+
+It was cut anyway, and the two reasons are worth keeping because neither is in
+any anti-goal list.
+
+**A crosshair is a gunsight.** That association attaches to the mark regardless
+of what the geometry means, and it is not one this product should carry. No
+amount of correctness in the snapping answers it, because the objection is not
+about whether the instrument works. Every critique this surface received was
+argued on craft terms and none of them raised this, which is the tell: a review
+loop optimises the thing it is pointed at and cannot tell you the thing should
+not exist.
+
+**It lived in one corner of one breakpoint.** Below 64rem the band was
+`display: none` and nothing was lost. Three rendered critics kept saying a
+version of this and the session kept answering the narrower question. An element
+that can vanish on a phone with no loss is carrying nothing at 1440 either.
+
+What replaced it is what was already there: the terminal types a real command
+and ends on a verdict. That is motion that argues the product's claim rather
+than decorating it, and it works at every width.
+
+**The lesson, and it generalises past this surface: an element that has to be
+argued for is usually decoration with a good lawyer.** The effort spent
+defending the band is the signal that should have been read earlier. The cut
+also took 2,197 bytes of CSS and an entire component with it.

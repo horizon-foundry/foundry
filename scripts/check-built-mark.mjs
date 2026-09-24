@@ -422,6 +422,52 @@ check(
   }
 }
 
+// 4. The monochrome rule, asserted in the ARTIFACT rather than in source.
+//    DESIGN.md allows no colour that is not a severity, a verdict or an
+//    invocable command, and source obeyed it while the shipped stylesheet did
+//    not: Tailwind auto-detection scanned the repo's prose, so `.text-red-600`
+//    was regenerated from a published audit report quoting another product's
+//    classes, and `.backdrop-blur` from the changelog entry describing its own
+//    removal. No source sweep can see that, which is why it survived two
+//    audits. Source scanning is now scoped (app/globals.css), and this is the
+//    check that says so.
+{
+  const PALETTE =
+    /\.(?:text|bg|border|ring|from|via|to|fill|stroke|outline|decoration|shadow|accent|caret|divide|placeholder)-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-\d{2,3}(?![\w-])/g;
+  //    The class-name pattern alone is not enough, and an adversarial pass
+  //    proved it: 13 of 16 real emitted forms walked straight past it, because
+  //    the class name is only bare in the simplest case. Every variant puts
+  //    something in front of it (`.hover\:text-red-600`, `.sm\:text-red-600`
+  //    inside a media query, `.group-hover\:…:is(…)`, an arbitrary variant),
+  //    and several utilities put something in the middle
+  //    (`.border-t-red-600`, `.ring-offset-red-500`). What every one of them
+  //    shares is that it resolves to `var(--color-<palette>-<n>)`, which pulls
+  //    that custom property into the emitted theme layer. So the VARIABLE is
+  //    the assertion that holds, and the class pattern stays only because it
+  //    names the offending selector in the failure message, which is what
+  //    makes the failure actionable.
+  //
+  //    Stated gap, deliberately not papered over: a hand-written `#dc2626` or
+  //    `oklch(57.7% .245 27.325)` is the same monochrome violation with no
+  //    class and no variable to find. Nothing here catches it. Enumerating
+  //    every non-brand hex would mean listing the brand's own values and
+  //    failing on anything else, which is a different and much larger check.
+  const PALETTE_VAR =
+    /--color-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-\d{2,3}(?![\w-])/g;
+  const sheets = filesUnder(join(ROOT, ".next/static"), (n) => n.endsWith(".css"));
+  check(sheets.length > 0, "no built stylesheet found to check.");
+  for (const f of sheets) {
+    const css = readFileSync(f, "utf8");
+    const rel = f.replace(`${ROOT}/`, "");
+    const classes = [...new Set(css.match(PALETTE) ?? [])];
+    const vars = [...new Set(css.match(PALETTE_VAR) ?? [])];
+    check(
+      classes.length === 0 && vars.length === 0,
+      `${rel} ships numbered Tailwind palette colour (${[...classes, ...vars].join(", ")}). The brand layer is monochrome; colour means a severity, a verdict or an invocable command. If it came from prose rather than from a component, the source scope in app/globals.css is what to fix.`,
+    );
+  }
+}
+
 if (fail.length) {
   console.error("Built-output check FAILED:");
   for (const m of fail) console.error(`  - ${m}`);

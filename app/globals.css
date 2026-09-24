@@ -1,5 +1,40 @@
-@import "tailwindcss";
-@plugin "@tailwindcss/typography";
+/* source(none) plus explicit sources, because auto-detection scans the whole
+   repository including prose. That put `.backdrop-blur` and `.bg-ink/85` in the
+   shipped stylesheet, regenerated from the changelog entry describing their
+   REMOVAL, and `.text-red-600` from a published audit report quoting another
+   product's Tailwind classes: a numbered palette colour in production CSS,
+   which the monochrome rule forbids, while the source stayed clean. A
+   source-only sweep cannot see that class of defect, which is why it survived
+   two audits.
+
+   Note for whoever edits these comments: naming a utility in the prose of a
+   SCANNED file mints it, so the sentence above would be a hazard if it lived in
+   a .ts or .tsx file. It does not. Measured rather than assumed: with this file
+   inside the scanned app/ directory and naming both utilities, neither is
+   emitted, because Tailwind v4 processes a .css file as CSS and never scans it
+   for class candidates. An `@source not` excluding stylesheets was written here
+   first and removed after a build proved it changed not one selector. The .tsx
+   comment in HeroForge that named the same two utilities DID mint them. */
+@import "tailwindcss" source(none);
+@source "../app";
+@source "../components";
+/* One file in lib/, named explicitly rather than by directory: report-types.ts
+   holds full class strings precisely because the scanner is the only thing
+   keeping them alive (the fragments are composed at runtime), and all four
+   survive today only because each happens to be duplicated in app/ or
+   components/, which is luck. Scanning all of lib/ was the first attempt and it
+   minted `font-bold` out of a sentence in fonts.ts, so the scope is the file
+   that needs it.
+   This line emits nothing today: compiled with and without it the output is
+   byte-identical, because all four classes happen to be duplicated elsewhere.
+   It stays anyway, and the distinction from the `@source not` that was deleted
+   for emitting nothing is the point. That one guarded a mechanism which does not
+   exist (a stylesheet is never scanned), so it could never do anything. This one
+   guards a hazard that is real and dated: the fifth class added to that map
+   ships unstyled on /reports/[slug] and /example/[slug], silently, and this is
+   the line that stops it. A guard for a future defect is not the same as a
+   claim about a present one. */
+@source "../lib/report-types.ts";
 
 /*
   Instrument design system. Tokens mirror DESIGN.md frontmatter; when the
@@ -46,17 +81,35 @@
 
   /* Motion. Named by what the motion DOES, never given as a range: matching a
      value to a token by the nearest number is how a system drifts. A close
-     runs faster and quieter than an open, so exits take --duration-tick or
-     --duration-quick with --ease-exit, and entrances take --ease-entrance.
+     runs faster and quieter than an open, so exits take
+     --transition-duration-tick or -quick with --ease-exit, and entrances take
+     --ease-entrance (or --ease-draw where the end point is fixed).
      Reduced motion drops spatial movement and keeps the state change (see the
      prefers-reduced-motion blocks below). DESIGN.md's Motion section is the
      record; these are its implementation. */
-  --duration-tick: 120ms; /* a press, a tick landing: acknowledgement */
-  --duration-quick: 220ms; /* hover and focus state changes, a chip lifting */
-  --duration-settle: 420ms; /* an element arriving, the crosshair settling */
-  --duration-draw: 600ms; /* a rule or the hero grid drawing itself in, once */
+  /* The --transition-duration-* namespace, not --duration-*: Tailwind v4
+     resolves the `duration-*` utility against this one, so naming them
+     anything else makes `class="duration-quick"` emit nothing, silently. The
+     first cut of these tokens did exactly that, and DESIGN.md documented the
+     utility as working. `var(--transition-duration-quick)` still resolves in
+     plain CSS, so the rename costs nothing. */
+  --transition-duration-tick: 120ms; /* a press, a hover-out, a tick landing */
+  --transition-duration-quick: 220ms; /* a hover or focus state arriving, a card lifting */
+  --transition-duration-settle: 420ms; /* an element arriving, a panel's output revealing */
+  --transition-duration-draw: 600ms; /* a rule or the hero field drawing itself in, once */
+  /* Every bare `transition-*` utility in the codebase (51 of them) runs at
+     Tailwind's 150ms default, which matches no token. Pointing the default at
+     a token retargets all of them without touching a component. Tailwind's
+     default easing is already bit-identical to --ease-exit. */
+  --default-transition-duration: var(--transition-duration-quick);
   --ease-entrance: cubic-bezier(0.22, 1, 0.36, 1); /* overshoot: entrances only */
   --ease-exit: cubic-bezier(0.4, 0, 0.2, 1); /* no overshoot on the way out */
+  /* A third easing, declared rather than left loose in two rules. Its job is
+     the entrance whose END POINT IS FIXED: a rule reaching exactly its full
+     width, a row landing exactly on its resting line. --ease-entrance would
+     overshoot past that and snap back, which reads as a bounce on a hairline.
+     Used by .draw-rule and .stagger-rise. */
+  --ease-draw: cubic-bezier(0.2, 0.7, 0.2, 1);
 
   /* Two distinct variable names: next/font's generated rule is unlayered CSS
      and would always beat this @theme-layer declaration in the cascade if
@@ -84,8 +137,24 @@ html {
   *::before,
   *::after {
     animation-duration: 0.001ms !important;
+    /* Was missing, so staggered children still arrived in sequence under a
+       preference that asks for no sequence. */
+    animation-delay: 0s !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
+    /* NOT a blanket transition kill. DESIGN.md's Motion section says reduced
+       motion drops spatial movement and keeps the meaning, and the blanket
+       version contradicted it: a colour or border change carries no movement
+       at all and is often the only thing confirming an action. Spatial
+       properties simply leave the transition list. */
+    transition-property: color, background-color, border-color, outline-color,
+      text-decoration-color, opacity, fill, stroke !important;
+    /* A forward guard, not a fix for anything observed: there is no
+       transition-delay anywhere in this repo today, so this reaches nothing.
+       The duration survives on purpose (a colour change still reads as a
+       change); a DELAY under this preference would only be a wait. The same is
+       true of text-decoration-color above, which Tailwind's own
+       transition-colors already includes. */
+    transition-delay: 0s !important;
   }
 }
 
@@ -125,64 +194,6 @@ body::before {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* The measuring band: the surface the grid and its crosshair live on. It is
-   positioned directly above the instrument panel and spans exactly its width
-   (see app/page.tsx), so its bottom edge is the panel's top border and its
-   sides are the panel's sides. Nothing here is placed by eye.
-
-   Two earlier placements failed, both for the same reason. Running the grid
-   under the hero's copy put the kicker at 3.27:1 against AA's 4.5:1. Floating
-   it in the upper right gave it four edges that aligned with nothing, a
-   near-miss against the panel's borders, and readings taken below the row
-   where the lattice was still drawn: a bright rule in empty ink with nothing
-   to measure against, which is the decoration the anti-goals are written
-   against. A near-miss reads as a mistake; landing on the panel reads as a
-   choice. */
-.hero-field {
-  display: none;
-  position: absolute;
-  bottom: 100%;
-  left: 0;
-  right: 0;
-  height: 10.5rem;
-  overflow: hidden;
-}
-/* Only where the hero is two columns. Below lg the copy runs full width and
-   the panel stacks under it, so a band above the panel would sit across the
-   copy instead of beside it. A composition that needs two columns is not
-   shown to one. */
-@media (min-width: 64rem) {
-  .hero-field {
-    display: block;
-  }
-}
-
-/* Hairline-grid backdrop utility for hero/section grounds. */
-.grid-field {
-  background-image:
-    linear-gradient(to right, var(--color-line) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--color-line) 1px, transparent 1px);
-  /* Nine columns across the band exactly, and rows of one module: the last
-     column edge is the panel's right border and the last row is its top
-     border, at every width the band renders. A fixed cell cannot do that
-     against a fluid column, which is how the graduations ended up 10 to 12px
-     off the thing sitting on them. */
-  background-size: calc(100% / 9) 3.5rem;
-  /* Alpha mask: only opacity matters, so the token's hue is irrelevant: any
-     fully-opaque value fades the grid the same way. Use the token, not a raw
-     literal. */
-  -webkit-mask-image: radial-gradient(
-    ellipse 80% 60% at 50% 0%,
-    var(--color-ink) 20%,
-    transparent 75%
-  );
-  mask-image: radial-gradient(
-    ellipse 80% 60% at 50% 0%,
-    var(--color-ink) 20%,
-    transparent 75%
-  );
-}
-
 /* Staggered entrance for slide content and hero. Children rise in sequence. */
 @keyframes rise {
   from {
@@ -194,9 +205,18 @@ body::before {
     transform: translateY(0);
   }
 }
+/* 500ms matches no token: a staggered arrival is its own job and is left alone
+   rather than forced into --transition-duration-settle. The curve IS a token,
+   --ease-draw, because these rows land on a fixed resting line.
+   Every child of a stagger container is a thing that staggers, with no
+   exclusions. There used to be one, for a decorative element that was a child
+   of this container, and it could not be mirrored onto the delays because
+   :nth-child() counts ALL children regardless of :not(). The right answer was
+   that a decoration had no business being in the container; the decoration is
+   gone entirely now. */
 .stagger-rise > * {
   opacity: 0;
-  animation: rise 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+  animation: rise 0.5s var(--ease-draw) forwards;
 }
 .stagger-rise > *:nth-child(1) {
   animation-delay: 0.04s;
@@ -231,7 +251,7 @@ body::before {
 }
 .draw-rule {
   transform-origin: left;
-  animation: draw-line 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) 0.2s both;
+  animation: draw-line var(--transition-duration-draw) var(--ease-draw) 0.2s both;
 }
 
 /* Long-form rendered doc prose (Behind-the-Build tabs). IBM Plex Serif,
@@ -400,105 +420,20 @@ body::before {
 
 }
 
-/* The hero's grid is a measuring surface, so the pointer reads as a coordinate
-   ON it rather than as a light source over it. Two hairlines snap to the
-   nearest graduation and a registration tick marks the crossing, the same tick
-   the verdict stamp uses. Snapping is the whole idea: a line that follows the
-   cursor is a cursor-follower, and a line that jumps to the nearest graduation
-   is a measurement.
-
-   What this replaced: an amber radial with a 28px blur and a 7s breathe, plus
-   a bone spotlight that transitioned a gradient POSITION (a paint over the
-   whole hero, every frame the cursor moved). Both were glows, which this
-   site's own anti-goals ban, and the amber one put hue on the brand layer
-   where only an invocable command may go. Everything here rides transform and
-   opacity, so it composites. */
-.grid-crosshair {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  z-index: 0;
-  opacity: 0;
-  transition: opacity var(--duration-quick) var(--ease-exit);
-  /* Deliberately NOT masked like the grid. The first pass gave it the grid's
-     radial fade for tidiness and the reading disappeared through most of the
-     hero, which is where the pointer actually is: the scale may fade into the
-     dark, the needle may not. */
-}
-.grid-crosshair[data-live="true"] {
-  opacity: 1;
-  transition-timing-function: var(--ease-entrance);
-}
-.grid-crosshair span {
-  position: absolute;
-  background: var(--color-line-strong);
-  transition: transform var(--duration-settle) var(--ease-entrance);
-}
-.grid-crosshair .gx {
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  transform: translate3d(var(--cx, 0px), 0, 0);
-}
-.grid-crosshair .gy {
-  left: 0;
-  right: 0;
-  height: 1px;
-  transform: translate3d(0, var(--cy, 0px), 0);
-}
-/* The crossing is the READING, so it is the bright thing: the graduations stay
-   quiet and the mark that says "here" is in bone. A first pass had the tick at
-   bone-faint and the whole crosshair read as one more grid line, which is the
-   failure mode of drawing an instrument in the same weight as its scale. */
-.grid-crosshair .tick {
-  top: -8px;
-  left: -8px;
-  width: 17px;
-  height: 17px;
-  background: none;
-  border-left: 1px solid var(--color-bone);
-  border-top: 1px solid var(--color-bone);
-  transform: translate3d(var(--cx, 0px), var(--cy, 0px), 0);
-}
-/* A second arm, so the mark reads as a registration cross rather than as a
-   stray corner. Drawn on the same element to keep the moving parts at three. */
-.grid-crosshair .tick::after {
-  content: "";
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 7px;
-  height: 7px;
-  border-right: 1px solid var(--color-bone);
-  border-bottom: 1px solid var(--color-bone);
-}
-
-/* The field arrives once, rather than looping forever. */
-@keyframes grid-raise {
-  from {
-    opacity: 0;
-    transform: translate3d(0, -8px, 0);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-.grid-field {
-  animation: grid-raise var(--duration-draw) var(--ease-entrance) both;
-}
-
 /* Command micro-interaction: the amber tokens warm slightly and lift on hover,
    reinforcing "this is executable". */
+/* The hover warms the colour and nothing else. It used to add a 14px amber
+   text-shadow, which is a glow (banned in Anti-goals), animated as a paint
+   property, making it the last paint-driven animation on the site after the
+   hero rewrite removed two others for that reason. It was live on /skills and
+   unreachable on the home page, so it was simultaneously a violation and a
+   promise the page never kept. Emphasis reads by luminance here, per Colors. */
 .text-command {
-  transition:
-    color 0.18s ease,
-    text-shadow 0.18s ease;
+  transition: color var(--transition-duration-tick) var(--ease-exit);
 }
 a:hover .text-command,
 .group:hover .text-command {
-  text-shadow: 0 0 14px
-    color-mix(in srgb, var(--color-command) 40%, transparent);
+  color: color-mix(in srgb, var(--color-command) 82%, white);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -508,22 +443,10 @@ a:hover .text-command,
     opacity: 1 !important;
     transform: none !important;
   }
-  /* No crosshair at all: it is a response to movement, and there is nothing
-     here it needs to keep conveying once the movement is gone. The grid stays,
-     simply present rather than arriving. */
-  .grid-crosshair {
-    display: none !important;
-  }
-  .grid-field {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
-  }
-  .text-command {
-    transition: none !important;
-  }
+  /* .text-command used to animate a text-shadow and was killed outright here.
+     It is colour-only now, which is exactly what this preference keeps, so the
+     kill is gone. */
 }
-
 
 /* Feedback layer: interactive cards lift slightly on hover/focus (transform +
    border only, GPU-friendly). Applied ONLY to genuinely interactive cards, not
@@ -533,36 +456,61 @@ a:hover .text-command,
      overshoot, because a card settling back should not draw the eye it is
      giving up (DESIGN.md, Motion: asymmetry is the default). */
   transition:
-    transform var(--duration-tick) var(--ease-exit),
-    border-color var(--duration-tick) var(--ease-exit),
-    background-color var(--duration-tick) var(--ease-exit);
+    transform var(--transition-duration-tick) var(--ease-exit),
+    border-color var(--transition-duration-tick) var(--ease-exit),
+    background-color var(--transition-duration-tick) var(--ease-exit);
 }
 .lift:hover,
 .lift:focus-visible {
   transform: translateY(-2px);
   transition:
-    transform var(--duration-quick) var(--ease-entrance),
-    border-color var(--duration-quick) var(--ease-entrance),
-    background-color var(--duration-quick) var(--ease-entrance);
+    transform var(--transition-duration-quick) var(--ease-entrance),
+    border-color var(--transition-duration-quick) var(--ease-entrance),
+    background-color var(--transition-duration-quick) var(--ease-entrance);
 }
 
 /* CTAs acknowledge the press. */
 .press {
-  transition: transform var(--duration-tick) var(--ease-exit);
+  transition: transform var(--transition-duration-tick) var(--ease-exit);
 }
 .press:active {
   transform: translateY(1px);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .lift,
-  .press {
-    transition: none !important;
-  }
+  /* The movement goes; the acknowledgement stays. Killing the transition
+     outright left a press with nothing at all to confirm it, which is the off
+     switch DESIGN.md's Motion section explicitly disclaims. The border does the
+     confirming instead, on the tick, with no spatial change. */
   .lift:hover,
   .lift:focus-visible,
   .press:active {
     transform: none !important;
+  }
+  /* The border takes the command colour, which is a real change on both plate
+     buttons (they sit at --color-line-strong) and cannot touch the label's
+     contrast. The first cut of this rule set the background to
+     --color-ink-raised on .press globally, which put #14191f text on #1e2530 at
+     1.15:1 on the two bone CTAs: an acknowledgement that erased the word it was
+     acknowledging, for reduced-motion users only.
+     `:not(:disabled)` because the amber is this brand's invocable-command
+     colour and the /unlock submit is disabled while a request is in flight, so
+     without it a press registered on a control that cannot be invoked.
+     Measured, and recorded because it is the marginal number here rather than
+     the one that reads well: amber against the bone plate is 2.05:1 and against
+     the page ground 7.25:1, and the idle-to-active change is 3.08:1. That
+     passes WCAG 1.4.11 on both readings, with 0.08 of headroom and nothing
+     guarding it, so a future nudge to --color-command or --color-line-strong
+     drops it below 3:1 silently.
+     The third call site is NOT covered here and does not try to be: a
+     borderless, plateless button has no border to change, and an earlier
+     version of this comment claimed its `hover:text-bone` confirmed the press,
+     which is wrong twice over (hover is pointing, not pressing, and a keyboard
+     activation never matches :hover). It carries its own `active:text-bone`
+     instead, which brightens rather than dims and is the brand's luminance
+     rule. */
+  .press:active:not(:disabled) {
+    border-color: var(--color-command);
   }
 }
 
@@ -577,7 +525,10 @@ a:hover .text-command,
 .glyph-draw :is(path, line, rect, circle, polygon) {
   stroke-dasharray: 220;
   stroke-dashoffset: 220;
-  animation: glyph-stroke 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.25s forwards;
+  /* 900ms matches no token and is left alone deliberately: a token is matched
+     by the job, never by the nearest number. The curve was a hand-written copy
+     of --ease-entrance and is now the token. */
+  animation: glyph-stroke 0.9s var(--ease-entrance) 0.25s forwards;
 }
 @media (prefers-reduced-motion: reduce) {
   .glyph-draw :is(path, line, rect, circle, polygon) {
