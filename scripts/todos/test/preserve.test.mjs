@@ -1,0 +1,82 @@
+import test from 'node:test'
+import assert from 'node:assert/strict'
+import { preserve } from '../preserve.mjs'
+
+const BEFORE = `# T
+
+## Phase 7 (Done)
+
+- [x] shipped thing -> \`~/.claude/plans/one.md\`
+
+## Backlog
+
+- [ ] open thing
+- [ ] another thing -> \`~/.claude/plans/two.md\`
+  - [ ] nested step
+- [ ] finished but unchecked
+`
+const kinds = (a, b) => preserve(a, b).map((m) => m.kind)
+
+test('a pure reordering passes', () => {
+  const after = `# T
+
+## Backlog
+
+- [ ] another thing -> \`~/.claude/plans/two.md\`
+  - [ ] nested step
+- [ ] open thing
+
+## Done
+
+- [x] shipped thing -> \`~/.claude/plans/one.md\`
+- [x] finished but unchecked
+`
+  assert.deepEqual(preserve(BEFORE, after), [])
+})
+
+test('adding a date and moving an item to Done while checking it passes', () => {
+  const after = BEFORE.replace('- [ ] open thing', '- [ ] 2026-01-01 open thing').replace('## Phase 7 (Done)', '## Done').replace('- [ ] finished but unchecked', '').concat('\n## Done\n\n- [x] finished but unchecked\n')
+  assert.deepEqual(preserve(BEFORE, after.replace('## Done\n\n- [x] shipped', '## Old\n\n- [x] shipped')), [])
+})
+
+test('a dropped item is caught', () => {
+  assert.deepEqual(kinds(BEFORE, BEFORE.replace('- [ ] open thing\n', '')), ['item-missing'])
+})
+
+test('a dropped nested checkbox is caught', () => {
+  assert.deepEqual(kinds(BEFORE, BEFORE.replace('  - [ ] nested step\n', '')), ['item-missing'])
+})
+
+test('a dropped plan link is caught, on the item and in the file', () => {
+  const m = preserve(BEFORE, BEFORE.replace(' -> `~/.claude/plans/two.md`', ''))
+  assert.deepEqual(m.map((x) => x.kind), ['plan-link-missing'])
+  assert.equal(m[0].detail, '~/.claude/plans/two.md')
+})
+
+test('a link kept elsewhere in the file but lost from its item is still caught', () => {
+  const after = BEFORE.replace(' -> `~/.claude/plans/two.md`', '') + '\nSee ~/.claude/plans/two.md\n'
+  assert.deepEqual(kinds(BEFORE, after), ['plan-link-missing'])
+})
+
+test('a silently edited title is caught', () => {
+  assert.deepEqual(kinds(BEFORE, BEFORE.replace('open thing', 'open things')), ['item-missing'])
+})
+
+test('unchecked to checked outside Done is caught, inside Done it is not', () => {
+  assert.deepEqual(kinds(BEFORE, BEFORE.replace('- [ ] open thing', '- [x] open thing')), ['checked-outside-done'])
+  const inDone = BEFORE.replace('- [ ] open thing\n', '') + '\n## Done\n\n- [x] open thing\n'
+  assert.deepEqual(preserve(BEFORE, inDone), [])
+})
+
+test('reopening a completed item is caught', () => {
+  assert.deepEqual(kinds(BEFORE, BEFORE.replace('- [x] shipped thing', '- [ ] shipped thing')), ['unchecked'])
+})
+
+test('duplicate items must both survive', () => {
+  const two = '## Backlog\n\n- [ ] same\n- [ ] same\n'
+  assert.deepEqual(kinds(two, '## Backlog\n\n- [ ] same\n'), ['item-missing'])
+})
+
+test('checkbox lines inside code fences are not items', () => {
+  assert.deepEqual(preserve('## A\n\n```\n- [ ] example\n```\n', '## A\n'), [])
+})

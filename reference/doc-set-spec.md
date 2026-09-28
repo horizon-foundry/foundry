@@ -28,7 +28,7 @@ Each file owns exactly one responsibility. Duplication between any two is drift 
 | `NOTES.md` | Why: decisions and the alternatives rejected | Routine change logs (that is git) |
 | `PROMPTS.md` | What happened, in order: summary, phases, and (optionally) a raw log | Curated narrative masquerading as history |
 | `FRICTION.md` | Where the process hurt: friction and candidate fixes | Product bugs |
-| `TODOS.md` | The plan index (Master Plan / Phase Plans) and backlog | Vague wishes without an owner |
+| `TODOS.md` | The plan index, what is in flight, the priority queue, the backlog, and closed units; shape owned by `todos-spec.md` | Vague wishes without an owner |
 
 Smaller projects can omit `ARCHITECTURE.md` (fold the data model into `PRODUCT.md` or `CLAUDE.md`) and `BRAND.md` (only if the project genuinely has no outward voice). Everything else is load-bearing for a shipping product. **The full set is the web-product shape, not a universal mandate:** `scaffold`'s profiles (experiment, internal-tool, web-product, service, library) each select the subset that project kind actually needs; an experiment carries a README and NOTES, a library's README is its product surface and it has no DESIGN. The ownership rules above apply to whichever files exist.
 

@@ -1,0 +1,88 @@
+// Content-preservation check for rewrites (migrations). preserve(before, after) -> Missing[].
+// Reports; never repairs.
+
+const BOX = /^(\s*)[-*+][ \t]+\[( |x|X)\](?:[ \t]+(.*))?$/
+const FENCE = /^\s*(`{3,}|~{3,})/
+const DATE = /^\d{4}-\d{2}-\d{2}\s*/
+const PLAN_PATH = /(?:~\/|\.{1,2}\/|\/)?(?:[\w.-]+\/)*plans\/[\w.-]+\.md/g
+const ARROW_PATH = /->\s+`?([^\s`]+\.md)/g
+
+const norm = (s) => s.replace(/\s+/g, ' ').trim().toLowerCase()
+
+function extract(text) {
+  const lines = text.split('\n')
+  const out = []
+  let inFence = false
+  let sec = ''
+  for (let i = 0; i < lines.length; i++) {
+    const l = lines[i].replace(/\r$/, '')
+    if (FENCE.test(l)) inFence = !inFence
+    if (inFence) continue
+    const h = /^##[ \t]+(.*?)[ \t]*$/.exec(l)
+    if (h) sec = h[1].toLowerCase()
+    const m = BOX.exec(l)
+    if (!m) continue
+    let rest = m[3] ?? ''
+    rest = rest.replace(DATE, '')
+    let plan = null
+    const p = /^(.*?)\s->\s+`?([^\s`]+)/.exec(rest)
+    if (p) {
+      rest = p[1]
+      plan = p[2]
+    }
+    let span = l
+    for (let j = i + 1; j < lines.length && /^[ \t]+\S/.test(lines[j]); j++) span += '\n' + lines[j]
+    out.push({ line: i + 1, checked: m[2] !== ' ', key: norm(rest), plan, section: sec, span, text: rest.trim() })
+  }
+  return out
+}
+
+function planPaths(text) {
+  const s = new Set(text.match(PLAN_PATH) ?? [])
+  for (const m of text.matchAll(ARROW_PATH)) s.add(m[1])
+  return s
+}
+
+export function preserve(before, after) {
+  const missing = []
+  const b = extract(before)
+  const a = extract(after)
+  const byKey = new Map()
+  for (const x of a) byKey.set(x.key, [...(byKey.get(x.key) ?? []), x])
+  const reported = new Set()
+
+  const pairs = []
+  const leftover = []
+  for (const bi of b) {
+    const cands = byKey.get(bi.key) ?? []
+    const k = cands.findIndex((c) => c.checked === bi.checked)
+    if (k >= 0) pairs.push([bi, cands.splice(k, 1)[0]])
+    else leftover.push(bi)
+  }
+  for (const bi of leftover) {
+    const cands = byKey.get(bi.key) ?? []
+    if (!cands.length) {
+      missing.push({ kind: 'item-missing', line: bi.line, text: bi.text, detail: 'no item with this text survives' })
+      continue
+    }
+    const ai = cands.shift()
+    if (!bi.checked && ai.checked && ai.section !== 'done') {
+      missing.push({ kind: 'checked-outside-done', line: bi.line, text: bi.text, detail: `now checked under "${ai.section}"` })
+    } else if (bi.checked && !ai.checked) {
+      missing.push({ kind: 'unchecked', line: bi.line, text: bi.text, detail: 'completed item reopened' })
+    }
+    pairs.push([bi, ai])
+  }
+  for (const [bi, ai] of pairs) {
+    if (bi.plan && !ai.span.includes(bi.plan)) {
+      reported.add(bi.plan)
+      missing.push({ kind: 'plan-link-missing', line: bi.line, text: bi.text, detail: bi.plan })
+    }
+  }
+  for (const p of planPaths(before)) {
+    if (!after.includes(p) && !reported.has(p)) {
+      missing.push({ kind: 'plan-link-missing', line: 0, text: '', detail: p })
+    }
+  }
+  return missing.sort((x, y) => x.line - y.line)
+}

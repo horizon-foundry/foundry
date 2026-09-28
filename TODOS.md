@@ -89,6 +89,7 @@ That audit was much fresher than the prior one; its #1 "blocker" (retired /commi
 - [ ] 2026-09-18 Phase 22, The design-quality boundary (already planned in full; cut the kicker mandate this suite currently requires and impeccable bans) -> `~/.claude/plans/foundry-design-quality-boundary.md`
 - [ ] 2026-09-18 Phase 23, Progressive disclosure for the flagship (supersedes Phase 17 and its Backlog duplicate, which describe one piece of work; sequenced after Phase 19 because that is what would catch a silent behavior change) -> `~/.claude/plans/foundry-master-plan.md`
 - [ ] 2026-09-18 Phase 24, Distribution (conditional: do not open until Phase 18 has an answer) -> `~/.claude/plans/foundry-master-plan.md`
+- [ ] 2026-09-28 Command Center Phase 1, the TODOS standard (`reference/todos-spec.md`, a lossless reference parser, a linter with stable rule ids, and a content-preservation check; first of five units under the cross-repo command-center master plan) -> `~/.claude/plans/command-center-phase-1-todos-standard.md`
 
 ## Launch sequence (do in this order)
 

@@ -86,6 +86,7 @@ sync-version:
 # version marker: VERSION agrees with every SKILL.md frontmatter and check
 # URL, lib/site.ts, and SECURITY.md, and SKILL_SLUGS matches skills/ exactly.
 validate:
+	node --test 'scripts/todos/test/*.test.mjs'
 	node scripts/check-skill-surfaces.mjs
 	node scripts/check-brand-assets.mjs
 	node scripts/check-built-mark.mjs
