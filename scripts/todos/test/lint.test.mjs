@@ -162,3 +162,20 @@ test('a code span in a child line does not expose a mark to an anchored rule', (
     assert.deepEqual(lint(swap('- [ ] 2026-03-02 Beta item', `- [ ] 2026-03-02 Beta item\n  ${c}`)), [], c)
   }
 })
+
+test('inline code never counts as a mark, on the item line or a child', () => {
+  assert.deepEqual(lint(swap('Delta item', 'use `~~x~~` here')), [])
+  assert.deepEqual(lint(swap('- [ ] 2026-03-02 Beta item', '- [ ] 2026-03-02 Beta item\n  - [`x`] \u2705 ok')), [])
+})
+
+test('a link needs an arrow or a directory, not just a .md word', () => {
+  const at = (h) => has(swap('### Build the thing -> `~/.claude/plans/build.md`', `### ${h}`), 'now-unit-plan')
+  assert.ok(at('U --> y.md') && at('U <-> plan.md') && at('U x->y.md handling') && at('U https://a.com/b.md'))
+  assert.ok(!at('U -> [Build](build.md)'))
+})
+
+test('hostile punctuation runs stay linear', () => {
+  const t0 = Date.now()
+  lint(swap('### Build the thing -> `~/.claude/plans/build.md`', '### U ' + '!'.repeat(80000) + 'x'))
+  assert.ok(Date.now() - t0 < 1000)
+})

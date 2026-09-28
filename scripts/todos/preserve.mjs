@@ -6,10 +6,17 @@ const FENCE = /^\s*(`{3,}|~{3,})([\s\S]*)$/
 const DATE = /^\d{4}-\d{2}-\d{2}\s*/
 const DELIM = /[\s`()<>,;"']+/
 // Trim prose punctuation and fragments so a path at the end of a sentence still counts as itself.
-const clean = (t) => t.replace(/^[*_[]+/, '').replace(/#.*$/, '').replace(/[.,:;*_)\]!?]+$/, '')
+const TRAIL = new Set('.,:;*_)]!?')
+// Linear right trim: an unanchored `+$` regex is quadratic on a long run of punctuation.
+export const trimTrail = (t) => {
+  let e = t.length
+  while (e > 0 && TRAIL.has(t[e - 1])) e--
+  return t.slice(0, e)
+}
+const clean = (t) => trimTrail(t.replace(/^[*_[]+/, '').replace(/#.*$/, ''))
 const PLAN_TOKEN = /(?:^|\/)plans\/.+\.md$/
 const ARROW = '\u0001'
-const split = (text) => text.replace(/->/g, ` ${ARROW} `).split(DELIM).filter(Boolean)
+const split = (text) => text.replace(/(^|\s)->(?=\s)/g, ` ${ARROW} `).split(DELIM).filter(Boolean)
 
 const norm = (s) => s.replace(/\s+/g, ' ').trim().toLowerCase()
 

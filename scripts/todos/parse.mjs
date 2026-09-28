@@ -29,7 +29,7 @@ export const isRealDate = (s) => {
 }
 const TAG = /^\*\*\[([^\]]+)\]\*\*\s*/
 const STRIKE = /~~[^~\s][^~]*~~/
-const EMOJI_LEAD = /^(?:[-*+]\s+)?(?:\[.\]\s*)?(?:\d{4}-\d{2}-\d{2}\s+)?(?:\*\*\[[^\]]+\]\*\*\s*)*[✅✔☑✓❌⬜☐🔲]/u
+const EMOJI_LEAD = /^(?:[-*+]\s+)?(?:\[[ xX]\]\s*)?(?:\d{4}-\d{2}-\d{2}\s+)?(?:\*\*\[[^\]]+\]\*\*\s*)*[✅✔☑✓❌⬜☐🔲]/u
 
 const bare = (line) => line.replace(/\r$/, '')
 
@@ -168,6 +168,7 @@ export function parse(text) {
             } else break
           } else break
         }
+        const codeless = line.replace(/`[^`]*`/g, '\uE000')
         const parsed = parseItemText(im[3])
         sec.nodes.push({
           type: 'item',
@@ -178,8 +179,8 @@ export function parse(text) {
           checked: im[2] !== ' ',
           ...parsed,
           key: normalizeTitle(parsed.title),
-          strike: STRIKE.test(line),
-          emoji: EMOJI_LEAD.test(line),
+          strike: STRIKE.test(codeless),
+          emoji: EMOJI_LEAD.test(codeless),
         })
         i = end
         continue

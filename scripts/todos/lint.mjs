@@ -1,6 +1,7 @@
 // Linter for reference/todos-spec.md. Rule ids are stable once published; the conformance checklist in
 // the spec lists exactly these ids (test/spec-agreement.test.mjs enforces it).
 import { parse, items, section, blocks, isRealDate, SECTION_NAMES } from './parse.mjs'
+import { trimTrail } from './preserve.mjs'
 
 const E = 'error'
 const W = 'warn'
@@ -40,13 +41,14 @@ export const RULES = {
 const DONE_HEADING = /^(?:.+ \((\d{4}-\d{2}-\d{2})(?:, PR #\d+|, PRs #\d+(?:, #\d+)+)?\)|(\d{4}-\d{2}-\d{2}))$/
 // A plan link is a path with a directory ending .md, or the target of " -> ". Token based, so linear.
 const hasPlanLink = (body) => {
-  const toks = body.replace(/->/g, ' \u0001 ').split(/[\s`()<>,;"']+/).filter(Boolean)
-  return toks.some((t, i) => /\.md$/.test(t.replace(/#.*$/, '').replace(/[.,:;*_)\]!?]+$/, '')) && (t.includes('/') || toks[i - 1] === '\u0001'))
+  const toks = body.replace(/(^|\s)->(?=\s)/g, ' \u0001 ').split(/[\s`()<>,;"']+/).filter(Boolean)
+  const md = (t) => trimTrail(t.replace(/#.*$/, '')).endsWith('.md')
+  return toks.some((t, i) => md(t) && !/^[a-z]+:\/\//i.test(t) && (t.includes('/') || toks.slice(Math.max(0, i - 3), i).includes('\u0001')))
 }
 const OPEN_CHILD = /^[ \t]+(?:[-*+]|\d+[.)])[ \t]+\[ \]/
 const UPPER_CHILD = /^[ \t]+[-*+][ \t]+\[X\]/
 const STRIKE = /~~[^~\s][^~]*~~/
-const EMOJI_LEAD = /^\s*(?:[-*+]\s+)?(?:\[.\]\s*)?(?:\d{4}-\d{2}-\d{2}\s+)?(?:\*\*\[[^\]]+\]\*\*\s*)*[✅✔☑✓❌⬜☐🔲]/u
+const EMOJI_LEAD = /^\s*(?:[-*+]\s+)?(?:\[[ xX]\]\s*)?(?:\d{4}-\d{2}-\d{2}\s+)?(?:\*\*\[[^\]]+\]\*\*\s*)*[✅✔☑✓❌⬜☐🔲]/u
 
 export function lint(text) {
   const doc = parse(text)
@@ -196,7 +198,7 @@ export function lint(text) {
       if (it.marker !== '-' || it.box === 'X') add('item-marker', it.start, 'Use "- [ ]" or "- [x]".')
       for (let l = it.start + 1; l <= it.end; l++) {
         if (inFence.has(l)) continue
-        const c = lines[l].replace(/`[^`]*`/g, '\u0000')
+        const c = lines[l].replace(/`[^`]*`/g, '\uE000')
         if (UPPER_CHILD.test(c)) add('item-marker', l, 'Use "[x]", not "[X]".')
         if (STRIKE.test(c)) add('item-strikethrough', l, 'Strikethrough in a child line.')
         if (EMOJI_LEAD.test(c)) add('item-emoji-check', l, 'Emoji check mark in a child line.')

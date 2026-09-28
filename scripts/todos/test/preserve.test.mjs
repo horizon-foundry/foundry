@@ -135,3 +135,10 @@ test('an unchanged file passes for a plan path wrapped in any delimiter', () => 
 test('a nested plans directory is still a plan path', () => {
   assert.equal(preserve('See ~/.claude/plans/sub/a.md.\n', 'nothing\n').length, 1)
 })
+
+test('hostile punctuation runs stay linear in preserve too', () => {
+  const t0 = Date.now()
+  const x = '- [ ] a -> ' + '!'.repeat(80000) + 'x\n'
+  preserve(x, x)
+  assert.ok(Date.now() - t0 < 1000)
+})
