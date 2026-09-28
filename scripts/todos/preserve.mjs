@@ -1,11 +1,13 @@
 // Content-preservation check for rewrites (migrations). preserve(before, after) -> Missing[].
 // Reports; never repairs.
 
-const BOX = /^(\s*(?:>\s*)*)(?:[-*+]|\d+[.)])[ \t]+\[( |x|X)\](?:[ \t]+(.*))?$/
+const BOX = /^(\s*(?:>\s*)*)(?:[-*+]|\d+[.)])[ \t]+\[( |x|X)\](?:[ \t]+([\s\S]*))?$/
 const FENCE = /^\s*(`{3,}|~{3,})([\s\S]*)$/
 const DATE = /^\d{4}-\d{2}-\d{2}\s*/
-const PLAN_PATH = /(?:~\/|\.{1,2}\/|\/)?(?:[\w.-]+\/)*plans\/[\w.-]+\.md/g
-const ARROW_PATH = /->\s+`?([^\s`]+\.md)/g
+const DELIM = /[\s`()<>,;"']+/
+// Trim prose punctuation and fragments so a path at the end of a sentence still counts as itself.
+const clean = (t) => t.replace(/^[*_[]+/, '').replace(/#.*$/, '').replace(/[.,:;*_)\]!?]+$/, '')
+const PLAN_TOKEN = /(?:^|\/)plans\/[^/]+\.md$/
 
 const norm = (s) => s.replace(/\s+/g, ' ').trim().toLowerCase()
 
@@ -32,10 +34,10 @@ function extract(text) {
     let rest = m[3] ?? ''
     rest = rest.replace(DATE, '')
     let plan = null
-    const p = /^(.*?)\s->\s+`?([^\s`]+)/.exec(rest)
+    const p = /^([\s\S]*?)\s->\s+`?([^\s`]+)/.exec(rest)
     if (p) {
       rest = p[1]
-      plan = p[2]
+      plan = clean(p[2])
     }
     let span = l
     for (let j = i + 1; j < lines.length && /^[ \t]+\S/.test(lines[j]); j++) span += '\n' + lines[j]
@@ -44,11 +46,15 @@ function extract(text) {
   return out
 }
 
-const tokensOf = (text) => new Set(text.split(/[\s`()<>,;"']+/).filter(Boolean))
+const tokensOf = (text) => new Set(text.split(DELIM).map(clean).filter(Boolean))
 
 function planPaths(text) {
-  const s = new Set(text.match(PLAN_PATH) ?? [])
-  for (const m of text.matchAll(ARROW_PATH)) s.add(m[1])
+  const raw = text.split(DELIM).filter(Boolean)
+  const s = new Set()
+  raw.forEach((t, i) => {
+    const c = clean(t)
+    if (PLAN_TOKEN.test(c) || (raw[i - 1] === '->' && c.endsWith('.md'))) s.add(c)
+  })
   return s
 }
 

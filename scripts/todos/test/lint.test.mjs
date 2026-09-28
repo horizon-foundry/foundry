@@ -128,5 +128,25 @@ test('a whitespace-only last line is not a final newline', () => {
 })
 
 test('a plan link without a directory still counts', () => {
-  assert.ok(!has(swap('build.md`', 'build.md`').replace('`~/.claude/plans/build.md`', 'plan.md'), 'now-unit-plan'))
+  assert.ok(!has(swap('build.md`', 'build.md`').replace('`~/.claude/plans/build.md`', '-> plan.md'), 'now-unit-plan'))
+})
+
+test('fenced text is not markup, in children too', () => {
+  const t = swap('- [ ] 2026-03-02 Beta item', '- [ ] 2026-03-02 Beta item\n  ```\n  - [X] y\n  ~~z~~\n  \u2705 q\n  ```')
+  assert.deepEqual(lint(t), [])
+  assert.deepEqual(lint(swap('- [x] did a thing', '- [x] did a thing\n  ```md\n  - [ ] example\n  ```')), [])
+  assert.deepEqual(lint(swap('- [ ] 2026-03-02 Beta item', '- [ ] 2026-03-02 Beta item\n  - use `~~x~~` syntax')), [])
+})
+
+test('numbered nested checkboxes are open boxes in Done', () => {
+  assert.ok(has(swap('- [x] did a thing', '- [x] did a thing\n  1. [ ] sub'), 'done-open-item'))
+})
+
+test('a bare README.md is not a plan link', () => {
+  assert.ok(has(swap('### Build the thing -> `~/.claude/plans/build.md`', '### Build the thing, see README.md'), 'now-unit-plan'))
+})
+
+test('a star or underscore inside a title is not emphasis', () => {
+  const t = swap('2026-03-03 Gamma item', '2026-03-03 a__b').replace('2026-03-02 Beta item', '2026-03-03 ab')
+  assert.ok(!has(t, 'item-duplicate'))
 })

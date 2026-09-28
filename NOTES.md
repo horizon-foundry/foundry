@@ -602,3 +602,17 @@ than decorating it, and it works at every width.
 argued for is usually decoration with a good lawyer.** The effort spent
 defending the band is the signal that should have been read earlier. The cut
 also took 2,197 bytes of CSS and an entire component with it.
+
+## 2026-09-28: the TODOS.md standard ships with its validator
+
+`reference/todos-spec.md` defines the shape of a project's `TODOS.md`, and `scripts/todos/` is its reference implementation. Both live in Foundry, not in the app that will consume them, because a standard without a validator drifts (the survey of twenty real files found every legacy shape the spec now names), and because any Foundry user can lint their own file with it.
+
+**The parser is lossless, not a tolerant markdown reader.** Every node is a line span into the original lines, so `serialize(parse(x)) === x` for any input, and a move edits spans and re-renders nothing. The reason is the write path: a reorder is left as an uncommitted edit to a file someone else's commit will pick up, so it must not touch a single unrelated byte. A parser that normalized on the way out would have made every move a whole-file diff.
+
+**The checklist and the linter cannot disagree.** A test parses the spec's conformance table and compares it, id and severity, to the linter's registry. The alternative was a prose promise that they match, which is how the twenty files drifted in the first place.
+
+**Rejected: a `Profile`-style hidden id comment per item.** Identity is section, date and normalized title, with the file hash as the concurrency backstop. Ids in the file would show up in every human's diff and rot when someone copies an item.
+
+**Rejected: TypeScript for the reference.** The repo's engines pin Node 22, where type stripping is not on by default, and every existing script here is `.mjs`. Plain ESM with no dependencies runs anywhere `node` does.
+
+**What the review found.** Two adversarial passes found sixteen reproducible defects, most at the edges the tests shared an assumption about: every fixture had a final newline, a title-cased first line, and non-overlapping duplicates. A fence after a blank line stranded its item on a move; a title containing a check-mark character failed the lint; duplicate texts hid an unchecked-to-checked flip in the preservation check. Each has a regression test now.

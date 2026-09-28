@@ -37,9 +37,13 @@ export const RULES = {
   'done-open-item': E,
 }
 
-const DONE_HEADING = /^(?:.+ \((\d{4}-\d{2}-\d{2})(?:, PRs? #\d+(?:, #\d+)*)?\)|(\d{4}-\d{2}-\d{2}))$/
-const PATH_LINK = /[\w.~/-]+\.md\b/
-const OPEN_CHILD = /^[ \t]+[-*+][ \t]+\[ \]/
+const DONE_HEADING = /^(?:.+ \((\d{4}-\d{2}-\d{2})(?:, PR #\d+|, PRs #\d+(?:, #\d+)+)?\)|(\d{4}-\d{2}-\d{2}))$/
+// A plan link is a path with a directory ending .md, or the target of " -> ". Token based, so linear.
+const hasPlanLink = (body) => {
+  const toks = body.split(/[\s`()<>,;"']+/).filter(Boolean)
+  return toks.some((t, i) => /\.md[.,:;*]*$/.test(t) && (t.includes('/') || toks[i - 1] === '->'))
+}
+const OPEN_CHILD = /^[ \t]+(?:[-*+]|\d+[.)])[ \t]+\[ \]/
 const UPPER_CHILD = /^[ \t]+[-*+][ \t]+\[X\]/
 const STRIKE = /~~[^~\s][^~]*~~/
 const EMOJI_LEAD = /^\s*(?:[-*+]\s+)?(?:\[.\]\s*)?(?:\d{4}-\d{2}-\d{2}\s+)?(?:\*\*\[[^\]]+\]\*\*\s*)*[✅✔☑✓❌⬜☐🔲]/u
@@ -97,6 +101,8 @@ export function lint(text) {
     if (!seen.has(name)) add('section-missing', 0, `Missing "## ${name}".`)
   }
 
+  const inFence = new Set()
+  for (const f of doc.fences) for (let l = f.open; l <= (f.close ?? lines.length - 1); l++) inFence.add(l)
   const get = (name) => section(doc, name)
 
   // Master Plan / Phase Plans.
@@ -126,7 +132,7 @@ export function lint(text) {
     bl.slice(1).forEach((b, k) => {
       if (k >= 3) add('now-cap', b.heading.start, 'Now holds at most 3 units.')
       const body = lines.slice(b.heading.start, b.end).join('\n')
-      if (!PATH_LINK.test(body)) add('now-unit-plan', b.heading.start, 'Unit does not link a plan file.')
+      if (!hasPlanLink(body)) add('now-unit-plan', b.heading.start, 'Unit does not link a plan file.')
     })
   }
 
@@ -180,7 +186,7 @@ export function lint(text) {
   for (const it of doneOpen) {
     if (!it.checked) add('done-open-item', it.start, 'Open item in Done.')
     for (let l = it.start + 1; l <= it.end; l++) {
-      if (OPEN_CHILD.test(lines[l])) add('done-open-item', l, 'Open nested checkbox in Done.')
+      if (!inFence.has(l) && OPEN_CHILD.test(lines[l])) add('done-open-item', l, 'Open nested checkbox in Done.')
     }
   }
 
@@ -189,7 +195,8 @@ export function lint(text) {
     for (const it of items(s)) {
       if (it.marker !== '-' || it.box === 'X') add('item-marker', it.start, 'Use "- [ ]" or "- [x]".')
       for (let l = it.start + 1; l <= it.end; l++) {
-        const c = lines[l]
+        if (inFence.has(l)) continue
+        const c = lines[l].replace(/`[^`]*`/g, '')
         if (UPPER_CHILD.test(c)) add('item-marker', l, 'Use "[x]", not "[X]".')
         if (STRIKE.test(c)) add('item-strikethrough', l, 'Strikethrough in a child line.')
         if (EMOJI_LEAD.test(c)) add('item-emoji-check', l, 'Emoji check mark in a child line.')

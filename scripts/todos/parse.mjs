@@ -38,7 +38,10 @@ export function hashText(text) {
 }
 
 export function normalizeTitle(title) {
-  return title.replace(/\*+|`|__/g, '').replace(/\s+/g, ' ').trim().toLowerCase()
+  return title
+    .replace(/\*\*|`/g, '')
+    .replace(/\*([^*\s][^*]*)\*/g, '$1')
+    .replace(/__([^_\s][^_]*)__/g, '$1').replace(/\s+/g, ' ').trim().toLowerCase()
 }
 
 export function parseItemText(rest) {

@@ -83,7 +83,9 @@ export function moveItem(doc, ref, target, baseHash) {
   // Removal range: the span plus one separator blank when the source list is blank-separated.
   let rmStart = it.start
   let rmEnd = it.end
-  const srcItems = itemsOf(region(doc, srcSec, groupOf(srcSec, it)))
+  const srcRegion = region(doc, srcSec, groupOf(srcSec, it))
+  if (srcRegion === 'ambiguous') return conflict('item-ambiguous', 'the item sits under a group name that appears more than once')
+  const srcItems = itemsOf(srcRegion)
   if (isLoose(doc, srcItems)) {
     if (rmEnd + 1 < lines.length && isBlank(lines[rmEnd + 1]) && srcItems[srcItems.length - 1] !== it) rmEnd++
     else if (rmStart > 0 && isBlank(lines[rmStart - 1])) rmStart--

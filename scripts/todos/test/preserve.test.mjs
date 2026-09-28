@@ -101,3 +101,26 @@ test('numbered and quoted checkboxes count', () => {
   assert.deepEqual(kinds('1. [ ] alpha\n2. [ ] beta\n', '- [ ] alpha\n'), ['item-missing'])
   assert.deepEqual(kinds('> - [ ] alpha\n', ''), ['item-missing'])
 })
+
+test('an unchanged file always passes, whatever punctuation surrounds a plan path', () => {
+  for (const tail of ['.', ', see also', '**', ']', ': done', '#top']) {
+    const x = `## Up Next\n\n- [ ] 2026-01-01 a -> ~/.claude/plans/a.md${tail}\n\nSee [~/.claude/plans/b.md].\n`
+    assert.deepEqual(preserve(x, x), [], tail)
+  }
+})
+
+test('a look-alike path does not stand in for the real one', () => {
+  const b = 'See ~/.claude/plans/a.md.\n'
+  assert.equal(preserve(b, 'See ~/.claude/myplans/a.md.\n').length, 1)
+  assert.equal(preserve(b, 'See ~/.claude/plans/a.mdx.\n').length, 1)
+})
+
+test('a checkbox line with a lone CR is still an item', () => {
+  assert.deepEqual(kinds('## Up Next\n- [ ] a\rb\n- [ ] keep\n', '## Up Next\n- [ ] keep\n'), ['item-missing'])
+})
+
+test('hostile long paths stay linear', () => {
+  const t0 = Date.now()
+  preserve('a/'.repeat(50000) + '\n', 'x\n')
+  assert.ok(Date.now() - t0 < 1000)
+})

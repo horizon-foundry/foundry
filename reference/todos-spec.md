@@ -88,7 +88,7 @@ Reordering is an edit to lines, never a rewrite of the file.
 A move removes the item's whole line span (the item line plus its continuation and children) and
 inserts that span at the target position. No other line changes. Moves address items by identity and
 carry the file hash they were computed against; a mismatch, a missing item, an ambiguous item, or an
-invalid target is a typed conflict, never a guess. The parser is lossless: serializing a parse returns
+invalid target is a typed conflict, never a guess (`hash-mismatch`, `hash-required`, `bad-request`, `item-not-found`, `item-ambiguous`, `source-not-movable`, `target-invalid`). A request without a hash is refused: a move that skips the guard is the one that clobbers a concurrent edit. The parser is lossless: serializing a parse returns
 the input byte for byte, for conforming and non-conforming files alike.
 
 ## Preservation
