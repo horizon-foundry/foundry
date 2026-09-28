@@ -150,3 +150,15 @@ test('a star or underscore inside a title is not emphasis', () => {
   const t = swap('2026-03-03 Gamma item', '2026-03-03 a__b').replace('2026-03-02 Beta item', '2026-03-03 ab')
   assert.ok(!has(t, 'item-duplicate'))
 })
+
+test('an arrow to a bare filename is a plan link', () => {
+  assert.ok(!has(swap('### Build the thing -> `~/.claude/plans/build.md`', '### Build the thing -> plan.md'), 'now-unit-plan'))
+  assert.ok(!has(swap('### Build the thing -> `~/.claude/plans/build.md`', '### Build the thing -> plans/x.md#sec'), 'now-unit-plan'))
+  assert.ok(has(swap('### Build the thing -> `~/.claude/plans/build.md`', '### Build the thing'), 'now-unit-plan'))
+})
+
+test('a code span in a child line does not expose a mark to an anchored rule', () => {
+  for (const c of ['`x` \u2705 done', '`x`- [X] y', '- `x` [X]']) {
+    assert.deepEqual(lint(swap('- [ ] 2026-03-02 Beta item', `- [ ] 2026-03-02 Beta item\n  ${c}`)), [], c)
+  }
+})

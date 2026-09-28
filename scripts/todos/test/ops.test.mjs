@@ -139,8 +139,9 @@ test('CRLF files gain no bare LF, and a last section keeps its final newline', (
   assert.ok(tail.text.endsWith('\n'))
 })
 
-test('an item under a duplicated group name is a typed conflict, not a crash', () => {
-  const src = '# T\n\n## Backlog\n\n### G\n\n- [ ] 2026-01-01 A\n\n### G\n\n- [ ] 2026-01-02 B\n'
+test('an item under a duplicated group name still moves out (its identity is unique)', () => {
+  const src = '# T\n\n## Up Next\n\n## Backlog\n\n### G\n\n- [ ] 2026-01-01 A\n\n### G\n\n- [ ] 2026-01-02 B\n'
   const r = moveItem(parse(src), ref('Backlog', 'A', '2026-01-01'), { section: 'Up Next', index: 0 })
-  assert.equal(r.ok, false)
+  assert.equal(r.ok, true)
+  assert.deepEqual(titles(r.text, 'Up Next'), ['A'])
 })

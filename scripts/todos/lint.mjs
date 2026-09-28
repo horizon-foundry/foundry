@@ -40,8 +40,8 @@ export const RULES = {
 const DONE_HEADING = /^(?:.+ \((\d{4}-\d{2}-\d{2})(?:, PR #\d+|, PRs #\d+(?:, #\d+)+)?\)|(\d{4}-\d{2}-\d{2}))$/
 // A plan link is a path with a directory ending .md, or the target of " -> ". Token based, so linear.
 const hasPlanLink = (body) => {
-  const toks = body.split(/[\s`()<>,;"']+/).filter(Boolean)
-  return toks.some((t, i) => /\.md[.,:;*]*$/.test(t) && (t.includes('/') || toks[i - 1] === '->'))
+  const toks = body.replace(/->/g, ' \u0001 ').split(/[\s`()<>,;"']+/).filter(Boolean)
+  return toks.some((t, i) => /\.md$/.test(t.replace(/#.*$/, '').replace(/[.,:;*_)\]!?]+$/, '')) && (t.includes('/') || toks[i - 1] === '\u0001'))
 }
 const OPEN_CHILD = /^[ \t]+(?:[-*+]|\d+[.)])[ \t]+\[ \]/
 const UPPER_CHILD = /^[ \t]+[-*+][ \t]+\[X\]/
@@ -196,7 +196,7 @@ export function lint(text) {
       if (it.marker !== '-' || it.box === 'X') add('item-marker', it.start, 'Use "- [ ]" or "- [x]".')
       for (let l = it.start + 1; l <= it.end; l++) {
         if (inFence.has(l)) continue
-        const c = lines[l].replace(/`[^`]*`/g, '')
+        const c = lines[l].replace(/`[^`]*`/g, '\u0000')
         if (UPPER_CHILD.test(c)) add('item-marker', l, 'Use "[x]", not "[X]".')
         if (STRIKE.test(c)) add('item-strikethrough', l, 'Strikethrough in a child line.')
         if (EMOJI_LEAD.test(c)) add('item-emoji-check', l, 'Emoji check mark in a child line.')

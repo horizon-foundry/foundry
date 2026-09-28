@@ -83,9 +83,8 @@ export function moveItem(doc, ref, target, baseHash) {
   // Removal range: the span plus one separator blank when the source list is blank-separated.
   let rmStart = it.start
   let rmEnd = it.end
-  const srcRegion = region(doc, srcSec, groupOf(srcSec, it))
-  if (srcRegion === 'ambiguous') return conflict('item-ambiguous', 'the item sits under a group name that appears more than once')
-  const srcItems = itemsOf(srcRegion)
+  const srcBlock = blocks(srcSec).find((b) => b.nodes.includes(it))
+  const srcItems = itemsOf(srcBlock)
   if (isLoose(doc, srcItems)) {
     if (rmEnd + 1 < lines.length && isBlank(lines[rmEnd + 1]) && srcItems[srcItems.length - 1] !== it) rmEnd++
     else if (rmStart > 0 && isBlank(lines[rmStart - 1])) rmStart--
@@ -106,15 +105,6 @@ export function moveItem(doc, ref, target, baseHash) {
   const sig = (d) => d.sections.flatMap((s) => items(s).map((x) => `${x.date}|${x.key}|${x.checked}`)).sort().join('\n')
   if (sig(next) !== sig(doc)) throw new Error('moveItem changed the item set; this is a bug')
   return { ok: true, text, hash: next.hash }
-}
-
-function groupOf(sec, it) {
-  let g
-  for (const nd of sec.nodes) {
-    if (nd.type === 'heading3') g = nd.text
-    if (nd === it) return g
-  }
-  return undefined
 }
 
 // Move the referenced items to the top of Up Next, in the given order.

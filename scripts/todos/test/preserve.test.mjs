@@ -124,3 +124,14 @@ test('hostile long paths stay linear', () => {
   preserve('a/'.repeat(50000) + '\n', 'x\n')
   assert.ok(Date.now() - t0 < 1000)
 })
+
+test('an unchanged file passes for a plan path wrapped in any delimiter', () => {
+  for (const [a, b] of [['(', ')'], ['"', '"'], ['<', '>'], ["'", "'"], ['[', '](x)'], ['', ',b'], ['', ';next']]) {
+    const x = `## Up Next\n\n- [ ] 2026-01-01 t -> ${a}plans/a.md${b}\n`
+    assert.deepEqual(preserve(x, x), [], a + b)
+  }
+})
+
+test('a nested plans directory is still a plan path', () => {
+  assert.equal(preserve('See ~/.claude/plans/sub/a.md.\n', 'nothing\n').length, 1)
+})

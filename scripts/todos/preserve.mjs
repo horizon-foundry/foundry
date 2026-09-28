@@ -7,7 +7,9 @@ const DATE = /^\d{4}-\d{2}-\d{2}\s*/
 const DELIM = /[\s`()<>,;"']+/
 // Trim prose punctuation and fragments so a path at the end of a sentence still counts as itself.
 const clean = (t) => t.replace(/^[*_[]+/, '').replace(/#.*$/, '').replace(/[.,:;*_)\]!?]+$/, '')
-const PLAN_TOKEN = /(?:^|\/)plans\/[^/]+\.md$/
+const PLAN_TOKEN = /(?:^|\/)plans\/.+\.md$/
+const ARROW = '\u0001'
+const split = (text) => text.replace(/->/g, ` ${ARROW} `).split(DELIM).filter(Boolean)
 
 const norm = (s) => s.replace(/\s+/g, ' ').trim().toLowerCase()
 
@@ -37,7 +39,7 @@ function extract(text) {
     const p = /^([\s\S]*?)\s->\s+`?([^\s`]+)/.exec(rest)
     if (p) {
       rest = p[1]
-      plan = clean(p[2])
+      plan = clean(split(p[2])[0] ?? '')
     }
     let span = l
     for (let j = i + 1; j < lines.length && /^[ \t]+\S/.test(lines[j]); j++) span += '\n' + lines[j]
@@ -46,14 +48,14 @@ function extract(text) {
   return out
 }
 
-const tokensOf = (text) => new Set(text.split(DELIM).map(clean).filter(Boolean))
+const tokensOf = (text) => new Set(split(text).map(clean).filter(Boolean))
 
 function planPaths(text) {
-  const raw = text.split(DELIM).filter(Boolean)
+  const raw = split(text)
   const s = new Set()
   raw.forEach((t, i) => {
     const c = clean(t)
-    if (PLAN_TOKEN.test(c) || (raw[i - 1] === '->' && c.endsWith('.md'))) s.add(c)
+    if (PLAN_TOKEN.test(c) || (raw[i - 1] === ARROW && c.endsWith('.md'))) s.add(c)
   })
   return s
 }
