@@ -93,6 +93,7 @@ That audit was much fresher than the prior one; its #1 "blocker" (retired /commi
 - [ ] 2026-09-28 Command Center Phase 3, migrate every tracked TODOS.md onto the standard (startable: Phase 1 merged; 14 files in scope; evidence-backed Done moves, Craig confirms every Now and Up Next placement) -> `~/.claude/plans/command-center-phase-3-migration.md`
 - [x] 2026-09-28 Decision required, confirm master plan decision 12 (one project-initiation path: `/scaffold` only, project-scaffold becomes a code-only Next + Fly starter) so Command Center Phase 2 can be planned (Craig) (closed: Craig confirmed 2026-09-28)
 - [ ] 2026-09-28 Command Center Phase 2, one project-initiation path (`/scaffold` only; project-scaffold becomes a code-only Next + Fly starter that builds in CI; scaffold writes a `Profile:` line) -> `~/.claude/plans/command-center-phase-2-initiation-path.md`
+- [ ] 2026-09-28 Command Center Phase 4, the app (agent first: repo via /scaffold, snapshot schema and scanner, then Fly server with GitHub OAuth, home feed, project view with guarded TODOS ops, docs panel; design approved by Craig 2026-09-28; step 2 needs his OAuth and Fly app) -> `~/.claude/plans/command-center-phase-4-app.md`
 
 ## Launch sequence (do in this order)
 
