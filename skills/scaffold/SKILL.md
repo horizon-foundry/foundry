@@ -78,7 +78,7 @@ When no template repo exists, create each file with these sections. The one-line
 - **`NOTES.md`**: dated decision entries: the decision, the reasoning, the rejected alternative(s).
 - **`PROMPTS.md`** (this suite's session-narrative convention, not a universal requirement; a team with its own history log can drop it): Summary paragraph; Phases (chronological narrative); Origin and direction.
 - **`FRICTION.md`** (same status: the suite's process-friction convention, optional where a team logs friction elsewhere): dated entries with three fields: What happened, Likely cause, Candidate improvement.
-- **`TODOS.md`**: `## Master Plan` block with a pointer to the master plan file and a `### Phase Plans` checklist index; `## Backlog`.
+- **`TODOS.md`**: the five sections of the Foundry TODOS standard (https://raw.githubusercontent.com/horizon-foundry/foundry/main/reference/todos-spec.md), in order: `## Master Plan` (a pointer to the master plan file and a `### Phase Plans` checklist index), `## Now`, `## Up Next`, `## Backlog`, `## Done`. Empty sections stay, so a later tool finds every list where the standard says it is.
 - **`LICENSE`**: per the interview answer (see step 3; never silently defaulted).
 
 ## Red flags
