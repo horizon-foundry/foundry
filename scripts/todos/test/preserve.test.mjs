@@ -80,3 +80,24 @@ test('duplicate items must both survive', () => {
 test('checkbox lines inside code fences are not items', () => {
   assert.deepEqual(preserve('## A\n\n```\n- [ ] example\n```\n', '## A\n'), [])
 })
+
+test('a checkbox moved into a different fence kind is not preserved', () => {
+  assert.deepEqual(kinds('## A\n\n- [ ] keep me\n', '## A\n\n```\n~~~\n- [ ] keep me\n'), ['item-missing'])
+})
+
+test('duplicate texts cannot mask a check outside Done', () => {
+  const before = '## Up Next\n\n- [ ] foo\n\n## Done\n\n- [x] foo\n'
+  const after = '## Now\n\n- [x] foo\n\n## Done\n\n- [x] foo\n'
+  assert.deepEqual(kinds(before, after), ['checked-outside-done'])
+})
+
+test('a plan path must survive as a whole token', () => {
+  const b = '- [ ] x -> `~/.claude/plans/a.md`\n'
+  assert.deepEqual(kinds(b, '- [ ] x -> `~/.claude/old-plans/a.md`\n').includes('plan-link-missing'), true)
+  assert.deepEqual(kinds(b, '- [ ] x -> `~/.claude/plans/a.md.bak`\n').includes('plan-link-missing'), true)
+})
+
+test('numbered and quoted checkboxes count', () => {
+  assert.deepEqual(kinds('1. [ ] alpha\n2. [ ] beta\n', '- [ ] alpha\n'), ['item-missing'])
+  assert.deepEqual(kinds('> - [ ] alpha\n', ''), ['item-missing'])
+})

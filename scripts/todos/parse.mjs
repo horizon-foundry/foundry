@@ -10,11 +10,26 @@ export const SECTION_NAMES = ['Master Plan', 'Now', 'Up Next', 'Backlog', 'Done'
 
 const BLANK = /^\s*$/
 const INDENTED = /^[ \t]+\S/
-const ITEM = /^([-*+])[ \t]+\[( |x|X)\](?:[ \t]+(.*))?$/
-const FENCE_OPEN = /^\s*(`{3,}|~{3,})/
+const ITEM = /^([-*+])[ \t]+\[( |x|X)\](?:[ \t]+([\s\S]*))?$/
+const FENCE_OPEN_RE = /^\s*(`{3,}|~{3,})([\s\S]*)$/
+// CommonMark: a backtick fence's info string may not contain a backtick (so "```x``` note" is prose).
+const FENCE_OPEN = {
+  exec(line) {
+    const m = FENCE_OPEN_RE.exec(line)
+    return m && !(m[1][0] === '`' && m[2].includes('`')) ? m : null
+  },
+  test(line) {
+    return this.exec(line) !== null
+  },
+}
 const DATE = /^(\d{4}-\d{2}-\d{2})(?:\s+|$)/
+export const isRealDate = (s) => {
+  const d = new Date(`${s}T00:00:00Z`)
+  return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === s
+}
 const TAG = /^\*\*\[([^\]]+)\]\*\*\s*/
-const EMOJI_CHECK = /[✅✔☑✓❌⬜☐🔲]/u
+const STRIKE = /~~[^~\s][^~]*~~/
+const EMOJI_LEAD = /^(?:[-*+]\s+)?(?:\[.\]\s*)?(?:\d{4}-\d{2}-\d{2}\s+)?(?:\*\*\[[^\]]+\]\*\*\s*)*[✅✔☑✓❌⬜☐🔲]/u
 
 const bare = (line) => line.replace(/\r$/, '')
 
@@ -23,14 +38,14 @@ export function hashText(text) {
 }
 
 export function normalizeTitle(title) {
-  return title.replace(/\*\*|`/g, '').replace(/\s+/g, ' ').trim().toLowerCase()
+  return title.replace(/\*+|`|__/g, '').replace(/\s+/g, ' ').trim().toLowerCase()
 }
 
 export function parseItemText(rest) {
   let text = rest ?? ''
   let date = null
   const d = DATE.exec(text)
-  if (d) {
+  if (d && isRealDate(d[1])) {
     date = d[1]
     text = text.slice(d[0].length)
   }
@@ -40,10 +55,11 @@ export function parseItemText(rest) {
     text = text.slice(m[0].length)
   }
   let plan = null
-  const p = /^(.*?)\s->\s+(\S.*)$/.exec(text)
+  const p = /^([\s\S]*?)\s->\s+(\S[\s\S]*)$/.exec(text)
   if (p) {
     text = p[1]
-    plan = p[2].trim().replace(/^`|`$/g, '')
+    const t = /^`([^`]+)`|^(\S+)/.exec(p[2])
+    plan = t[1] ?? t[2]
   }
   return { date, tags, title: text.trim(), plan }
 }
@@ -78,17 +94,19 @@ export function parse(text) {
 
   const headingAt = (i, level) => {
     if (inFence[i]) return null
-    const m = new RegExp(`^#{${level}}[ \\t]+(.*?)[ \\t]*$`).exec(bare(lines[i]))
+    const m = new RegExp(`^#{${level}}[ \\t]+([\\s\\S]*?)[ \\t]*$`).exec(bare(lines[i]))
     return m ? m[1] : null
   }
 
   let title = null
+  const h1s = []
   const sectionStarts = []
   for (let i = 0; i < n; i++) {
     if (inFence[i]) continue
-    if (title === null) {
-      const t = headingAt(i, 1)
-      if (t !== null) title = { line: i, text: t }
+    const t1 = headingAt(i, 1)
+    if (t1 !== null) {
+      h1s.push(i)
+      if (title === null) title = { line: i, text: t1 }
     }
     const s = headingAt(i, 2)
     if (s !== null) sectionStarts.push({ name: s, line: i })
@@ -137,9 +155,13 @@ export function parse(text) {
           } else if (BLANK.test(lines[j])) {
             let k = j
             while (k < sec.end && BLANK.test(lines[k])) k++
-            if (k < sec.end && INDENTED.test(bare(lines[k])) && !inFence[k]) {
+            if (k < sec.end && INDENTED.test(bare(lines[k])) && (!inFence[k] || fenceEnd.has(k))) {
               end = k
               j = k
+              if (fenceEnd.has(k)) {
+                end = Math.min(fenceEnd.get(k), sec.end - 1)
+                j = end
+              }
             } else break
           } else break
         }
@@ -153,8 +175,8 @@ export function parse(text) {
           checked: im[2] !== ' ',
           ...parsed,
           key: normalizeTitle(parsed.title),
-          strike: line.includes('~~'),
-          emoji: EMOJI_CHECK.test(line),
+          strike: STRIKE.test(line),
+          emoji: EMOJI_LEAD.test(line),
         })
         i = end
         continue
@@ -176,6 +198,7 @@ export function parse(text) {
     lines,
     eol: text.includes('\r\n') ? '\r\n' : '\n',
     title,
+    h1s,
     titleFirst: title !== null && title.line === firstNonBlank,
     firstSectionLine: sections.length ? sections[0].line : n,
     sections,

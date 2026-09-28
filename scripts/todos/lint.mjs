@@ -1,6 +1,6 @@
 // Linter for reference/todos-spec.md. Rule ids are stable once published; the conformance checklist in
 // the spec lists exactly these ids (test/spec-agreement.test.mjs enforces it).
-import { parse, items, section, blocks, SECTION_NAMES } from './parse.mjs'
+import { parse, items, section, blocks, isRealDate, SECTION_NAMES } from './parse.mjs'
 
 const E = 'error'
 const W = 'warn'
@@ -38,7 +38,11 @@ export const RULES = {
 }
 
 const DONE_HEADING = /^(?:.+ \((\d{4}-\d{2}-\d{2})(?:, PRs? #\d+(?:, #\d+)*)?\)|(\d{4}-\d{2}-\d{2}))$/
-const PATH_LINK = /[\w.~-]*\/[\w./~-]+\.md/
+const PATH_LINK = /[\w.~/-]+\.md\b/
+const OPEN_CHILD = /^[ \t]+[-*+][ \t]+\[ \]/
+const UPPER_CHILD = /^[ \t]+[-*+][ \t]+\[X\]/
+const STRIKE = /~~[^~\s][^~]*~~/
+const EMOJI_LEAD = /^\s*(?:[-*+]\s+)?(?:\[.\]\s*)?(?:\d{4}-\d{2}-\d{2}\s+)?(?:\*\*\[[^\]]+\]\*\*\s*)*[✅✔☑✓❌⬜☐🔲]/u
 
 export function lint(text) {
   const doc = parse(text)
@@ -50,7 +54,8 @@ export function lint(text) {
   const cr = lines.findIndex((l) => l.endsWith('\r'))
   if (cr >= 0) add('file-crlf', cr, 'File uses CRLF line endings; use LF.')
   const lf = text.replace(/\r\n/g, '\n')
-  if (!lf.endsWith('\n') || lf.endsWith('\n\n')) {
+  const lfl = lf.split('\n')
+  if (lfl.length < 2 || lfl[lfl.length - 1] !== '' || !lfl[lfl.length - 2].trim()) {
     add('file-final-newline', lines.length - 1, 'File must end with exactly one newline.')
   }
   lines.forEach((l, i) => {
@@ -64,6 +69,7 @@ export function lint(text) {
   if (!doc.title || !doc.titleFirst || doc.title.line > doc.firstSectionLine) {
     add('title-h1', 0, 'File must start with a "# " title before any "## " section.')
   }
+  for (const h of doc.h1s.slice(1)) add('title-h1', h, 'Only one "# " title is allowed.')
   const pStart = doc.title ? doc.title.line + 1 : 0
   for (let i = pStart; i < doc.firstSectionLine; i++) {
     if (lines[i].trim()) {
@@ -162,17 +168,32 @@ export function lint(text) {
         continue
       }
       const d = m[1] ?? m[2]
+      if (!isRealDate(d)) {
+        add('done-heading', b.heading.start, `${d} is not a real date.`)
+        continue
+      }
       if (prev && d < prev) add('done-order', b.heading.start, 'Done blocks must be oldest first.')
       prev = d
     }
   }
   const doneOpen = done ? items(done) : []
-  for (const it of doneOpen) if (!it.checked) add('done-open-item', it.start, 'Open item in Done.')
+  for (const it of doneOpen) {
+    if (!it.checked) add('done-open-item', it.start, 'Open item in Done.')
+    for (let l = it.start + 1; l <= it.end; l++) {
+      if (OPEN_CHILD.test(lines[l])) add('done-open-item', l, 'Open nested checkbox in Done.')
+    }
+  }
 
   // Item syntax, every section.
   for (const s of doc.sections) {
     for (const it of items(s)) {
       if (it.marker !== '-' || it.box === 'X') add('item-marker', it.start, 'Use "- [ ]" or "- [x]".')
+      for (let l = it.start + 1; l <= it.end; l++) {
+        const c = lines[l]
+        if (UPPER_CHILD.test(c)) add('item-marker', l, 'Use "[x]", not "[X]".')
+        if (STRIKE.test(c)) add('item-strikethrough', l, 'Strikethrough in a child line.')
+        if (EMOJI_LEAD.test(c)) add('item-emoji-check', l, 'Emoji check mark in a child line.')
+      }
       if (it.strike) add('item-strikethrough', it.start, 'Strikethrough; a finished item is [x] in Done.')
       if (it.emoji) add('item-emoji-check', it.start, 'Emoji check mark; use [x].')
     }

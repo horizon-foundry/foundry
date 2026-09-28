@@ -18,7 +18,7 @@ on purpose: five sections, one item grammar, one place for narrative.
 
 ## Sections
 
-A conforming file is one `# ` title, then exactly these `## ` sections in this order:
+A conforming file is exactly one `# ` title, then exactly these `## ` sections in this order:
 
 | Section | Holds | Prose | `###` |
 |---|---|---|---|
@@ -48,7 +48,7 @@ in a `## Phase 7 (Done)` style section belongs in `## Done` as a block.
   Done blocks an item is a step of its unit and inherits the block's context, so its date is optional.
 - Tags are zero or more `**[Name]**` runs after the date. The title is the text after the tags up to
   ` -> `. The plan link is optional: ` -> ` then a path, backticked or bare.
-- No strikethrough (`~~`) and no emoji check marks. A finished item is `[x]` and lives in Done.
+- No strikethrough (`~~`) and no emoji check marks, on the item line or its children (a mark inside prose in the title does not count). A finished item is `[x]` and lives in Done.
 - **Continuation and children.** Every following line that is indented (or blank, when the next
   non-blank line is indented) belongs to the item and moves with it. A non-indented line directly under
   an item, with no blank between, is a lazy continuation: markdown reads it as part of the item but a
@@ -62,10 +62,10 @@ carry the hash of the file they were computed against (below).
 
 ## Done
 
-A Done block heading is `### <unit> (YYYY-MM-DD)` or `### <unit> (YYYY-MM-DD, PR #n)`, where the date
+A Done block heading is `### <unit> (YYYY-MM-DD)` or `### <unit> (YYYY-MM-DD, PR #n)` (several PRs: `PRs #n, #m`), where the date
 is the day the unit closed. A small item finished outside any unit goes under a dated block for its
 close day, whose heading is only the date: `### YYYY-MM-DD`. Blocks are ordered by date, oldest first,
-so "the last unit complete" is always the last block. Every checkbox in Done is `[x]`.
+so "the last unit complete" is always the last block. Every checkbox in Done is `[x]`, nested ones included. Dates must be real calendar days.
 
 ## How an agent reads the file
 
@@ -96,7 +96,7 @@ the input byte for byte, for conforming and non-conforming files alike.
 A rewrite that claims to preserve content (a migration onto this standard is the case) must pass
 `preserve(before, after)`: every checkbox line in the original survives with the same normalized text
 (date removed, plan link removed, everything else compared), a `[ ]` may become `[x]` only where the
-item now sits in Done, and every plan-link path survives, both on its item and in the file. It reports
+item now sits in Done, and every plan-link path survives as a whole path, both on its item and in the file. A plan-link path is any path containing `plans/` and ending `.md`, or the target of ` -> `. Checkbox lines with `-`, `*`, `+`, numbered or quoted markers all count. It reports
 what is missing; it never repairs.
 
 ## Conformance checklist

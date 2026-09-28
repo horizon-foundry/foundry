@@ -79,3 +79,54 @@ test('narrative is allowed in Master Plan, Now and Done blocks', () => {
 test('undated steps inside Now and Done blocks are allowed', () => {
   assert.ok(!rules(GOOD).has('item-date'))
 })
+
+// Regressions from the adversarial review of the parser and linter.
+const has = (t, id) => rules(t).has(id)
+
+test('a fence after a blank line stays inside its item', () => {
+  const t = swap('- [ ] 2026-03-03 Gamma item', '- [ ] 2026-03-03 Gamma item\n\n  ```\n  code\n  ```')
+  assert.deepEqual(lint(t), [])
+})
+
+test('open and malformed children are seen, not just the first line', () => {
+  assert.ok(has(swap('- [x] did a thing', '- [x] did a thing\n  - [ ] child'), 'done-open-item'))
+  assert.ok(has(swap('- [ ] 2026-03-02 Beta item', '- [ ] 2026-03-02 Beta item\n  - [X] c'), 'item-marker'))
+  assert.ok(has(swap('- [ ] 2026-03-02 Beta item', '- [ ] 2026-03-02 Beta item\n  - ~~c~~'), 'item-strikethrough'))
+  assert.ok(has(swap('- [ ] 2026-03-02 Beta item', '- [ ] 2026-03-02 Beta item\n  - ✅ c'), 'item-emoji-check'))
+})
+
+test('marks inside a title are not marks on the item', () => {
+  const t = swap('Delta item', 'show ✓ in UI and clean ~~/tmp files')
+  assert.ok(!has(t, 'item-emoji-check') && !has(t, 'item-strikethrough'))
+})
+
+test('exactly one title', () => {
+  assert.ok(has(swap('## Master Plan', '# Another\n\n## Master Plan'), 'title-h1'))
+  assert.ok(has(swap('### Phase Plans', '# Sub\n\n### Phase Plans'), 'title-h1'))
+})
+
+test('a CR inside a line does not turn an item into prose', () => {
+  assert.ok(!has(swap('Beta item', 'Beta\ritem'), 'list-prose'))
+})
+
+test('"```x``` note" is prose, not a fence', () => {
+  const t = swap('Some narrative about the unit.', '```x``` note')
+  assert.deepEqual(lint(t), [])
+})
+
+test('impossible dates are not dates', () => {
+  assert.ok(has(swap('2026-03-02 Beta', '2026-13-45 Beta'), 'item-date'))
+  assert.ok(has(swap('### 2026-02-01', '### 2026-13-45'), 'done-heading'))
+})
+
+test('emphasis does not hide a duplicate', () => {
+  assert.ok(has(swap('2026-03-03 Gamma item', '2026-03-02 *Beta* item'), 'item-duplicate'))
+})
+
+test('a whitespace-only last line is not a final newline', () => {
+  assert.ok(has(GOOD + '   \n', 'file-final-newline'))
+})
+
+test('a plan link without a directory still counts', () => {
+  assert.ok(!has(swap('build.md`', 'build.md`').replace('`~/.claude/plans/build.md`', 'plan.md'), 'now-unit-plan'))
+})

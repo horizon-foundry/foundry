@@ -1,8 +1,8 @@
 // Content-preservation check for rewrites (migrations). preserve(before, after) -> Missing[].
 // Reports; never repairs.
 
-const BOX = /^(\s*)[-*+][ \t]+\[( |x|X)\](?:[ \t]+(.*))?$/
-const FENCE = /^\s*(`{3,}|~{3,})/
+const BOX = /^(\s*(?:>\s*)*)(?:[-*+]|\d+[.)])[ \t]+\[( |x|X)\](?:[ \t]+(.*))?$/
+const FENCE = /^\s*(`{3,}|~{3,})([\s\S]*)$/
 const DATE = /^\d{4}-\d{2}-\d{2}\s*/
 const PLAN_PATH = /(?:~\/|\.{1,2}\/|\/)?(?:[\w.-]+\/)*plans\/[\w.-]+\.md/g
 const ARROW_PATH = /->\s+`?([^\s`]+\.md)/g
@@ -12,12 +12,19 @@ const norm = (s) => s.replace(/\s+/g, ' ').trim().toLowerCase()
 function extract(text) {
   const lines = text.split('\n')
   const out = []
-  let inFence = false
+  let fence = null
   let sec = ''
   for (let i = 0; i < lines.length; i++) {
     const l = lines[i].replace(/\r$/, '')
-    if (FENCE.test(l)) inFence = !inFence
-    if (inFence) continue
+    const f = FENCE.exec(l)
+    if (fence) {
+      if (f && f[1][0] === fence[0] && f[1].length >= fence.length && !f[2].trim()) fence = null
+      continue
+    }
+    if (f && !(f[1][0] === '`' && f[2].includes('`'))) {
+      fence = f[1]
+      continue
+    }
     const h = /^##[ \t]+(.*?)[ \t]*$/.exec(l)
     if (h) sec = h[1].toLowerCase()
     const m = BOX.exec(l)
@@ -37,6 +44,8 @@ function extract(text) {
   return out
 }
 
+const tokensOf = (text) => new Set(text.split(/[\s`()<>,;"']+/).filter(Boolean))
+
 function planPaths(text) {
   const s = new Set(text.match(PLAN_PATH) ?? [])
   for (const m of text.matchAll(ARROW_PATH)) s.add(m[1])
@@ -55,7 +64,8 @@ export function preserve(before, after) {
   const leftover = []
   for (const bi of b) {
     const cands = byKey.get(bi.key) ?? []
-    const k = cands.findIndex((c) => c.checked === bi.checked)
+    let k = cands.findIndex((c) => c.checked === bi.checked && c.section === bi.section)
+    if (k < 0) k = cands.findIndex((c) => c.checked === bi.checked)
     if (k >= 0) pairs.push([bi, cands.splice(k, 1)[0]])
     else leftover.push(bi)
   }
@@ -74,13 +84,14 @@ export function preserve(before, after) {
     pairs.push([bi, ai])
   }
   for (const [bi, ai] of pairs) {
-    if (bi.plan && !ai.span.includes(bi.plan)) {
+    if (bi.plan && !tokensOf(ai.span).has(bi.plan)) {
       reported.add(bi.plan)
       missing.push({ kind: 'plan-link-missing', line: bi.line, text: bi.text, detail: bi.plan })
     }
   }
+  const afterTokens = tokensOf(after)
   for (const p of planPaths(before)) {
-    if (!after.includes(p) && !reported.has(p)) {
+    if (!afterTokens.has(p) && !reported.has(p)) {
       missing.push({ kind: 'plan-link-missing', line: 0, text: '', detail: p })
     }
   }

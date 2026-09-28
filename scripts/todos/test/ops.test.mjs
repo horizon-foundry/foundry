@@ -1,7 +1,8 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { parse, items, section } from '../parse.mjs'
-import { moveItem, queueToTop } from '../ops.mjs'
+import { moveItem as rawMove, queueToTop } from '../ops.mjs'
+const moveItem = (d, r, t, h = d.hash) => rawMove(d, r, t, h)
 import { lint, errors } from '../lint.mjs'
 import { GOOD } from './base.mjs'
 
@@ -109,4 +110,31 @@ test('CRLF files stay CRLF', () => {
   const r = moveItem(crlf, ref('Up Next', 'Gamma item', '2026-03-03'), { section: 'Up Next', index: 0 })
   assert.ok(r.ok)
   assert.equal(r.text.replace(/\r\n/g, '').includes('\n'), false)
+})
+
+test('moving the only item to its own place is byte-identical', () => {
+  const src = '# T\n\n## Up Next\n\n- [ ] 2026-01-01 A\n\n## Backlog\n'
+  const d = parse(src)
+  assert.equal(moveItem(d, ref('Up Next', 'A', '2026-01-01'), { section: 'Up Next', index: 0 }).text, src)
+})
+
+test('a request without the hash, or malformed, is a typed conflict', () => {
+  assert.equal(rawMove(doc, ref('Up Next', 'Beta item', '2026-03-02'), { section: 'Up Next', index: 0 }).conflict.kind, 'hash-required')
+  assert.equal(moveItem(doc, { section: 'Up Next', date: null, title: 5 }, { section: 'Up Next', index: 0 }).conflict.kind, 'bad-request')
+  assert.equal(moveItem(doc, null, { section: 'Up Next', index: 0 }).conflict.kind, 'bad-request')
+  assert.equal(queueToTop(doc, 'x', doc.hash).conflict.kind, 'bad-request')
+})
+
+test('a duplicated group name is ambiguous, not the first match', () => {
+  const src = '# T\n\n## Backlog\n\n### G\n\n- [ ] 2026-01-01 A\n\n### G\n\n- [ ] 2026-01-02 B\n'
+  const r = moveItem(parse(src), ref('Backlog', 'B', '2026-01-02'), { section: 'Backlog', group: 'G', index: 0 })
+  assert.equal(r.conflict.kind, 'target-invalid')
+})
+
+test('CRLF files gain no bare LF, and a last section keeps its final newline', () => {
+  const src = '# T\r\n\r\n## Up Next\r\n\r\n## Backlog\r\n\r\n- [ ] 2026-01-01 A\r\n'
+  const r = moveItem(parse(src), ref('Backlog', 'A', '2026-01-01'), { section: 'Up Next', index: 0 })
+  assert.equal(r.text.replace(/\r\n/g, '').includes('\n'), false)
+  const tail = moveItem(parse('# T\n\n## Up Next\n\n- [ ] 2026-01-01 A\n\n## Backlog\n'), ref('Up Next', 'A', '2026-01-01'), { section: 'Backlog', index: 0 })
+  assert.ok(tail.text.endsWith('\n'))
 })

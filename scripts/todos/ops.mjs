@@ -11,6 +11,7 @@ const conflict = (kind, detail) => ({ ok: false, conflict: { kind, detail } })
 
 function region(doc, sec, group) {
   const bl = blocks(sec)
+  if (group !== undefined && bl.filter((x) => x.heading && x.heading.text === group).length > 1) return 'ambiguous'
   if (group === undefined) {
     const b = bl[0]
     return { anchor: sec.line, start: b.start, end: b.end, nodes: b.nodes }
@@ -25,7 +26,14 @@ const isLoose = (doc, its) => its.some((a, k) => k + 1 < its.length && its[k + 1
 // moveItem(doc, ref, {section, index, group?}, baseHash?) -> {ok:true,text,hash} | {ok:false,conflict}
 // `index` is the item's final 0-based position within the target list (its group for Backlog).
 export function moveItem(doc, ref, target, baseHash) {
-  if (baseHash !== undefined && baseHash !== doc.hash) return conflict('hash-mismatch', doc.hash)
+  if (baseHash === undefined) return conflict('hash-required', 'pass the hash of the text the request was computed against')
+  if (baseHash !== doc.hash) return conflict('hash-mismatch', doc.hash)
+  if (!ref || typeof ref.section !== 'string' || typeof ref.title !== 'string' || !(ref.date === null || typeof ref.date === 'string')) {
+    return conflict('bad-request', 'ref must be {section, date, title}')
+  }
+  if (!target || typeof target.section !== 'string' || !(target.group === undefined || typeof target.group === 'string')) {
+    return conflict('bad-request', 'target must be {section, index, group?}')
+  }
   if (!MOVABLE.includes(ref.section)) return conflict('source-not-movable', ref.section)
   if (!MOVABLE.includes(target.section)) return conflict('target-invalid', `cannot move into ${target.section}`)
   const srcSec = section(doc, ref.section)
@@ -40,13 +48,17 @@ export function moveItem(doc, ref, target, baseHash) {
   const it = hits[0]
 
   const dst = region(doc, dstSec, target.group)
+  if (dst === 'ambiguous') return conflict('target-invalid', `group "${target.group}" appears more than once`)
   if (!dst) return conflict('target-invalid', `no group "${target.group}"`)
+  const here = itemsOf(dst).indexOf(it)
+  if (here >= 0 && here === target.index) return { ok: true, text: doc.text, hash: doc.hash } // already there
   const remaining = itemsOf(dst).filter((x) => x !== it)
   if (!Number.isInteger(target.index) || target.index < 0 || target.index > remaining.length) {
     return conflict('target-invalid', `index ${target.index} outside 0..${remaining.length}`)
   }
 
   const lines = doc.lines
+  const BL = doc.eol === '\r\n' ? '\r' : ''
   const span = lines.slice(it.start, it.end + 1)
   const loose = isLoose(doc, itemsOf(dst))
 
@@ -56,15 +68,16 @@ export function moveItem(doc, ref, target, baseHash) {
   let post = []
   if (target.index < remaining.length) {
     at = remaining[target.index].start
-    if (loose) post = ['']
+    if (loose) post = [BL]
   } else if (remaining.length) {
     at = remaining[remaining.length - 1].end + 1
-    if (loose) pre = ['']
+    if (loose) pre = [BL]
   } else {
     at = dst.anchor + 1
     while (at < dst.end && isBlank(lines[at])) at++
-    if (at === dst.anchor + 1) pre = ['']
-    if (at < lines.length && !isBlank(lines[at])) post = ['']
+    if (at === lines.length && lines[lines.length - 1] === '') at-- // keep the final newline
+    if (at === dst.anchor + 1) pre = [BL]
+    if (at < lines.length && !isBlank(lines[at])) post = [BL]
   }
 
   // Removal range: the span plus one separator blank when the source list is blank-separated.
@@ -104,11 +117,13 @@ function groupOf(sec, it) {
 
 // Move the referenced items to the top of Up Next, in the given order.
 export function queueToTop(doc, refs, baseHash) {
-  if (baseHash !== undefined && baseHash !== doc.hash) return conflict('hash-mismatch', doc.hash)
+  if (baseHash === undefined) return conflict('hash-required', 'pass the hash of the text the request was computed against')
+  if (baseHash !== doc.hash) return conflict('hash-mismatch', doc.hash)
+  if (!Array.isArray(refs)) return conflict('bad-request', 'refs must be an array')
   let cur = doc
   let text = doc.text
   for (let k = 0; k < refs.length; k++) {
-    const r = moveItem(cur, refs[k], { section: 'Up Next', index: k })
+    const r = moveItem(cur, refs[k], { section: 'Up Next', index: k }, cur.hash)
     if (!r.ok) return r
     text = r.text
     cur = parse(text)
