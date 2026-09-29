@@ -145,3 +145,13 @@ test('an item under a duplicated group name still moves out (its identity is uni
   assert.equal(r.ok, true)
   assert.deepEqual(titles(r.text, 'Up Next'), ['A'])
 })
+
+test('removing the only item of a group leaves one blank line, and it can be refilled cleanly', () => {
+  const src = '# T\n\n## Up Next\n\n- [ ] 2026-01-01 a\n\n## Backlog\n\n### G\n\n- [ ] 2026-01-02 b\n\n## Done\n'
+  const out = moveItem(parse(src), ref('Backlog', 'b', '2026-01-02'), { section: 'Up Next', index: 1 })
+  assert.ok(out.ok)
+  assert.equal(out.text, '# T\n\n## Up Next\n\n- [ ] 2026-01-01 a\n- [ ] 2026-01-02 b\n\n## Backlog\n\n### G\n\n## Done\n')
+  const back = moveItem(parse(out.text), ref('Up Next', 'b', '2026-01-02'), { section: 'Backlog', group: 'G', index: 0 })
+  assert.ok(back.ok)
+  assert.equal(back.text, src.replace('- [ ] 2026-01-01 a\n\n', '- [ ] 2026-01-01 a\n\n'))
+})
