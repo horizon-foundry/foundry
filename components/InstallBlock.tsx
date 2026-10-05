@@ -82,7 +82,7 @@ export async function InstallBlock() {
             <h2 className="font-display text-2xl tracking-normal text-bone sm:text-3xl">
               Install Foundry
             </h2>
-            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-bone-dim">
+            <p className="mt-2 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
               One command adds the skills to Claude Code. No build step, no
               account. One disclosed call home: at most once a day, a skill
               asks this site for the current version so it can tell you when
@@ -103,7 +103,7 @@ export async function InstallBlock() {
               <div className="flex items-center justify-between border-b border-line px-4 py-2">
                 {/* Emphasis by luminance, not hue: amber is reserved for
                     commands you fire (DESIGN.md report-excerpt exception). */}
-                <span className="font-mono text-[0.65rem] uppercase tracking-wide text-signal">
+                <span className="font-mono text-[0.6875rem] uppercase tracking-wide text-signal">
                   recommended
                 </span>
                 <CopyButton
@@ -128,7 +128,7 @@ export async function InstallBlock() {
             {/* Alternative: from source. */}
             <div className="border border-line bg-ink">
               <div className="flex items-center justify-between border-b border-line px-4 py-2">
-                <span className="font-mono text-[0.65rem] uppercase tracking-wide text-bone-faint">
+                <span className="font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
                   from source
                 </span>
                 <CopyButton
@@ -160,7 +160,7 @@ export async function InstallBlock() {
               to its content instead of stretching to the taller command column
               (which left ~40% dead panel at lg). */}
           <div className="min-w-0 border border-line bg-ink p-5 lg:self-start">
-            <p className="font-mono text-[0.65rem] uppercase tracking-wide text-bone-faint">
+            <p className="font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
               What happens when you invoke it
             </p>
             <p className="mt-3 text-sm leading-relaxed text-bone-dim">

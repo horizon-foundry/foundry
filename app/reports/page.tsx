@@ -76,7 +76,7 @@ function ExampleCard({ r }: { r: ReportSummary }) {
           <h3 className="font-mono text-lg font-semibold text-bone">
             {r.project}
           </h3>
-          <span className="border border-line px-2 py-0.5 font-mono text-[0.6rem] uppercase tracking-wide text-bone-faint">
+          <span className="border border-line px-2 py-0.5 font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
             {isSelfAudit ? "Our own audit" : "Illustrative sample"}
           </span>
           <span
@@ -128,7 +128,7 @@ export default async function ReportsIndex() {
             {admin ? "Audit reports" : "Your audit reports"}
           </h1>
           {owned.length === 0 ? (
-            <p className="mt-4 max-w-2xl text-sm leading-relaxed text-bone-dim">
+            <p className="mt-4 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
               No reports are associated with {email} yet. Run{" "}
               <span className="font-mono text-command">/production-audit</span>{" "}
               on your project; published reports stamped with your email appear
@@ -151,7 +151,7 @@ export default async function ReportsIndex() {
         <h2 className="mt-2 font-mono text-3xl font-semibold tracking-tight text-bone">
           {email ? "Example reports" : "What a Production Audit returns"}
         </h2>
-        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-bone-dim">
+        <p className="mt-3 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
           Public examples, rendered by the same template every audit uses:
           Foundry&apos;s own audit of this repository, and an illustrative sample
           of a traditional SaaS product. Each ends in a scope-qualified verdict,

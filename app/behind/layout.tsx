@@ -18,7 +18,7 @@ export default function BehindLayout({
           <h1 className="mt-2 font-mono text-3xl font-semibold tracking-tight text-bone">
             How this was made
           </h1>
-          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-bone-dim">
+          <p className="mt-2 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
             The project&apos;s own curated artifacts, rendered in product: the
             overview, the design system, the review philosophy, and the brand.
           </p>

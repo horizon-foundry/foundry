@@ -58,7 +58,7 @@ export default function SkillsIndex() {
             <h1 className="mt-3 max-w-3xl font-display text-3xl tracking-normal text-bone sm:text-4xl">
               Software delivery integrity, as Claude Code skills.
             </h1>
-            <p className="mt-4 max-w-2xl leading-relaxed text-bone-dim">
+            <p className="mt-4 max-w-[68ch] leading-relaxed text-bone-dim">
               For people who build products with an AI in the loop. The suite
               makes six promises between an idea and its release. Product
               intent is declared and audited. A feature&apos;s design is checked
@@ -138,7 +138,7 @@ export default function SkillsIndex() {
             <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-bone-faint">
               Where it fits
             </h2>
-            <p className="mt-5 max-w-2xl leading-relaxed text-bone-dim">
+            <p className="mt-5 max-w-[68ch] leading-relaxed text-bone-dim">
               Foundry is the release gate at the end of the build loop. The
               inner-loop skills you already use to write and review code stay
               where they are; Foundry is the pass that decides whether the

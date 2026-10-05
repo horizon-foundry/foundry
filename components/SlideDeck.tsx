@@ -134,7 +134,7 @@ export function SlideDeck({ slides, title, tagline, statChips }: Props) {
               <h3 className="font-mono text-2xl font-semibold leading-tight tracking-tight text-bone sm:text-3xl">
                 {slide.heading}
               </h3>
-              <p className="max-w-2xl leading-relaxed text-bone-dim">
+              <p className="max-w-[68ch] leading-relaxed text-bone-dim">
                 {slide.body}
               </p>
               {slide.items && (
@@ -158,7 +158,7 @@ export function SlideDeck({ slides, title, tagline, statChips }: Props) {
                   {slide.chips.map((c) => (
                     <span
                       key={c}
-                      className="border border-line px-2 py-0.5 font-mono text-[0.65rem] uppercase tracking-wide text-bone-dim"
+                      className="border border-line px-2 py-0.5 font-mono text-[0.6875rem] uppercase tracking-wide text-bone-dim"
                     >
                       {c}
                     </span>
@@ -170,7 +170,7 @@ export function SlideDeck({ slides, title, tagline, statChips }: Props) {
                   <blockquote className="font-serif text-sm italic leading-relaxed text-bone-dim">
                     &ldquo;{slide.quote.text}&rdquo;
                   </blockquote>
-                  <figcaption className="mt-1.5 font-mono text-[0.65rem] uppercase tracking-wide text-bone-faint">
+                  <figcaption className="mt-1.5 font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
                     {slide.quote.attribution}
                   </figcaption>
                 </figure>

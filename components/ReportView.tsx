@@ -69,7 +69,7 @@ function FindingRow({ f }: { f: Finding }) {
           <span className="block text-sm font-medium leading-snug text-bone">
             {f.issue}
           </span>
-          <span className="mt-1 block break-words font-mono text-[0.65rem] uppercase tracking-wide text-bone-faint">
+          <span className="mt-1 block break-words font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
             {f.dimension} · {loc(f.location)}
           </span>
         </span>
@@ -96,7 +96,7 @@ function FindingRow({ f }: { f: Finding }) {
             {f.instances.map((i) => loc(i)).join("  ·  ")}
           </Field>
         )}
-        <div className="flex flex-wrap gap-x-6 gap-y-2 border-t border-line pt-3 font-mono text-[0.65rem] uppercase tracking-wide text-bone-faint">
+        <div className="flex flex-wrap gap-x-6 gap-y-2 border-t border-line pt-3 font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
           <span>Confidence: {CONFIDENCE_LABEL[f.confidence]}</span>
           <span>
             {VERIFY_LABEL[f.verification.status]}
@@ -125,7 +125,7 @@ function Field({
 }) {
   return (
     <div>
-      <div className="font-mono text-[0.65rem] uppercase tracking-wide text-bone-faint">
+      <div className="font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
         {label}
       </div>
       <div
@@ -190,7 +190,7 @@ function Block({
 }) {
   return (
     <section id={id} className={`mt-12 ${id ? "scroll-mt-24" : ""}`}>
-      <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-bone-faint">
+      <h2 className="font-mono text-sm text-bone-dim">
         {label}
       </h2>
       <div className="mt-5">{children}</div>
@@ -217,7 +217,7 @@ export function ReportView({ report }: { report: AuditReport }) {
           a public report is stamped to a release (v0.1.0) rather than a date
           that reads stale as commits pile up; the audit date drops to the quiet
           meta row. */}
-      <p className="font-mono text-xs uppercase tracking-[0.25em] text-bone-faint">
+      <p className="font-mono text-xs text-bone-faint">
         Audit report{meta.version ? ` · v${meta.version}` : ` · ${meta.date}`}
       </p>
       <h1 className="mt-2 font-mono text-3xl font-semibold tracking-tight text-bone sm:text-4xl">
@@ -387,7 +387,7 @@ export function ReportView({ report }: { report: AuditReport }) {
           weighs. A report with none says so plainly, so a healthy app reads as
           healthy rather than as a wall of problems. */}
       <Block id="risks" label={`Risks to weigh (${riskFindings.length})`}>
-        <p className="-mt-2 mb-4 max-w-2xl text-sm leading-relaxed text-bone-dim">
+        <p className="-mt-2 mb-4 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
           Findings with a path to harm in production. These are what the verdict
           weighs.
         </p>
@@ -405,7 +405,7 @@ export function ReportView({ report }: { report: AuditReport }) {
           not a body count. */}
       {improvementFindings.length > 0 && (
         <Block id="improvements" label={`Improvements (${improvementFindings.length})`}>
-          <p className="-mt-2 mb-4 max-w-2xl text-sm leading-relaxed text-bone-dim">
+          <p className="-mt-2 mb-4 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
             Safe today. Ways to make the app more robust, observable, and
             consistent over time. These do not affect the verdict.
           </p>
@@ -432,7 +432,7 @@ export function ReportView({ report }: { report: AuditReport }) {
                   </p>
                 )}
                 {step.findingIds.length > 0 && (
-                  <p className="mt-1.5 font-mono text-[0.65rem] uppercase tracking-wide text-bone-faint">
+                  <p className="mt-1.5 font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
                     {step.findingIds.join(", ")}
                   </p>
                 )}
@@ -451,7 +451,7 @@ export function ReportView({ report }: { report: AuditReport }) {
               <div className="flex items-baseline justify-between gap-4">
                 <p className="text-sm font-medium text-bone">{w.title}</p>
                 {w.findingId && (
-                  <span className="shrink-0 font-mono text-[0.65rem] uppercase text-bone-faint">
+                  <span className="shrink-0 font-mono text-[0.6875rem] uppercase text-bone-faint">
                     {w.findingId}
                   </span>
                 )}
@@ -477,7 +477,7 @@ export function ReportView({ report }: { report: AuditReport }) {
                 </p>
               )}
               {d.findingIds && d.findingIds.length > 0 && (
-                <p className="mt-1.5 font-mono text-[0.65rem] uppercase tracking-wide text-bone-faint">
+                <p className="mt-1.5 font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
                   {d.findingIds.join(", ")}
                 </p>
               )}
@@ -518,7 +518,7 @@ export function ReportView({ report }: { report: AuditReport }) {
                 <span className="font-mono text-xs uppercase tracking-wide text-bone">
                   {s.name}
                 </span>
-                <span className="font-mono text-[0.65rem] uppercase tracking-wide text-bone-faint">
+                <span className="font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
                   {s.outcome}
                 </span>
                 {s.summary && (

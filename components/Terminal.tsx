@@ -175,12 +175,12 @@ export function Terminal() {
           <span className="h-2.5 w-2.5 rounded-full border border-line-strong" />
           <span className="h-2.5 w-2.5 rounded-full border border-line-strong" />
         </span>
-        <span className="ml-1 font-mono text-[0.68rem] uppercase tracking-wide text-bone-faint">
+        <span className="ml-1 font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
           foundry
         </span>
         {/* The honest boundary, applied to our own hero: this is a replay,
             not a live session. */}
-        <span className="ml-auto font-mono text-[0.65rem] uppercase tracking-wide text-bone-faint">
+        <span className="ml-auto font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
           simulated run
         </span>
       </div>

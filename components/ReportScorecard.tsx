@@ -80,7 +80,7 @@ export function ReportScorecard({
               >
                 {n}
               </div>
-              <div className="mt-1 font-mono text-[0.65rem] uppercase tracking-wide text-bone-faint">
+              <div className="mt-1 font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
                 {sev === "informational" ? "info" : sev}
               </div>
             </button>

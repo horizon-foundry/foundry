@@ -46,14 +46,14 @@ export default async function SkillPage({
           <h1 className="font-mono text-2xl font-semibold tracking-tight text-command">
             /{skill.name}
           </h1>
-          <span className="border border-line px-2 py-0.5 font-mono text-[0.68rem] uppercase tracking-widest text-bone-dim">
+          <span className="border border-line px-2 py-0.5 font-mono text-[0.6875rem] uppercase tracking-widest text-bone-dim">
             {skill.invocation === "user"
               ? "user-invoked · you type it"
               : "model-invoked · the agent applies it"}
           </span>
         </div>
 
-        <p className="mt-4 max-w-2xl text-lg leading-relaxed text-bone">
+        <p className="mt-4 max-w-[68ch] text-lg leading-relaxed text-bone">
           {skill.tagline}
         </p>
 
@@ -100,7 +100,7 @@ export default async function SkillPage({
           </h2>
           <span className="h-px flex-1 bg-line" aria-hidden="true" />
         </div>
-        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-bone-faint">
+        <p className="mt-2 max-w-[68ch] text-sm leading-relaxed text-bone-faint">
           This is the exact SKILL.md your agent follows when you invoke{" "}
           <span className="font-mono text-command">/{skill.name}</span>. No
           separate docs to drift: the spec is the product.
