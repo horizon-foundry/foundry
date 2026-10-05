@@ -11,6 +11,26 @@
         ],
         "createdAt": "2026-09-22T11:48:15.071Z",
         "reason": "The only uppercase on the card is one mono metadata line and the wordmark. DESIGN.md sets the Foundry lockup uppercase, and the tracked mono caps label is the site's standing pattern (app/page.tsx kicker, SiteFooter); this is a short label, which the rule itself exempts. Copy is unchanged from the card this replaces."
+      },
+      {
+        "rule": "hero-eyebrow-chip",
+        "value": "*",
+        "files": [
+          "app/page.tsx",
+          "https://foundry-skills.fly.dev/"
+        ],
+        "createdAt": "2026-10-05T20:39:10.702Z",
+        "reason": "Agent: the one codified hero kicker. NOTES 2026-07-13 sets the tracked-caps kicker exactly once, on the hero; DESIGN.md Anti-goals keeps it to the hero only. Craig approved this exception 2026-10-05."
+      },
+      {
+        "rule": "content-hidden-at-rest",
+        "value": "*",
+        "files": [
+          "app/globals.css",
+          "https://foundry-skills.fly.dev/"
+        ],
+        "createdAt": "2026-10-05T20:39:10.736Z",
+        "reason": "Agent: the codified scroll reveals. NOTES 2026-07-13 adopts rise and fade entrances, gated under html.js so the page ships visible without JS. Craig approved this exception 2026-10-05."
       }
     ]
   }
