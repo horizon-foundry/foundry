@@ -23,7 +23,7 @@ export default function Error({
       id="main"
       className="mx-auto flex min-h-[70vh] max-w-[720px] flex-col justify-center px-5 py-16 sm:px-8"
     >
-      <p className="font-mono text-xs uppercase tracking-[0.25em] text-bone-faint">
+      <p className="font-mono text-sm text-bone-dim">
         Something broke
       </p>
       <h1 className="mt-2 font-mono text-2xl font-semibold tracking-tight text-bone sm:text-3xl">

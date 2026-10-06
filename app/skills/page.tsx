@@ -11,7 +11,7 @@ export const metadata = {
 
 // One tile shape for the whole directory: a full-surface link, an amber
 // heading that underlines on hover, the tagline, and a "View" affordance that
-// warms to amber on hover. No directional arrow: these are peers, not a
+// brightens to bone on hover (amber stays reserved for the command name). No directional arrow: these are peers, not a
 // left-to-right sequence. Every clickable cell renders through this so they
 // stay identical.
 function Tile({
@@ -76,7 +76,7 @@ export default function SkillsIndex() {
 
         <section className="border-b border-line">
           <div className="mx-auto max-w-[1180px] px-5 py-12 sm:px-8">
-            <h2 className="font-mono text-sm font-semibold text-bone">
+            <h2 className="font-display text-xl tracking-normal text-bone sm:text-2xl">
               User-invoked · commands you type
             </h2>
             {/* An odd count would leave an empty grid slot where the bg-line
@@ -109,7 +109,7 @@ export default function SkillsIndex() {
 
         <section className="border-b border-line">
           <div className="mx-auto max-w-[1180px] px-5 py-12 sm:px-8">
-            <h2 className="font-mono text-sm font-semibold text-bone">
+            <h2 className="font-display text-xl tracking-normal text-bone sm:text-2xl">
               Model-invoked · applied automatically by the agent
             </h2>
             <div className="mt-5 grid gap-px border border-line bg-line sm:grid-cols-2">
@@ -132,7 +132,7 @@ export default function SkillsIndex() {
 
         <section className="border-b border-line">
           <div className="mx-auto max-w-[1180px] px-5 py-12 sm:px-8">
-            <h2 className="font-mono text-sm font-semibold text-bone">
+            <h2 className="font-display text-xl tracking-normal text-bone sm:text-2xl">
               Where it fits
             </h2>
             <p className="mt-5 max-w-[68ch] leading-relaxed text-bone-dim">
@@ -152,7 +152,7 @@ export default function SkillsIndex() {
 
         <section>
           <div className="mx-auto max-w-[1180px] px-5 py-14 sm:px-8">
-            <h2 className="font-mono text-sm font-semibold text-bone">
+            <h2 className="font-display text-xl tracking-normal text-bone sm:text-2xl">
               What they share
             </h2>
             <div className="mt-5 grid gap-px border border-line bg-line sm:grid-cols-2">

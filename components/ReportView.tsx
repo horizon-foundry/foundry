@@ -66,7 +66,7 @@ function FindingRow({ f }: { f: Finding }) {
           <SeverityChip severity={f.severity} />
         </span>
         <span className="min-w-0 flex-1">
-          <span className="block text-sm font-medium leading-snug text-bone">
+          <span className="block max-w-[68ch] text-sm font-medium leading-snug text-bone">
             {f.issue}
           </span>
           <span className="mt-1 block break-words font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
@@ -129,10 +129,10 @@ function Field({
         {label}
       </div>
       <div
-        className={`mt-1 max-w-[68ch] leading-relaxed text-bone-dim ${
+        className={`mt-1 leading-relaxed text-bone-dim ${
           mono
             ? "whitespace-pre-wrap break-words rounded-sm bg-ink-raised-2 p-2 font-mono text-[0.78rem]"
-            : ""
+            : "max-w-[68ch]"
         }`}
       >
         {children}
@@ -190,7 +190,7 @@ function Block({
 }) {
   return (
     <section id={id} className={`mt-12 ${id ? "scroll-mt-24" : ""}`}>
-      <h2 className="font-mono text-sm font-semibold text-bone">
+      <h2 className="font-mono text-base font-semibold text-bone">
         {label}
       </h2>
       <div className="mt-5">{children}</div>
@@ -262,9 +262,9 @@ export function ReportView({ report }: { report: AuditReport }) {
       </div>
       {verdict.blockingFindingIds.length > 0 && (
         <div className="mt-6">
-          <p className="font-mono text-sm font-semibold text-bone">
+          <h2 className="font-mono text-base font-semibold text-bone">
             What drives this verdict
-          </p>
+          </h2>
           <ul className="mt-2.5 space-y-2">
             {verdict.blockingFindingIds.map((id) => {
               const f = findings.find((x) => x.id === id);
@@ -374,7 +374,7 @@ export function ReportView({ report }: { report: AuditReport }) {
                     </span>
                   </summary>
                   <p className="border-t border-line px-4 py-3 text-sm leading-relaxed text-bone-dim">
-                    {s.note}
+                    <span className="block max-w-[68ch]">{s.note}</span>
                   </p>
                 </details>
               </li>
@@ -522,7 +522,7 @@ export function ReportView({ report }: { report: AuditReport }) {
                   {s.outcome}
                 </span>
                 {s.summary && (
-                  <span className="w-full text-xs leading-relaxed text-bone-dim sm:w-auto sm:flex-1">
+                  <span className="w-full max-w-[68ch] text-xs leading-relaxed text-bone-dim sm:w-auto sm:flex-1">
                     {s.summary}
                   </span>
                 )}

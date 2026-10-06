@@ -26,7 +26,7 @@ export default async function Unlock({
         <SiteHeader />
         <main id="main" className="mx-auto flex min-h-[70vh] max-w-[1180px] items-center px-5 sm:px-8">
           <div className="w-full max-w-md">
-            <p className="font-mono text-xs uppercase tracking-[0.25em] text-bone-faint">
+            <p className="font-mono text-sm text-bone-dim">
               Access · check your inbox
             </p>
             <h1 className="mt-3 font-mono text-2xl font-semibold tracking-tight text-bone">
@@ -54,7 +54,7 @@ export default async function Unlock({
       <SiteHeader />
       <main id="main" className="mx-auto flex min-h-[70vh] max-w-[1180px] items-center px-5 sm:px-8">
         <div className="w-full max-w-md">
-          <p className="font-mono text-xs uppercase tracking-[0.25em] text-bone-faint">
+          <p className="font-mono text-sm text-bone-dim">
             Report history
           </p>
           <h1 className="mt-3 font-mono text-2xl font-semibold tracking-tight text-bone">

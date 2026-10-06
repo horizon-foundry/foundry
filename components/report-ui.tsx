@@ -4,7 +4,7 @@ import type {
   AssessedScope,
   AuditReport,
 } from "@/lib/report-types";
-import { VERDICT_LABEL } from "@/lib/report-types";
+import { SEV_SHORT, VERDICT_LABEL } from "@/lib/report-types";
 
 // Literal class maps so Tailwind's JIT sees every class. Color is the ONLY
 // saturated ink in the system and it always means a severity or a verdict
@@ -128,14 +128,15 @@ export function StatStrip({
   return (
     <div className="grid grid-cols-5 divide-x divide-line border border-line">
       {order.map((sev) => (
-        <div key={sev} className="px-1 py-3 text-center">
+        <div key={sev} className="px-2 py-3 text-center">
           <div
             className={`font-mono text-2xl font-semibold tabular-nums ${SEV_TEXT[sev]}`}
           >
             {bySeverity[sev]}
           </div>
           <div className="mt-1 font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
-            {sev === "informational" ? "info" : sev}
+            <span aria-hidden="true">{SEV_SHORT[sev] ?? sev}</span>
+            <span className="sr-only">{sev}</span>
           </div>
         </div>
       ))}

@@ -169,6 +169,14 @@ export const VERDICT_LABEL: Record<VerdictLevel, string> = {
   "do-not-ship": "Do not ship",
 };
 
+// Short visual labels for the five-column severity strip, where the full word
+// does not fit a cell at 11px on narrow widths. The full name stays available
+// to screen readers beside it.
+export const SEV_SHORT: Partial<Record<Severity, string>> = {
+  critical: "crit",
+  informational: "info",
+};
+
 // Maps a verdict/severity to the token color class fragment (see DESIGN.md:
 // color means severity or verdict, nothing else).
 export const VERDICT_COLOR: Record<VerdictLevel, string> = {
