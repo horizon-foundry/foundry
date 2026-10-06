@@ -11,7 +11,7 @@ export const metadata = {
 
 // One tile shape for the whole directory: a full-surface link, an amber
 // heading that underlines on hover, the tagline, and a "View" affordance that
-// warms to amber on hover. No directional arrow: these are peers, not a
+// brightens to bone on hover (amber stays reserved for the command name). No directional arrow: these are peers, not a
 // left-to-right sequence. Every clickable cell renders through this so they
 // stay identical.
 function Tile({
@@ -34,7 +34,7 @@ function Tile({
         {heading}
       </span>
       <p className="mt-2 text-sm leading-relaxed text-bone-dim">{body}</p>
-      <span className="mt-4 pt-1 font-mono text-[0.7rem] uppercase tracking-wide text-bone-faint transition-colors group-hover:text-command">
+      <span className="mt-4 pt-1 font-mono text-[0.7rem] uppercase tracking-wide text-bone-faint transition-colors group-hover:text-bone">
         View
       </span>
     </Link>
@@ -52,13 +52,10 @@ export default function SkillsIndex() {
       <main id="main">
         <section className="border-b border-line">
           <div className="mx-auto max-w-[1180px] px-5 py-14 sm:px-8">
-            <p className="font-mono text-xs uppercase tracking-[0.25em] text-bone-faint">
-              The Foundry suite
-            </p>
-            <h1 className="mt-3 max-w-3xl font-display text-3xl tracking-normal text-bone sm:text-4xl">
+            <h1 className="max-w-3xl font-display text-3xl tracking-normal text-bone sm:text-4xl">
               Software delivery integrity, as Claude Code skills.
             </h1>
-            <p className="mt-4 max-w-2xl leading-relaxed text-bone-dim">
+            <p className="mt-4 max-w-[68ch] leading-relaxed text-bone-dim">
               For people who build products with an AI in the loop. The suite
               makes six promises between an idea and its release. Product
               intent is declared and audited. A feature&apos;s design is checked
@@ -79,7 +76,7 @@ export default function SkillsIndex() {
 
         <section className="border-b border-line">
           <div className="mx-auto max-w-[1180px] px-5 py-12 sm:px-8">
-            <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-bone-faint">
+            <h2 className="font-display text-xl tracking-normal text-bone sm:text-2xl">
               User-invoked · commands you type
             </h2>
             {/* An odd count would leave an empty grid slot where the bg-line
@@ -112,7 +109,7 @@ export default function SkillsIndex() {
 
         <section className="border-b border-line">
           <div className="mx-auto max-w-[1180px] px-5 py-12 sm:px-8">
-            <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-bone-faint">
+            <h2 className="font-display text-xl tracking-normal text-bone sm:text-2xl">
               Model-invoked · applied automatically by the agent
             </h2>
             <div className="mt-5 grid gap-px border border-line bg-line sm:grid-cols-2">
@@ -135,10 +132,10 @@ export default function SkillsIndex() {
 
         <section className="border-b border-line">
           <div className="mx-auto max-w-[1180px] px-5 py-12 sm:px-8">
-            <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-bone-faint">
+            <h2 className="font-display text-xl tracking-normal text-bone sm:text-2xl">
               Where it fits
             </h2>
-            <p className="mt-5 max-w-2xl leading-relaxed text-bone-dim">
+            <p className="mt-5 max-w-[68ch] leading-relaxed text-bone-dim">
               Foundry is the release gate at the end of the build loop. The
               inner-loop skills you already use to write and review code stay
               where they are; Foundry is the pass that decides whether the
@@ -155,7 +152,7 @@ export default function SkillsIndex() {
 
         <section>
           <div className="mx-auto max-w-[1180px] px-5 py-14 sm:px-8">
-            <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-bone-faint">
+            <h2 className="font-display text-xl tracking-normal text-bone sm:text-2xl">
               What they share
             </h2>
             <div className="mt-5 grid gap-px border border-line bg-line sm:grid-cols-2">

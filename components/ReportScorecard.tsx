@@ -1,6 +1,7 @@
 "use client";
 
 import type { AuditReport, Severity } from "@/lib/report-types";
+import { SEV_SHORT } from "@/lib/report-types";
 
 // The scorecard is a jump table into the report, not a static readout: every
 // non-zero count scrolls to the detail it summarizes. Clicking a severity finds
@@ -80,8 +81,15 @@ export function ReportScorecard({
               >
                 {n}
               </div>
-              <div className="mt-1 font-mono text-[0.65rem] uppercase tracking-wide text-bone-faint">
-                {sev === "informational" ? "info" : sev}
+              <div className="mt-1 font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
+                {SEV_SHORT[sev] ? (
+                  <>
+                    <span aria-hidden="true">{SEV_SHORT[sev]}</span>
+                    <span className="sr-only select-none">{sev}</span>
+                  </>
+                ) : (
+                  sev
+                )}
               </div>
             </button>
           );

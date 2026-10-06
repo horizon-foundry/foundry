@@ -85,9 +85,6 @@ export function SlideDeck({ slides, title, tagline, statChips }: Props) {
                   so the canonical cut, not the small one the chrome uses. */}
               <BrandMark className="h-12 w-auto" />
             </div>
-            <p className="font-mono text-xs uppercase tracking-[0.2em] text-bone-faint">
-              Behind the Build · Overview
-            </p>
             {/* This is a mark + wordmark lockup (BrandMark above), so it
                 gets the same uppercase, open-tracking treatment as the
                 header/footer Wordmark, not the sentence-case display
@@ -121,7 +118,7 @@ export function SlideDeck({ slides, title, tagline, statChips }: Props) {
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-center gap-3 pt-1">
                   <span className="draw-rule h-px w-8 bg-signal" />
-                  <span className="font-mono text-xs font-medium uppercase tracking-[0.2em] text-bone">
+                  <span className="font-mono text-sm text-bone-dim">
                     {slide.category}
                   </span>
                 </div>
@@ -134,11 +131,11 @@ export function SlideDeck({ slides, title, tagline, statChips }: Props) {
               <h3 className="font-mono text-2xl font-semibold leading-tight tracking-tight text-bone sm:text-3xl">
                 {slide.heading}
               </h3>
-              <p className="max-w-2xl leading-relaxed text-bone-dim">
+              <p className="max-w-[68ch] leading-relaxed text-bone-dim">
                 {slide.body}
               </p>
               {slide.items && (
-                <ul className="space-y-2 pt-1">
+                <ul className="max-w-[68ch] space-y-2 pt-1 text-sm">
                   {slide.items.map((it) => (
                     <li
                       key={it}
@@ -158,7 +155,7 @@ export function SlideDeck({ slides, title, tagline, statChips }: Props) {
                   {slide.chips.map((c) => (
                     <span
                       key={c}
-                      className="border border-line px-2 py-0.5 font-mono text-[0.65rem] uppercase tracking-wide text-bone-dim"
+                      className="border border-line px-2 py-0.5 font-mono text-[0.6875rem] uppercase tracking-wide text-bone-dim"
                     >
                       {c}
                     </span>
@@ -170,7 +167,7 @@ export function SlideDeck({ slides, title, tagline, statChips }: Props) {
                   <blockquote className="font-serif text-sm italic leading-relaxed text-bone-dim">
                     &ldquo;{slide.quote.text}&rdquo;
                   </blockquote>
-                  <figcaption className="mt-1.5 font-mono text-[0.65rem] uppercase tracking-wide text-bone-faint">
+                  <figcaption className="mt-1.5 font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
                     {slide.quote.attribution}
                   </figcaption>
                 </figure>

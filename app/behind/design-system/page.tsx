@@ -54,7 +54,7 @@ function Section({
 }) {
   return (
     <section className="border-t border-line py-8 first:border-t-0 first:pt-0">
-      <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-bone-faint">
+      <h2 className="font-mono text-sm font-semibold text-bone">
         {label}
       </h2>
       <div className="mt-5">{children}</div>
@@ -65,12 +65,12 @@ function Section({
 export default function DesignSystem() {
   return (
     <div className="max-w-4xl">
-      <p className="max-w-2xl font-serif leading-relaxed text-bone-dim">
+      <p className="max-w-[68ch] font-serif leading-relaxed text-bone-dim">
         Foundry, the design system for the suite, rendered from its own tokens.
         The brand layer is monochrome steel and white, the Horizon Foundry
         palette. Color is reserved: severity and verdict hues live in the
         reports (and in elements explicitly framed as report excerpts, nowhere
-        else), and <span className="text-command">amber</span> is the forge
+        else), and amber is the forge
         glow, used only on the invoke and run layer (the commands you fire),
         never for decoration.
       </p>
@@ -85,10 +85,10 @@ export default function DesignSystem() {
                     hairline left the darkest samples reading as empty boxes
                     rather than as filled chips. */}
                 <div className={`h-12 border border-line-strong ${bg}`} />
-                <div className="mt-2 font-mono text-[0.65rem] text-bone">
+                <div className="mt-2 font-mono text-[0.6875rem] text-bone">
                   {name}
                 </div>
-                <div className="font-mono text-[0.6rem] uppercase text-bone-faint">
+                <div className="font-mono text-[0.6875rem] uppercase text-bone-faint">
                   {hex}
                 </div>
               </div>
@@ -102,7 +102,7 @@ export default function DesignSystem() {
               <SeverityChip key={s} severity={s} />
             ))}
           </div>
-          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-bone-dim">
+          <p className="mt-4 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
             Critical red, high orange, medium amber, low steel, informational
             gray. The three verdict colors reuse the same hues so a reader learns
             one language.
@@ -176,7 +176,7 @@ export default function DesignSystem() {
               </span>
             </div>
           </div>
-          <p className="mt-5 max-w-2xl text-sm leading-relaxed text-bone-dim">
+          <p className="mt-5 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
             A value is matched to a token by what the motion does, never by the
             nearest number, and a duration whose job matches no token is left
             alone. Three easings:{" "}
@@ -195,13 +195,13 @@ export default function DesignSystem() {
           <div className="flex flex-wrap items-end gap-10 text-bone">
             <div>
               <BrandMark className="h-12 w-auto" />
-              <p className="mt-3 font-mono text-[0.65rem] uppercase tracking-wide text-bone-faint">
+              <p className="mt-3 font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
                 Canonical · 48px wide and up
               </p>
             </div>
             <div>
               <BrandMark small className="h-5 w-auto" />
-              <p className="mt-3 font-mono text-[0.65rem] uppercase tracking-wide text-bone-faint">
+              <p className="mt-3 font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
                 Small cut · below 48px wide
               </p>
             </div>
@@ -210,7 +210,7 @@ export default function DesignSystem() {
               the page cannot demonstrate the rule by breaking it. What the
               small cut changes is not visible at 20px, which is the point of
               having it, so the difference is stated instead of shown. */}
-          <p className="mt-5 max-w-2xl text-sm leading-relaxed text-bone-dim">
+          <p className="mt-5 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
             The parent brand&rsquo;s mark, taken from the Horizon Foundry design
             kit. The small cut widens the channels and thickens the echo ridge
             so they survive rasterizing: the canonical cut holds at 48px wide
@@ -227,7 +227,7 @@ export default function DesignSystem() {
               <p className="font-mono text-sm text-bone">
                 command <span className="text-bone-faint">#D99A2E</span>
               </p>
-              <p className="mt-1 text-sm text-bone-dim">
+              <p className="mt-1 max-w-[68ch] text-sm text-bone-dim">
                 The forge glow. Reserved for the invoke and run layer, the
                 commands you fire, like{" "}
                 <code className="text-command">/production-audit</code> or{" "}

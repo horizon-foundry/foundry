@@ -25,10 +25,10 @@ export function ReportSpecimen({
   return (
     <figure className="border border-line bg-ink-raised/70">
       <figcaption className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b border-line px-4 py-2.5">
-        <span className="min-w-0 break-words font-mono text-[0.65rem] uppercase tracking-[0.18em] text-bone-faint">
+        <span className="min-w-0 break-words font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-bone-faint">
           Report · {report.meta.project} · {report.meta.date}
         </span>
-        <span className="font-mono text-[0.65rem] uppercase tracking-wide text-bone-faint">
+        <span className="font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
           Worked example
         </span>
       </figcaption>

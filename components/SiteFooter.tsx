@@ -19,11 +19,11 @@ export function SiteFooter() {
       <div className="mx-auto flex max-w-[1180px] flex-col gap-6 px-5 py-8 sm:flex-row sm:items-start sm:justify-between sm:px-8">
         <div className="flex flex-col gap-2">
           <Wordmark className="text-xs" />
-          <p className="font-mono text-[0.68rem] uppercase tracking-wide text-bone-faint">
+          <p className="font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
             A Horizon Foundry project · v{suiteVersion()}
           </p>
         </div>
-        <nav className="flex flex-wrap gap-x-5 gap-y-2 font-mono text-[0.68rem] uppercase tracking-wide text-bone-faint">
+        <nav className="flex flex-wrap gap-x-5 gap-y-2 font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
           {SECONDARY.map((item) =>
             item.external ? (
               <a

@@ -4,7 +4,7 @@ import type {
   AssessedScope,
   AuditReport,
 } from "@/lib/report-types";
-import { VERDICT_LABEL } from "@/lib/report-types";
+import { SEV_SHORT, VERDICT_LABEL } from "@/lib/report-types";
 
 // Literal class maps so Tailwind's JIT sees every class. Color is the ONLY
 // saturated ink in the system and it always means a severity or a verdict
@@ -49,7 +49,7 @@ const VERDICT_BORDER: Record<VerdictLevel, string> = {
 export function SeverityChip({ severity }: { severity: Severity }) {
   return (
     <span
-      className={`inline-flex items-center border-l-2 ${SEV_FILL[severity]} ${SEV_BORDER[severity]} border-y border-r border-y-line border-r-line px-2 py-0.5 font-mono text-[0.65rem] font-medium uppercase tracking-widest ${SEV_TEXT[severity]}`}
+      className={`inline-flex items-center border-l-2 ${SEV_FILL[severity]} ${SEV_BORDER[severity]} border-y border-r border-y-line border-r-line px-2 py-0.5 font-mono text-[0.6875rem] font-medium uppercase tracking-widest ${SEV_TEXT[severity]}`}
     >
       {severity}
     </span>
@@ -87,7 +87,7 @@ export function VerdictStamp({
         className={`pointer-events-none absolute -bottom-px -right-px h-3 w-3 border-b-2 border-r-2 ${VERDICT_BORDER[level]}`}
         aria-hidden="true"
       />
-      <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-bone-faint">
+      <p className="font-mono text-[0.6875rem] uppercase tracking-[0.2em] text-bone-faint">
         Release recommendation
       </p>
       <p
@@ -96,7 +96,7 @@ export function VerdictStamp({
         {label}
       </p>
       {assessedScope && (
-        <p className="mt-2 font-mono text-[0.65rem] uppercase tracking-wide text-bone-dim">
+        <p className="mt-2 font-mono text-[0.6875rem] uppercase tracking-wide text-bone-dim">
           {assessedScope === "static"
             ? "Static review · runtime not exercised"
             : "Static review + runtime pass"}
@@ -112,7 +112,7 @@ export function VerdictStamp({
 }
 
 // Tabular counts by severity: each number in its severity color, labels in
-// faint mono (DESIGN.md stat strip).
+// faint mono, the two longest names shortened (SEV_SHORT in report-types).
 export function StatStrip({
   bySeverity,
 }: {
@@ -134,8 +134,15 @@ export function StatStrip({
           >
             {bySeverity[sev]}
           </div>
-          <div className="mt-1 font-mono text-[0.65rem] uppercase tracking-wide text-bone-faint">
-            {sev === "informational" ? "info" : sev}
+          <div className="mt-1 font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
+            {SEV_SHORT[sev] ? (
+              <>
+                <span aria-hidden="true">{SEV_SHORT[sev]}</span>
+                <span className="sr-only select-none">{sev}</span>
+              </>
+            ) : (
+              sev
+            )}
           </div>
         </div>
       ))}

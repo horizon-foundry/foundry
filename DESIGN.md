@@ -87,7 +87,7 @@ The severity ramp (critical red, high orange, medium amber-yellow, low steel-blu
 
 ## Typography
 
-**Archivo Black** carries the brand: the wordmark and display headings, a heavy grotesque whose blunt, machined letterforms rhyme with the angular mark. It ships in a single 400 weight, so display type never sets a bold or semibold utility (the browser would synthesize a faux weight); emphasis in the brand layer comes from size and the mark, not weight. **IBM Plex Sans** is the body and UI voice. **IBM Plex Mono** is the instrument voice: verdicts, finding IDs, severities, code, and all technical metadata. **IBM Plex Serif** sets long-form rendered documentation. A heavy grotesque for the foundry, monospace for the instrument.
+**Archivo Black** carries the brand: the wordmark and display headings, a heavy grotesque whose blunt, machined letterforms rhyme with the angular mark. It ships in a single 400 weight, so display type never sets a bold or semibold utility (the browser would synthesize a faux weight); emphasis in the brand layer comes from size and the mark, not weight. **IBM Plex Sans** is the body and UI voice. **IBM Plex Mono** is the instrument voice: verdicts, finding IDs, severities, code, and all technical metadata. **IBM Plex Serif** sets long-form rendered documentation. A heavy grotesque for the foundry, monospace for the instrument. Functional text (labels, links, buttons, table cells, meta rows) is never below 11px (0.6875rem).
 
 ## Layout & Spacing
 
@@ -180,7 +180,7 @@ Sharp. Corner radius 2-4px, effectively square, matching the mark's cut letterfo
 
 The audit report is read by a detail-oriented but time-poor senior or principal engineer, or a product lead. They do not read it top to bottom; they triage. So the report is comprehensive but never a wall of text: the default view is the decision and the shape, and all depth is one click away and precise when opened.
 
-- **The first screen is the whole call.** The verdict stamp carries the punch: the amber verdict, then the one-line posture as a bright, bold summary inside the stamp (it is the headline, so it is the punchiest text on the block, never subdued). The justification is quieter supporting detail below the stamp; the findings that drive the verdict are named and linked right under it, not left as bare IDs. Then one scorecard: the severity mix, the count of risks versus improvements, the gate statuses, and what was not assessed. A reader who reads nothing else has the decision and the triage. The stamp is a compact block sized to its content, never a full-width bar with a dead half.
+- **The first screen is the whole call.** The verdict stamp carries the punch: the verdict in its level's color, then the one-line posture as a bright, bold summary inside the stamp (it is the headline, so it is the punchiest text on the block, never subdued). The justification is quieter supporting detail below the stamp; the findings that drive the verdict are named and linked right under it, not left as bare IDs. Then one scorecard: the severity mix, the count of risks versus improvements, the gate statuses, and what was not assessed. A reader who reads nothing else has the decision and the triage. The stamp is full width so the top matches the scorecard below it, with the summary text capped inside it. The scorecard's severity strip abbreviates the two longest names to crit and info at every width, so a narrow cell never clips, and keeps the full name for screen readers.
 - **Progressive disclosure below, risks before improvements.** Findings split into two groups: **risks to weigh** (a path to harm, what the verdict rests on) then **improvements** (safe today, robustness over time, which never cap the verdict), each a severity-sorted index of collapsed rows (one-line issue plus location) with the low and informational bulk folded into one disclosure. A report with no risks says so plainly ("no risks surfaced"), so a healthy app reads as healthy with a punch list, not as a wall of problems. Strengths lead as scannable green headlines, the note one click away. Process detail (remediation, not-assessed, mechanical sweeps) sits at the tail, compact.
 - **No repetition, no filler.** Identical per-item cards collapse to one line. If a section repeats the same sentence, it is one sentence.
 - **Gate and finding notes surface only when they move the decision.** A met gate is a chip; an at-risk or not-met gate shows its reason.
@@ -188,7 +188,17 @@ The audit report is read by a detail-oriented but time-poor senior or principal 
 ## Anti-goals
 
 - No drop shadows, glows, rounded-pill buttons, or gradient meshes.
-- No color that does not mean a severity, a verdict, or an invocable command. The brand layer is otherwise monochrome, and the one amber accent is defined under Colors, not opened up here (corrected 2026-09-22; see NOTES).
-- No hype or marketing warmth; this is a foundry, not a SaaS splash.
-- Never set the identity in anything but Archivo Black and the Horizon Foundry mark.
+- No color that does not mean a severity, a verdict, or an invocable command. Amber also heads the entry tiles on the skills directory. Severity and verdict hues appear only inside a framed report excerpt. Everything else is steel, bone and white.
+- No hype or marketing warmth.
+- Never set the wordmark or display headings in anything but Archivo Black, or draw the mark in anything but the Horizon Foundry mark in one flat color.
 - No em dashes in any copy.
+- A page must not show a severity or verdict hue on plain marketing chrome (a label, a badge, a heading) outside a framed report excerpt.
+- A page must not stack bordered cards. Hairline rules divide sections.
+- A marketing page must not use a tracked-caps kicker above a heading more than once, on the hero only.
+- A report page must not bury the verdict. The first screen is the stamp, the one-line summary, and the scorecard.
+- A page must not mark emphasis by hue or by faux bold.
+- A page must not set long-form prose wider than about 68ch.
+- A page must not round corners beyond 2 to 4px, or fill the active nav tab like a pill.
+- A page must not draw the mark in any hue, or set it near body text at 16px.
+- A page must not carry a decorative element that can vanish on a phone with nothing lost.
+- A page must not use pointer reticles or crosshairs.

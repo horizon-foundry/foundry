@@ -124,7 +124,7 @@ export default function Home() {
                 <br />
                 from <span className="text-signal">AI-built code</span>.
               </h1>
-              <p className="mt-6 max-w-2xl text-lg leading-relaxed text-bone-dim">
+              <p className="mt-6 max-w-[68ch] text-lg leading-relaxed text-bone-dim">
                 Foundry is eleven Claude Code skills that turn fast, AI-built
                 code into something you can ship. The flagship audits the whole
                 application and ends in one verdict that names its evidence:
@@ -189,10 +189,10 @@ export default function Home() {
             quick start. Delivery integrity, not product strategy. */}
         <section className="reveal border-b border-line">
           <div className="mx-auto max-w-[1180px] px-5 py-12 sm:px-8">
-            <p className="font-mono text-xs uppercase tracking-[0.25em] text-bone-faint">
+            <h2 className="font-display text-2xl tracking-normal text-bone sm:text-3xl">
               Six promises, each kept by a skill
-            </p>
-            <ol className="mt-4 divide-y divide-line border-y border-line">
+            </h2>
+            <ol className="mt-6 divide-y divide-line border-y border-line">
               {(
                 [
                   ["Product intent is declared and audited", "/frame"],
@@ -232,7 +232,7 @@ export default function Home() {
                   Production Audit
                 </h2>
               </div>
-              <p className="mt-2 max-w-2xl text-sm leading-relaxed text-bone-dim">
+              <p className="mt-2 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
                 The deliver step of the suite: a whole-application pre-launch
                 audit across the dimensions your product calls for, from a
                 standing set of eleven, separating risks from improvements. It
@@ -311,7 +311,7 @@ export default function Home() {
                 </div>
               ))}
             </div>
-            <p className="mt-4 max-w-2xl text-sm leading-relaxed text-bone-dim">
+            <p className="mt-4 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
               These six usually apply. Five more resolve per project, operability,
               testing confidence, data and migration safety, release safety, and
               performance, and even these six drop out where there is no surface,
@@ -344,7 +344,7 @@ export default function Home() {
                     <h3 className="font-mono text-base font-semibold uppercase tracking-wide text-bone">
                       {p.t}
                     </h3>
-                    <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-bone-dim">
+                    <p className="mt-1.5 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
                       {p.d}
                     </p>
                   </div>
@@ -364,7 +364,7 @@ export default function Home() {
               {PRINCIPLES.map((pr) => (
                 <div key={pr.t} className="bg-ink p-5">
                   <h3 className="text-sm font-semibold text-bone">{pr.t}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-bone-dim">
+                  <p className="mt-2 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
                     {pr.d}
                   </p>
                 </div>
@@ -372,7 +372,7 @@ export default function Home() {
             </div>
             {/* The tune-vs-fixed answer, given its own line rather than buried
                 as one principle among many: it is the sharpest trust claim. */}
-            <p className="mt-6 max-w-2xl text-sm leading-relaxed text-bone-dim">
+            <p className="mt-6 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
               You set the scope, not the bar. Which dimensions apply comes from
               what your product is, and which risks you accept is your call, on
               the record. The severity rubric and the meaning of the verdict are
@@ -473,7 +473,7 @@ export default function Home() {
                 </div>
               ))}
             </div>
-            <p className="mt-4 max-w-2xl text-sm leading-relaxed text-bone-dim">
+            <p className="mt-4 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
               The audit is read-only. It never changes your code. It produces a
               structured report and a verdict, and it tells you what it did not
               look at. It reads code and traces flows; it is not a penetration
