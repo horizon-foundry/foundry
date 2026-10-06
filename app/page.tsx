@@ -364,7 +364,7 @@ export default function Home() {
               {PRINCIPLES.map((pr) => (
                 <div key={pr.t} className="bg-ink p-5">
                   <h3 className="text-sm font-semibold text-bone">{pr.t}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-bone-dim">
+                  <p className="mt-2 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
                     {pr.d}
                   </p>
                 </div>

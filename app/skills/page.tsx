@@ -34,7 +34,7 @@ function Tile({
         {heading}
       </span>
       <p className="mt-2 text-sm leading-relaxed text-bone-dim">{body}</p>
-      <span className="mt-4 pt-1 font-mono text-[0.7rem] uppercase tracking-wide text-bone-faint transition-colors group-hover:text-command">
+      <span className="mt-4 pt-1 font-mono text-[0.7rem] uppercase tracking-wide text-bone-faint transition-colors group-hover:text-bone">
         View
       </span>
     </Link>
@@ -52,10 +52,7 @@ export default function SkillsIndex() {
       <main id="main">
         <section className="border-b border-line">
           <div className="mx-auto max-w-[1180px] px-5 py-14 sm:px-8">
-            <p className="font-mono text-xs uppercase tracking-[0.25em] text-bone-faint">
-              The Foundry suite
-            </p>
-            <h1 className="mt-3 max-w-3xl font-display text-3xl tracking-normal text-bone sm:text-4xl">
+            <h1 className="max-w-3xl font-display text-3xl tracking-normal text-bone sm:text-4xl">
               Software delivery integrity, as Claude Code skills.
             </h1>
             <p className="mt-4 max-w-[68ch] leading-relaxed text-bone-dim">
@@ -79,7 +76,7 @@ export default function SkillsIndex() {
 
         <section className="border-b border-line">
           <div className="mx-auto max-w-[1180px] px-5 py-12 sm:px-8">
-            <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-bone-faint">
+            <h2 className="font-mono text-sm font-semibold text-bone">
               User-invoked · commands you type
             </h2>
             {/* An odd count would leave an empty grid slot where the bg-line
@@ -112,7 +109,7 @@ export default function SkillsIndex() {
 
         <section className="border-b border-line">
           <div className="mx-auto max-w-[1180px] px-5 py-12 sm:px-8">
-            <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-bone-faint">
+            <h2 className="font-mono text-sm font-semibold text-bone">
               Model-invoked · applied automatically by the agent
             </h2>
             <div className="mt-5 grid gap-px border border-line bg-line sm:grid-cols-2">
@@ -135,7 +132,7 @@ export default function SkillsIndex() {
 
         <section className="border-b border-line">
           <div className="mx-auto max-w-[1180px] px-5 py-12 sm:px-8">
-            <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-bone-faint">
+            <h2 className="font-mono text-sm font-semibold text-bone">
               Where it fits
             </h2>
             <p className="mt-5 max-w-[68ch] leading-relaxed text-bone-dim">
@@ -155,7 +152,7 @@ export default function SkillsIndex() {
 
         <section>
           <div className="mx-auto max-w-[1180px] px-5 py-14 sm:px-8">
-            <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-bone-faint">
+            <h2 className="font-mono text-sm font-semibold text-bone">
               What they share
             </h2>
             <div className="mt-5 grid gap-px border border-line bg-line sm:grid-cols-2">

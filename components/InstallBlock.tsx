@@ -163,7 +163,7 @@ export async function InstallBlock() {
             <p className="font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
               What happens when you invoke it
             </p>
-            <p className="mt-3 text-sm leading-relaxed text-bone-dim">
+            <p className="mt-3 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
               A skill is something Claude Code runs against your project.{" "}
               <span className="text-command">/production-audit</span> reads your
               code (never writes), traces the flows that cross file boundaries,
@@ -190,7 +190,7 @@ export async function InstallBlock() {
               <dt className="font-mono text-sm font-semibold uppercase tracking-wide text-bone">
                 {item.k}
               </dt>
-              <dd className="mt-2 text-sm leading-relaxed text-bone-dim">
+              <dd className="mt-2 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
                 {item.d}
               </dd>
             </div>

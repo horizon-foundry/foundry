@@ -54,7 +54,7 @@ function Section({
 }) {
   return (
     <section className="border-t border-line py-8 first:border-t-0 first:pt-0">
-      <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-bone-faint">
+      <h2 className="font-mono text-sm font-semibold text-bone">
         {label}
       </h2>
       <div className="mt-5">{children}</div>
@@ -70,7 +70,7 @@ export default function DesignSystem() {
         The brand layer is monochrome steel and white, the Horizon Foundry
         palette. Color is reserved: severity and verdict hues live in the
         reports (and in elements explicitly framed as report excerpts, nowhere
-        else), and <span className="text-command">amber</span> is the forge
+        else), and amber is the forge
         glow, used only on the invoke and run layer (the commands you fire),
         never for decoration.
       </p>
@@ -227,7 +227,7 @@ export default function DesignSystem() {
               <p className="font-mono text-sm text-bone">
                 command <span className="text-bone-faint">#D99A2E</span>
               </p>
-              <p className="mt-1 text-sm text-bone-dim">
+              <p className="mt-1 max-w-[68ch] text-sm text-bone-dim">
                 The forge glow. Reserved for the invoke and run layer, the
                 commands you fire, like{" "}
                 <code className="text-command">/production-audit</code> or{" "}

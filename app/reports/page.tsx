@@ -89,7 +89,7 @@ function ExampleCard({ r }: { r: ReportSummary }) {
           {risks} {risks === 1 ? "risk" : "risks"} · {improvements} improvements
           · audited {r.date}
         </p>
-        <p className="mt-3 text-sm leading-relaxed text-bone-dim">
+        <p className="mt-3 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
           {isSelfAudit
             ? "Foundry ran /production-audit against its own code. Real findings, no fiction, and the repository is public so you can check the report against the source."
             : "A fictional booking app audited in full, to show the method on a payments-and-concurrency product the self-audit's own surface cannot exercise."}
@@ -121,10 +121,7 @@ export default async function ReportsIndex() {
     <div className="space-y-14">
       {email && (
         <section>
-          <p className="font-mono text-xs uppercase tracking-[0.25em] text-bone-faint">
-            Report history
-          </p>
-          <h1 className="mt-2 font-mono text-3xl font-semibold tracking-tight text-bone">
+          <h1 className="font-mono text-3xl font-semibold tracking-tight text-bone">
             {admin ? "Audit reports" : "Your audit reports"}
           </h1>
           {owned.length === 0 ? (
@@ -145,10 +142,7 @@ export default async function ReportsIndex() {
       )}
 
       <section>
-        <p className="font-mono text-xs uppercase tracking-[0.25em] text-bone-faint">
-          Example reports
-        </p>
-        <h2 className="mt-2 font-mono text-3xl font-semibold tracking-tight text-bone">
+        <h2 className="font-mono text-3xl font-semibold tracking-tight text-bone">
           {email ? "Example reports" : "What a Production Audit returns"}
         </h2>
         <p className="mt-3 max-w-[68ch] text-sm leading-relaxed text-bone-dim">

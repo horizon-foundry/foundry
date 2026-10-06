@@ -61,7 +61,7 @@ export default async function SkillPage({
           <div className="mt-8 grid gap-px border border-line bg-line md:grid-cols-[1.15fr_0.85fr]">
             {skill.why && (
               <div className="bg-ink p-5 sm:p-6">
-                <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-bone-faint">
+                <h2 className="font-mono text-sm font-semibold text-bone">
                   Why it matters
                 </h2>
                 <p className="mt-3 max-w-xl leading-relaxed text-bone-dim">
@@ -71,7 +71,7 @@ export default async function SkillPage({
             )}
             {skill.when && skill.when.length > 0 && (
               <div className="bg-ink p-5 sm:p-6">
-                <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-bone-faint">
+                <h2 className="font-mono text-sm font-semibold text-bone">
                   Reach for it when
                 </h2>
                 <ul className="mt-3 space-y-2.5">
@@ -81,7 +81,7 @@ export default async function SkillPage({
                       className="flex gap-2.5 text-sm leading-relaxed text-bone-dim"
                     >
                       <span
-                        className="mt-2.5 h-px w-3 shrink-0 bg-command/70"
+                        className="mt-2.5 h-px w-3 shrink-0 bg-line-strong"
                         aria-hidden="true"
                       />
                       <span>{w}</span>
@@ -95,7 +95,7 @@ export default async function SkillPage({
 
         {/* The spec itself, clearly framed as what the agent runs. */}
         <div className="mt-12 flex items-center gap-3">
-          <h2 className="shrink-0 font-mono text-xs uppercase tracking-[0.2em] text-bone-faint">
+          <h2 className="shrink-0 font-mono text-sm font-semibold text-bone">
             The skill, verbatim
           </h2>
           <span className="h-px flex-1 bg-line" aria-hidden="true" />

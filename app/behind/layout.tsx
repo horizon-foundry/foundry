@@ -12,7 +12,7 @@ export default function BehindLayout({
       <SiteHeader />
       <div className="border-b border-line">
         <div className="mx-auto max-w-[1180px] px-5 pb-4 pt-10 sm:px-8">
-          <p className="font-mono text-xs uppercase tracking-[0.25em] text-bone-faint">
+          <p className="font-mono text-sm text-bone-dim">
             Behind the Build
           </p>
           <h1 className="mt-2 font-mono text-3xl font-semibold tracking-tight text-bone">

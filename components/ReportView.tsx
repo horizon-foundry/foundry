@@ -105,7 +105,7 @@ function FindingRow({ f }: { f: Finding }) {
           </span>
         </div>
         {f.verification.refutationNotes && (
-          <p className="border-l-2 border-line-strong pl-3 text-xs italic leading-relaxed text-bone-faint">
+          <p className="max-w-[68ch] border-l-2 border-line-strong pl-3 text-xs italic leading-relaxed text-bone-faint">
             {f.verification.refutationNotes}
           </p>
         )}
@@ -129,7 +129,7 @@ function Field({
         {label}
       </div>
       <div
-        className={`mt-1 leading-relaxed text-bone-dim ${
+        className={`mt-1 max-w-[68ch] leading-relaxed text-bone-dim ${
           mono
             ? "whitespace-pre-wrap break-words rounded-sm bg-ink-raised-2 p-2 font-mono text-[0.78rem]"
             : ""
@@ -190,7 +190,7 @@ function Block({
 }) {
   return (
     <section id={id} className={`mt-12 ${id ? "scroll-mt-24" : ""}`}>
-      <h2 className="font-mono text-sm text-bone-dim">
+      <h2 className="font-mono text-sm font-semibold text-bone">
         {label}
       </h2>
       <div className="mt-5">{children}</div>
@@ -254,7 +254,7 @@ export function ReportView({ report }: { report: AuditReport }) {
                 ›
               </span>
             </summary>
-            <p className="mt-2 text-sm leading-relaxed text-bone-dim">
+            <p className="mt-2 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
               {verdict.justification}
             </p>
           </details>
@@ -262,7 +262,7 @@ export function ReportView({ report }: { report: AuditReport }) {
       </div>
       {verdict.blockingFindingIds.length > 0 && (
         <div className="mt-6">
-          <p className="font-mono text-[0.7rem] uppercase tracking-[0.2em] text-bone-faint">
+          <p className="font-mono text-sm font-semibold text-bone">
             What drives this verdict
           </p>
           <ul className="mt-2.5 space-y-2">
@@ -279,7 +279,7 @@ export function ReportView({ report }: { report: AuditReport }) {
                     {id}
                   </a>
                   {f && (
-                    <span className="text-sm leading-snug text-bone-dim">
+                    <span className="max-w-[68ch] text-sm leading-snug text-bone-dim">
                       {f.issue}
                     </span>
                   )}
@@ -323,7 +323,7 @@ export function ReportView({ report }: { report: AuditReport }) {
             {report.shipGates
               .filter((g) => g.status === "not-met" || g.status === "at-risk")
               .map((g) => (
-                <p key={g.gate} className="text-xs leading-relaxed text-bone-dim">
+                <p key={g.gate} className="max-w-[68ch] text-xs leading-relaxed text-bone-dim">
                   <span
                     className={`font-mono uppercase ${SHIP_GATE_STATUS_COLOR[g.status]}`}
                   >
@@ -427,7 +427,7 @@ export function ReportView({ report }: { report: AuditReport }) {
               <div>
                 <p className="text-sm font-medium text-bone">{step.title}</p>
                 {step.detail && (
-                  <p className="mt-1 text-sm leading-relaxed text-bone-dim">
+                  <p className="mt-1 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
                     {step.detail}
                   </p>
                 )}
@@ -456,7 +456,7 @@ export function ReportView({ report }: { report: AuditReport }) {
                   </span>
                 )}
               </div>
-              <p className="mt-1 text-xs leading-relaxed text-bone-faint">
+              <p className="mt-1 max-w-[68ch] text-xs leading-relaxed text-bone-faint">
                 Blast radius: {w.blastRadius}
               </p>
             </li>
@@ -472,7 +472,7 @@ export function ReportView({ report }: { report: AuditReport }) {
             <li key={d.title} className="border border-line bg-ink-raised p-3.5">
               <p className="text-sm font-medium text-bone">{d.title}</p>
               {d.detail && (
-                <p className="mt-1 text-sm leading-relaxed text-bone-dim">
+                <p className="mt-1 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
                   {d.detail}
                 </p>
               )}
@@ -493,7 +493,7 @@ export function ReportView({ report }: { report: AuditReport }) {
           {report.notAssessed.map((n) => (
             <li key={n.check} className="border border-line bg-ink-raised p-3.5">
               <p className="text-sm font-medium text-bone">{n.check}</p>
-              <p className="mt-1 text-xs leading-relaxed text-bone-dim">
+              <p className="mt-1 max-w-[68ch] text-xs leading-relaxed text-bone-dim">
                 <span className="font-mono uppercase tracking-wide text-bone-faint">
                   To verify:
                 </span>{" "}

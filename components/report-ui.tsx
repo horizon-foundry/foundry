@@ -128,7 +128,7 @@ export function StatStrip({
   return (
     <div className="grid grid-cols-5 divide-x divide-line border border-line">
       {order.map((sev) => (
-        <div key={sev} className="px-2 py-3 text-center">
+        <div key={sev} className="px-1 py-3 text-center">
           <div
             className={`font-mono text-2xl font-semibold tabular-nums ${SEV_TEXT[sev]}`}
           >

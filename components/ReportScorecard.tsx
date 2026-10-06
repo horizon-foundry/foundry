@@ -69,7 +69,7 @@ export function ReportScorecard({
               type="button"
               onClick={() => goSeverity(sev)}
               aria-disabled={!clickable}
-              className={`px-2 py-3 text-center transition-colors ${
+              className={`px-1 py-3 text-center transition-colors ${
                 clickable
                   ? "cursor-pointer hover:bg-ink-raised-2"
                   : "cursor-default"
