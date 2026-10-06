@@ -89,6 +89,8 @@ export function moveItem(doc, ref, target, baseHash) {
     if (rmEnd + 1 < lines.length && isBlank(lines[rmEnd + 1]) && srcItems[srcItems.length - 1] !== it) rmEnd++
     else if (rmStart > 0 && isBlank(lines[rmStart - 1])) rmStart--
   }
+  // The only item of a list, with a blank line on each side: removing it would leave two blanks in a row.
+  if (rmStart > 0 && isBlank(lines[rmStart - 1]) && rmEnd + 1 < lines.length && isBlank(lines[rmEnd + 1])) rmEnd++
 
   const insert = [...pre, ...span, ...post]
   const out = []
