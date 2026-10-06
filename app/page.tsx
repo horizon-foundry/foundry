@@ -248,8 +248,13 @@ export default function Home() {
                 </Link>
               )}
             </div>
-            {/* The three verdicts it can return. Color = the decision. */}
-            <div className="flex flex-col gap-2">
+            {/* The three verdicts it can return, drawn inside a visible
+                excerpt frame: the frame is what licenses the verdict hues on a
+                marketing page (DESIGN.md Colors, settled 2026-10-06). */}
+            <figure className="flex flex-col gap-2 border border-line bg-ink p-3">
+              <figcaption className="font-mono text-[0.6875rem] text-bone-faint">
+                The verdicts a report returns
+              </figcaption>
               {(
                 [
                   ["safe-to-ship", "text-verdict-safe", "border-verdict-safe"],
@@ -266,7 +271,7 @@ export default function Home() {
                   </span>
                 </div>
               ))}
-            </div>
+            </figure>
           </div>
         </section>
 
@@ -402,18 +407,10 @@ export default function Home() {
                   </p>
                   <p className="mt-4 font-mono text-sm text-bone-dim">
                     Verdict:{" "}
-                    {/* Full-literal class map: the verdict hue must come from
-                        the verdict (DESIGN.md's core law), and Tailwind's JIT
-                        needs complete literals, so no template interpolation. */}
-                    <span
-                      className={
-                        {
-                          "safe-to-ship": "text-verdict-safe",
-                          "ship-with-known-risks": "text-verdict-risk",
-                          "do-not-ship": "text-verdict-noship",
-                        }[featured.verdictLevel]
-                      }
-                    >
+                    {/* Bone, not the verdict hue: this line sits outside the
+                        framed specimen beside it, which already shows the
+                        verdict in color (DESIGN.md Colors, settled 2026-10-06). */}
+                    <span className="text-bone">
                       {VERDICT_LABEL[featured.verdictLevel]}
                     </span>
                   </p>
