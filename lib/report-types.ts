@@ -169,9 +169,10 @@ export const VERDICT_LABEL: Record<VerdictLevel, string> = {
   "do-not-ship": "Do not ship",
 };
 
-// Short visual labels for the five-column severity strip, where the full word
-// does not fit a cell at 11px on narrow widths. The full name stays available
-// to screen readers beside it.
+// Short visual labels for the five-column severity strip. They show at every
+// width so the report's strip and the home page's narrow specimen read the
+// same: the specimen's cells cannot fit the full word at 11px until well past
+// tablet width. The full name stays available to screen readers beside it.
 export const SEV_SHORT: Partial<Record<Severity, string>> = {
   critical: "crit",
   informational: "info",

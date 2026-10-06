@@ -296,6 +296,7 @@ export function ReportView({ report }: { report: AuditReport }) {
           read in seconds. Gate notes appear only when a gate is at-risk or
           not-met, because only those move the decision. */}
       <div className="mt-8 border border-line bg-ink-raised">
+        <h2 className="sr-only">Scorecard</h2>
         <div className="px-4 py-4">
           <ReportScorecard
             bySeverity={stats.bySeverity}

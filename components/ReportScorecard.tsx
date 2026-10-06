@@ -82,8 +82,14 @@ export function ReportScorecard({
                 {n}
               </div>
               <div className="mt-1 font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
-                <span aria-hidden="true">{SEV_SHORT[sev] ?? sev}</span>
-                <span className="sr-only">{sev}</span>
+                {SEV_SHORT[sev] ? (
+                  <>
+                    <span aria-hidden="true">{SEV_SHORT[sev]}</span>
+                    <span className="sr-only select-none">{sev}</span>
+                  </>
+                ) : (
+                  sev
+                )}
               </div>
             </button>
           );
