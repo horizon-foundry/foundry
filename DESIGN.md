@@ -27,7 +27,7 @@ typography:
   display:
     fontFamily: 'Archivo Black'
     fontWeight: '400'
-    letterSpacing: '0'
+    letterSpacing: '0em'
   body:
     fontFamily: 'IBM Plex Sans'
   mono:
