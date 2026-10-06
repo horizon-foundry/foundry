@@ -64,7 +64,8 @@
   --color-signal: #ffffff;
 
   /* Amber is the forge glow: reserved for the invoke/run layer (commands you
-     fire, install and invocation tokens), and nothing else. It is the one
+     fire, install and invocation tokens) and the heading of each /skills entry
+     tile (DESIGN.md, Colors). It is the one
      functional accent, distinct from the monochrome brand and from the
      severity/verdict colors in the reports. */
   --color-command: #d99a2e;

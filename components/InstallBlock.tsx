@@ -161,19 +161,19 @@ export async function InstallBlock() {
               <pre className="whitespace-pre-wrap break-all px-4 py-4 font-mono text-sm leading-relaxed sm:overflow-x-auto sm:whitespace-pre sm:break-normal">
                 <code>
                   <span className="text-bone-faint">$ </span>
-                  <span className="text-bone-dim">git clone {REPO_URL}</span>
+                  <span className="text-command">git clone {REPO_URL}</span>
                   {"\n"}
                   <span className="text-bone-faint">$ </span>
-                  <span className="text-bone-dim">cd foundry</span>
+                  <span className="text-command">cd foundry</span>
                   {"\n"}
                   <span className="text-bone-faint">$ </span>
-                  <span className="text-bone-dim">make install</span>
+                  <span className="text-command">make install</span>
                 </code>
               </pre>
               <p className="border-t border-line px-4 py-2.5 font-mono text-xs leading-relaxed text-bone-faint">
                 Symlinks every skill so it tracks the repo. Update with{" "}
-                <span className="text-bone-dim">git pull &amp;&amp; make install</span>,
-                remove with <span className="text-bone-dim">make uninstall</span>.
+                <span className="text-command">git pull &amp;&amp; make install</span>,
+                remove with <span className="text-command">make uninstall</span>.
               </p>
             </div>
           </div>

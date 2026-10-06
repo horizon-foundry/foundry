@@ -162,7 +162,7 @@ function FindingList({
       ))}
       {folded.length > 0 && (
         <details className="group/fold">
-          <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3 font-mono text-xs uppercase tracking-wide text-bone-dim [&::-webkit-details-marker]:hidden">
+          <summary className="flex cursor-pointer list-none items-center justify-between border-l-2 border-l-transparent px-4 py-3 font-mono text-xs uppercase tracking-wide text-bone-dim [&::-webkit-details-marker]:hidden">
             <span>{folded.length} more · hygiene and polish</span>
             <span className="text-bone-faint transition-transform group-open/fold:rotate-90">
               ›

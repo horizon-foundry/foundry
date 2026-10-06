@@ -103,7 +103,7 @@ export default function DesignSystem() {
             ))}
           </div>
           <p className="mt-4 max-w-measure text-sm leading-relaxed text-bone-dim">
-            Critical red, high orange, medium amber, low steel, informational
+            Critical red, high orange, medium amber-yellow, low steel, informational
             gray. The three verdict colors reuse the same hues so a reader learns
             one language.
           </p>
