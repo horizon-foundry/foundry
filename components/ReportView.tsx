@@ -51,7 +51,7 @@ function FindingRow({ f }: { f: Finding }) {
     <details
       id={`finding-${f.id}`}
       data-severity={f.severity}
-      className="group scroll-mt-24 border border-line bg-ink-raised open:border-line-strong"
+      className="group scroll-mt-24"
     >
       {/* Below sm the id/chip row stacks ABOVE the issue text; sharing one
           row squeezed the finding text to a ~18ch measure on phones, the
@@ -156,19 +156,19 @@ function FindingList({
   const shown = collapseMinor ? items.filter((f) => !isMinor(f)) : items;
   const folded = collapseMinor ? items.filter(isMinor) : [];
   return (
-    <div className="space-y-2">
+    <div className="divide-y divide-line border border-line bg-ink-raised">
       {shown.map((f) => (
         <FindingRow key={f.id} f={f} />
       ))}
       {folded.length > 0 && (
-        <details className="group border border-line bg-ink-raised">
+        <details className="group">
           <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3 font-mono text-xs uppercase tracking-wide text-bone-dim [&::-webkit-details-marker]:hidden">
             <span>{folded.length} more · hygiene and polish</span>
             <span className="text-bone-faint transition-transform group-open:rotate-90">
               ›
             </span>
           </summary>
-          <div className="space-y-2 border-t border-line px-4 py-4">
+          <div className="divide-y divide-line border-t border-line">
             {folded.map((f) => (
               <FindingRow key={f.id} f={f} />
             ))}
@@ -353,10 +353,10 @@ export function ReportView({ report }: { report: AuditReport }) {
           not read five paragraphs; the note is one click away. */}
       {report.strengths && report.strengths.length > 0 && (
         <Block label={`What's solid (${report.strengths.length})`}>
-          <ul className="space-y-2">
+          <ul className="divide-y divide-line border border-line bg-ink-raised">
             {report.strengths.map((s) => (
               <li key={s.area}>
-                <details className="group border border-line bg-ink-raised open:border-line-strong">
+                <details className="group">
                   <summary className="flex cursor-pointer list-none items-center gap-2.5 px-4 py-3 [&::-webkit-details-marker]:hidden">
                     <span
                       className="shrink-0 font-mono text-sm text-verdict-safe"
@@ -416,11 +416,11 @@ export function ReportView({ report }: { report: AuditReport }) {
 
       {report.remediationPlan.length > 0 && (
       <Block label="Prioritised remediation plan">
-        <ol className="space-y-2">
+        <ol className="divide-y divide-line border border-line bg-ink-raised">
           {report.remediationPlan.map((step, i) => (
             <li
               key={step.title}
-              className="flex gap-4 border border-line bg-ink-raised p-3.5"
+              className="flex gap-4 p-3.5"
             >
               <span className="font-mono text-sm font-semibold tabular-nums text-bone-faint">
                 {String(i + 1).padStart(2, "0")}
@@ -446,9 +446,9 @@ export function ReportView({ report }: { report: AuditReport }) {
 
       {report.quickWins.length > 0 && (
       <Block label="Quick wins: low regression risk">
-        <ul className="space-y-2">
+        <ul className="divide-y divide-line border border-line bg-ink-raised">
           {report.quickWins.map((w) => (
-            <li key={w.title} className="border border-line bg-ink-raised p-3.5">
+            <li key={w.title} className="p-3.5">
               <div className="flex items-baseline justify-between gap-4">
                 <p className="text-sm font-medium text-bone">{w.title}</p>
                 {w.findingId && (
@@ -468,9 +468,9 @@ export function ReportView({ report }: { report: AuditReport }) {
 
       {report.deeperInvestigation.length > 0 && (
       <Block label="Requires deeper investigation">
-        <ul className="space-y-2">
+        <ul className="divide-y divide-line border border-line bg-ink-raised">
           {report.deeperInvestigation.map((d) => (
-            <li key={d.title} className="border border-line bg-ink-raised p-3.5">
+            <li key={d.title} className="p-3.5">
               <p className="text-sm font-medium text-bone">{d.title}</p>
               {d.detail && (
                 <p className="mt-1 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
@@ -490,9 +490,9 @@ export function ReportView({ report }: { report: AuditReport }) {
 
       {report.notAssessed.length > 0 && (
       <Block label="Not assessed: runtime-only checks skipped">
-        <ul className="space-y-2">
+        <ul className="divide-y divide-line border border-line bg-ink-raised">
           {report.notAssessed.map((n) => (
-            <li key={n.check} className="border border-line bg-ink-raised p-3.5">
+            <li key={n.check} className="p-3.5">
               <p className="text-sm font-medium text-bone">{n.check}</p>
               <p className="mt-1 max-w-[68ch] text-xs leading-relaxed text-bone-dim">
                 <span className="font-mono uppercase tracking-wide text-bone-faint">

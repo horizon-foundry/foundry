@@ -70,7 +70,7 @@ function ExampleCard({ r }: { r: ReportSummary }) {
     <li>
       <Link
         href={`/example/${r.slug}`}
-        className="group block border border-line bg-ink-raised p-5 transition-colors hover:border-line-strong sm:p-6"
+        className="group block p-5 transition-colors hover:bg-ink-raised-2 sm:p-6"
       >
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
           <h3 className="font-mono text-lg font-semibold text-bone">
@@ -151,7 +151,7 @@ export default async function ReportsIndex() {
           of a traditional SaaS product. Each ends in a scope-qualified verdict,
           with risks separated from improvements.
         </p>
-        <ul className="mt-8 space-y-4">
+        <ul className="mt-8 divide-y divide-line border border-line bg-ink-raised">
           {examples.map((r) => (
             <ExampleCard key={r.slug} r={r} />
           ))}

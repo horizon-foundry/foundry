@@ -97,9 +97,9 @@ export async function InstallBlock() {
             propagates through the grid and widens the whole page on phones,
             clipping the install command (the conversion moment). */}
         <div className="mt-8 grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="min-w-0 space-y-5">
+          <div className="min-w-0 divide-y divide-line self-start border border-line bg-ink">
             {/* Recommended: npx. */}
-            <div className="border border-line bg-ink">
+            <div>
               <div className="flex items-center justify-between border-b border-line px-4 py-2">
                 {/* Emphasis by luminance, not hue: amber is reserved for
                     commands you fire (DESIGN.md report-excerpt exception). */}
@@ -126,7 +126,7 @@ export async function InstallBlock() {
             </div>
 
             {/* Alternative: from source. */}
-            <div className="border border-line bg-ink">
+            <div>
               <div className="flex items-center justify-between border-b border-line px-4 py-2">
                 <span className="font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
                   from source
