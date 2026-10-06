@@ -103,7 +103,7 @@ export function VerdictStamp({
         </p>
       )}
       {posture && (
-        <p className="mt-4 max-w-3xl text-lg font-semibold leading-snug text-bone sm:text-xl">
+        <p className="mt-4 max-w-measure text-lg font-semibold leading-snug text-bone sm:text-xl">
           {posture}
         </p>
       )}

@@ -33,7 +33,7 @@ function Tile({
       <span className="font-mono text-sm font-semibold text-command underline-offset-4 group-hover:underline">
         {heading}
       </span>
-      <p className="mt-2 text-sm leading-relaxed text-bone-dim">{body}</p>
+      <p className="mt-2 max-w-measure text-sm leading-relaxed text-bone-dim">{body}</p>
       <span className="mt-4 pt-1 font-mono text-[0.7rem] uppercase tracking-wide text-bone-faint transition-colors group-hover:text-bone">
         View
       </span>
@@ -55,7 +55,7 @@ export default function SkillsIndex() {
             <h1 className="max-w-3xl font-display text-3xl tracking-normal text-bone sm:text-4xl">
               Software delivery integrity, as Claude Code skills.
             </h1>
-            <p className="mt-4 max-w-[68ch] leading-relaxed text-bone-dim">
+            <p className="mt-4 max-w-measure leading-relaxed text-bone-dim">
               For people who build products with an AI in the loop. The suite
               makes six promises between an idea and its release. Product
               intent is declared and audited. A feature&apos;s design is checked
@@ -135,7 +135,7 @@ export default function SkillsIndex() {
             <h2 className="font-display text-xl tracking-normal text-bone sm:text-2xl">
               Where it fits
             </h2>
-            <p className="mt-5 max-w-[68ch] leading-relaxed text-bone-dim">
+            <p className="mt-5 max-w-measure leading-relaxed text-bone-dim">
               Foundry is the release gate at the end of the build loop. The
               inner-loop skills you already use to write and review code stay
               where they are; Foundry is the pass that decides whether the
@@ -160,7 +160,7 @@ export default function SkillsIndex() {
                 <h3 className="font-mono text-sm font-semibold text-bone">
                   A documentation architecture
                 </h3>
-                <p className="mt-2 text-sm leading-relaxed text-bone-dim">
+                <p className="mt-2 max-w-measure text-sm leading-relaxed text-bone-dim">
                   The skills enforce one doc set, engineered as the agent&apos;s
                   memory so a cold start can&apos;t go wrong. One owner per fact,
                   a forever spec, an unbroken plan chain.
@@ -170,7 +170,7 @@ export default function SkillsIndex() {
                 <h3 className="font-mono text-sm font-semibold text-bone">
                   Skills that resist being ignored
                 </h3>
-                <p className="mt-2 text-sm leading-relaxed text-bone-dim">
+                <p className="mt-2 max-w-measure text-sm leading-relaxed text-bone-dim">
                   Each skill opens with a mandatory gate. A named skill is
                   invoked and followed, never hand-reproduced, so the discipline
                   is explicit and hard to skip. Where an invariant must truly

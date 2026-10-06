@@ -29,7 +29,7 @@ export default async function Unlock({
             <p className="font-mono text-sm text-bone-dim">
               Access · check your inbox
             </p>
-            <h1 className="mt-3 font-mono text-2xl font-semibold tracking-tight text-bone">
+            <h1 className="mt-3 font-display text-2xl tracking-normal text-bone sm:text-3xl">
               Sign-in link sent.
             </h1>
             <p className="mt-3 text-sm leading-relaxed text-bone-dim">
@@ -57,7 +57,7 @@ export default async function Unlock({
           <p className="font-mono text-sm text-bone-dim">
             Report history
           </p>
-          <h1 className="mt-3 font-mono text-2xl font-semibold tracking-tight text-bone">
+          <h1 className="mt-3 font-display text-2xl tracking-normal text-bone sm:text-3xl">
             Sign in to view your reports.
           </h1>
           <p className="mt-3 text-sm leading-relaxed text-bone-dim">

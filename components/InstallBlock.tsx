@@ -56,18 +56,40 @@ function StarButton({ stars }: { stars: number | null }) {
   );
 }
 
-const DETAIL = [
+// A command a reader types, inside running prose: the command style (DESIGN.md,
+// Colors), so every command on the page reads the same.
+function Cmd({ children }: { children: React.ReactNode }) {
+  return <span className="font-mono text-command">{children}</span>;
+}
+
+const DETAIL: { k: string; d: React.ReactNode }[] = [
   {
     k: "Requirements",
     d: "For npx: Node and Claude Code. For the from-source path: git, make, and Claude Code. No account; the skills' only network call is the disclosed daily version check.",
   },
   {
     k: "What it installs",
-    d: "The skills land in Claude Code's skills directory, invocable in any session as top-level commands (/foundry, /production-audit, and so on). npx lets you pick which skills; the from-source make install symlinks them all so they track the repo.",
+    d: (
+      <>
+        The skills land in Claude Code&apos;s skills directory, invocable in
+        any session as top-level commands (<Cmd>/foundry</Cmd>,{" "}
+        <Cmd>/production-audit</Cmd>, and so on). npx lets you pick which
+        skills; the from-source <Cmd>make install</Cmd> symlinks them all so
+        they track the repo.
+      </>
+    ),
   },
   {
     k: "Upgrade and uninstall",
-    d: "npx: re-run the add command to update; a skill run tells you when a newer suite is out. From source: git pull && make install to update, make uninstall to remove the symlinks. Beyond the skills directory, the one file the skills touch is the version-check stamp at ~/.claude/.foundry-version-checked.",
+    d: (
+      <>
+        npx: re-run the add command to update; a skill run tells you when a
+        newer suite is out. From source: <Cmd>git pull &amp;&amp; make install</Cmd>{" "}
+        to update, <Cmd>make uninstall</Cmd> to remove the symlinks. Beyond the
+        skills directory, the one file the skills touch is the version-check
+        stamp at ~/.claude/.foundry-version-checked.
+      </>
+    ),
   },
 ];
 
@@ -82,7 +104,7 @@ export async function InstallBlock() {
             <h2 className="font-display text-2xl tracking-normal text-bone sm:text-3xl">
               Install Foundry
             </h2>
-            <p className="mt-2 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
+            <p className="mt-2 max-w-measure text-sm leading-relaxed text-bone-dim">
               One command adds the skills to Claude Code. No build step, no
               account. One disclosed call home: at most once a day, a skill
               asks this site for the current version so it can tell you when
@@ -97,9 +119,9 @@ export async function InstallBlock() {
             propagates through the grid and widens the whole page on phones,
             clipping the install command (the conversion moment). */}
         <div className="mt-8 grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="min-w-0 space-y-5">
+          <div className="min-w-0 divide-y divide-line self-start border border-line bg-ink">
             {/* Recommended: npx. */}
-            <div className="border border-line bg-ink">
+            <div>
               <div className="flex items-center justify-between border-b border-line px-4 py-2">
                 {/* Emphasis by luminance, not hue: amber is reserved for
                     commands you fire (DESIGN.md report-excerpt exception). */}
@@ -126,7 +148,7 @@ export async function InstallBlock() {
             </div>
 
             {/* Alternative: from source. */}
-            <div className="border border-line bg-ink">
+            <div>
               <div className="flex items-center justify-between border-b border-line px-4 py-2">
                 <span className="font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
                   from source
@@ -139,19 +161,19 @@ export async function InstallBlock() {
               <pre className="whitespace-pre-wrap break-all px-4 py-4 font-mono text-sm leading-relaxed sm:overflow-x-auto sm:whitespace-pre sm:break-normal">
                 <code>
                   <span className="text-bone-faint">$ </span>
-                  <span className="text-bone-dim">git clone {REPO_URL}</span>
+                  <span className="text-command">git clone {REPO_URL}</span>
                   {"\n"}
                   <span className="text-bone-faint">$ </span>
-                  <span className="text-bone-dim">cd foundry</span>
+                  <span className="text-command">cd foundry</span>
                   {"\n"}
                   <span className="text-bone-faint">$ </span>
-                  <span className="text-bone-dim">make install</span>
+                  <span className="text-command">make install</span>
                 </code>
               </pre>
               <p className="border-t border-line px-4 py-2.5 font-mono text-xs leading-relaxed text-bone-faint">
                 Symlinks every skill so it tracks the repo. Update with{" "}
-                <span className="text-bone-dim">git pull &amp;&amp; make install</span>,
-                remove with <span className="text-bone-dim">make uninstall</span>.
+                <span className="text-command">git pull &amp;&amp; make install</span>,
+                remove with <span className="text-command">make uninstall</span>.
               </p>
             </div>
           </div>
@@ -163,7 +185,7 @@ export async function InstallBlock() {
             <p className="font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
               What happens when you invoke it
             </p>
-            <p className="mt-3 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
+            <p className="mt-3 max-w-measure text-sm leading-relaxed text-bone-dim">
               A skill is something Claude Code runs against your project.{" "}
               <span className="text-command">/production-audit</span> reads your
               code (never writes), traces the flows that cross file boundaries,
@@ -190,7 +212,7 @@ export async function InstallBlock() {
               <dt className="font-mono text-sm font-semibold uppercase tracking-wide text-bone">
                 {item.k}
               </dt>
-              <dd className="mt-2 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
+              <dd className="mt-2 max-w-measure text-sm leading-relaxed text-bone-dim">
                 {item.d}
               </dd>
             </div>

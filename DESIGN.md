@@ -53,6 +53,8 @@ spacing:
   unit: '4px'
   gutter: '24px'
   container-max: '1180px'
+  measure: '58ch'          # sans prose: lands near 75 characters per line
+  measure-serif: '61ch'    # serif doc prose: lands near 75 characters per line
 ---
 
 Inherits the Horizon Foundry parent brand (the horizon-foundry/horizon-foundry repo's BRAND.md); Archivo Black display, decided 2026-07-24 (revised from the initial Big Shoulders pick on 2026-07-23, reversed on letterform grounds before any merge).
@@ -63,7 +65,7 @@ Inherits the Horizon Foundry parent brand (the horizon-foundry/horizon-foundry r
 
 Foundry is Horizon Foundry's suite, and the site wears the Horizon Foundry identity: a dark blue-gray steel ground, the angular Horizon Foundry mark, and a monochrome palette. The register is a working foundry, industrial and precise, software forged with craft rather than announced with hype.
 
-Two layers share one screen. The **brand layer** (chrome, the suite pages, the mark and wordmark) is steel and white in an industrial condensed gothic. The **instrument layer** (the audit reports and other technical surfaces) keeps a monospace, ledger character and the severity palette. The instrument is the tool; the brand is the foundry it was made in.
+Two layers share one screen. The **brand layer** (chrome, the suite pages, the mark and wordmark) is steel and white, with Archivo Black for the wordmark and page titles. The **instrument layer** (the audit reports and other technical surfaces) keeps a monospace, ledger character and the severity palette. The instrument is the tool; the brand is the foundry it was made in.
 
 The organizing color rule holds throughout: the brand is monochrome, so color means a severity, a verdict, or the one named exception below (the amber command accent, under Colors), and nothing else. A screen is steel and bone until a finding or a verdict speaks; emphasis in the brand layer reads by luminance (bright white on steel), not by hue.
 
@@ -79,19 +81,19 @@ The **wordmark** pairs the mark with "Foundry", the suite. The parent's own HORI
 
 Steel is the ground: a dark blue-gray anchored on the Brand Slate `#334455` (which doubles as the hairline). It layers `ink` -> `ink-raised` -> `ink-raised-2`. Text is `bone`, `bone-dim`, `bone-faint` (`bone-faint` was brightened from `#6C7684` to `#8B94A4` so small metadata clears WCAG AA 4.5:1 on the steel grounds; the hairline tokens `line`/`line-strong` are RULES, never text). The brand layer is monochrome: emphasis is pure white `#FFFFFF` (`signal`) against the steel ground and bone body text, an accent of luminance rather than hue.
 
-One functional accent breaks the monochrome: **amber `#D99A2E`**. It marks the commands you fire (`/production-audit`, `make install`, install and invocation tokens), and as the heading token of a directory tile on `/skills` (codified 2026-07-13). On the skills directory, amber marks the actionable heading of each entry-point tile, so it reads as one consistent set; this includes the non-command "Your reports" tile that shares the grid. That tile always renders, because it is the only `/unlock` entry point outside the footer; it was previously conditional on an odd skill count to keep the two-column grid square, which meant adding a skill could silently remove the sign-in path. An even user-invoked count therefore leaves one blank cell in the last row, which is the accepted cost of not hiding a functional link (revisited 2026-08-14). Outside that directory grid, amber stays strictly the command signal. It is distinct from the brand (monochrome) and from the severity and verdict hues (which live only in the reports).
+One functional accent breaks the monochrome: **amber `#D99A2E`**. It marks the commands you fire (`/production-audit`, `make install`, install and invocation tokens), and as the heading token of a directory tile on `/skills` (codified 2026-07-13). On the skills directory, amber marks the actionable heading of each entry-point tile, so it reads as one consistent set; this includes the non-command "Your reports" tile that shares the grid. That tile always renders, because it is the only `/unlock` entry point outside the footer; it was previously conditional on an odd skill count to keep the two-column grid square, which meant adding a skill could silently remove the sign-in path. An even user-invoked count therefore leaves one blank cell in the last row, which is the accepted cost of not hiding a functional link (revisited 2026-08-14). Outside that directory grid, amber stays strictly the command signal. It is distinct from the brand (monochrome) and from the severity and verdict hues (which live in reports and in the framed places listed below).
 
-The severity ramp (critical red, high orange, medium amber-yellow, low steel-blue, informational gray) and the three verdict colors (green safe, amber-yellow risk, red no-ship) belong to the instrument layer and mean exactly severity and verdict. Because the brand layer carries no hue, any saturated color a reader sees is unambiguously a severity or a verdict.
+The severity ramp (critical red, high orange, medium amber-yellow, low steel-blue, informational gray) and the three verdict colors (green safe, amber-yellow risk, red no-ship) belong to the instrument layer and mean exactly severity and verdict. Because the brand layer carries no hue, any saturated color a reader sees, other than the command amber, is a severity or a verdict.
 
-**The report-excerpt exception (codified 2026-07-13).** A marketing surface may carry severity or verdict hues ONLY inside an element framed as a report excerpt: the hero terminal's simulated output, the worked-example report specimen (a real excerpt of the published example, rendered by the report components), the flagship's three-verdict list, and the install block's mini-verdict. The frame is what licenses the color; a severity hue on plain marketing chrome (a label, a badge, a heading) is still a violation. Labels like "recommended" are emphasis, not commands or verdicts: they read in `signal` white, never amber, never a severity hue.
+**The report-excerpt exception (codified 2026-07-13).** A marketing surface may carry severity or verdict hues ONLY inside an element framed as a report excerpt: the hero terminal's simulated output, the worked-example report specimen (a real excerpt of the published example, rendered by the report components), the flagship's three-verdict list (drawn inside a visible excerpt frame), the install block's mini-verdict, the report cards on `/reports` (each one summarizes a report), and the severity and verdict specimens on the design-system page (they document the tokens). That list is the whole license (settled 2026-10-06). The frame is what licenses the color; a severity hue on plain marketing chrome (a label, a badge, a heading) is still a violation. Labels like "recommended" are emphasis, not commands or verdicts: they read in `signal` white, never amber, never a severity hue.
 
 ## Typography
 
-**Archivo Black** carries the brand: the wordmark and display headings, a heavy grotesque whose blunt, machined letterforms rhyme with the angular mark. It ships in a single 400 weight, so display type never sets a bold or semibold utility (the browser would synthesize a faux weight); emphasis in the brand layer comes from size and the mark, not weight. **IBM Plex Sans** is the body and UI voice. **IBM Plex Mono** is the instrument voice: verdicts, finding IDs, severities, code, and all technical metadata. **IBM Plex Serif** sets long-form rendered documentation. A heavy grotesque for the foundry, monospace for the instrument. Functional text (labels, links, buttons, table cells, meta rows) is never below 11px (0.6875rem).
+**Archivo Black** carries the brand: the wordmark and display headings, a heavy grotesque whose blunt, machined letterforms rhyme with the angular mark. It ships in a single 400 weight, so display type never sets a bold or semibold utility (the browser would synthesize a faux weight); emphasis in the brand layer comes from size and the mark, not weight. **IBM Plex Sans** is the body and UI voice. **IBM Plex Mono** is the instrument voice: verdicts, finding IDs, severities, code, and all technical metadata. **IBM Plex Serif** sets long-form rendered documentation. Page titles follow their layer (settled 2026-10-06): a brand-layer page title (/behind, the /reports index, /unlock, 404, error) is Archivo Black; report names and deck slide headings are the instrument layer and stay in Plex Mono; a skill page's title is the command itself, so it sets in the amber command style. A heavy grotesque for the foundry, monospace for the instrument. Functional text (labels, links, buttons, table cells, meta rows) is never below 11px (0.6875rem).
 
 ## Layout & Spacing
 
-A strict 4px unit. Generous negative space around dense, high-signal content. Hairline rules (Brand Slate) divide sections instead of stacked cards. Content max width 1180px; long-form prose narrows to ~68ch. Left-aligned and ledger-like.
+A strict 4px unit. Generous negative space around dense, high-signal content. Hairline rules (Brand Slate) divide sections instead of stacked cards. Content max width 1180px; long-form prose stops at about 75 characters per line. A `ch` is the width of a zero, not of an average character, so the measure is two tokens measured against real text: `measure` (58ch) for sans and `measure-serif` (61ch) for the serif doc prose (settled 2026-10-06). Mono evidence (code, paths, quoted output) is not prose and is not capped: it wraps at the edge of its box. Left-aligned and ledger-like.
 
 ## Elevation & Depth
 
@@ -172,7 +174,9 @@ Sharp. Corner radius 2-4px, effectively square, matching the mark's cut letterfo
 
 - **Wordmark / mark**: the Horizon Foundry symbol plus the Foundry wordmark; monochrome.
 - **Severity chip**: uppercase mono label, hairline border, a 2px left rule in the severity color.
-- **Verdict stamp**: a bordered block with corner registration ticks in the verdict color; level in mono uppercase.
+- **Verdict stamp**: a bordered block with corner registration ticks in the verdict color; level in mono uppercase. The ticks are the stamp's mark, not decoration.
+- **Section rule**: a short 1px rule that draws in once before a marketing section heading (the `draw` motion token). It is the section's mark, not decoration.
+- **List**: one block divided by 1px rules, never separately bordered items with gaps between them. On the page ground it is ruled top and bottom (Six promises, The method); a list that carries its own raised fill (the report's finding lists, the install methods) takes a full hairline frame so the fill has an edge.
 - **Nav tabs**: mono, active tab underlined in bone, not a filled pill (action is not selection).
 - **Doc prose**: IBM Plex Serif, bone on steel, narrow measure, hairline rules under headings.
 
@@ -180,7 +184,7 @@ Sharp. Corner radius 2-4px, effectively square, matching the mark's cut letterfo
 
 The audit report is read by a detail-oriented but time-poor senior or principal engineer, or a product lead. They do not read it top to bottom; they triage. So the report is comprehensive but never a wall of text: the default view is the decision and the shape, and all depth is one click away and precise when opened.
 
-- **The first screen is the whole call.** The verdict stamp carries the punch: the verdict in its level's color, then the one-line posture as a bright, bold summary inside the stamp (it is the headline, so it is the punchiest text on the block, never subdued). The justification is quieter supporting detail below the stamp; the findings that drive the verdict are named and linked right under it, not left as bare IDs. Then one scorecard: the severity mix, the count of risks versus improvements, the gate statuses, and what was not assessed. A reader who reads nothing else has the decision and the triage. The stamp is full width so the top matches the scorecard below it, with the summary text capped inside it. The scorecard's severity strip abbreviates the two longest names to crit and info at every width, so a narrow cell never clips, and keeps the full name for screen readers.
+- **The first screen is the whole call.** The verdict stamp carries the punch: the verdict in its level's color, then the one-line posture as a bright, bold summary inside the stamp (it is the headline, so it is the punchiest text on the block, never subdued). The justification is quieter supporting detail below the stamp, folded. Then one scorecard: the severity mix, the count of risks versus improvements, the gate statuses, and what was not assessed. The findings that drive the verdict follow directly under the scorecard, named and linked, not left as bare IDs. A reader who reads nothing else has the decision and the triage, and the scorecard sits on the first screen (settled 2026-10-06; it used to follow the drivers). The stamp is full width so the top matches the scorecard below it, with the summary text capped inside it. The scorecard's severity strip abbreviates the two longest names to crit and info at every width, so a narrow cell never clips, and keeps the full name for screen readers.
 - **Progressive disclosure below, risks before improvements.** Findings split into two groups: **risks to weigh** (a path to harm, what the verdict rests on) then **improvements** (safe today, robustness over time, which never cap the verdict), each a severity-sorted index of collapsed rows (one-line issue plus location) with the low and informational bulk folded into one disclosure. A report with no risks says so plainly ("no risks surfaced"), so a healthy app reads as healthy with a punch list, not as a wall of problems. Strengths lead as scannable green headlines, the note one click away. Process detail (remediation, not-assessed, mechanical sweeps) sits at the tail, compact.
 - **No repetition, no filler.** Identical per-item cards collapse to one line. If a section repeats the same sentence, it is one sentence.
 - **Gate and finding notes surface only when they move the decision.** A met gate is a chip; an at-risk or not-met gate shows its reason.
@@ -188,17 +192,17 @@ The audit report is read by a detail-oriented but time-poor senior or principal 
 ## Anti-goals
 
 - No drop shadows, glows, rounded-pill buttons, or gradient meshes.
-- No color that does not mean a severity, a verdict, or an invocable command. Amber also heads the entry tiles on the skills directory. Severity and verdict hues appear only inside a framed report excerpt. Everything else is steel, bone and white.
+- No color that does not mean a severity, a verdict, or an invocable command. Amber also heads the entry tiles on the skills directory. Severity and verdict hues appear only in reports and in the framed places the next line lists. Everything else is steel, bone and white.
 - No hype or marketing warmth.
-- Never set the wordmark or display headings in anything but Archivo Black, or draw the mark in anything but the Horizon Foundry mark in one flat color.
+- Never set the wordmark or a brand-layer page title in anything but Archivo Black, or draw the mark in anything but the Horizon Foundry mark in one flat color. Report names and deck slide headings are the instrument layer and stay in Plex Mono, and a skill page's title is its command, in the amber command style.
 - No em dashes in any copy.
-- A page must not show a severity or verdict hue on plain marketing chrome (a label, a badge, a heading) outside a framed report excerpt.
-- A page must not stack bordered cards. Hairline rules divide sections.
+- A page must not show a severity or verdict hue on plain marketing chrome (a label, a badge, a heading). Outside a report, the hues appear only inside these frames: the hero terminal's simulated run, the report specimen, the framed three-verdict list, the install block's mini-verdict, the report cards on /reports, and the severity and verdict specimens on the design-system page.
+- A page must not stack bordered cards. Hairline rules divide sections, and a list is one block divided by 1px rules: ruled top and bottom on the page ground, fully framed when it carries a raised fill. A ledger grid divided by 1px gaps is a hairline grid, not stacked cards.
 - A marketing page must not use a tracked-caps kicker above a heading more than once, on the hero only.
 - A report page must not bury the verdict. The first screen is the stamp, the one-line summary, and the scorecard.
 - A page must not mark emphasis by hue or by faux bold.
-- A page must not set long-form prose wider than about 68ch.
+- A page must not set long-form prose wider than about 75 characters per line.
 - A page must not round corners beyond 2 to 4px, or fill the active nav tab like a pill.
 - A page must not draw the mark in any hue, or set it near body text at 16px.
-- A page must not carry a decorative element that can vanish on a phone with nothing lost.
+- A page must not carry a decorative element that can vanish on a phone with nothing lost. The section rule and the stamp's corner ticks are marks (see Components), not decoration.
 - A page must not use pointer reticles or crosshairs.

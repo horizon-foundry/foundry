@@ -53,7 +53,7 @@ export default async function SkillPage({
           </span>
         </div>
 
-        <p className="mt-4 max-w-[68ch] text-lg leading-relaxed text-bone">
+        <p className="mt-4 max-w-measure text-lg leading-relaxed text-bone">
           {skill.tagline}
         </p>
 
@@ -64,7 +64,7 @@ export default async function SkillPage({
                 <h2 className="font-mono text-sm font-semibold text-bone">
                   Why it matters
                 </h2>
-                <p className="mt-3 max-w-xl leading-relaxed text-bone-dim">
+                <p className="mt-3 max-w-measure leading-relaxed text-bone-dim">
                   {skill.why}
                 </p>
               </div>
@@ -74,17 +74,13 @@ export default async function SkillPage({
                 <h2 className="font-mono text-sm font-semibold text-bone">
                   Reach for it when
                 </h2>
-                <ul className="mt-3 space-y-2.5">
+                <ul className="mt-3 divide-y divide-line border-y border-line">
                   {skill.when.map((w) => (
                     <li
                       key={w}
-                      className="flex gap-2.5 text-sm leading-relaxed text-bone-dim"
+                      className="py-2.5 text-sm leading-relaxed text-bone-dim"
                     >
-                      <span
-                        className="mt-2.5 h-px w-3 shrink-0 bg-line-strong"
-                        aria-hidden="true"
-                      />
-                      <span>{w}</span>
+                      {w}
                     </li>
                   ))}
                 </ul>
@@ -100,7 +96,7 @@ export default async function SkillPage({
           </h2>
           <span className="h-px flex-1 bg-line" aria-hidden="true" />
         </div>
-        <p className="mt-2 max-w-[68ch] text-sm leading-relaxed text-bone-faint">
+        <p className="mt-2 max-w-measure text-sm leading-relaxed text-bone-faint">
           This is the exact SKILL.md your agent follows when you invoke{" "}
           <span className="font-mono text-command">/{skill.name}</span>. No
           separate docs to drift: the spec is the product.

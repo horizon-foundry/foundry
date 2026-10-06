@@ -64,7 +64,8 @@
   --color-signal: #ffffff;
 
   /* Amber is the forge glow: reserved for the invoke/run layer (commands you
-     fire, install and invocation tokens), and nothing else. It is the one
+     fire, install and invocation tokens) and the heading of each /skills entry
+     tile (DESIGN.md, Colors). It is the one
      functional accent, distinct from the monochrome brand and from the
      severity/verdict colors in the reports. */
   --color-command: #d99a2e;
@@ -120,6 +121,12 @@
   --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-plex-mono), ui-monospace, monospace;
   --font-serif: var(--font-plex-serif), ui-serif, Georgia, serif;
+  /* The measure: about 75 characters per line (DESIGN.md Layout). A ch is the
+     width of a zero, not of an average character, so each text style gets the
+     value that lands near 75 when measured against real text: 58ch for the
+     sans body, 61ch for the serif doc prose. */
+  --container-measure: 58ch;
+  --container-measure-serif: 61ch;
 }
 
 /* No global smooth scroll: it made Next's scroll-to-top on route change animate,
@@ -259,7 +266,7 @@ body::before {
 .doc-prose {
   font-family: var(--font-serif);
   color: var(--color-bone);
-  max-width: 68ch;
+  max-width: var(--container-measure-serif);
 }
 .doc-prose h1,
 .doc-prose h2,

@@ -10,7 +10,7 @@ export default function NotFound() {
         <p className="font-mono text-sm text-bone-dim">
           404 · not found
         </p>
-        <h1 className="mt-3 font-mono text-3xl font-semibold tracking-tight text-bone">
+        <h1 className="mt-3 font-display text-3xl tracking-normal text-bone sm:text-4xl">
           No finding here.
         </h1>
         <Link

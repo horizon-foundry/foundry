@@ -170,12 +170,7 @@ export function Terminal() {
     <div className="w-full border border-line bg-ink-raised">
       {/* Title bar */}
       <div className="flex items-center gap-2 border-b border-line px-3.5 py-2.5">
-        <span className="flex gap-1.5" aria-hidden="true">
-          <span className="h-2.5 w-2.5 rounded-full border border-line-strong" />
-          <span className="h-2.5 w-2.5 rounded-full border border-line-strong" />
-          <span className="h-2.5 w-2.5 rounded-full border border-line-strong" />
-        </span>
-        <span className="ml-1 font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
+        <span className="font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
           foundry
         </span>
         {/* The honest boundary, applied to our own hero: this is a replay,
@@ -197,8 +192,8 @@ export function Terminal() {
             aria-pressed={i === active}
             className={`min-h-11 border px-2.5 py-1 font-mono text-xs transition-colors ${
               i === active
-                ? "border-command/60 text-command"
-                : "border-line text-bone-faint hover:border-line-strong hover:text-bone-dim"
+                ? "border-bone text-command"
+                : "border-line text-command hover:border-line-strong"
             }`}
           >
             {c.cmd}

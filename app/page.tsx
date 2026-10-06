@@ -124,7 +124,7 @@ export default function Home() {
                 <br />
                 from <span className="text-signal">AI-built code</span>.
               </h1>
-              <p className="mt-6 max-w-[68ch] text-lg leading-relaxed text-bone-dim">
+              <p className="mt-6 max-w-measure text-lg leading-relaxed text-bone-dim">
                 Foundry is eleven Claude Code skills that turn fast, AI-built
                 code into something you can ship. The flagship audits the whole
                 application and ends in one verdict that names its evidence:
@@ -232,7 +232,7 @@ export default function Home() {
                   Production Audit
                 </h2>
               </div>
-              <p className="mt-2 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
+              <p className="mt-2 max-w-measure text-sm leading-relaxed text-bone-dim">
                 The deliver step of the suite: a whole-application pre-launch
                 audit across the dimensions your product calls for, from a
                 standing set of eleven, separating risks from improvements. It
@@ -248,8 +248,13 @@ export default function Home() {
                 </Link>
               )}
             </div>
-            {/* The three verdicts it can return. Color = the decision. */}
-            <div className="flex flex-col gap-2">
+            {/* The three verdicts it can return, drawn inside a visible
+                excerpt frame: the frame is what licenses the verdict hues on a
+                marketing page (DESIGN.md Colors, settled 2026-10-06). */}
+            <figure className="flex flex-col gap-2 border border-line bg-ink p-3">
+              <figcaption className="font-mono text-[0.6875rem] text-bone-faint">
+                The verdicts a report returns
+              </figcaption>
               {(
                 [
                   ["safe-to-ship", "text-verdict-safe", "border-verdict-safe"],
@@ -266,7 +271,7 @@ export default function Home() {
                   </span>
                 </div>
               ))}
-            </div>
+            </figure>
           </div>
         </section>
 
@@ -277,13 +282,13 @@ export default function Home() {
               Software built fast ships confident and unverified.
             </h2>
             <div className="space-y-4 text-bone-dim">
-              <p className="leading-relaxed">
+              <p className="max-w-measure leading-relaxed">
                 A security review looks at security. A diff review looks at a
                 diff. A frontend audit looks at the frontend. None of them
                 answer the question you actually ask the night before an invite
                 wave: is this safe to put in front of real people.
               </p>
-              <p className="leading-relaxed">
+              <p className="max-w-measure leading-relaxed">
                 That question covers the whole app, and it needs a verdict, not a
                 list. Production Audit traces the flows that cross file
                 boundaries, produces artifacts a reviewer can finish, and refuses
@@ -311,7 +316,7 @@ export default function Home() {
                 </div>
               ))}
             </div>
-            <p className="mt-4 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
+            <p className="mt-4 max-w-measure text-sm leading-relaxed text-bone-dim">
               These six usually apply. Five more resolve per project, operability,
               testing confidence, data and migration safety, release safety, and
               performance, and even these six drop out where there is no surface,
@@ -344,7 +349,7 @@ export default function Home() {
                     <h3 className="font-mono text-base font-semibold uppercase tracking-wide text-bone">
                       {p.t}
                     </h3>
-                    <p className="mt-1.5 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
+                    <p className="mt-1.5 max-w-measure text-sm leading-relaxed text-bone-dim">
                       {p.d}
                     </p>
                   </div>
@@ -364,7 +369,7 @@ export default function Home() {
               {PRINCIPLES.map((pr) => (
                 <div key={pr.t} className="bg-ink p-5">
                   <h3 className="text-sm font-semibold text-bone">{pr.t}</h3>
-                  <p className="mt-2 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
+                  <p className="mt-2 max-w-measure text-sm leading-relaxed text-bone-dim">
                     {pr.d}
                   </p>
                 </div>
@@ -372,7 +377,7 @@ export default function Home() {
             </div>
             {/* The tune-vs-fixed answer, given its own line rather than buried
                 as one principle among many: it is the sharpest trust claim. */}
-            <p className="mt-6 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
+            <p className="mt-6 max-w-measure text-sm leading-relaxed text-bone-dim">
               You set the scope, not the bar. Which dimensions apply comes from
               what your product is, and which risks you accept is your call, on
               the record. The severity rubric and the meaning of the verdict are
@@ -391,10 +396,9 @@ export default function Home() {
                   <h2 className="font-display text-2xl tracking-normal text-bone sm:text-3xl">
                     We audited Foundry with Foundry.
                   </h2>
-                  <p className="mt-4 leading-relaxed text-bone-dim">
-                    The same {"/production-audit"} this suite ships, run against
-                    Foundry&apos;s own repository. Real code, real findings,
-                    nothing fictional. What the audit verified clean and what it
+                  <p className="mt-4 max-w-measure leading-relaxed text-bone-dim">
+                    The same <span className="font-mono text-command">/production-audit</span> this suite ships, run against
+                    Foundry&apos;s own repository. What the audit verified clean and what it
                     flagged are both on the record, finding by finding. The
                     repository is public, so you can read the report against its
                     source and see exactly what the method checked and what it
@@ -402,18 +406,10 @@ export default function Home() {
                   </p>
                   <p className="mt-4 font-mono text-sm text-bone-dim">
                     Verdict:{" "}
-                    {/* Full-literal class map: the verdict hue must come from
-                        the verdict (DESIGN.md's core law), and Tailwind's JIT
-                        needs complete literals, so no template interpolation. */}
-                    <span
-                      className={
-                        {
-                          "safe-to-ship": "text-verdict-safe",
-                          "ship-with-known-risks": "text-verdict-risk",
-                          "do-not-ship": "text-verdict-noship",
-                        }[featured.verdictLevel]
-                      }
-                    >
+                    {/* Bone, not the verdict hue: this line sits outside the
+                        framed specimen beside it, which already shows the
+                        verdict in color (DESIGN.md Colors, settled 2026-10-06). */}
+                    <span className="text-bone">
                       {VERDICT_LABEL[featured.verdictLevel]}
                     </span>
                   </p>
@@ -473,7 +469,7 @@ export default function Home() {
                 </div>
               ))}
             </div>
-            <p className="mt-4 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
+            <p className="mt-4 max-w-measure text-sm leading-relaxed text-bone-dim">
               The audit is read-only. It never changes your code. It produces a
               structured report and a verdict, and it tells you what it did not
               look at. It reads code and traces flows; it is not a penetration

@@ -42,9 +42,11 @@ export default async function ExampleReport({
       <CaptureView event="example_report_viewed" properties={{ slug }} />
       <SiteHeader />
       <main id="main" className="mx-auto min-h-[70vh] max-w-[1180px] px-5 py-10 sm:px-8">
-        {/* Banner: this one report is public; the full history is gated. */}
-        <div className="mb-8 flex flex-col gap-2 border border-line bg-ink-raised px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="font-mono text-xs uppercase tracking-wide text-bone-dim">
+        {/* Provenance line: this one report is public; the full history is
+            gated. One plain line, not a bordered banner, so the stamp and the
+            scorecard keep the first screen on a phone (DESIGN.md Anti-goals). */}
+        <div className="mb-6 flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
+          <p className="font-mono text-xs text-bone-dim">
             {isSelfAudit ? (
               <>
                 <span className="text-signal">Our own audit.</span> We ran{" "}
@@ -61,7 +63,7 @@ export default async function ExampleReport({
           </p>
           <Link
             href="/reports"
-            className="font-mono text-xs uppercase tracking-wide text-bone-faint transition-colors hover:text-bone"
+            className="shrink-0 self-start font-mono text-xs text-bone-faint transition-colors hover:text-bone"
           >
             All reports →
           </Link>

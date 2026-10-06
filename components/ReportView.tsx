@@ -51,7 +51,7 @@ function FindingRow({ f }: { f: Finding }) {
     <details
       id={`finding-${f.id}`}
       data-severity={f.severity}
-      className="group scroll-mt-24 border border-line bg-ink-raised open:border-line-strong"
+      className="group/row scroll-mt-24 border-l-2 border-l-transparent open:border-l-line-strong"
     >
       {/* Below sm the id/chip row stacks ABOVE the issue text; sharing one
           row squeezed the finding text to a ~18ch measure on phones, the
@@ -66,7 +66,7 @@ function FindingRow({ f }: { f: Finding }) {
           <SeverityChip severity={f.severity} />
         </span>
         <span className="min-w-0 flex-1">
-          <span className="block max-w-[68ch] text-sm font-medium leading-snug text-bone">
+          <span className="block max-w-measure text-sm font-medium leading-snug text-bone">
             {f.issue}
           </span>
           <span className="mt-1 block break-words font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
@@ -74,7 +74,7 @@ function FindingRow({ f }: { f: Finding }) {
           </span>
         </span>
         <span
-          className="hidden shrink-0 pt-0.5 font-mono text-bone-faint transition-transform group-open:rotate-90 sm:block"
+          className="hidden shrink-0 pt-0.5 font-mono text-bone-faint transition-transform group-open/row:rotate-90 sm:block"
           aria-hidden="true"
         >
           ›
@@ -105,7 +105,7 @@ function FindingRow({ f }: { f: Finding }) {
           </span>
         </div>
         {f.verification.refutationNotes && (
-          <p className="max-w-[68ch] border-l-2 border-line-strong pl-3 text-xs italic leading-relaxed text-bone-faint">
+          <p className="max-w-measure border-l-2 border-line-strong pl-3 text-xs italic leading-relaxed text-bone-faint">
             {f.verification.refutationNotes}
           </p>
         )}
@@ -132,7 +132,7 @@ function Field({
         className={`mt-1 leading-relaxed text-bone-dim ${
           mono
             ? "whitespace-pre-wrap break-words rounded-sm bg-ink-raised-2 p-2 font-mono text-[0.78rem]"
-            : "max-w-[68ch]"
+            : "max-w-measure"
         }`}
       >
         {children}
@@ -156,19 +156,19 @@ function FindingList({
   const shown = collapseMinor ? items.filter((f) => !isMinor(f)) : items;
   const folded = collapseMinor ? items.filter(isMinor) : [];
   return (
-    <div className="space-y-2">
+    <div className="divide-y divide-line border border-line bg-ink-raised">
       {shown.map((f) => (
         <FindingRow key={f.id} f={f} />
       ))}
       {folded.length > 0 && (
-        <details className="group border border-line bg-ink-raised">
-          <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3 font-mono text-xs uppercase tracking-wide text-bone-dim [&::-webkit-details-marker]:hidden">
+        <details className="group/fold">
+          <summary className="flex cursor-pointer list-none items-center justify-between border-l-2 border-l-transparent px-4 py-3 font-mono text-xs uppercase tracking-wide text-bone-dim [&::-webkit-details-marker]:hidden">
             <span>{folded.length} more · hygiene and polish</span>
-            <span className="text-bone-faint transition-transform group-open:rotate-90">
+            <span className="text-bone-faint transition-transform group-open/fold:rotate-90">
               ›
             </span>
           </summary>
-          <div className="space-y-2 border-t border-line px-4 py-4">
+          <div className="divide-y divide-line border-t border-line">
             {folded.map((f) => (
               <FindingRow key={f.id} f={f} />
             ))}
@@ -254,50 +254,20 @@ export function ReportView({ report }: { report: AuditReport }) {
                 ›
               </span>
             </summary>
-            <p className="mt-2 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
+            <p className="mt-2 max-w-measure text-sm leading-relaxed text-bone-dim">
               {verdict.justification}
             </p>
           </details>
         )}
       </div>
-      {verdict.blockingFindingIds.length > 0 && (
-        <div className="mt-6">
-          <h2 className="font-mono text-base font-semibold text-bone">
-            What drives this verdict
-          </h2>
-          <ul className="mt-2.5 space-y-2">
-            {verdict.blockingFindingIds.map((id) => {
-              const f = findings.find((x) => x.id === id);
-              return (
-                <li key={id} className="flex flex-col gap-1 sm:flex-row sm:gap-3">
-                  <a
-                    href={`#finding-${id}`}
-                    className={`shrink-0 font-mono text-xs font-semibold hover:underline ${
-                      f ? SEV_TEXT[f.severity] : "text-bone-faint"
-                    }`}
-                  >
-                    {id}
-                  </a>
-                  {f && (
-                    <span className="max-w-[68ch] text-sm leading-snug text-bone-dim">
-                      {f.issue}
-                    </span>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      )}
-
       {/* Scorecard: the triage view. Severity mix, gate statuses, and what was
           not assessed, in one glance under the verdict. Everything below is
           detail the reader drills into; this is the part they must be able to
           read in seconds. Gate notes appear only when a gate is at-risk or
           not-met, because only those move the decision. */}
-      <div className="mt-8 border border-line bg-ink-raised">
+      <div className="mt-8">
         <h2 className="sr-only">Scorecard</h2>
-        <div className="px-4 py-4">
+        <div>
           <ReportScorecard
             bySeverity={stats.bySeverity}
             riskCount={riskFindings.length}
@@ -307,7 +277,7 @@ export function ReportView({ report }: { report: AuditReport }) {
         </div>
         {(report.shipGates.length > 0 ||
           (meta.scope.excludedDimensions?.length ?? 0) > 0) && (
-          <div className="space-y-2.5 border-t border-line px-4 py-3.5">
+          <div className="mt-4 space-y-2.5 border-t border-line pt-3.5">
             {report.shipGates.length > 0 && (
               <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 font-mono text-[0.7rem] uppercase tracking-wide">
                 <span className="text-bone-faint">Gates</span>
@@ -324,7 +294,7 @@ export function ReportView({ report }: { report: AuditReport }) {
             {report.shipGates
               .filter((g) => g.status === "not-met" || g.status === "at-risk")
               .map((g) => (
-                <p key={g.gate} className="max-w-[68ch] text-xs leading-relaxed text-bone-dim">
+                <p key={g.gate} className="max-w-measure text-xs leading-relaxed text-bone-dim">
                   <span
                     className={`font-mono uppercase ${SHIP_GATE_STATUS_COLOR[g.status]}`}
                   >
@@ -348,15 +318,47 @@ export function ReportView({ report }: { report: AuditReport }) {
         )}
       </div>
 
+      {/* Drivers follow the scorecard, so the scorecard stays on the first
+          screen (DESIGN.md Interaction, settled 2026-10-06). */}
+      {verdict.blockingFindingIds.length > 0 && (
+        <div className="mt-8">
+          <h2 className="font-mono text-base font-semibold text-bone">
+            What drives this verdict
+          </h2>
+          <ul className="mt-2.5 space-y-2">
+            {verdict.blockingFindingIds.map((id) => {
+              const f = findings.find((x) => x.id === id);
+              return (
+                <li key={id} className="flex flex-col gap-1 sm:flex-row sm:gap-3">
+                  <a
+                    href={`#finding-${id}`}
+                    className={`shrink-0 font-mono text-xs font-semibold hover:underline ${
+                      f ? SEV_TEXT[f.severity] : "text-bone-faint"
+                    }`}
+                  >
+                    {id}
+                  </a>
+                  {f && (
+                    <span className="max-w-measure text-sm leading-snug text-bone-dim">
+                      {f.issue}
+                    </span>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
+
       {/* Strengths: lead with what's solid (green = safe). Collapsed to
           scannable headlines, the reassurance at a glance for a reader who will
           not read five paragraphs; the note is one click away. */}
       {report.strengths && report.strengths.length > 0 && (
         <Block label={`What's solid (${report.strengths.length})`}>
-          <ul className="space-y-2">
+          <ul className="divide-y divide-line border border-line bg-ink-raised">
             {report.strengths.map((s) => (
               <li key={s.area}>
-                <details className="group border border-line bg-ink-raised open:border-line-strong">
+                <details className="group">
                   <summary className="flex cursor-pointer list-none items-center gap-2.5 px-4 py-3 [&::-webkit-details-marker]:hidden">
                     <span
                       className="shrink-0 font-mono text-sm text-verdict-safe"
@@ -375,7 +377,7 @@ export function ReportView({ report }: { report: AuditReport }) {
                     </span>
                   </summary>
                   <p className="border-t border-line px-4 py-3 text-sm leading-relaxed text-bone-dim">
-                    <span className="block max-w-[68ch]">{s.note}</span>
+                    <span className="block max-w-measure">{s.note}</span>
                   </p>
                 </details>
               </li>
@@ -388,7 +390,7 @@ export function ReportView({ report }: { report: AuditReport }) {
           weighs. A report with none says so plainly, so a healthy app reads as
           healthy rather than as a wall of problems. */}
       <Block id="risks" label={`Risks to weigh (${riskFindings.length})`}>
-        <p className="-mt-2 mb-4 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
+        <p className="-mt-2 mb-4 max-w-measure text-sm leading-relaxed text-bone-dim">
           Findings with a path to harm in production. These are what the verdict
           weighs.
         </p>
@@ -406,7 +408,7 @@ export function ReportView({ report }: { report: AuditReport }) {
           not a body count. */}
       {improvementFindings.length > 0 && (
         <Block id="improvements" label={`Improvements (${improvementFindings.length})`}>
-          <p className="-mt-2 mb-4 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
+          <p className="-mt-2 mb-4 max-w-measure text-sm leading-relaxed text-bone-dim">
             Safe today. Ways to make the app more robust, observable, and
             consistent over time. These do not affect the verdict.
           </p>
@@ -416,11 +418,11 @@ export function ReportView({ report }: { report: AuditReport }) {
 
       {report.remediationPlan.length > 0 && (
       <Block label="Prioritised remediation plan">
-        <ol className="space-y-2">
+        <ol className="divide-y divide-line border border-line bg-ink-raised">
           {report.remediationPlan.map((step, i) => (
             <li
               key={step.title}
-              className="flex gap-4 border border-line bg-ink-raised p-3.5"
+              className="flex gap-4 p-3.5"
             >
               <span className="font-mono text-sm font-semibold tabular-nums text-bone-faint">
                 {String(i + 1).padStart(2, "0")}
@@ -428,7 +430,7 @@ export function ReportView({ report }: { report: AuditReport }) {
               <div>
                 <p className="text-sm font-medium text-bone">{step.title}</p>
                 {step.detail && (
-                  <p className="mt-1 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
+                  <p className="mt-1 max-w-measure text-sm leading-relaxed text-bone-dim">
                     {step.detail}
                   </p>
                 )}
@@ -446,9 +448,9 @@ export function ReportView({ report }: { report: AuditReport }) {
 
       {report.quickWins.length > 0 && (
       <Block label="Quick wins: low regression risk">
-        <ul className="space-y-2">
+        <ul className="divide-y divide-line border border-line bg-ink-raised">
           {report.quickWins.map((w) => (
-            <li key={w.title} className="border border-line bg-ink-raised p-3.5">
+            <li key={w.title} className="p-3.5">
               <div className="flex items-baseline justify-between gap-4">
                 <p className="text-sm font-medium text-bone">{w.title}</p>
                 {w.findingId && (
@@ -457,7 +459,7 @@ export function ReportView({ report }: { report: AuditReport }) {
                   </span>
                 )}
               </div>
-              <p className="mt-1 max-w-[68ch] text-xs leading-relaxed text-bone-faint">
+              <p className="mt-1 max-w-measure text-xs leading-relaxed text-bone-faint">
                 Blast radius: {w.blastRadius}
               </p>
             </li>
@@ -468,12 +470,12 @@ export function ReportView({ report }: { report: AuditReport }) {
 
       {report.deeperInvestigation.length > 0 && (
       <Block label="Requires deeper investigation">
-        <ul className="space-y-2">
+        <ul className="divide-y divide-line border border-line bg-ink-raised">
           {report.deeperInvestigation.map((d) => (
-            <li key={d.title} className="border border-line bg-ink-raised p-3.5">
+            <li key={d.title} className="p-3.5">
               <p className="text-sm font-medium text-bone">{d.title}</p>
               {d.detail && (
-                <p className="mt-1 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
+                <p className="mt-1 max-w-measure text-sm leading-relaxed text-bone-dim">
                   {d.detail}
                 </p>
               )}
@@ -490,11 +492,11 @@ export function ReportView({ report }: { report: AuditReport }) {
 
       {report.notAssessed.length > 0 && (
       <Block label="Not assessed: runtime-only checks skipped">
-        <ul className="space-y-2">
+        <ul className="divide-y divide-line border border-line bg-ink-raised">
           {report.notAssessed.map((n) => (
-            <li key={n.check} className="border border-line bg-ink-raised p-3.5">
+            <li key={n.check} className="p-3.5">
               <p className="text-sm font-medium text-bone">{n.check}</p>
-              <p className="mt-1 max-w-[68ch] text-xs leading-relaxed text-bone-dim">
+              <p className="mt-1 max-w-measure text-xs leading-relaxed text-bone-dim">
                 <span className="font-mono uppercase tracking-wide text-bone-faint">
                   To verify:
                 </span>{" "}
@@ -523,7 +525,7 @@ export function ReportView({ report }: { report: AuditReport }) {
                   {s.outcome}
                 </span>
                 {s.summary && (
-                  <span className="w-full max-w-[68ch] text-xs leading-relaxed text-bone-dim sm:w-auto sm:flex-1">
+                  <span className="w-full max-w-measure text-xs leading-relaxed text-bone-dim sm:w-auto sm:flex-1">
                     {s.summary}
                   </span>
                 )}

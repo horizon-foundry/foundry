@@ -26,10 +26,10 @@ export default function Error({
       <p className="font-mono text-sm text-bone-dim">
         Something broke
       </p>
-      <h1 className="mt-2 font-mono text-2xl font-semibold tracking-tight text-bone sm:text-3xl">
+      <h1 className="mt-2 font-display text-2xl tracking-normal text-bone sm:text-3xl">
         This page hit an unexpected error.
       </h1>
-      <p className="mt-4 max-w-xl text-sm leading-relaxed text-bone-dim">
+      <p className="mt-4 max-w-measure text-sm leading-relaxed text-bone-dim">
         The error was logged. You can retry, or head back to the start. Nothing
         you did is stuck.
       </p>

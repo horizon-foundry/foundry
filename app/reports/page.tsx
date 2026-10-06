@@ -25,9 +25,9 @@ function OwnedRow({ r }: { r: ReportSummary }) {
         className="group grid gap-3 py-5 transition-colors hover:bg-ink-raised sm:grid-cols-[1fr_auto] sm:items-center"
       >
         <div className="min-w-0">
-          <h3 className="break-words font-mono text-lg font-semibold tracking-tight text-bone">
+          <h2 className="break-words font-mono text-lg font-semibold tracking-tight text-bone">
             {r.project}
-          </h3>
+          </h2>
           <p className="mt-0.5 font-mono text-xs uppercase tracking-wide text-bone-faint">
             {r.date}
           </p>
@@ -59,8 +59,16 @@ function OwnedRow({ r }: { r: ReportSummary }) {
   );
 }
 
-// One public example: links to the ungated detail (/example/[slug]).
-function ExampleCard({ r }: { r: ReportSummary }) {
+// One public example: links to the ungated detail (/example/[slug]). Its
+// title sits one level under the section heading, which is the page h1 when
+// signed out and an h2 under the report history when signed in.
+function ExampleCard({
+  r,
+  titleAs: Title,
+}: {
+  r: ReportSummary;
+  titleAs: "h2" | "h3";
+}) {
   const full = getPublicReport(r.slug);
   const risks =
     full?.findings.filter((f) => (f.kind ?? "risk") === "risk").length ?? 0;
@@ -70,12 +78,12 @@ function ExampleCard({ r }: { r: ReportSummary }) {
     <li>
       <Link
         href={`/example/${r.slug}`}
-        className="group block border border-line bg-ink-raised p-5 transition-colors hover:border-line-strong sm:p-6"
+        className="group block p-5 transition-colors hover:bg-ink sm:p-6"
       >
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-          <h3 className="font-mono text-lg font-semibold text-bone">
+          <Title className="font-mono text-lg font-semibold text-bone">
             {r.project}
-          </h3>
+          </Title>
           <span className="border border-line px-2 py-0.5 font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
             {isSelfAudit ? "Our own audit" : "Illustrative sample"}
           </span>
@@ -89,9 +97,9 @@ function ExampleCard({ r }: { r: ReportSummary }) {
           {risks} {risks === 1 ? "risk" : "risks"} · {improvements} improvements
           · audited {r.date}
         </p>
-        <p className="mt-3 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
+        <p className="mt-3 max-w-measure text-sm leading-relaxed text-bone-dim">
           {isSelfAudit
-            ? "Foundry ran /production-audit against its own code. Real findings, no fiction, and the repository is public so you can check the report against the source."
+            ? <>Foundry ran <span className="font-mono text-command">/production-audit</span> against its own code, and the repository is public so you can check the report against the source.</>
             : "A fictional booking app audited in full, to show the method on a payments-and-concurrency product the self-audit's own surface cannot exercise."}
         </p>
         <span className="mt-4 inline-flex items-center font-mono text-xs uppercase tracking-wide text-bone-dim transition-colors group-hover:text-bone">
@@ -121,11 +129,11 @@ export default async function ReportsIndex() {
     <div className="space-y-14">
       {email && (
         <section>
-          <h1 className="font-mono text-3xl font-semibold tracking-tight text-bone">
+          <h1 className="font-display text-3xl tracking-normal text-bone sm:text-4xl">
             {admin ? "Audit reports" : "Your audit reports"}
           </h1>
           {owned.length === 0 ? (
-            <p className="mt-4 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
+            <p className="mt-4 max-w-measure text-sm leading-relaxed text-bone-dim">
               No reports are associated with {email} yet. Run{" "}
               <span className="font-mono text-command">/production-audit</span>{" "}
               on your project; published reports stamped with your email appear
@@ -142,29 +150,37 @@ export default async function ReportsIndex() {
       )}
 
       <section>
-        <h2 className="font-mono text-3xl font-semibold tracking-tight text-bone">
-          {email ? "Example reports" : "What a Production Audit returns"}
-        </h2>
-        <p className="mt-3 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
+        {/* Signed out, this is the page's only title, so it is the h1;
+            signed in, the report history above owns the h1. */}
+        {email ? (
+          <h2 className="font-display text-3xl tracking-normal text-bone sm:text-4xl">
+            Example reports
+          </h2>
+        ) : (
+          <h1 className="font-display text-3xl tracking-normal text-bone sm:text-4xl">
+            What a Production Audit returns
+          </h1>
+        )}
+        <p className="mt-3 max-w-measure text-sm leading-relaxed text-bone-dim">
           Public examples, rendered by the same template every audit uses:
           Foundry&apos;s own audit of this repository, and an illustrative sample
           of a traditional SaaS product. Each ends in a scope-qualified verdict,
           with risks separated from improvements.
         </p>
-        <ul className="mt-8 space-y-4">
+        <ul className="mt-8 divide-y divide-line border border-line bg-ink-raised">
           {examples.map((r) => (
-            <ExampleCard key={r.slug} r={r} />
+            <ExampleCard key={r.slug} r={r} titleAs={email ? "h3" : "h2"} />
           ))}
         </ul>
       </section>
 
       {!email && (
-        <div className="flex flex-col gap-3 border border-line bg-ink px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+        <div className="flex flex-col gap-3 border-t border-line pt-6 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="font-mono text-sm font-semibold text-bone">
               Your own reports
             </p>
-            <p className="mt-1 max-w-xl text-sm leading-relaxed text-bone-dim">
+            <p className="mt-1 max-w-measure text-sm leading-relaxed text-bone-dim">
               Published audits are private to their owner. Run{" "}
               <span className="font-mono text-command">/production-audit</span>{" "}
               on your project, then sign in to see any reports that belong to
