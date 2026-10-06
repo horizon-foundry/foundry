@@ -121,7 +121,7 @@ export default async function ReportsIndex() {
     <div className="space-y-14">
       {email && (
         <section>
-          <h1 className="font-mono text-3xl font-semibold tracking-tight text-bone">
+          <h1 className="font-display text-3xl tracking-normal text-bone sm:text-4xl">
             {admin ? "Audit reports" : "Your audit reports"}
           </h1>
           {owned.length === 0 ? (
@@ -142,7 +142,7 @@ export default async function ReportsIndex() {
       )}
 
       <section>
-        <h2 className="font-mono text-3xl font-semibold tracking-tight text-bone">
+        <h2 className="font-display text-3xl tracking-normal text-bone sm:text-4xl">
           {email ? "Example reports" : "What a Production Audit returns"}
         </h2>
         <p className="mt-3 max-w-[68ch] text-sm leading-relaxed text-bone-dim">

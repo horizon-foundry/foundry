@@ -15,7 +15,7 @@ export default function BehindLayout({
           <p className="font-mono text-sm text-bone-dim">
             Behind the Build
           </p>
-          <h1 className="mt-2 font-mono text-3xl font-semibold tracking-tight text-bone">
+          <h1 className="mt-2 font-display text-3xl tracking-normal text-bone sm:text-4xl">
             How this was made
           </h1>
           <p className="mt-2 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
