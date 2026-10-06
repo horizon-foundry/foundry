@@ -135,11 +135,11 @@ export function SlideDeck({ slides, title, tagline, statChips }: Props) {
                 {slide.body}
               </p>
               {slide.items && (
-                <ul className="max-w-measure divide-y divide-line border-y border-line">
+                <ul className="max-w-measure divide-y divide-line border-y border-line text-sm">
                   {slide.items.map((it) => (
                     <li
                       key={it}
-                      className="py-2 text-sm leading-relaxed text-bone-dim"
+                      className="py-2 leading-relaxed text-bone-dim"
                     >
                       {it}
                     </li>

@@ -71,8 +71,8 @@ export default function DesignSystem() {
         palette. Color is reserved: severity and verdict hues live in the
         reports and in a short, named list of framed places (the specimens on
         this page are one), nowhere else, and amber is the forge
-        glow, used only on the invoke and run layer (the commands you fire),
-        never for decoration.
+        glow, used on the invoke and run layer (the commands you fire) and on
+        the heading of each /skills entry tile, never for decoration.
       </p>
 
       <div className="mt-8">
@@ -96,7 +96,7 @@ export default function DesignSystem() {
           </div>
         </Section>
 
-        <Section label="Severity ramp: the only saturated ink">
+        <Section label="Severity ramp: the only severity ink">
           <div className="flex flex-wrap items-center gap-3">
             {SEVERITIES.map((s) => (
               <SeverityChip key={s} severity={s} />
@@ -231,8 +231,8 @@ export default function DesignSystem() {
                 The forge glow. Reserved for the invoke and run layer, the
                 commands you fire, like{" "}
                 <code className="text-command">/production-audit</code> or{" "}
-                <code className="text-command">make install</code>, and nothing
-                else.
+                <code className="text-command">make install</code>, and for the
+                heading of each entry tile on /skills. Nothing else.
               </p>
             </div>
           </div>
