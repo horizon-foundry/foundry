@@ -74,17 +74,13 @@ export default async function SkillPage({
                 <h2 className="font-mono text-sm font-semibold text-bone">
                   Reach for it when
                 </h2>
-                <ul className="mt-3 space-y-2.5">
+                <ul className="mt-3 divide-y divide-line border-y border-line">
                   {skill.when.map((w) => (
                     <li
                       key={w}
-                      className="flex gap-2.5 text-sm leading-relaxed text-bone-dim"
+                      className="py-2.5 text-sm leading-relaxed text-bone-dim"
                     >
-                      <span
-                        className="mt-2.5 h-px w-3 shrink-0 bg-line-strong"
-                        aria-hidden="true"
-                      />
-                      <span>{w}</span>
+                      {w}
                     </li>
                   ))}
                 </ul>
