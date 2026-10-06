@@ -82,7 +82,7 @@ export async function InstallBlock() {
             <h2 className="font-display text-2xl tracking-normal text-bone sm:text-3xl">
               Install Foundry
             </h2>
-            <p className="mt-2 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
+            <p className="mt-2 max-w-measure text-sm leading-relaxed text-bone-dim">
               One command adds the skills to Claude Code. No build step, no
               account. One disclosed call home: at most once a day, a skill
               asks this site for the current version so it can tell you when
@@ -163,7 +163,7 @@ export async function InstallBlock() {
             <p className="font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
               What happens when you invoke it
             </p>
-            <p className="mt-3 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
+            <p className="mt-3 max-w-measure text-sm leading-relaxed text-bone-dim">
               A skill is something Claude Code runs against your project.{" "}
               <span className="text-command">/production-audit</span> reads your
               code (never writes), traces the flows that cross file boundaries,
@@ -190,7 +190,7 @@ export async function InstallBlock() {
               <dt className="font-mono text-sm font-semibold uppercase tracking-wide text-bone">
                 {item.k}
               </dt>
-              <dd className="mt-2 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
+              <dd className="mt-2 max-w-measure text-sm leading-relaxed text-bone-dim">
                 {item.d}
               </dd>
             </div>

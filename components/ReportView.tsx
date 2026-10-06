@@ -66,7 +66,7 @@ function FindingRow({ f }: { f: Finding }) {
           <SeverityChip severity={f.severity} />
         </span>
         <span className="min-w-0 flex-1">
-          <span className="block max-w-[68ch] text-sm font-medium leading-snug text-bone">
+          <span className="block max-w-measure text-sm font-medium leading-snug text-bone">
             {f.issue}
           </span>
           <span className="mt-1 block break-words font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
@@ -105,7 +105,7 @@ function FindingRow({ f }: { f: Finding }) {
           </span>
         </div>
         {f.verification.refutationNotes && (
-          <p className="max-w-[68ch] border-l-2 border-line-strong pl-3 text-xs italic leading-relaxed text-bone-faint">
+          <p className="max-w-measure border-l-2 border-line-strong pl-3 text-xs italic leading-relaxed text-bone-faint">
             {f.verification.refutationNotes}
           </p>
         )}
@@ -132,7 +132,7 @@ function Field({
         className={`mt-1 leading-relaxed text-bone-dim ${
           mono
             ? "whitespace-pre-wrap break-words rounded-sm bg-ink-raised-2 p-2 font-mono text-[0.78rem]"
-            : "max-w-[68ch]"
+            : "max-w-measure"
         }`}
       >
         {children}
@@ -254,7 +254,7 @@ export function ReportView({ report }: { report: AuditReport }) {
                 ›
               </span>
             </summary>
-            <p className="mt-2 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
+            <p className="mt-2 max-w-measure text-sm leading-relaxed text-bone-dim">
               {verdict.justification}
             </p>
           </details>
@@ -294,7 +294,7 @@ export function ReportView({ report }: { report: AuditReport }) {
             {report.shipGates
               .filter((g) => g.status === "not-met" || g.status === "at-risk")
               .map((g) => (
-                <p key={g.gate} className="max-w-[68ch] text-xs leading-relaxed text-bone-dim">
+                <p key={g.gate} className="max-w-measure text-xs leading-relaxed text-bone-dim">
                   <span
                     className={`font-mono uppercase ${SHIP_GATE_STATUS_COLOR[g.status]}`}
                   >
@@ -339,7 +339,7 @@ export function ReportView({ report }: { report: AuditReport }) {
                     {id}
                   </a>
                   {f && (
-                    <span className="max-w-[68ch] text-sm leading-snug text-bone-dim">
+                    <span className="max-w-measure text-sm leading-snug text-bone-dim">
                       {f.issue}
                     </span>
                   )}
@@ -377,7 +377,7 @@ export function ReportView({ report }: { report: AuditReport }) {
                     </span>
                   </summary>
                   <p className="border-t border-line px-4 py-3 text-sm leading-relaxed text-bone-dim">
-                    <span className="block max-w-[68ch]">{s.note}</span>
+                    <span className="block max-w-measure">{s.note}</span>
                   </p>
                 </details>
               </li>
@@ -390,7 +390,7 @@ export function ReportView({ report }: { report: AuditReport }) {
           weighs. A report with none says so plainly, so a healthy app reads as
           healthy rather than as a wall of problems. */}
       <Block id="risks" label={`Risks to weigh (${riskFindings.length})`}>
-        <p className="-mt-2 mb-4 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
+        <p className="-mt-2 mb-4 max-w-measure text-sm leading-relaxed text-bone-dim">
           Findings with a path to harm in production. These are what the verdict
           weighs.
         </p>
@@ -408,7 +408,7 @@ export function ReportView({ report }: { report: AuditReport }) {
           not a body count. */}
       {improvementFindings.length > 0 && (
         <Block id="improvements" label={`Improvements (${improvementFindings.length})`}>
-          <p className="-mt-2 mb-4 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
+          <p className="-mt-2 mb-4 max-w-measure text-sm leading-relaxed text-bone-dim">
             Safe today. Ways to make the app more robust, observable, and
             consistent over time. These do not affect the verdict.
           </p>
@@ -430,7 +430,7 @@ export function ReportView({ report }: { report: AuditReport }) {
               <div>
                 <p className="text-sm font-medium text-bone">{step.title}</p>
                 {step.detail && (
-                  <p className="mt-1 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
+                  <p className="mt-1 max-w-measure text-sm leading-relaxed text-bone-dim">
                     {step.detail}
                   </p>
                 )}
@@ -459,7 +459,7 @@ export function ReportView({ report }: { report: AuditReport }) {
                   </span>
                 )}
               </div>
-              <p className="mt-1 max-w-[68ch] text-xs leading-relaxed text-bone-faint">
+              <p className="mt-1 max-w-measure text-xs leading-relaxed text-bone-faint">
                 Blast radius: {w.blastRadius}
               </p>
             </li>
@@ -475,7 +475,7 @@ export function ReportView({ report }: { report: AuditReport }) {
             <li key={d.title} className="p-3.5">
               <p className="text-sm font-medium text-bone">{d.title}</p>
               {d.detail && (
-                <p className="mt-1 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
+                <p className="mt-1 max-w-measure text-sm leading-relaxed text-bone-dim">
                   {d.detail}
                 </p>
               )}
@@ -496,7 +496,7 @@ export function ReportView({ report }: { report: AuditReport }) {
           {report.notAssessed.map((n) => (
             <li key={n.check} className="p-3.5">
               <p className="text-sm font-medium text-bone">{n.check}</p>
-              <p className="mt-1 max-w-[68ch] text-xs leading-relaxed text-bone-dim">
+              <p className="mt-1 max-w-measure text-xs leading-relaxed text-bone-dim">
                 <span className="font-mono uppercase tracking-wide text-bone-faint">
                   To verify:
                 </span>{" "}
@@ -525,7 +525,7 @@ export function ReportView({ report }: { report: AuditReport }) {
                   {s.outcome}
                 </span>
                 {s.summary && (
-                  <span className="w-full max-w-[68ch] text-xs leading-relaxed text-bone-dim sm:w-auto sm:flex-1">
+                  <span className="w-full max-w-measure text-xs leading-relaxed text-bone-dim sm:w-auto sm:flex-1">
                     {s.summary}
                   </span>
                 )}

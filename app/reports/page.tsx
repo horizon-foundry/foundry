@@ -89,7 +89,7 @@ function ExampleCard({ r }: { r: ReportSummary }) {
           {risks} {risks === 1 ? "risk" : "risks"} · {improvements} improvements
           · audited {r.date}
         </p>
-        <p className="mt-3 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
+        <p className="mt-3 max-w-measure text-sm leading-relaxed text-bone-dim">
           {isSelfAudit
             ? "Foundry ran /production-audit against its own code. Real findings, no fiction, and the repository is public so you can check the report against the source."
             : "A fictional booking app audited in full, to show the method on a payments-and-concurrency product the self-audit's own surface cannot exercise."}
@@ -125,7 +125,7 @@ export default async function ReportsIndex() {
             {admin ? "Audit reports" : "Your audit reports"}
           </h1>
           {owned.length === 0 ? (
-            <p className="mt-4 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
+            <p className="mt-4 max-w-measure text-sm leading-relaxed text-bone-dim">
               No reports are associated with {email} yet. Run{" "}
               <span className="font-mono text-command">/production-audit</span>{" "}
               on your project; published reports stamped with your email appear
@@ -145,7 +145,7 @@ export default async function ReportsIndex() {
         <h2 className="font-display text-3xl tracking-normal text-bone sm:text-4xl">
           {email ? "Example reports" : "What a Production Audit returns"}
         </h2>
-        <p className="mt-3 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
+        <p className="mt-3 max-w-measure text-sm leading-relaxed text-bone-dim">
           Public examples, rendered by the same template every audit uses:
           Foundry&apos;s own audit of this repository, and an illustrative sample
           of a traditional SaaS product. Each ends in a scope-qualified verdict,

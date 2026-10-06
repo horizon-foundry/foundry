@@ -65,7 +65,7 @@ function Section({
 export default function DesignSystem() {
   return (
     <div className="max-w-4xl">
-      <p className="max-w-[68ch] font-serif leading-relaxed text-bone-dim">
+      <p className="max-w-measure-serif font-serif leading-relaxed text-bone-dim">
         Foundry, the design system for the suite, rendered from its own tokens.
         The brand layer is monochrome steel and white, the Horizon Foundry
         palette. Color is reserved: severity and verdict hues live in the
@@ -102,7 +102,7 @@ export default function DesignSystem() {
               <SeverityChip key={s} severity={s} />
             ))}
           </div>
-          <p className="mt-4 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
+          <p className="mt-4 max-w-measure text-sm leading-relaxed text-bone-dim">
             Critical red, high orange, medium amber, low steel, informational
             gray. The three verdict colors reuse the same hues so a reader learns
             one language.
@@ -176,7 +176,7 @@ export default function DesignSystem() {
               </span>
             </div>
           </div>
-          <p className="mt-5 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
+          <p className="mt-5 max-w-measure text-sm leading-relaxed text-bone-dim">
             A value is matched to a token by what the motion does, never by the
             nearest number, and a duration whose job matches no token is left
             alone. Three easings:{" "}
@@ -210,7 +210,7 @@ export default function DesignSystem() {
               the page cannot demonstrate the rule by breaking it. What the
               small cut changes is not visible at 20px, which is the point of
               having it, so the difference is stated instead of shown. */}
-          <p className="mt-5 max-w-[68ch] text-sm leading-relaxed text-bone-dim">
+          <p className="mt-5 max-w-measure text-sm leading-relaxed text-bone-dim">
             The parent brand&rsquo;s mark, taken from the Horizon Foundry design
             kit. The small cut widens the channels and thickens the echo ridge
             so they survive rasterizing: the canonical cut holds at 48px wide
@@ -227,7 +227,7 @@ export default function DesignSystem() {
               <p className="font-mono text-sm text-bone">
                 command <span className="text-bone-faint">#D99A2E</span>
               </p>
-              <p className="mt-1 max-w-[68ch] text-sm text-bone-dim">
+              <p className="mt-1 max-w-measure text-sm text-bone-dim">
                 The forge glow. Reserved for the invoke and run layer, the
                 commands you fire, like{" "}
                 <code className="text-command">/production-audit</code> or{" "}
