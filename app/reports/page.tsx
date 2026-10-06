@@ -91,7 +91,7 @@ function ExampleCard({ r }: { r: ReportSummary }) {
         </p>
         <p className="mt-3 max-w-measure text-sm leading-relaxed text-bone-dim">
           {isSelfAudit
-            ? "Foundry ran /production-audit against its own code. Real findings, no fiction, and the repository is public so you can check the report against the source."
+            ? "Foundry ran /production-audit against its own code, and the repository is public so you can check the report against the source."
             : "A fictional booking app audited in full, to show the method on a payments-and-concurrency product the self-audit's own surface cannot exercise."}
         </p>
         <span className="mt-4 inline-flex items-center font-mono text-xs uppercase tracking-wide text-bone-dim transition-colors group-hover:text-bone">

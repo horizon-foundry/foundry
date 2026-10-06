@@ -398,8 +398,7 @@ export default function Home() {
                   </h2>
                   <p className="mt-4 leading-relaxed text-bone-dim">
                     The same {"/production-audit"} this suite ships, run against
-                    Foundry&apos;s own repository. Real code, real findings,
-                    nothing fictional. What the audit verified clean and what it
+                    Foundry&apos;s own repository. What the audit verified clean and what it
                     flagged are both on the record, finding by finding. The
                     repository is public, so you can read the report against its
                     source and see exactly what the method checked and what it
