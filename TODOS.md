@@ -92,6 +92,7 @@ That audit was much fresher than the prior one; its #1 "blocker" (retired /commi
 - [ ] 2026-09-28 Command Center Phase 1, the TODOS standard (`reference/todos-spec.md`, a lossless reference parser, a linter with stable rule ids, and a content-preservation check; first of five units under the cross-repo command-center master plan) -> `~/.claude/plans/command-center-phase-1-todos-standard.md`
 - [ ] 2026-09-28 Command Center Phase 3, migrate every tracked TODOS.md onto the standard (gated: Phase 1 merged in foundry and code-workspace; evidence-backed Done moves, Craig confirms every Now and Up Next placement) -> `~/.claude/plans/command-center-phase-3-migration.md`
 - [ ] 2026-09-28 Decision required, confirm master plan decision 12 (one project-initiation path: `/scaffold` only, project-scaffold becomes a code-only Next + Fly starter) so Command Center Phase 2 can be planned (Craig)
+- [ ] 2026-09-18 Site production readiness (not yet numbered: Phase 18 above is now Read the verdict): the 20-point checklist audited against the code (12 met, 4 gaps: privacy page, cookie-free analytics instead of a banner, sitemap, contact email; 4 skipped with reasons; PostHog identity decided 2026-09-18: one project per product, so the cookie-free step stands; the contact email waits on the studio mailbox going live, a studio pre-launch step) -> `~/.claude/plans/foundry-site-production-readiness.md`
 
 ## Launch sequence (do in this order)
 
