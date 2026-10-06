@@ -101,6 +101,7 @@ That audit was much fresher than the prior one; its #1 "blocker" (retired /commi
 - [x] 2026-09-28 Decision required, confirm master plan decision 12 (one project-initiation path: `/scaffold` only, project-scaffold becomes a code-only Next + Fly starter) so Command Center Phase 2 can be planned (Craig) (closed: Craig confirmed 2026-09-28)
 - [ ] 2026-09-28 Command Center Phase 2, one project-initiation path (`/scaffold` only; project-scaffold becomes a code-only Next + Fly starter that builds in CI; scaffold writes a `Profile:` line) -> `~/.claude/plans/command-center-phase-2-initiation-path.md`
 - [ ] 2026-09-28 Command Center Phase 4, the app (agent first: repo via /scaffold, snapshot schema and scanner, then Fly server with GitHub OAuth, home feed, project view with guarded TODOS ops, docs panel; design approved by Craig 2026-09-28; step 2 needs his OAuth and Fly app) -> `~/.claude/plans/command-center-phase-4-app.md`
+- [ ] 2026-09-18 Site production readiness (not yet numbered: Phase 18 above is now Read the verdict): the 20-point checklist audited against the code (12 met, 4 gaps: privacy page, cookie-free analytics instead of a banner, sitemap, contact email; 4 skipped with reasons; PostHog identity decided 2026-09-18: one project per product, so the cookie-free step stands; the contact email waits on the studio mailbox going live, a studio pre-launch step) -> `~/.claude/plans/foundry-site-production-readiness.md`
 
 ## Launch sequence (do in this order)
 
