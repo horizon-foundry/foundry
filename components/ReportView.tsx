@@ -260,36 +260,6 @@ export function ReportView({ report }: { report: AuditReport }) {
           </details>
         )}
       </div>
-      {verdict.blockingFindingIds.length > 0 && (
-        <div className="mt-6">
-          <h2 className="font-mono text-base font-semibold text-bone">
-            What drives this verdict
-          </h2>
-          <ul className="mt-2.5 space-y-2">
-            {verdict.blockingFindingIds.map((id) => {
-              const f = findings.find((x) => x.id === id);
-              return (
-                <li key={id} className="flex flex-col gap-1 sm:flex-row sm:gap-3">
-                  <a
-                    href={`#finding-${id}`}
-                    className={`shrink-0 font-mono text-xs font-semibold hover:underline ${
-                      f ? SEV_TEXT[f.severity] : "text-bone-faint"
-                    }`}
-                  >
-                    {id}
-                  </a>
-                  {f && (
-                    <span className="max-w-[68ch] text-sm leading-snug text-bone-dim">
-                      {f.issue}
-                    </span>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      )}
-
       {/* Scorecard: the triage view. Severity mix, gate statuses, and what was
           not assessed, in one glance under the verdict. Everything below is
           detail the reader drills into; this is the part they must be able to
@@ -347,6 +317,38 @@ export function ReportView({ report }: { report: AuditReport }) {
           </div>
         )}
       </div>
+
+      {/* Drivers follow the scorecard, so the scorecard stays on the first
+          screen (DESIGN.md Interaction, settled 2026-10-06). */}
+      {verdict.blockingFindingIds.length > 0 && (
+        <div className="mt-8">
+          <h2 className="font-mono text-base font-semibold text-bone">
+            What drives this verdict
+          </h2>
+          <ul className="mt-2.5 space-y-2">
+            {verdict.blockingFindingIds.map((id) => {
+              const f = findings.find((x) => x.id === id);
+              return (
+                <li key={id} className="flex flex-col gap-1 sm:flex-row sm:gap-3">
+                  <a
+                    href={`#finding-${id}`}
+                    className={`shrink-0 font-mono text-xs font-semibold hover:underline ${
+                      f ? SEV_TEXT[f.severity] : "text-bone-faint"
+                    }`}
+                  >
+                    {id}
+                  </a>
+                  {f && (
+                    <span className="max-w-[68ch] text-sm leading-snug text-bone-dim">
+                      {f.issue}
+                    </span>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
 
       {/* Strengths: lead with what's solid (green = safe). Collapsed to
           scannable headlines, the reassurance at a glance for a reader who will
