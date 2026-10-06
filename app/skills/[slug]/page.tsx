@@ -64,7 +64,7 @@ export default async function SkillPage({
                 <h2 className="font-mono text-sm font-semibold text-bone">
                   Why it matters
                 </h2>
-                <p className="mt-3 max-w-xl leading-relaxed text-bone-dim">
+                <p className="mt-3 max-w-measure leading-relaxed text-bone-dim">
                   {skill.why}
                 </p>
               </div>

@@ -29,7 +29,7 @@ export default function Error({
       <h1 className="mt-2 font-display text-2xl tracking-normal text-bone sm:text-3xl">
         This page hit an unexpected error.
       </h1>
-      <p className="mt-4 max-w-xl text-sm leading-relaxed text-bone-dim">
+      <p className="mt-4 max-w-measure text-sm leading-relaxed text-bone-dim">
         The error was logged. You can retry, or head back to the start. Nothing
         you did is stuck.
       </p>

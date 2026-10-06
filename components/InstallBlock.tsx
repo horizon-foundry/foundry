@@ -159,7 +159,7 @@ export async function InstallBlock() {
           {/* What happens when you invoke it. self-start keeps the card sized
               to its content instead of stretching to the taller command column
               (which left ~40% dead panel at lg). */}
-          <div className="min-w-0 border border-line bg-ink p-5 lg:self-start">
+          <div className="min-w-0 lg:self-start">
             <p className="font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
               What happens when you invoke it
             </p>

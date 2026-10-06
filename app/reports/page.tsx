@@ -70,7 +70,7 @@ function ExampleCard({ r }: { r: ReportSummary }) {
     <li>
       <Link
         href={`/example/${r.slug}`}
-        className="group block p-5 transition-colors hover:bg-ink-raised-2 sm:p-6"
+        className="group block p-5 transition-colors hover:bg-ink sm:p-6"
       >
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
           <h3 className="font-mono text-lg font-semibold text-bone">
@@ -91,7 +91,7 @@ function ExampleCard({ r }: { r: ReportSummary }) {
         </p>
         <p className="mt-3 max-w-measure text-sm leading-relaxed text-bone-dim">
           {isSelfAudit
-            ? "Foundry ran /production-audit against its own code, and the repository is public so you can check the report against the source."
+            ? <>Foundry ran <span className="font-mono text-command">/production-audit</span> against its own code, and the repository is public so you can check the report against the source.</>
             : "A fictional booking app audited in full, to show the method on a payments-and-concurrency product the self-audit's own surface cannot exercise."}
         </p>
         <span className="mt-4 inline-flex items-center font-mono text-xs uppercase tracking-wide text-bone-dim transition-colors group-hover:text-bone">
@@ -142,9 +142,17 @@ export default async function ReportsIndex() {
       )}
 
       <section>
-        <h2 className="font-display text-3xl tracking-normal text-bone sm:text-4xl">
-          {email ? "Example reports" : "What a Production Audit returns"}
-        </h2>
+        {/* Signed out, this is the page's only title, so it is the h1;
+            signed in, the report history above owns the h1. */}
+        {email ? (
+          <h2 className="font-display text-3xl tracking-normal text-bone sm:text-4xl">
+            Example reports
+          </h2>
+        ) : (
+          <h1 className="font-display text-3xl tracking-normal text-bone sm:text-4xl">
+            What a Production Audit returns
+          </h1>
+        )}
         <p className="mt-3 max-w-measure text-sm leading-relaxed text-bone-dim">
           Public examples, rendered by the same template every audit uses:
           Foundry&apos;s own audit of this repository, and an illustrative sample
@@ -159,12 +167,12 @@ export default async function ReportsIndex() {
       </section>
 
       {!email && (
-        <div className="flex flex-col gap-3 border border-line bg-ink px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+        <div className="flex flex-col gap-3 border-t border-line pt-6 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="font-mono text-sm font-semibold text-bone">
               Your own reports
             </p>
-            <p className="mt-1 max-w-xl text-sm leading-relaxed text-bone-dim">
+            <p className="mt-1 max-w-measure text-sm leading-relaxed text-bone-dim">
               Published audits are private to their owner. Run{" "}
               <span className="font-mono text-command">/production-audit</span>{" "}
               on your project, then sign in to see any reports that belong to

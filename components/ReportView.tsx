@@ -51,7 +51,7 @@ function FindingRow({ f }: { f: Finding }) {
     <details
       id={`finding-${f.id}`}
       data-severity={f.severity}
-      className="group scroll-mt-24"
+      className="group/row scroll-mt-24 border-l-2 border-transparent open:border-line-strong"
     >
       {/* Below sm the id/chip row stacks ABOVE the issue text; sharing one
           row squeezed the finding text to a ~18ch measure on phones, the
@@ -74,7 +74,7 @@ function FindingRow({ f }: { f: Finding }) {
           </span>
         </span>
         <span
-          className="hidden shrink-0 pt-0.5 font-mono text-bone-faint transition-transform group-open:rotate-90 sm:block"
+          className="hidden shrink-0 pt-0.5 font-mono text-bone-faint transition-transform group-open/row:rotate-90 sm:block"
           aria-hidden="true"
         >
           ›
@@ -161,10 +161,10 @@ function FindingList({
         <FindingRow key={f.id} f={f} />
       ))}
       {folded.length > 0 && (
-        <details className="group">
+        <details className="group/fold">
           <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3 font-mono text-xs uppercase tracking-wide text-bone-dim [&::-webkit-details-marker]:hidden">
             <span>{folded.length} more · hygiene and polish</span>
-            <span className="text-bone-faint transition-transform group-open:rotate-90">
+            <span className="text-bone-faint transition-transform group-open/fold:rotate-90">
               ›
             </span>
           </summary>
@@ -265,9 +265,9 @@ export function ReportView({ report }: { report: AuditReport }) {
           detail the reader drills into; this is the part they must be able to
           read in seconds. Gate notes appear only when a gate is at-risk or
           not-met, because only those move the decision. */}
-      <div className="mt-8 border border-line bg-ink-raised">
+      <div className="mt-8">
         <h2 className="sr-only">Scorecard</h2>
-        <div className="px-4 py-4">
+        <div>
           <ReportScorecard
             bySeverity={stats.bySeverity}
             riskCount={riskFindings.length}
@@ -277,7 +277,7 @@ export function ReportView({ report }: { report: AuditReport }) {
         </div>
         {(report.shipGates.length > 0 ||
           (meta.scope.excludedDimensions?.length ?? 0) > 0) && (
-          <div className="space-y-2.5 border-t border-line px-4 py-3.5">
+          <div className="mt-4 space-y-2.5 border-t border-line pt-3.5">
             {report.shipGates.length > 0 && (
               <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 font-mono text-[0.7rem] uppercase tracking-wide">
                 <span className="text-bone-faint">Gates</span>

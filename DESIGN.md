@@ -65,7 +65,7 @@ Inherits the Horizon Foundry parent brand (the horizon-foundry/horizon-foundry r
 
 Foundry is Horizon Foundry's suite, and the site wears the Horizon Foundry identity: a dark blue-gray steel ground, the angular Horizon Foundry mark, and a monochrome palette. The register is a working foundry, industrial and precise, software forged with craft rather than announced with hype.
 
-Two layers share one screen. The **brand layer** (chrome, the suite pages, the mark and wordmark) is steel and white in an industrial condensed gothic. The **instrument layer** (the audit reports and other technical surfaces) keeps a monospace, ledger character and the severity palette. The instrument is the tool; the brand is the foundry it was made in.
+Two layers share one screen. The **brand layer** (chrome, the suite pages, the mark and wordmark) is steel and white, with Archivo Black for the wordmark and page titles. The **instrument layer** (the audit reports and other technical surfaces) keeps a monospace, ledger character and the severity palette. The instrument is the tool; the brand is the foundry it was made in.
 
 The organizing color rule holds throughout: the brand is monochrome, so color means a severity, a verdict, or the one named exception below (the amber command accent, under Colors), and nothing else. A screen is steel and bone until a finding or a verdict speaks; emphasis in the brand layer reads by luminance (bright white on steel), not by hue.
 
@@ -89,11 +89,11 @@ The severity ramp (critical red, high orange, medium amber-yellow, low steel-blu
 
 ## Typography
 
-**Archivo Black** carries the brand: the wordmark and display headings, a heavy grotesque whose blunt, machined letterforms rhyme with the angular mark. It ships in a single 400 weight, so display type never sets a bold or semibold utility (the browser would synthesize a faux weight); emphasis in the brand layer comes from size and the mark, not weight. **IBM Plex Sans** is the body and UI voice. **IBM Plex Mono** is the instrument voice: verdicts, finding IDs, severities, code, and all technical metadata. **IBM Plex Serif** sets long-form rendered documentation. A heavy grotesque for the foundry, monospace for the instrument. Functional text (labels, links, buttons, table cells, meta rows) is never below 11px (0.6875rem).
+**Archivo Black** carries the brand: the wordmark and display headings, a heavy grotesque whose blunt, machined letterforms rhyme with the angular mark. It ships in a single 400 weight, so display type never sets a bold or semibold utility (the browser would synthesize a faux weight); emphasis in the brand layer comes from size and the mark, not weight. **IBM Plex Sans** is the body and UI voice. **IBM Plex Mono** is the instrument voice: verdicts, finding IDs, severities, code, and all technical metadata. **IBM Plex Serif** sets long-form rendered documentation. Page titles follow their layer (settled 2026-10-06): a brand-layer page title (/behind, the /reports index, /unlock, 404, error) is Archivo Black; report names and deck slide headings are the instrument layer and stay in Plex Mono; a skill page's title is the command itself, so it sets in the amber command style. A heavy grotesque for the foundry, monospace for the instrument. Functional text (labels, links, buttons, table cells, meta rows) is never below 11px (0.6875rem).
 
 ## Layout & Spacing
 
-A strict 4px unit. Generous negative space around dense, high-signal content. Hairline rules (Brand Slate) divide sections instead of stacked cards. Content max width 1180px; long-form prose stops at about 75 characters per line. A `ch` is the width of a zero, not of an average character, so the measure is two tokens measured against real text: `measure` (58ch) for sans and `measure-serif` (61ch) for the serif doc prose (settled 2026-10-06). Left-aligned and ledger-like.
+A strict 4px unit. Generous negative space around dense, high-signal content. Hairline rules (Brand Slate) divide sections instead of stacked cards. Content max width 1180px; long-form prose stops at about 75 characters per line. A `ch` is the width of a zero, not of an average character, so the measure is two tokens measured against real text: `measure` (58ch) for sans and `measure-serif` (61ch) for the serif doc prose (settled 2026-10-06). Mono evidence (code, paths, quoted output) is not prose and is not capped: it wraps at the edge of its box. Left-aligned and ledger-like.
 
 ## Elevation & Depth
 
@@ -176,6 +176,7 @@ Sharp. Corner radius 2-4px, effectively square, matching the mark's cut letterfo
 - **Severity chip**: uppercase mono label, hairline border, a 2px left rule in the severity color.
 - **Verdict stamp**: a bordered block with corner registration ticks in the verdict color; level in mono uppercase. The ticks are the stamp's mark, not decoration.
 - **Section rule**: a short 1px rule that draws in once before a marketing section heading (the `draw` motion token). It is the section's mark, not decoration.
+- **List**: one block divided by 1px rules, never separately bordered items with gaps between them. On the page ground it is ruled top and bottom (Six promises, The method); a list that carries its own raised fill (the report's finding lists, the install methods) takes a full hairline frame so the fill has an edge.
 - **Nav tabs**: mono, active tab underlined in bone, not a filled pill (action is not selection).
 - **Doc prose**: IBM Plex Serif, bone on steel, narrow measure, hairline rules under headings.
 
@@ -193,7 +194,7 @@ The audit report is read by a detail-oriented but time-poor senior or principal 
 - No drop shadows, glows, rounded-pill buttons, or gradient meshes.
 - No color that does not mean a severity, a verdict, or an invocable command. Amber also heads the entry tiles on the skills directory. Severity and verdict hues appear only in reports and in the framed places the next line lists. Everything else is steel, bone and white.
 - No hype or marketing warmth.
-- Never set the wordmark or a brand-layer page title in anything but Archivo Black, or draw the mark in anything but the Horizon Foundry mark in one flat color. Report names and deck slide headings are the instrument layer and stay in Plex Mono.
+- Never set the wordmark or a brand-layer page title in anything but Archivo Black, or draw the mark in anything but the Horizon Foundry mark in one flat color. Report names and deck slide headings are the instrument layer and stay in Plex Mono, and a skill page's title is its command, in the amber command style.
 - No em dashes in any copy.
 - A page must not show a severity or verdict hue on plain marketing chrome (a label, a badge, a heading). Outside a report, the hues appear only inside these frames: the hero terminal's simulated run, the report specimen, the framed three-verdict list, the install block's mini-verdict, the report cards on /reports, and the severity and verdict specimens on the design-system page.
 - A page must not stack bordered cards. Hairline rules divide sections, and a list is one bordered block divided by 1px rules. A ledger grid divided by 1px gaps is a hairline grid, not stacked cards.

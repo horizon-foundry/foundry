@@ -282,13 +282,13 @@ export default function Home() {
               Software built fast ships confident and unverified.
             </h2>
             <div className="space-y-4 text-bone-dim">
-              <p className="leading-relaxed">
+              <p className="max-w-measure leading-relaxed">
                 A security review looks at security. A diff review looks at a
                 diff. A frontend audit looks at the frontend. None of them
                 answer the question you actually ask the night before an invite
                 wave: is this safe to put in front of real people.
               </p>
-              <p className="leading-relaxed">
+              <p className="max-w-measure leading-relaxed">
                 That question covers the whole app, and it needs a verdict, not a
                 list. Production Audit traces the flows that cross file
                 boundaries, produces artifacts a reviewer can finish, and refuses
@@ -396,8 +396,8 @@ export default function Home() {
                   <h2 className="font-display text-2xl tracking-normal text-bone sm:text-3xl">
                     We audited Foundry with Foundry.
                   </h2>
-                  <p className="mt-4 leading-relaxed text-bone-dim">
-                    The same {"/production-audit"} this suite ships, run against
+                  <p className="mt-4 max-w-measure leading-relaxed text-bone-dim">
+                    The same <span className="font-mono text-command">/production-audit</span> this suite ships, run against
                     Foundry&apos;s own repository. What the audit verified clean and what it
                     flagged are both on the record, finding by finding. The
                     repository is public, so you can read the report against its

@@ -69,8 +69,8 @@ export default function DesignSystem() {
         Foundry, the design system for the suite, rendered from its own tokens.
         The brand layer is monochrome steel and white, the Horizon Foundry
         palette. Color is reserved: severity and verdict hues live in the
-        reports (and in elements explicitly framed as report excerpts, nowhere
-        else), and amber is the forge
+        reports and in a short, named list of framed places (the specimens on
+        this page are one), nowhere else, and amber is the forge
         glow, used only on the invoke and run layer (the commands you fire),
         never for decoration.
       </p>

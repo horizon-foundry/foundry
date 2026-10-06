@@ -192,8 +192,8 @@ export function Terminal() {
             aria-pressed={i === active}
             className={`min-h-11 border px-2.5 py-1 font-mono text-xs transition-colors ${
               i === active
-                ? "border-command/60 text-command"
-                : "border-line text-bone-faint hover:border-line-strong hover:text-bone-dim"
+                ? "border-bone text-command"
+                : "border-line text-command hover:border-line-strong"
             }`}
           >
             {c.cmd}

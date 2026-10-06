@@ -33,7 +33,7 @@ function Tile({
       <span className="font-mono text-sm font-semibold text-command underline-offset-4 group-hover:underline">
         {heading}
       </span>
-      <p className="mt-2 text-sm leading-relaxed text-bone-dim">{body}</p>
+      <p className="mt-2 max-w-measure text-sm leading-relaxed text-bone-dim">{body}</p>
       <span className="mt-4 pt-1 font-mono text-[0.7rem] uppercase tracking-wide text-bone-faint transition-colors group-hover:text-bone">
         View
       </span>
@@ -160,7 +160,7 @@ export default function SkillsIndex() {
                 <h3 className="font-mono text-sm font-semibold text-bone">
                   A documentation architecture
                 </h3>
-                <p className="mt-2 text-sm leading-relaxed text-bone-dim">
+                <p className="mt-2 max-w-measure text-sm leading-relaxed text-bone-dim">
                   The skills enforce one doc set, engineered as the agent&apos;s
                   memory so a cold start can&apos;t go wrong. One owner per fact,
                   a forever spec, an unbroken plan chain.
@@ -170,7 +170,7 @@ export default function SkillsIndex() {
                 <h3 className="font-mono text-sm font-semibold text-bone">
                   Skills that resist being ignored
                 </h3>
-                <p className="mt-2 text-sm leading-relaxed text-bone-dim">
+                <p className="mt-2 max-w-measure text-sm leading-relaxed text-bone-dim">
                   Each skill opens with a mandatory gate. A named skill is
                   invoked and followed, never hand-reproduced, so the discipline
                   is explicit and hard to skip. Where an invariant must truly
