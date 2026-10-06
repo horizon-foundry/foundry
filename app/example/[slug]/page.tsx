@@ -63,7 +63,7 @@ export default async function ExampleReport({
           </p>
           <Link
             href="/reports"
-            className="shrink-0 font-mono text-xs text-bone-faint transition-colors hover:text-bone"
+            className="shrink-0 self-start font-mono text-xs text-bone-faint transition-colors hover:text-bone"
           >
             All reports →
           </Link>

@@ -56,18 +56,40 @@ function StarButton({ stars }: { stars: number | null }) {
   );
 }
 
-const DETAIL = [
+// A command a reader types, inside running prose: the command style (DESIGN.md,
+// Colors), so every command on the page reads the same.
+function Cmd({ children }: { children: React.ReactNode }) {
+  return <span className="font-mono text-command">{children}</span>;
+}
+
+const DETAIL: { k: string; d: React.ReactNode }[] = [
   {
     k: "Requirements",
     d: "For npx: Node and Claude Code. For the from-source path: git, make, and Claude Code. No account; the skills' only network call is the disclosed daily version check.",
   },
   {
     k: "What it installs",
-    d: "The skills land in Claude Code's skills directory, invocable in any session as top-level commands (/foundry, /production-audit, and so on). npx lets you pick which skills; the from-source make install symlinks them all so they track the repo.",
+    d: (
+      <>
+        The skills land in Claude Code&apos;s skills directory, invocable in
+        any session as top-level commands (<Cmd>/foundry</Cmd>,{" "}
+        <Cmd>/production-audit</Cmd>, and so on). npx lets you pick which
+        skills; the from-source <Cmd>make install</Cmd> symlinks them all so
+        they track the repo.
+      </>
+    ),
   },
   {
     k: "Upgrade and uninstall",
-    d: "npx: re-run the add command to update; a skill run tells you when a newer suite is out. From source: git pull && make install to update, make uninstall to remove the symlinks. Beyond the skills directory, the one file the skills touch is the version-check stamp at ~/.claude/.foundry-version-checked.",
+    d: (
+      <>
+        npx: re-run the add command to update; a skill run tells you when a
+        newer suite is out. From source: <Cmd>git pull &amp;&amp; make install</Cmd>{" "}
+        to update, <Cmd>make uninstall</Cmd> to remove the symlinks. Beyond the
+        skills directory, the one file the skills touch is the version-check
+        stamp at ~/.claude/.foundry-version-checked.
+      </>
+    ),
   },
 ];
 
@@ -159,7 +181,7 @@ export async function InstallBlock() {
           {/* What happens when you invoke it. self-start keeps the card sized
               to its content instead of stretching to the taller command column
               (which left ~40% dead panel at lg). */}
-          <div className="min-w-0 lg:self-start">
+          <div className="min-w-0 border border-line bg-ink p-5 lg:self-start">
             <p className="font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
               What happens when you invoke it
             </p>

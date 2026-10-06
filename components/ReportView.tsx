@@ -51,7 +51,7 @@ function FindingRow({ f }: { f: Finding }) {
     <details
       id={`finding-${f.id}`}
       data-severity={f.severity}
-      className="group/row scroll-mt-24 border-l-2 border-transparent open:border-line-strong"
+      className="group/row scroll-mt-24 border-l-2 border-l-transparent open:border-l-line-strong"
     >
       {/* Below sm the id/chip row stacks ABOVE the issue text; sharing one
           row squeezed the finding text to a ~18ch measure on phones, the

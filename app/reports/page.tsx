@@ -25,9 +25,9 @@ function OwnedRow({ r }: { r: ReportSummary }) {
         className="group grid gap-3 py-5 transition-colors hover:bg-ink-raised sm:grid-cols-[1fr_auto] sm:items-center"
       >
         <div className="min-w-0">
-          <h3 className="break-words font-mono text-lg font-semibold tracking-tight text-bone">
+          <h2 className="break-words font-mono text-lg font-semibold tracking-tight text-bone">
             {r.project}
-          </h3>
+          </h2>
           <p className="mt-0.5 font-mono text-xs uppercase tracking-wide text-bone-faint">
             {r.date}
           </p>
@@ -59,8 +59,16 @@ function OwnedRow({ r }: { r: ReportSummary }) {
   );
 }
 
-// One public example: links to the ungated detail (/example/[slug]).
-function ExampleCard({ r }: { r: ReportSummary }) {
+// One public example: links to the ungated detail (/example/[slug]). Its
+// title sits one level under the section heading, which is the page h1 when
+// signed out and an h2 under the report history when signed in.
+function ExampleCard({
+  r,
+  titleAs: Title,
+}: {
+  r: ReportSummary;
+  titleAs: "h2" | "h3";
+}) {
   const full = getPublicReport(r.slug);
   const risks =
     full?.findings.filter((f) => (f.kind ?? "risk") === "risk").length ?? 0;
@@ -73,9 +81,9 @@ function ExampleCard({ r }: { r: ReportSummary }) {
         className="group block p-5 transition-colors hover:bg-ink sm:p-6"
       >
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-          <h3 className="font-mono text-lg font-semibold text-bone">
+          <Title className="font-mono text-lg font-semibold text-bone">
             {r.project}
-          </h3>
+          </Title>
           <span className="border border-line px-2 py-0.5 font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
             {isSelfAudit ? "Our own audit" : "Illustrative sample"}
           </span>
@@ -161,7 +169,7 @@ export default async function ReportsIndex() {
         </p>
         <ul className="mt-8 divide-y divide-line border border-line bg-ink-raised">
           {examples.map((r) => (
-            <ExampleCard key={r.slug} r={r} />
+            <ExampleCard key={r.slug} r={r} titleAs={email ? "h3" : "h2"} />
           ))}
         </ul>
       </section>

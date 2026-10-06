@@ -99,7 +99,7 @@ export function ReportScorecard({
         <button
           type="button"
           onClick={() => goSection("risks")}
-          className="cursor-pointer transition-colors hover:text-bone-dim"
+          className="cursor-pointer uppercase transition-colors hover:text-bone-dim"
         >
           {riskCount} {riskCount === 1 ? "risk" : "risks"}
         </button>
@@ -107,7 +107,7 @@ export function ReportScorecard({
           <button
             type="button"
             onClick={() => goSection("improvements")}
-            className="cursor-pointer transition-colors hover:text-bone-dim"
+            className="cursor-pointer uppercase transition-colors hover:text-bone-dim"
           >
             {improvementCount} improvements
           </button>
