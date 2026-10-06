@@ -191,11 +191,11 @@ The audit report is read by a detail-oriented but time-poor senior or principal 
 ## Anti-goals
 
 - No drop shadows, glows, rounded-pill buttons, or gradient meshes.
-- No color that does not mean a severity, a verdict, or an invocable command. Amber also heads the entry tiles on the skills directory. Severity and verdict hues appear only in reports and in the framed places Colors names. Everything else is steel, bone and white.
+- No color that does not mean a severity, a verdict, or an invocable command. Amber also heads the entry tiles on the skills directory. Severity and verdict hues appear only in reports and in the framed places the next line lists. Everything else is steel, bone and white.
 - No hype or marketing warmth.
 - Never set the wordmark or a brand-layer page title in anything but Archivo Black, or draw the mark in anything but the Horizon Foundry mark in one flat color. Report names and deck slide headings are the instrument layer and stay in Plex Mono.
 - No em dashes in any copy.
-- A page must not show a severity or verdict hue on plain marketing chrome (a label, a badge, a heading) outside a report or a framed place Colors names.
+- A page must not show a severity or verdict hue on plain marketing chrome (a label, a badge, a heading). Outside a report, the hues appear only inside these frames: the hero terminal's simulated run, the report specimen, the framed three-verdict list, the install block's mini-verdict, the report cards on /reports, and the severity and verdict specimens on the design-system page.
 - A page must not stack bordered cards. Hairline rules divide sections, and a list is one bordered block divided by 1px rules. A ledger grid divided by 1px gaps is a hairline grid, not stacked cards.
 - A marketing page must not use a tracked-caps kicker above a heading more than once, on the hero only.
 - A report page must not bury the verdict. The first screen is the stamp, the one-line summary, and the scorecard.
