@@ -658,6 +658,6 @@ Craig answered all eight open questions from the conformance plan the same day, 
 
 **Reasoning.** A human reads their own input to a plan first and rarely the rest, so decisions buried in prose get answered late or not at all. The fixed shape is also machine-readable: a tool can render the decisions first and collect the answers, and an unanswered decision stays visibly unanswered instead of reading as agreement. The template states the grammar in prose and carries no worked example inside the section, because a plan copied from the template that kept the example would show invented decisions as open.
 
-This is not elicitation, which the suite rules out (no skill elicits by questionnaire): the section lists decisions the work itself raised, each with the agent's recommended call, and does not ask the human to supply intent.
+This is not elicitation, which the suite rules out (no skill elicits by questionnaire): the section lists decisions the work itself raised, each option-bearing item with the agent's recommended call and a free-text item naming the question the work raised, and does not ask the human to supply intent.
 
 **Rejected.** Keeping human-owed items in Open questions with a "the human" owner tag, the previous shape. It put the human's input in the same list as a pending review or an external reply, in no fixed form, so a reader had to scan every open question to find their own and a tool could neither render them first nor tell an answer from silence.
