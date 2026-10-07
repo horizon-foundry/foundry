@@ -305,6 +305,9 @@ body::before {
   color: var(--color-signal);
   text-decoration: underline;
   text-underline-offset: 3px;
+  /* A bare URL is one unbreakable word: at 390 the raw template links on the
+     phase-plan and brand-voice pages pushed the page sideways. Break it anywhere. */
+  overflow-wrap: anywhere;
 }
 .doc-prose code {
   font-family: var(--font-mono);
