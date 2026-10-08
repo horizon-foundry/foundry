@@ -46,7 +46,7 @@ const COMMANDS: Cmd[] = [
       [
         { t: "0", c: C.safe },
         { t: " risks   ", c: C.faint },
-        { t: "39", c: C.dim },
+        { t: "60", c: C.dim },
         { t: " improvements", c: C.faint },
       ],
       [{ t: "improvements don't block the release", c: C.dim }],
