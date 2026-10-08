@@ -114,7 +114,7 @@ export default function Home() {
         {/* Hero */}
         <section className="relative overflow-hidden border-b border-line">
           <div className="relative mx-auto max-w-[1180px] px-5 pb-20 pt-16 sm:px-8 sm:pt-24">
-            <div className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+            <div className="grid grid-cols-[minmax(0,1fr)] gap-12 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-center">
             <div className="stagger-rise">
               <p className="font-mono text-xs uppercase tracking-[0.25em] text-bone-faint">
                 A Horizon Foundry suite · Distill. Forge. Deliver.
@@ -224,7 +224,7 @@ export default function Home() {
 
         {/* The flagship divider */}
         <section className="reveal border-b border-line bg-ink-raised">
-          <div className="mx-auto grid max-w-[1180px] gap-8 px-5 py-12 sm:px-8 md:grid-cols-[1fr_auto] md:items-center">
+          <div className="mx-auto grid max-w-[1180px] grid-cols-[minmax(0,1fr)] gap-8 px-5 py-12 sm:px-8 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
             <div>
               <div className="flex items-center gap-3">
                 <span className="draw-rule h-px w-8 bg-signal" aria-hidden="true" />

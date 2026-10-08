@@ -60,7 +60,10 @@ export function ReportScorecard({
 
   return (
     <>
-      <div className="grid grid-cols-5 divide-x divide-line border border-line">
+      {/* overflow-wrap: normal opts out of ReportView's inherited break-words:
+          every label here is a fixed short token, and splitting one ("MEDIU/M"
+          at 320) is worse than its sub-pixel overhang. */}
+      <div className="grid grid-cols-5 divide-x divide-line border border-line [overflow-wrap:normal]">
         {ORDER.map((sev) => {
           const n = bySeverity[sev];
           const clickable = n > 0;

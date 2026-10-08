@@ -25,7 +25,7 @@ function Chevron({ dir }: { dir: "left" | "right" }) {
   return (
     <svg
       viewBox="0 0 16 16"
-      className="size-3.5"
+      className="size-[14px]"
       fill="none"
       stroke="currentColor"
       strokeWidth="1.5"
@@ -174,43 +174,51 @@ export function SlideDeck({ slides, title, tagline, statChips }: Props) {
       </div>
 
       {/* Nav bar */}
-      <div className="flex items-center justify-between border-t border-line px-4 py-3">
+      <div className="flex items-center justify-between border-t border-line px-[4px] py-1 sm:px-4">
         <button
           type="button"
           onClick={prev}
           disabled={current === 0}
-          className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wide text-bone-dim transition-colors hover:text-bone disabled:cursor-not-allowed disabled:opacity-30"
+          className="inline-flex min-h-11 min-w-[24px] items-center justify-center sm:min-w-[36px] gap-1.5 font-mono text-xs uppercase tracking-wide text-bone-dim transition-colors hover:text-bone disabled:cursor-not-allowed disabled:opacity-30"
         >
           <Chevron dir="left" />
-          Prev
+          {/* Icon-only and 24px wide below sm: nine 24px dots, two 24px buttons and
+              4px padding make 272px, which fits the 278px a 320 viewport leaves. */}
+          <span className="sr-only sm:not-sr-only">Prev</span>
         </button>
-        <div
-          className="flex items-center gap-1.5"
-          role="group"
-          aria-label="Go to slide"
-        >
+        {/* Each dot's button IS its target: 24px wide (WCAG 2.5.8) and 44px
+            tall, side by side with no gap, so no two targets can overlap. An
+            expanded ::before hit area overlapped its neighbour here and sent 7
+            of 9 taps to the next slide. Nine 44px-wide targets would not fit
+            beside Prev and Next at 320. */}
+        <div className="flex items-center" role="group" aria-label="Go to slide">
           {Array.from({ length: total }).map((_, i) => (
             <button
               key={i}
               type="button"
               onClick={() => setCurrent(i)}
-              className={`relative h-1.5 transition-all before:absolute before:-inset-2.5 before:content-[''] ${
-                i === current
-                  ? "w-5 bg-signal"
-                  : "w-1.5 bg-line-strong hover:bg-bone-faint"
-              }`}
+              className="group flex min-h-11 min-w-[24px] items-center justify-center"
               aria-label={`Go to slide ${i + 1}`}
               aria-current={i === current ? "true" : undefined}
-            />
+            >
+              <span
+                aria-hidden="true"
+                className={`block h-1.5 transition-colors ${
+                  i === current
+                    ? "w-5 bg-signal"
+                    : "w-1.5 bg-line-strong group-hover:bg-bone-faint"
+                }`}
+              />
+            </button>
           ))}
         </div>
         <button
           type="button"
           onClick={next}
           disabled={current === total - 1}
-          className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wide text-bone-dim transition-colors hover:text-bone disabled:cursor-not-allowed disabled:opacity-30"
+          className="inline-flex min-h-11 min-w-[24px] items-center justify-center sm:min-w-[36px] gap-1.5 font-mono text-xs uppercase tracking-wide text-bone-dim transition-colors hover:text-bone disabled:cursor-not-allowed disabled:opacity-30"
         >
-          Next
+          <span className="sr-only sm:not-sr-only">Next</span>
           <Chevron dir="right" />
         </button>
       </div>

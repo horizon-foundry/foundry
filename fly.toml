@@ -5,7 +5,9 @@
 #   fly secrets set SUPABASE_ANON_KEY="<anon key>"
 #   fly secrets set ADMIN_EMAILS="you@example.com"
 # Without the Supabase env the gate fails closed (no one gets in). The Supabase
-# project's redirect allowlist must include https://foundry-skills.fly.dev/auth/confirm.
+# project's redirect allowlist must include https://foundry.thehorizonfoundry.com/auth/confirm
+# (and keeps the fly.dev one, so links mailed before the cutover still verify;
+# those sessions stay on fly.dev, so their users sign in once more on the canonical host).
 
 app = "foundry-skills"
 primary_region = "iad"
@@ -14,7 +16,7 @@ primary_region = "iad"
   # Pinned public origin for the magic-link redirect target, so it is never
   # derived from a spoofable X-Forwarded-Host (see lib/supabase.ts publicOrigin).
   # Not a secret; it is the public site URL.
-  SITE_ORIGIN = "https://foundry-skills.fly.dev"
+  SITE_ORIGIN = "https://foundry.thehorizonfoundry.com"
 
 [build]
   # Browser analytics key, inlined into the client bundle at build time (a phc

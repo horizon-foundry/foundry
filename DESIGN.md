@@ -95,6 +95,8 @@ The severity ramp (critical red, high orange, medium amber-yellow, low steel-blu
 
 A strict 4px unit. Generous negative space around dense, high-signal content. Hairline rules (Brand Slate) divide sections instead of stacked cards. Content max width 1180px; long-form prose stops at about 75 characters per line. A `ch` is the width of a zero, not of an average character, so the measure is two tokens measured against real text: `measure` (58ch) for sans and `measure-serif` (61ch) for the serif doc prose (settled 2026-10-06). Mono evidence (code, paths, quoted output) is not prose and is not capped: it wraps at the edge of its box. Left-aligned and ledger-like.
 
+Tap targets are at least 44px tall, and a target is its own box: never a pseudo-element hit area grown past the control, because grown areas overlap their neighbours and the later sibling takes the tap (the overview deck's dots opened the wrong slide on 7 of 9 that way until v0.2.1). A target that carries no text, such as a deck dot, is sized in px, because text-only zoom scales rem and would push a row of them off a phone; a target that carries text stays in rem so it grows with its label (settled 2026-10-07).
+
 ## Elevation & Depth
 
 Depth comes from tonal steel layering and hairlines, never drop shadows. A focused element gains a `line-strong` border or a 1px white edge, not a glow. A faint film grain over the ground gives the screen the texture of milled stock.
@@ -176,6 +178,7 @@ Sharp. Corner radius 2-4px, effectively square, matching the mark's cut letterfo
 - **Severity chip**: uppercase mono label, hairline border, a 2px left rule in the severity color.
 - **Verdict stamp**: a bordered block with corner registration ticks in the verdict color; level in mono uppercase. The ticks are the stamp's mark, not decoration.
 - **Section rule**: a short 1px rule that draws in once before a marketing section heading (the `draw` motion token). It is the section's mark, not decoration.
+- **Slide marks**: each overview-deck slide carries a short amber rule beside its category and one hairline glyph (`components/SlideGlyph.tsx`), monochrome and square-cut, drawn in once on entry. They are the slide's marks, not decoration: a slide must not be a wall of text, and one glyph per slide is a standing convention across Craig's projects (settled 2026-10-08). One glyph per slide, never more, and never an illustration.
 - **List**: one block divided by 1px rules, never separately bordered items with gaps between them. On the page ground it is ruled top and bottom (Six promises, The method); a list that carries its own raised fill (the report's finding lists, the install methods) takes a full hairline frame so the fill has an edge.
 - **Nav tabs**: mono, active tab underlined in bone, not a filled pill (action is not selection).
 - **Doc prose**: IBM Plex Serif, bone on steel, narrow measure, hairline rules under headings.
@@ -204,5 +207,5 @@ The audit report is read by a detail-oriented but time-poor senior or principal 
 - A page must not set long-form prose wider than about 75 characters per line.
 - A page must not round corners beyond 2 to 4px, or fill the active nav tab like a pill.
 - A page must not draw the mark in any hue, or set it near body text at 16px.
-- A page must not carry a decorative element that can vanish on a phone with nothing lost. The section rule and the stamp's corner ticks are marks (see Components), not decoration.
+- A page must not carry a decorative element that can vanish on a phone with nothing lost. The section rule, the stamp's corner ticks, and a deck slide's rule and glyph are marks (see Components), not decoration.
 - A page must not use pointer reticles or crosshairs.

@@ -46,7 +46,7 @@ const COMMANDS: Cmd[] = [
       [
         { t: "0", c: C.safe },
         { t: " risks   ", c: C.faint },
-        { t: "39", c: C.dim },
+        { t: "60", c: C.dim },
         { t: " improvements", c: C.faint },
       ],
       [{ t: "improvements don't block the release", c: C.dim }],
@@ -136,7 +136,7 @@ function Screen({ cmd }: { cmd: Cmd }) {
   }, [cmd.cmd]);
 
   return (
-    <div className="min-h-[168px] px-4 py-4 font-mono text-sm">
+    <div className="min-h-[168px] px-4 py-4 font-mono text-sm [overflow-wrap:anywhere]">
       <div className="flex items-center">
         <span className="mr-2 text-bone-faint" aria-hidden="true">
           ▸

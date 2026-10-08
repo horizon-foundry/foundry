@@ -142,6 +142,10 @@ The design critic that `/pr` runs reads only DESIGN.md's Anti-goals, and Foundry
 
 The ask was to resolve the open questions so the anti-goals work could close and other work could move again. Craig answered all eight from a structured question set, choosing the recommended side every time: lists become one block divided by rules, the scorecard comes before the drivers, the hue license is a named list of six framed places, page titles follow their layer, the measure is about 75 characters, the window dots and dash bullets go while the section rule and stamp ticks are named as marks, the detector suppression stays, and the two "real" slogans go. The branch put the design record first, in one commit, then one code commit per question. The `/pr` run's critic, given only screenshots and the new anti-goals, found the scorecard frame, the example banner and several boxed blocks still read as stacked cards. The code angles found a hover state that failed contrast, nested folds that rotated each other's chevrons, and prose the measure sweep had missed on six pages. A later check found that making the signed-out /reports title an h1 had left the card titles skipping a level. Each was fixed and then reviewed again. NOTES.md records the reasoning.
 
+### Released on an audit that had to be earned (2026-10-07)
+
+The ask was to run the release for v0.2.1, gated on a full production-audit passing as safe to ship, and to ship that audit as the public self-audit. The audit ran eleven dimension reviews and a runtime pass, then sent every risk candidate to a skeptic on a different model or a runtime test. None survived as a risk, mostly because no report has an owner yet, but the runtime pass failed the mobile gate. Craig chose to fix the gate in the release, and to fix the sign-in host mismatch that had been open since launch once it was explained. Each review round then found defects in the previous round's fixes, which are recorded in NOTES.
+
 ## Origin and direction
 
 This section records the decisions that shaped the build, in the project's own voice.
