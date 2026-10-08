@@ -429,7 +429,7 @@ export function ReportView({ report }: { report: AuditReport }) {
               <span className="font-mono text-sm font-semibold tabular-nums text-bone-faint">
                 {String(i + 1).padStart(2, "0")}
               </span>
-              <div>
+              <div className="min-w-0">
                 <p className="text-sm font-medium text-bone">{step.title}</p>
                 {step.detail && (
                   <p className="mt-1 max-w-measure text-sm leading-relaxed text-bone-dim">
@@ -453,8 +453,8 @@ export function ReportView({ report }: { report: AuditReport }) {
         <ul className="divide-y divide-line border border-line bg-ink-raised">
           {report.quickWins.map((w) => (
             <li key={w.title} className="p-3.5">
-              <div className="flex flex-wrap items-baseline justify-between gap-x-4">
-                <p className="min-w-0 flex-1 basis-48 text-sm font-medium text-bone">{w.title}</p>
+              <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                <p className="min-w-0 flex-1 basis-40 text-sm font-medium text-bone">{w.title}</p>
                 {w.findingId && (
                   <span className="shrink-0 font-mono text-[0.6875rem] uppercase text-bone-faint">
                     {w.findingId}
