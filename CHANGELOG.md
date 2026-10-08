@@ -6,7 +6,7 @@ All notable changes to Foundry are recorded here. The format follows [Keep a Cha
 
 ## [Unreleased]
 
-## [0.2.1] - 2026-10-07
+## [0.2.1] - 2026-10-08
 
 **Why this release:** v0.2.0 made the suite verifiable in execution; v0.2.1 makes its records hold their shape and its own site keep its promises. Projects get a `TODOS.md` standard with a lossless parser and a linter that `scaffold` now runs, and plans get a dated, chronological index and a `Decisions needed` section a human can answer first. `frame`, `brand-voice` and `production-audit` each learned to report a class of defect they missed (contradictions across entries, an invented vocabulary, a control no test can reach). The release procedure is written down and the changelog is enforced in CI. The site took the design record's new anti-goals on every page and the design kit's revised mark, under two gates that check the built output. And the release was gated by a fresh full self-audit, which found no risk but failed the mobile gate and named a sign-in that broke on the canonical domain. The gate's failed rows and the host mismatch are fixed here; the gate stays at risk on large text and real devices, one live sign-in is still unchecked, and the published report says what was fixed rather than deleting it. The bar this release keeps: a record you can parse, and a site that does what its own skills require.
 
