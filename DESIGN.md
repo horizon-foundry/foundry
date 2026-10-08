@@ -95,6 +95,8 @@ The severity ramp (critical red, high orange, medium amber-yellow, low steel-blu
 
 A strict 4px unit. Generous negative space around dense, high-signal content. Hairline rules (Brand Slate) divide sections instead of stacked cards. Content max width 1180px; long-form prose stops at about 75 characters per line. A `ch` is the width of a zero, not of an average character, so the measure is two tokens measured against real text: `measure` (58ch) for sans and `measure-serif` (61ch) for the serif doc prose (settled 2026-10-06). Mono evidence (code, paths, quoted output) is not prose and is not capped: it wraps at the edge of its box. Left-aligned and ledger-like.
 
+Tap targets are at least 44px tall, and a target is its own box: never a pseudo-element hit area grown past the control, because grown areas overlap their neighbours and the later sibling takes the tap (the overview deck's dots opened the wrong slide on 7 of 9 that way until v0.2.1). A target that carries no text, such as a deck dot, is sized in px, because text-only zoom scales rem and would push a row of them off a phone; a target that carries text stays in rem so it grows with its label (settled 2026-10-07).
+
 ## Elevation & Depth
 
 Depth comes from tonal steel layering and hairlines, never drop shadows. A focused element gains a `line-strong` border or a 1px white edge, not a glow. A faint film grain over the ground gives the screen the texture of milled stock.

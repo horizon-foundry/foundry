@@ -29,7 +29,7 @@
   "verdict": {
     "level": "safe-to-ship",
     "assessedScope": "static-plus-runtime",
-    "posture": "Healthy, with a long robustness list. Eleven dimensions and eight adversarial verifications found no risk that survived: every risk candidate was real code but had no harm path today, mostly because no report has an owner yet. The 60 improvements are what to schedule, led by the work owed before the first owned report.",
+    "posture": "No risk survived verification; 60 improvements to schedule, led by the work owed before the first owned report.",
     "justification": "Static review of commit 8328077 plus a runtime pass against a local build (Playwright and axe across 19 routes, local load tests, and live unauthenticated GETs of public pages); signed-in surfaces, real devices and Supabase dashboard state were not exercised. Eight findings were proposed as risks or rated high, and each was sent to a skeptic on a different model or settled by a runtime test; all were downgraded to improvements, with the reasoning recorded on each. The mobile gate failed at 8328077 and was fixed in this release before publication, then re-probed: 19 of 19 routes reflow at 320 to 430 and in landscape, and the deck works on 9 of 9 dots. Both required gates remain at risk, not met; neither caps the verdict.",
     "blockingFindingIds": []
   },
@@ -1704,32 +1704,32 @@
   ],
   "notAssessed": [
     {
-      "check": "Supabase dashboard state: SMTP provider and its cap, the magic-link email template, the redirect allowlist contents, refresh-token reuse interval, and which objects the anon role can reach",
-      "reason": "Dashboard state is not in the repo and the audit made no credentialed call.",
+      "check": "Supabase dashboard state",
+      "reason": "The SMTP provider and its cap, the magic-link template, the redirect allowlist, the refresh-token reuse interval and what the anon role can reach are dashboard state, not in the repo, and the audit made no credentialed call.",
       "howToVerify": "Supabase dashboard: Authentication > SMTP Settings, Rate Limits, Email Templates > Magic Link, URL Configuration, Sessions; then list public-schema grants in the SQL editor."
     },
     {
-      "check": "A real magic-link sign-in end to end on the canonical host",
+      "check": "A real sign-in on the canonical host",
       "reason": "Requesting a link sends real mail and spends the project's email quota.",
       "howToVerify": "After deploy, request a link on https://foundry.thehorizonfoundry.com/unlock, open it on the same device, and confirm /reports shows the signed-in state on that host."
     },
     {
-      "check": "Signed-in /reports and the sign-out button",
+      "check": "Signed-in /reports and sign-out",
       "reason": "The local runtime pass ran with Supabase unset.",
       "howToVerify": "Sign in as an admin and run the accessibility probe and a keyboard walk on /reports and /reports/[slug]."
     },
     {
-      "check": "Mobile real-device rows: software keyboard, iOS Safari, Android Chrome",
+      "check": "Mobile rows that need a real device",
       "reason": "Emulation cannot exercise the soft keyboard, autofill or scroll physics.",
       "howToVerify": "Walk the core flows on an iPhone and a Pixel-class phone at default and 200% text size; focus the /unlock field and confirm the field and Send stay visible."
     },
     {
-      "check": "Fly machine count, proxy concurrency limits and cold-start time",
+      "check": "Fly machines, concurrency and cold start",
       "reason": "The audit ran no fly command.",
       "howToVerify": "fly machines list, fly config show, and curl -w %{time_starttransfer} on / after ten minutes idle."
     },
     {
-      "check": "The live analytics funnel and any PostHog dashboard, owner or billing limit",
+      "check": "The live analytics funnel",
       "reason": "No credentialed PostHog call was made.",
       "howToVerify": "In PostHog, confirm magic_link_requested joins sign_in_completed under one person, list saved insights for both funnels, and check the billing limit."
     }
