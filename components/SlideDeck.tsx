@@ -25,7 +25,7 @@ function Chevron({ dir }: { dir: "left" | "right" }) {
   return (
     <svg
       viewBox="0 0 16 16"
-      className="size-3.5"
+      className="size-[14px]"
       fill="none"
       stroke="currentColor"
       strokeWidth="1.5"

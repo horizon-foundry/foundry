@@ -453,8 +453,8 @@ export function ReportView({ report }: { report: AuditReport }) {
         <ul className="divide-y divide-line border border-line bg-ink-raised">
           {report.quickWins.map((w) => (
             <li key={w.title} className="p-3.5">
-              <div className="flex items-baseline justify-between gap-4">
-                <p className="min-w-0 text-sm font-medium text-bone [overflow-wrap:anywhere]">{w.title}</p>
+              <div className="flex flex-wrap items-baseline justify-between gap-x-4">
+                <p className="min-w-0 flex-1 basis-48 text-sm font-medium text-bone">{w.title}</p>
                 {w.findingId && (
                   <span className="shrink-0 font-mono text-[0.6875rem] uppercase text-bone-faint">
                     {w.findingId}

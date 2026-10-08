@@ -105,7 +105,7 @@
         "A11Y-05",
         "A11Y-10"
       ],
-      "note": "Required by the release policy. At 8328077 the gate failed: deck dots opened the wrong slide on 7 of 9, text-only 200% clipped the hero's lead and Install CTA, and two skill pages overflowed at 320. Fixed in this release before publication and re-probed with a scripted matrix: 0 overflow and 0 clipped text on 19 of 19 routes at 320, 360, 393, 430 and landscape; 9 of 9 dots; the install command reachable by keyboard. At risk, not met: at 200% text five routes still scroll sideways, and the software keyboard, iOS Safari and Android Chrome rows were not run on real devices."
+      "note": "Required by the release policy. At 8328077 the gate failed: deck dots opened the wrong slide on 7 of 9, text-only 200% clipped the hero's lead and Install CTA, and two skill pages overflowed at 320. Fixed in this release before publication and re-probed with a scripted matrix: 0 overflow and 0 clipped text on 19 of 19 routes at 320, 360, 393, 430 and landscape; 9 of 9 dots; the install command reachable by keyboard. At risk, not met: at 200% text on a 393 phone five routes still scroll sideways, and the software keyboard, iOS Safari and Android Chrome rows were not run on real devices."
     },
     {
       "gate": "instrumentation",
@@ -708,7 +708,7 @@
         "line": 117
       },
       "issue": "Text-only enlargement clipped the hero and still scrolls five routes sideways.",
-      "impact": "At 200% text on a 390 phone the hero clipped its lead paragraph and the Install CTA. Fixed in this release (v0.2.1) before publication: minmax(0, ...) tracks and a self-scrolling terminal, so 0 of 19 routes clip text. Still open: at 200% text, / (report specimen), /reports (5px), /skills/mobile and the doc tables on /skills/production-audit and /skills/scaffold scroll sideways. Browser page zoom at 200% was always clean, so 1.4.4 is met.",
+      "impact": "At 200% text on a 390 phone the hero clipped its lead paragraph and the Install CTA. Fixed in this release (v0.2.1) before publication: minmax(0, ...) tracks and a terminal that wraps long commands, so 0 of 19 routes clip text. Still open: at 200% text on a 393 phone, / (report specimen), /reports (5px), /skills/mobile and the doc tables on /skills/production-audit and /skills/scaffold scroll sideways. Browser page zoom at 200% was always clean, so 1.4.4 is met.",
       "evidence": "app/page.tsx:117 `<div className=\"grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center\">` (auto tracks cannot shrink below content) under `overflow-hidden` at :115, measured before and after with the same scripted probe.",
       "recommendedFix": "Constrain the doc tables and the home report specimen at large text sizes.",
       "confidence": "runtime-reproduced",

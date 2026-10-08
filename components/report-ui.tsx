@@ -126,7 +126,10 @@ export function StatStrip({
     "informational",
   ];
   return (
-    <div className="grid grid-cols-5 divide-x divide-line border border-line">
+    // overflow-wrap: normal opts out of the report root's inherited break-words:
+    // every value here is a fixed short token, and breaking one ("MEDIU/M") is
+    // worse than its 0.4px overhang at 320.
+    <div className="grid grid-cols-5 divide-x divide-line border border-line [overflow-wrap:normal]">
       {order.map((sev) => (
         <div key={sev} className="px-2 py-3 text-center">
           <div
