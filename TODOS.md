@@ -154,9 +154,7 @@ Three agents, one angle each, all browser- or build-verified. They found twelve 
 - [ ] 2026-09-28 Command Center Phase 4, the app (agent first: repo via /scaffold, snapshot schema and scanner, then Fly server with GitHub OAuth, home feed, project view with guarded TODOS ops, docs panel; design approved by Craig 2026-09-28; step 2 needs his OAuth and Fly app) -> `~/.claude/plans/command-center-phase-4-app.md`
 - [ ] 2026-09-18 Site production readiness (not yet numbered: Phase 18 above is now Read the verdict): the 20-point checklist audited against the code (12 met, 4 gaps: privacy page, cookie-free analytics instead of a banner, sitemap, contact email; 4 skipped with reasons; PostHog identity decided 2026-09-18: one project per product, so the cookie-free step stands; the contact email waits on the studio mailbox going live, a studio pre-launch step) -> `~/.claude/plans/foundry-site-production-readiness.md`
 
-### From the 2026-08-14 self-audit (safe to ship, 0 risks, 39 improvements)
-
-The finding ids below (SEC-01, REL-01 and the rest) are the retired 2026-08-14 report's, which is in git history; `reports/foundry-2026-10-07.json` reuses several of the same ids for different findings.
+### From the 2026-08-14 self-audit (safe to ship, 0 risks, 39 improvements; ids are that retired report's, in git history, and the 2026-10-07 report reuses several for different findings)
 
 - [ ] 2026-08-14 **[Security/Testing]** Close the report-confidentiality seam before any private report lands: publish-time validate control, unexport getReport, first pinning tests (SEC-01, TEST-01)
 - [ ] 2026-08-14 **[Ops]** Operations section plus one external signal: the runbook indexed below, an uptime check on /api/version, the request-stage failure log, the two documented recall paths (OPS-01, OPS-02, OPS-03, OPS-04, SHIP-04)
