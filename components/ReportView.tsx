@@ -57,7 +57,7 @@ function FindingRow({ f }: { f: Finding }) {
           row squeezed the finding text to a ~18ch measure on phones, the
           product's core artifact at its worst. */}
       <summary className="flex cursor-pointer list-none flex-col gap-2 px-4 py-3.5 sm:flex-row sm:items-start sm:gap-4 [&::-webkit-details-marker]:hidden">
-        <span className="flex shrink-0 items-center gap-2.5 sm:pt-0.5">
+        <span className="flex shrink-0 flex-wrap items-center gap-2.5 sm:pt-0.5">
           <span
             className={`font-mono text-xs font-semibold tabular-nums ${SEV_TEXT[f.severity]}`}
           >
@@ -212,7 +212,9 @@ export function ReportView({ report }: { report: AuditReport }) {
   );
 
   return (
-    <div>
+    // break-words is inherited: a report carries paths, URLs and identifiers,
+    // and one of them at large text sizes pushed the page sideways.
+    <div className="break-words">
       {/* Header. Leads with the product version when the report carries one, so
           a public report is stamped to a release (v0.1.0) rather than a date
           that reads stale as commits pile up; the audit date drops to the quiet
@@ -452,7 +454,7 @@ export function ReportView({ report }: { report: AuditReport }) {
           {report.quickWins.map((w) => (
             <li key={w.title} className="p-3.5">
               <div className="flex items-baseline justify-between gap-4">
-                <p className="text-sm font-medium text-bone">{w.title}</p>
+                <p className="min-w-0 text-sm font-medium text-bone [overflow-wrap:anywhere]">{w.title}</p>
                 {w.findingId && (
                   <span className="shrink-0 font-mono text-[0.6875rem] uppercase text-bone-faint">
                     {w.findingId}

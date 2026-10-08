@@ -320,9 +320,11 @@ body::before {
 }
 /* Inline code is one unbreakable word too: at 320 the overflow probe on the
    mobile page and the schema URL on the production-audit page pushed the page
-   sideways. Block code keeps its own scroll box. */
+   sideways. break-word, not anywhere: anywhere lowers min-content, so table
+   columns shrink and split a flag like --runtime at desktop widths. Block code
+   keeps its own scroll box. */
 .doc-prose :not(pre) > code {
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 .doc-prose pre {
   font-family: var(--font-mono);

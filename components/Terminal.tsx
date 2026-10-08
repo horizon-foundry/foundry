@@ -136,7 +136,7 @@ function Screen({ cmd }: { cmd: Cmd }) {
   }, [cmd.cmd]);
 
   return (
-    <div className="min-h-[168px] overflow-x-auto px-4 py-4 font-mono text-sm">
+    <div className="min-h-[168px] px-4 py-4 font-mono text-sm [overflow-wrap:anywhere]">
       <div className="flex items-center">
         <span className="mr-2 text-bone-faint" aria-hidden="true">
           ▸

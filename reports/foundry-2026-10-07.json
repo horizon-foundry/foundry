@@ -1711,7 +1711,7 @@
     {
       "check": "A real sign-in on the canonical host",
       "reason": "Requesting a link sends real mail and spends the project's email quota.",
-      "howToVerify": "After deploy, request a link on https://foundry.thehorizonfoundry.com/unlock, open it on the same device, and confirm /reports shows the signed-in state on that host."
+      "howToVerify": "After deploy, request a link on /unlock on the canonical host, open it on the same device, and confirm /reports shows the signed-in state there."
     },
     {
       "check": "Signed-in /reports and sign-out",

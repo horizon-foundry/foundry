@@ -174,15 +174,16 @@ export function SlideDeck({ slides, title, tagline, statChips }: Props) {
       </div>
 
       {/* Nav bar */}
-      <div className="flex items-center justify-between border-t border-line px-[8px] py-1 sm:px-4">
+      <div className="flex items-center justify-between border-t border-line px-[4px] py-1 sm:px-4">
         <button
           type="button"
           onClick={prev}
           disabled={current === 0}
-          className="inline-flex min-h-11 min-w-[36px] items-center justify-center gap-1.5 font-mono text-xs uppercase tracking-wide text-bone-dim transition-colors hover:text-bone disabled:cursor-not-allowed disabled:opacity-30"
+          className="inline-flex min-h-11 min-w-[24px] items-center justify-center sm:min-w-[36px] gap-1.5 font-mono text-xs uppercase tracking-wide text-bone-dim transition-colors hover:text-bone disabled:cursor-not-allowed disabled:opacity-30"
         >
           <Chevron dir="left" />
-          {/* Icon-only below sm: nine 24px dots and two labelled buttons do not fit at 320. */}
+          {/* Icon-only and 24px wide below sm: nine 24px dots, two 24px buttons and
+              4px padding make 272px, which fits the 278px a 320 viewport leaves. */}
           <span className="sr-only sm:not-sr-only">Prev</span>
         </button>
         {/* Each dot's button IS its target: 24px wide (WCAG 2.5.8) and 44px
@@ -215,7 +216,7 @@ export function SlideDeck({ slides, title, tagline, statChips }: Props) {
           type="button"
           onClick={next}
           disabled={current === total - 1}
-          className="inline-flex min-h-11 min-w-[36px] items-center justify-center gap-1.5 font-mono text-xs uppercase tracking-wide text-bone-dim transition-colors hover:text-bone disabled:cursor-not-allowed disabled:opacity-30"
+          className="inline-flex min-h-11 min-w-[24px] items-center justify-center sm:min-w-[36px] gap-1.5 font-mono text-xs uppercase tracking-wide text-bone-dim transition-colors hover:text-bone disabled:cursor-not-allowed disabled:opacity-30"
         >
           <span className="sr-only sm:not-sr-only">Next</span>
           <Chevron dir="right" />
