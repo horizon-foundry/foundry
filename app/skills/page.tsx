@@ -65,11 +65,11 @@ export default function SkillsIndex() {
               before real users arrive. Each promise is kept by a skill you can
               run.
             </p>
-            <div className="mt-7 inline-flex items-center gap-3 border border-line bg-ink-raised px-4 py-2.5">
+            <div className="mt-7 inline-flex max-w-full items-center gap-3 border border-line bg-ink-raised px-4 py-2.5">
               <span className="font-mono text-xs uppercase tracking-wide text-bone-faint">
                 Install
               </span>
-              <code className="font-mono text-sm text-command">npx skills@latest add horizon-foundry/foundry</code>
+              <code className="min-w-0 font-mono text-sm text-command [overflow-wrap:anywhere]">npx skills@latest add horizon-foundry/foundry</code>
             </div>
           </div>
         </section>

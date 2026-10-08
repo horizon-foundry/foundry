@@ -318,6 +318,12 @@ body::before {
   padding: 0.05em 0.35em;
   color: var(--color-bone);
 }
+/* Inline code is one unbreakable word too: at 320 the overflow probe on the
+   mobile page and the schema URL on the production-audit page pushed the page
+   sideways. Block code keeps its own scroll box. */
+.doc-prose :not(pre) > code {
+  overflow-wrap: anywhere;
+}
 .doc-prose pre {
   font-family: var(--font-mono);
   background: var(--color-ink-raised);

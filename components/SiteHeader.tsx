@@ -20,7 +20,7 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-20 border-b border-line bg-ink">
       <div className="mx-auto max-w-[1180px] px-5 sm:px-8">
-        <div className="flex min-h-14 items-center justify-between gap-4">
+        <div className="flex min-h-14 flex-wrap items-center justify-between gap-x-4">
           <Wordmark className="text-sm" />
           <nav
             aria-label="Primary"

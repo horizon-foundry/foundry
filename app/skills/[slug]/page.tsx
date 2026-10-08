@@ -43,7 +43,7 @@ export default async function SkillPage({
         </Link>
 
         <div className="mt-6 flex flex-wrap items-center gap-3">
-          <h1 className="font-mono text-2xl font-semibold tracking-tight text-command">
+          <h1 className="font-mono text-2xl font-semibold tracking-tight text-command [overflow-wrap:anywhere]">
             /{skill.name}
           </h1>
           <span className="border border-line px-2 py-0.5 font-mono text-[0.6875rem] uppercase tracking-widest text-bone-dim">
