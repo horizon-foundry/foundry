@@ -4,7 +4,7 @@
 
 Foundry is eleven Claude Code skills that turn fast, AI-built code into something you can ship. The flagship, `production-audit`, audits the whole application across eleven dimensions and ends in one verdict: safe to ship; ready to ship, risks noted; or do not ship. Every finding cites the code that motivated it, and a static run never claims a runtime result.
 
-The proof is public: we audited Foundry with Foundry, fixed the risks the report found, and published it. Read the [self-audit](https://foundry.thehorizonfoundry.com/reports) against this source.
+The proof is public: we audited Foundry with Foundry, fixed what the report found, and published it. Read the [self-audit](https://foundry.thehorizonfoundry.com/reports) against this source.
 
 ## Install
 

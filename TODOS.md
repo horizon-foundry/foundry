@@ -126,9 +126,10 @@ Three agents, one angle each, all browser- or build-verified. They found twelve 
 ### Pre-publish, still open (from the 2026-07-16 audits)
 
 - [ ] 2026-07-17 **[Security]** **The domain cutover** (code side DONE in v0.2.1 on 2026-10-07: `SITE_ORIGIN` flipped and fly.dev redirects `/unlock` and `/reports` to the canonical host; still open: one real sign-in verified end to end on the canonical host, and the no-wildcard confirmation of the allowlist) (see the call-out at the top; this entry is its home). Two steps, in this order, and the order matters because doing the second first breaks sign-in harder than leaving it alone:
+  (Record of the original sequence; step 2's flip is done, step 1 is Craig's and must precede the deploy.)
   1. **Craig, in the Supabase dashboard** (Auth -> URL Configuration): confirm the redirect allowlist carries NO wildcard, and add `/auth/confirm` for `https://foundry.thehorizonfoundry.com`, `https://www.thehorizonfoundry.com` and the apex.
   2. **Then the agent**: flip `SITE_ORIGIN` in `fly.toml` from `https://foundry-skills.fly.dev` to the canonical host, confirm `app/unlock/actions.ts` builds `emailRedirectTo` from it, deploy, and verify a real magic link end to end on the custom domain before calling it done.
-  Open since the 2026-07-17 launch. What it costs while open: every sign-in from the canonical domain mails a link to the .fly.dev host, so the session lands on the wrong origin and report history reads as empty on the domain the site actually advertises. Also closes SEC-01's remaining half (the no-wildcard confirmation) in the Backlog.
+  Open from the 2026-07-17 launch to v0.2.1. What it cost while open: every sign-in from the canonical domain mails a link to the .fly.dev host, so the session lands on the wrong origin and report history reads as empty on the domain the site actually advertises. Also closes SEC-01's remaining half (the no-wildcard confirmation) in the Backlog.
 - [ ] 2026-07-17 **[Decision]** The proof is one fictional app (Perch) staged three ways; the frame's own success-measure entry is blank. Highest-leverage pre-launch move: run `/production-audit` on one real public repo and publish it alongside Perch. (Craig's call)
 - [ ] 2026-07-17 **[Decision]** The "Horizon Foundry suite/project" chrome on a solo v0.1.0 repo: earn it or soften to a maker's toolkit for launch. (Craig's call; HF is real, this is launch-optics)
 - [ ] 2026-07-17 **[Polish]** Minor positioning: /skills leads with the abstraction vs the concrete hero line; the "not product strategy, not org facilitation" negations; the eight-epigraph /behind deck (Aristotle twice)
@@ -154,6 +155,8 @@ Three agents, one angle each, all browser- or build-verified. They found twelve 
 - [ ] 2026-09-18 Site production readiness (not yet numbered: Phase 18 above is now Read the verdict): the 20-point checklist audited against the code (12 met, 4 gaps: privacy page, cookie-free analytics instead of a banner, sitemap, contact email; 4 skipped with reasons; PostHog identity decided 2026-09-18: one project per product, so the cookie-free step stands; the contact email waits on the studio mailbox going live, a studio pre-launch step) -> `~/.claude/plans/foundry-site-production-readiness.md`
 
 ### From the 2026-08-14 self-audit (safe to ship, 0 risks, 39 improvements)
+
+The finding ids below (SEC-01, REL-01 and the rest) are the retired 2026-08-14 report's, which is in git history; `reports/foundry-2026-10-07.json` reuses several of the same ids for different findings.
 
 - [ ] 2026-08-14 **[Security/Testing]** Close the report-confidentiality seam before any private report lands: publish-time validate control, unexport getReport, first pinning tests (SEC-01, TEST-01)
 - [ ] 2026-08-14 **[Ops]** Operations section plus one external signal: the runbook indexed below, an uptime check on /api/version, the request-stage failure log, the two documented recall paths (OPS-01, OPS-02, OPS-03, OPS-04, SHIP-04)
