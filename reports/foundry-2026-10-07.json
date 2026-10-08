@@ -30,7 +30,7 @@
     "level": "safe-to-ship",
     "assessedScope": "static-plus-runtime",
     "posture": "Healthy, with a long robustness list. Eleven dimensions and eight adversarial verifications found no risk that survived: every risk candidate was real code but had no harm path today, mostly because no report has an owner yet. The 60 improvements are what to schedule, led by the work owed before the first owned report.",
-    "justification": "Static review of commit 8328077 plus a runtime pass against a local build (Playwright and axe across 19 routes, local load tests, and live unauthenticated GETs of public pages); signed-in surfaces, real devices and Supabase dashboard state were not exercised. Eight findings were proposed as risks or rated high, and each was sent to a skeptic on a different model or settled by a runtime test; all were downgraded to improvements, with the reasoning recorded on each. The mobile gate failed at 8328077 and was fixed in the release branch before publication, then re-probed: 19 of 19 routes reflow at 320 to 430 and in landscape, and the deck works on 9 of 9 dots. Both required gates remain at risk, not met; neither caps the verdict.",
+    "justification": "Static review of commit 8328077 plus a runtime pass against a local build (Playwright and axe across 19 routes, local load tests, and live unauthenticated GETs of public pages); signed-in surfaces, real devices and Supabase dashboard state were not exercised. Eight findings were proposed as risks or rated high, and each was sent to a skeptic on a different model or settled by a runtime test; all were downgraded to improvements, with the reasoning recorded on each. The mobile gate failed at 8328077 and was fixed in this release before publication, then re-probed: 19 of 19 routes reflow at 320 to 430 and in landscape, and the deck works on 9 of 9 dots. Both required gates remain at risk, not met; neither caps the verdict.",
     "blockingFindingIds": []
   },
   "strengths": [
@@ -105,7 +105,7 @@
         "A11Y-05",
         "A11Y-10"
       ],
-      "note": "Required by the release policy. At 8328077 the gate failed: deck dots opened the wrong slide on 7 of 9, text-only 200% clipped the hero's lead and Install CTA, and two skill pages overflowed at 320. Fixed in the release branch and re-probed (filled matrix in tmp/mobile-matrix-2026-10-07.md): 0 overflow and 0 clipped text on 19 of 19 routes at 320, 360, 393, 430 and landscape; 9 of 9 dots; the install command reachable by keyboard. At risk, not met: at 200% text five routes still scroll sideways, and the software keyboard, iOS Safari and Android Chrome rows were not run on real devices."
+      "note": "Required by the release policy. At 8328077 the gate failed: deck dots opened the wrong slide on 7 of 9, text-only 200% clipped the hero's lead and Install CTA, and two skill pages overflowed at 320. Fixed in this release before publication and re-probed with a scripted matrix: 0 overflow and 0 clipped text on 19 of 19 routes at 320, 360, 393, 430 and landscape; 9 of 9 dots; the install command reachable by keyboard. At risk, not met: at 200% text five routes still scroll sideways, and the software keyboard, iOS Safari and Android Chrome rows were not run on real devices."
     },
     {
       "gate": "instrumentation",
@@ -492,7 +492,7 @@
         "line": 17
       },
       "issue": "The magic-link redirect was pinned to foundry-skills.fly.dev while the canonical host is foundry.thehorizonfoundry.com, so a sign-in started on the custom domain failed or finished on the wrong host.",
-      "impact": "A visitor who signed in from the canonical domain got \"That sign-in link is invalid or has expired\" (the host-only PKCE verifier cookie was on the other host), or a session on fly.dev the custom domain could not see. No owned report exists, so nobody lost access to anything. Fixed in release/v0.2.1 before publication: SITE_ORIGIN names the canonical host and fly.dev redirects /unlock and /reports there.",
+      "impact": "A visitor who signed in from the canonical domain got \"That sign-in link is invalid or has expired\" (the host-only PKCE verifier cookie was on the other host), or a session on fly.dev the custom domain could not see. No owned report exists, so nobody lost access to anything. Fixed in this release (v0.2.1) before publication: SITE_ORIGIN names the canonical host and fly.dev redirects /unlock and /reports there.",
       "evidence": "fly.toml:17 `SITE_ORIGIN = \"https://foundry-skills.fly.dev\"`; lib/supabase.ts:109 `if (pinned) return pinned.replace(/\\/+$/, \"\");`; app/unlock/actions.ts:37 `options: { emailRedirectTo: `${origin}/auth/confirm` },`; @supabase/ssr createServerClient sets `flowType: \"pkce\"` and a host-only cookie; both hosts serve this app (HTTP 200 on /unlock).",
       "recommendedFix": "Done in this release. Verify one real sign-in end to end on the canonical host after deploy; the Supabase allowlist must carry the canonical /auth/confirm.",
       "confidence": "code-traced",
@@ -645,9 +645,9 @@
         "line": 197
       },
       "issue": "The overview deck's dot targets overlapped, so a tap or click on a dot's centre opened the next slide on 7 of 9 dots.",
-      "impact": "Pointer and touch users on /behind landed on the wrong slide; Prev and Next still worked. Fixed in release/v0.2.1 before publication: each dot's button is its own 24 by 44 target with no gap; re-probed, 9 of 9 dots open their own slide at 393 touch and 1440 mouse.",
+      "impact": "Pointer and touch users on /behind landed on the wrong slide; Prev and Next still worked. Fixed in this release (v0.2.1) before publication: each dot's button is its own 24 by 44 target with no gap; re-probed, 9 of 9 dots open their own slide at 393 touch and 1440 mouse.",
       "evidence": "components/SlideDeck.tsx:197 `relative h-1.5 transition-all before:absolute before:-inset-2.5` on 6px dots at a 12px pitch; axe flagged all nine for target size; the inactive dot measured 2.05:1.",
-      "recommendedFix": "Done in this release. Still open: the inactive dot's 2.05:1 contrast (1.4.11) and swipe support (Unit D).",
+      "recommendedFix": "Done in this release. Still open: the inactive dot's 2.05:1 contrast (1.4.11) and swipe support.",
       "confidence": "runtime-reproduced",
       "verification": {
         "status": "not-verified"
@@ -708,9 +708,9 @@
         "line": 117
       },
       "issue": "Text-only enlargement clipped the hero and still scrolls five routes sideways.",
-      "impact": "At 200% text on a 390 phone the hero clipped its lead paragraph and the Install CTA. Fixed in release/v0.2.1 before publication: minmax(0, ...) tracks and a self-scrolling terminal, so 0 of 19 routes clip text. Still open: at 200% text, / (report specimen), /reports (5px), /skills/mobile and the doc tables on /skills/production-audit and /skills/scaffold scroll sideways. Browser page zoom at 200% was always clean, so 1.4.4 is met.",
-      "evidence": "app/page.tsx:117 `<div className=\"grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center\">` (auto tracks cannot shrink below content) under `overflow-hidden` at :115; tmp/mobile-matrix-2026-10-07.md has the before and after probe.",
-      "recommendedFix": "Constrain the doc tables and the home report specimen at large text sizes (Unit E).",
+      "impact": "At 200% text on a 390 phone the hero clipped its lead paragraph and the Install CTA. Fixed in this release (v0.2.1) before publication: minmax(0, ...) tracks and a self-scrolling terminal, so 0 of 19 routes clip text. Still open: at 200% text, / (report specimen), /reports (5px), /skills/mobile and the doc tables on /skills/production-audit and /skills/scaffold scroll sideways. Browser page zoom at 200% was always clean, so 1.4.4 is met.",
+      "evidence": "app/page.tsx:117 `<div className=\"grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center\">` (auto tracks cannot shrink below content) under `overflow-hidden` at :115, measured before and after with the same scripted probe.",
+      "recommendedFix": "Constrain the doc tables and the home report specimen at large text sizes.",
       "confidence": "runtime-reproduced",
       "verification": {
         "status": "not-verified"
@@ -727,7 +727,7 @@
         "line": 312
       },
       "issue": "Inline code in rendered docs had no wrap rule, so two skill pages scrolled sideways at 320 (1.4.10).",
-      "impact": "/skills/mobile overflowed 26px and /skills/production-audit 48px at 320. Fixed in release/v0.2.1 before publication: inline code may break anywhere; re-probed, 0 overflow on all 11 skill pages at 320.",
+      "impact": "/skills/mobile overflowed 26px and /skills/production-audit 48px at 320. Fixed in this release (v0.2.1) before publication: inline code may break anywhere; re-probed, 0 overflow on all 11 skill pages at 320.",
       "evidence": "app/globals.css:312 `.doc-prose code {` with no overflow-wrap, while `.doc-prose a` had `overflow-wrap: anywhere`.",
       "recommendedFix": "Done in this release.",
       "confidence": "runtime-reproduced",
@@ -965,7 +965,7 @@
         "line": 19
       },
       "issue": "The site ran next 16.3.1 (and sharp 0.35.3), inside the ranges of nine Next.js advisories including three critical RCEs, with an image optimizer the app never uses.",
-      "impact": "None was reachable in this deployment. Fixed in release/v0.2.1 before publication: next 16.3.8 with sharp 0.35.5; npm audit --omit=dev no longer lists next or sharp. The optimizer endpoint stays enabled, so one images config line would make the optimizer advisories relevant again.",
+      "impact": "None was reachable in this deployment. Fixed in this release (v0.2.1) before publication: next 16.3.8 with sharp 0.35.5; npm audit --omit=dev no longer lists next or sharp. The optimizer endpoint stays enabled, so one images config line would make the optimizer advisories relevant again.",
       "evidence": "package.json `\"next\": \"16.3.1\"`; next.config.ts has no images key; .next/images-manifest.json shows formats [image/webp] and empty remotePatterns; no next/image, next/og or ImageResponse anywhere.",
       "recommendedFix": "Done in this release. Set `images: { unoptimized: true }` to remove the unused endpoint, and patch the live site before publishing any report that names its vulnerabilities.",
       "confidence": "runtime-reproduced",
@@ -1256,7 +1256,7 @@
         "line": 51
       },
       "issue": "Release steps 1, 3 and 4 have no mechanical check, the Unreleased changelog block carried two Changed headings, and v0.1.0 has a tag but no GitHub Release.",
-      "impact": "A release can ship with a malformed note, a stale self-audit or a missing tag, and nothing fails. Fixed in release/v0.2.1 before publication: the roll-up merged the duplicate headings.",
+      "impact": "A release can ship with a malformed note, a stale self-audit or a missing tag, and nothing fails. Fixed in this release (v0.2.1) before publication: the roll-up merged the duplicate headings.",
       "evidence": "CLAUDE.md:51 \"Roll `[Unreleased]` into a dated `## [0.x.y]` heading\"; CHANGELOG.md had `### Changed` at lines 9 and 27; scripts/check-changelog.mjs checks only that the file was touched.",
       "recommendedFix": "A `make release-check` that asserts VERSION matches the top dated heading and the self-audit's meta.version, and after merge that the tag exists.",
       "confidence": "code-traced",
@@ -1416,7 +1416,7 @@
         "line": 29
       },
       "issue": "Replacing the public self-audit deleted its shareable URL with no redirect, and the 2026-07-16 one already 404s.",
-      "impact": "Anyone who shared the old report link lands on a 404. Fixed in release/v0.2.1 before publication: permanent redirects from both retired slugs to the current self-audit.",
+      "impact": "Anyone who shared the old report link lands on a 404. Fixed in this release (v0.2.1) before publication: permanent redirects from both retired slugs to the current self-audit.",
       "evidence": "next.config.ts had no redirects(); commit eabd83b removed foundry-2026-07-16.json; public/robots.txt allows /example.",
       "recommendedFix": "Done in this release.",
       "confidence": "code-traced",
@@ -1631,7 +1631,7 @@
         "A11Y-11",
         "A11Y-12"
       ],
-      "detail": "Units D and E: deck focus and headings, large-text overflow, focus under the sticky header, chip contrast, copy-button names, the sign-in field."
+      "detail": "Deck focus and headings, large-text overflow, focus under the sticky header, chip contrast, copy-button names, the sign-in field."
     },
     {
       "title": "Delivery and robustness",
@@ -1645,7 +1645,7 @@
         "INF-02",
         "INF-03"
       ],
-      "detail": "Unit F plus the Supabase client timeout and the build-context hygiene."
+      "detail": "Static rendering for the content routes, a lighter first load, a memoized report index, the Supabase client timeout, and build-context hygiene."
     }
   ],
   "quickWins": [
