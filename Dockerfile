@@ -1,7 +1,8 @@
 # syntax=docker/dockerfile:1
 
 # Next.js standalone on Node 22. Multi-stage: deps -> build -> run. No native
-# modules (the site reads JSON/markdown from disk), so no build toolchain needed.
+# modules to compile (the site reads JSON/markdown from disk), so no build
+# toolchain is needed; sharp, which Next pulls in, ships prebuilt binaries.
 
 FROM node:22-bookworm-slim AS base
 
