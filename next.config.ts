@@ -48,10 +48,13 @@ const nextConfig: NextConfig = {
       // Sign-in must start and finish on one host: the PKCE verifier cookie is
       // host-only, and SITE_ORIGIN mails every link to the canonical host. So
       // the fly.dev host sends its sign-in and report pages there. /auth/confirm
-      // is deliberately absent, so a link already mailed to fly.dev still lands.
+      // is deliberately absent so a link mailed to fly.dev before the cutover
+      // still verifies; its session stays on fly.dev (cookies are host-only), so
+      // that user signs in once more on the canonical host.
       ...["/unlock", "/reports/:path*"].map((source) => ({
         source,
-        has: [{ type: "host" as const, value: "foundry-skills.fly.dev" }],
+        // `value` is a regex (Next anchors it), so the dots are escaped.
+        has: [{ type: "host" as const, value: "foundry-skills\\.fly\\.dev" }],
         destination: `https://foundry.thehorizonfoundry.com${source}`,
         permanent: false,
       })),

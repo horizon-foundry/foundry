@@ -394,8 +394,8 @@ check(
   // so checking one page checked an eighth of the surface.
   const token = `/og.png?v=${readRendered().render.slice(0, 8)}`;
   // The ORIGIN as well as the path. A suffix check passes on any host, and
-  // this site deliberately runs two (SITE_URL and fly.toml's SITE_ORIGIN
-  // disagree through the launch tail), which is exactly when a share card
+  // this site answers on two hosts (the canonical one and the fly.dev one,
+  // which redirects its sign-in pages), which is exactly when a share card
   // pointing at the wrong one is plausible.
   const siteUrl = readFileSync(join(ROOT, "app/layout.tsx"), "utf8").match(/const SITE_URL = "([^"]+)"/)?.[1];
   check(siteUrl !== undefined, "app/layout.tsx no longer declares SITE_URL where this gate reads it.");

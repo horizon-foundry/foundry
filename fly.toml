@@ -6,7 +6,8 @@
 #   fly secrets set ADMIN_EMAILS="you@example.com"
 # Without the Supabase env the gate fails closed (no one gets in). The Supabase
 # project's redirect allowlist must include https://foundry.thehorizonfoundry.com/auth/confirm
-# (and keeps the fly.dev one, so links mailed before the cutover still land).
+# (and keeps the fly.dev one, so links mailed before the cutover still verify;
+# those sessions stay on fly.dev, so their users sign in once more on the canonical host).
 
 app = "foundry-skills"
 primary_region = "iad"
