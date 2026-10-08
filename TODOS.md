@@ -13,7 +13,7 @@
 >
 > This paragraph is hand-maintained and nothing fails when it goes stale. It named Phase 19 as the frontier from 2026-09-18 and was wrong from 2026-09-21, when a different stream of work started. Whoever closes a unit updates it.
 
-> **The domain cutover shipped in v0.2.1 (2026-10-07), pending one live check.** `SITE_ORIGIN` now names `https://foundry.thehorizonfoundry.com`, and the fly.dev host redirects `/unlock` and `/reports` there, so a sign-in starts and finishes on one host (the PKCE verifier cookie is host-only). It needs the canonical `/auth/confirm` in the Supabase redirect allowlist before the deploy (Craig's dashboard step). What remains after that is a real magic-link sign-in end to end on the canonical host after the deploy; see the Backlog entry.
+> **The domain cutover shipped in v0.2.1 and is deployed (2026-10-08), pending one live check.** `SITE_ORIGIN` now names `https://foundry.thehorizonfoundry.com`, and the fly.dev host redirects `/unlock` and `/reports` there, so a sign-in starts and finishes on one host (the PKCE verifier cookie is host-only). Craig confirmed on 2026-10-08, before the deploy, that the Supabase redirect allowlist carries the canonical `/auth/confirm`, keeps the fly.dev entry, and holds no wildcard. What remains is one real magic-link sign-in end to end on the canonical host (Craig's, since it needs his inbox); see the Backlog entry.
 
 ### Phase Plans
 
@@ -125,7 +125,7 @@ Three agents, one angle each, all browser- or build-verified. They found twelve 
 
 ### Pre-publish, still open (from the 2026-07-16 audits)
 
-- [ ] 2026-07-17 **[Security]** **The domain cutover** (code side DONE in v0.2.1 on 2026-10-07: `SITE_ORIGIN` flipped and fly.dev redirects `/unlock` and `/reports` to the canonical host; still open: one real sign-in verified end to end on the canonical host, and the no-wildcard confirmation of the allowlist) (see the call-out at the top; this entry is its home). Two steps, in this order, and the order matters because doing the second first breaks sign-in harder than leaving it alone:
+- [ ] 2026-07-17 **[Security]** **The domain cutover** (code side DONE in v0.2.1 on 2026-10-07: `SITE_ORIGIN` flipped and fly.dev redirects `/unlock` and `/reports` to the canonical host; deployed 2026-10-08 after Craig confirmed the allowlist (canonical `/auth/confirm` added, fly.dev kept, no wildcard); still open: one real sign-in verified end to end on the canonical host) (see the call-out at the top; this entry is its home). Two steps, in this order, and the order matters because doing the second first breaks sign-in harder than leaving it alone:
   (Record of the original sequence; step 2's flip is done, step 1 is Craig's and must precede the deploy.)
   1. **Craig, in the Supabase dashboard** (Auth -> URL Configuration): confirm the redirect allowlist carries NO wildcard, and add `/auth/confirm` for `https://foundry.thehorizonfoundry.com`, `https://www.thehorizonfoundry.com` and the apex.
   2. **Then the agent**: flip `SITE_ORIGIN` in `fly.toml` from `https://foundry-skills.fly.dev` to the canonical host, confirm `app/unlock/actions.ts` builds `emailRedirectTo` from it, deploy, and verify a real magic link end to end on the custom domain before calling it done.
@@ -181,7 +181,7 @@ Three agents, one angle each, all browser- or build-verified. They found twelve 
 - [ ] 2026-07-17 **[Release]** Extend `make validate` to gate SKILL.md content: frontmatter parses, mandatory gate paragraph present, no em dashes (SHIP-02)
 - [ ] 2026-07-17 **[Testing]** Four pure-function gate tests: canView ownership matrix, slug traversal guard, meta.public gate, adminEmails parsing (TEST-01; ~1 hour, no mocking)
 - [ ] 2026-08-14 **[Reliability]** AbortSignal.timeout on the Supabase fetch (all three client constructions); the confirm-failure logging half landed in Phase 13.2, the request-stage log is still open (refiled as OPS-02 in the 2026-08-14 audit) (REL-01, OPS-01, OPS-02)
-- [ ] 2026-08-14 **[Security]** The pin landed in Phase 13.2 (`publicOrigin` prefers server-only SITE_ORIGIN); REMAINING: confirm the Supabase redirect allowlist carries no wildcard, which rides Craig's domain-cutover step (SEC-01)
+- [x] 2026-08-14 **[Security]** The pin landed in Phase 13.2 (`publicOrigin` prefers server-only SITE_ORIGIN); REMAINING: confirm the Supabase redirect allowlist carries no wildcard, which rides Craig's domain-cutover step (SEC-01) (closed 2026-10-08: Craig confirmed no wildcard before the v0.2.1 deploy)
 - [ ] 2026-07-17 **[Perf]** `generateStaticParams` on /skills/[slug] + /example/[slug]; React.cache on getSessionUser (PERF-01, REL-04)
 - [ ] 2026-07-17 **[A11y]** 16px unlock input at mobile widths; role=status on the copy confirmation; min target heights on SlideDeck prev/next + SignOutButton (A11Y-01, A11Y-02, A11Y-03)
 - [ ] 2026-07-17 **[Ops]** Operations section in CLAUDE.md: rollback command, the two known auth failure modes and their checks, alerting confirmation, priority order (OPS-03, OPS-04, SHIP-04)
