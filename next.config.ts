@@ -26,11 +26,36 @@ const csp = [
   "form-action 'self'",
 ].join("; ");
 
+// The slug of the published self-audit (reports/foundry-<date>.json). Update it
+// in the release that replaces the report.
+const CURRENT_SELF_AUDIT = "foundry-2026-10-07";
+
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   output: "standalone",
   turbopack: {
     root: import.meta.dirname,
+  },
+  async redirects() {
+    return [
+      // The public self-audit is replaced each release, and its URL is the one
+      // people share. Retired slugs land on the current one instead of a 404.
+      ...["foundry-2026-07-16", "foundry-2026-08-14"].map((slug) => ({
+        source: `/example/${slug}`,
+        destination: `/example/${CURRENT_SELF_AUDIT}`,
+        permanent: true,
+      })),
+      // Sign-in must start and finish on one host: the PKCE verifier cookie is
+      // host-only, and SITE_ORIGIN mails every link to the canonical host. So
+      // the fly.dev host sends its sign-in and report pages there. /auth/confirm
+      // is deliberately absent, so a link already mailed to fly.dev still lands.
+      ...["/unlock", "/reports/:path*"].map((source) => ({
+        source,
+        has: [{ type: "host" as const, value: "foundry-skills.fly.dev" }],
+        destination: `https://foundry.thehorizonfoundry.com${source}`,
+        permanent: false,
+      })),
+    ];
   },
   async headers() {
     return [
