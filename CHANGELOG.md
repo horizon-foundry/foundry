@@ -8,6 +8,7 @@ All notable changes to Foundry are recorded here. The format follows [Keep a Cha
 
 ### Changed
 
+- Skills: `phase-plan` asks only for decisions that change what gets built and that the work cannot settle itself: a call the agent can make goes in Kickoff decisions or the step, most plans have none to two, and a "does it look right?" review is an acceptance criterion, not a decision. Why: once every plan carried the section, plans filled it, up to seven or eight decisions on trivial points, and each one stopped the work for an answer that changed nothing.
 - Skills: `phase-plan` tells the plan writer never to add a "something else" option to a decision. Why: the human can always answer in their own words, and a tool that collects answers (a review pane, a rendered page) already offers that slot under every option list, so a written-in option shows the slot twice and can end up marked as the recommended default.
 
 ## [0.2.1] - 2026-10-08
