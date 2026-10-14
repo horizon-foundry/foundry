@@ -43,7 +43,7 @@ The sections after this one are the reference each step points at.
 ### reconcile
 
 1. Run the truth checklist. Artifact: the per-item report.
-2. Pull every existing presentation surface current (see "Reconcile: what a re-run checks"; for the deck, read `deck.md` in this skill's directory). Check: a per-surface line in the report, current or updated.
+2. Pull every existing presentation surface current (see "Reconcile: what a re-run checks"; for the public hub read `hub.md`, for the deck read `deck.md`, and run the `sanitization.md` checklist on any public section that changes, all in this skill's directory). Check: a per-surface line in the report, current or updated.
 3. Run the cold-start drill (see that section). Artifact: the drill result, pass or a doc-set finding per failed check.
 4. End with the convergence check: on an unchanged project the touched-surface diff is empty, and the report says so.
 

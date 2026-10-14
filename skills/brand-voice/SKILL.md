@@ -96,7 +96,7 @@ The priority order is fixed: **comprehension, accessibility, and error recovery 
 
 ## Product surfaces get brand prose, not raw internal docs
 
-A public, user-facing surface is hand-written in brand voice, never an internal doc dropped on verbatim (a spec, a session log, a decision record); the boundary rule is owned by the `document` skill.
+A public, user-facing surface is hand-written in brand voice, never an internal doc dropped on verbatim (a spec, a session log, a decision record), and never carries timestamps, internal labels, or working notes; the boundary rule is owned by the `document` skill.
 
 ## Keep outward copy in sync with the product
 

@@ -14,6 +14,25 @@ The second feature, and every feature after it, is designed inside a codebase th
 
 So this skill is "check my thinking against the code", never "help me think". The builder declares the feature in six entries; the skill grounds every proposed behavior and every named path in the actual repository and audits the declaration the way the suite audits code. The single highest-value outcome is the contradiction check no other moment performs: discovering before the plan is written that the feature is a reachability fix, not a build, or that a declared dependency has no producer the search can find.
 
+## When NOT to use
+
+- Deciding whether the product or the idea is worth building, or who it serves: `frame` owns product intent; this skill assumes a product already framed and audits one change inside it.
+- Writing the implementation plan, its steps, or its index entry: `phase-plan` owns the handoff. A run that emits a Steps list has become that skill and must stop.
+- Judging whether the built system is safe to ship: `production-audit` is the suite's only inspector and the only source of a verdict.
+- Docs disagreeing with present-tense code: `document` owns drift; this skill audits a forward-looking declaration, not the doc set.
+- A small change: no new behavior, no new surface, and no decision with a real alternative means there is no declaration worth auditing, and the overhead exceeds the change. Design it directly. (A one-file change or a bug fix is the common case of this.)
+
+## The declaration, six entries
+
+The builder declares; the skill audits. One page is the norm, as with the product frame; a declaration that keeps growing is usually failing entry 6. Entries the builder did not state are either drafted ONLY from what already exists (the backlog entry, the issue, a design document, prior notes, what the builder said this session), each drafted entry marked "assumed, unconfirmed" AND naming its source material, or left blank. A blank is a finding, never a question fired at the builder.
+
+1. **Behavior.** What changes for the user or caller, as observable behavior, not implementation.
+2. **Surface area.** Every call site, module, route, table, or job the change touches, each named as a path.
+3. **Decisions.** Each significant choice with the alternative it beat and why. A decision with no rejected alternative is an assertion, and is reported as one.
+4. **Non-goals.** What this deliberately does not do, including the adjacent thing a reader would assume it does. A non-goal without a reason is a finding.
+5. **Verification.** What observation would show it works, and what observation would show the design is wrong. Both, or the entry is half-filled.
+6. **Scope.** That this is one unit of work, and what was cut to make it one.
+
 ## Steps
 
 Two paths run through these steps. Step 1 decides which.

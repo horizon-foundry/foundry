@@ -4,11 +4,26 @@ version: 0.2.1
 description: Use when a unit of work is closing (a PR about to merge, a phase complete) and the next unit needs a plan, when a close has no next unit and the chain needs an honest terminal entry, or when writing any plan file. Not for whole-product master planning or mid-execution task tracking.
 ---
 
+# phase-plan
+
 > **Using this skill:** announce "Using phase-plan", then make a todo per numbered step in `## Steps`.
 
 ## Overview
 
 A unit of work is not done when it is merged. It is done when it is merged and what happens next is written down and indexed: usually the next unit's plan, and when there is honestly no next unit, an explicit terminal entry. This skill writes that record. It runs at a **meaningful handoff**, not after every PR. A handoff is where context loss would be expensive: a phase completing, a long interruption, work the next session has to resume cold. A routine one-file PR that leaves nothing to resume does not need a permanent plan artifact; manufacturing one for it just adds files the next session has to sort through. When there is no handoff, an honest terminal entry (or nothing) is the right output, not a filler plan. The reading half is a standing instruction: a scaffolded project's `CLAUDE.md` carries it, and a session-start hook can enforce it. On a terse continuation prompt, read the indexed plan before acting, then reconcile it against the repo (below).
+
+## When NOT to use
+
+- Planning a whole product or its phase set from scratch: that is the master plan, a different artifact this skill links to but does not author.
+- Tracking tasks mid-execution: the harness's own todo list owns in-flight work; the plan chain records handoffs between sessions.
+- A routine PR that leaves nothing to resume: the honest output is no plan or a terminal entry, never a filler artifact.
+- Recording decisions or product truth: NOTES.md and the forever spec own those; a plan is a handoff, not a record of why.
+
+## The rule: write and index atomically
+
+A plan file is written **and** its path is added to the project's `TODOS.md` Master Plan / Phase Plans index **in the same action**. An unindexed plan is invisible after a `/clear`, so writing without indexing is the same as not writing it.
+
+Plans live in one project-declared directory, named in the project's `CLAUDE.md` (a maintainer may keep a global plans directory outside the repo; a project with no declaration defaults to `<project>/plans/`). The index line's path is written exactly as the next session should open it.
 
 ## Steps
 
