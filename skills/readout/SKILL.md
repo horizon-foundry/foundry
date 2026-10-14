@@ -6,26 +6,17 @@ description: Use when building or reviewing a surface that DISPLAYS measurements
 
 # readout
 
-> **Using this skill:** announce "Using readout", make a todo per numbered step in `## Steps`, and do not skip the gates. This skill's worth is its process, not a hand-reproduced outcome. If you were told to "run readout", run it, do not improvise its result. (Suite standard: https://github.com/horizon-foundry/foundry/blob/main/reference/skill-authoring.md)
+> **Using this skill:** announce "Using readout" and make a todo per numbered step in `## Steps`.
 
 ## Overview
 
-`instrumentation` makes numbers exist. This skill makes them safe to read.
-
-The two fail differently. Instrumentation fails loudly: an event never fires, a funnel is empty, someone notices. A read-out fails quietly and confidently. Every number is individually correct, every query returns, every test passes, and the surface still tells a reader something untrue, because a right number in the wrong row is still wrong. A ninety-day rate beside a twenty-four-hour count passes every consistency check ever written and misleads on sight.
-
-This class is not findable in data. A payload is identical whether a comparison renders above or below the line it depends on. A card's height is not a field. A throttled source and a genuinely empty week are the same `null` unless something made them different. So the discipline is not another correctness pass: it is a composition pass and a rendered review, and it ends with someone looking at the pixels who did not build them.
-
-There is a second failure that survives every correctness fix: a surface can be accurate, legible, and still not tell anyone anything. Numbers accumulate because they can be computed rather than because a reader needs them, every block states a fact and none states a conclusion, and the same measure appears across the product wearing four different numbers. That surface is not wrong. It is just unread, and being unread is the outcome most dashboards actually reach.
-
-The bar is not "the numbers are right". The bar is **a named reader acts on this, at the depth they need, and is not misled**.
+`instrumentation` makes numbers exist. This skill makes them safe to read: it assumes each number is individually correct and reviews what the surface does with it, through a composition pass and a rendered review by someone who did not build the surface. The bar is not "the numbers are right". The bar is **a named reader acts on this, at the depth they need, and is not misled**.
 
 ## When NOT to use
 
 - Adding events, wiring capture, identity and stitching: `instrumentation` owns the emit side; this skill starts once numbers reach a surface.
 - Choosing the product's success measure or its activation moment: the frame declares it (`frame`), this skill displays it honestly.
 - Deciding what to alert on, what the SLO is, or who receives the page: that is observability as a discipline, assessed by `production-audit`'s operability dimension. The *rendering* of operational metrics stays here: an on-call board is a surface with a reader and a decision, and a stale panel shown without its age is this skill's failure, not operability's.
-- The numbers themselves are wrong (an event never fires, two identities never stitched, a bad query): `instrumentation` owns the emit side. This skill assumes each number is individually correct and reviews what the surface does with it, so a doubted number gets triaged at step 0 before any of this applies.
 - The visual design language of a page, or its small-screen behaviour as such: that is design work and `mobile`'s loop, not this one. This skill governs what a number claims, not what it looks like, though "Read the render, not the payload" will surface layout defects that make a number lie.
 - Marketing or landing copy about a metric: `brand-voice`.
 
@@ -39,10 +30,10 @@ The bar is not "the numbers are right". The bar is **a named reader acts on this
 5. **Force every source to fail and look at what renders** (see "A gap is not a zero"). Check: for each source, the failed, empty, and stale renders are named, and none of them is a zero or a raw error.
 6. **State the evidence floor for every rate.** Check: each rate names its denominator, and a rate below its floor withholds rather than prints.
 7. **List every deploy and config change inside every window on display** (see "When the measured surface changes"). Check: each is classified as changing what is measured or not, and any window spanning such a change is either split or labelled.
-8. **Render and review, independently.** Screenshot every surface at a desktop and a phone width into `<project>/tmp/readout-<date>/`, then have someone who did not build it review the IMAGES against steps 1 to 7. Where the run has no browser or screenshot capability, that is a declared degradation, not a skipped step: say so in the artifact's opening line and mark every finding that needs a render `unverified` with the exact check to run. Check: findings reported per surface, ranked, or the degradation declared (see "Read the render, not the payload").
+8. **Render and review, independently** (see "Read the render, not the payload"). Save the screenshots into `<project>/tmp/readout-<date>/`, then have someone who did not build the surface review the IMAGES against steps 1 to 7. Where the run has no browser or screenshot capability, that is a declared degradation, not a skipped step: say so in the artifact's opening line and mark every finding that needs a render `unverified` with the exact check to run. Check: findings reported per surface, ranked, or the degradation declared.
 9. **Read the set as one story** (see "The set tells one story"). Check: the arc is stated in order, its breaks are named, and every surface either ends in a decision or is reported as not doing so.
 10. **Close with what remains unverified**, each with the exact check to run. Check: the closing report lists them.
-11. **Emit the run's artifact.** Write it to `<project>/tmp/readout-<date>.md`, screenshots beside it in `<project>/tmp/readout-<date>/`: the per-surface reader, decision, and elevation from step 1 with each marked declared or `assumed, unconfirmed`; the keep, fold, or cut call per block with its failing gate; the ranked findings; and what remains unverified. A later `foundry check` or audit cites this file rather than a claim that a review happened. Check: the file exists and every surface reviewed has a section in it.
+11. **Emit the run's artifact.** Write it to `<project>/tmp/readout-<date>.md`, screenshots beside it in `<project>/tmp/readout-<date>/`, carrying the step 1 declarations, the step 3 calls, the ranked findings from steps 2 to 9, and the step 10 list. A later `foundry check` or audit cites this file rather than a claim that a review happened. Check: the file exists and every surface reviewed has a section in it.
 
 ## Name the reader, then pitch the elevation
 
@@ -74,7 +65,7 @@ Every block on primary real estate passes three gates, in order. Most surfaces a
 
 1. **Does this matter?** If its movement would not change anyone's week, it gets no face real estate. This gate kills things good writing cannot save: itemised ledgers of an immaterial spend, tiles that read zero because nobody has used the feature, cross-checks that exist to reconcile two sources. Fold or cut them; do not rewrite them.
 2. **What does it say?** One plain reading, in a sentence, not a paragraph.
-3. **What do we do?** The action or the watch-instruction, linked. A surface whose every block ends in a fact and none in a decision is a report nobody acts on.
+3. **What do we do?** The action or the watch-instruction, linked (see "The set tells one story" for the surface-level rule).
 
 **Validity is the fourth thing and it is never primary.** How a number is computed, which population it counts, why it can be trusted: that belongs in chips and fold-outs, reachable in one click and out of the way. A reader who doubts a number will click; a reader who trusts it should never have to wade. Each caveat gets exactly one home per surface, and text that can be derived from a definition is derived, never restated, because a restatement drifts and a derivation cannot.
 
@@ -124,23 +115,19 @@ The deepest failure in this class: a window that spans a change to the thing bei
 - Screenshot every surface at a desktop and a phone width, full page, and review the images.
 - The reviewer must not be the builder. An agent that just produced a surface grades it generously; a fresh reader does not. Where sub-agents are available, fan the review out and give each reviewer a different lens rather than the same checklist. Where they are not, say so in the closing report rather than skipping the step.
 - Shoot the states nobody demos: a failed source, a stale read, an empty result, a narrow window, a long label. Happy-path-only screenshots hide most of this class.
-- Watch for the composition tells: uneven card bottoms in a row, a comparison rendered above the number it qualifies, a bar whose full width means something different in the group beside it, an unlabelled scale, a control that looks live but governs nothing, text clipped without a scroll affordance.
+- Watch for the composition tells: uneven card bottoms in a row, a comparison rendered above the number it qualifies, a bar whose full width means something different in the group beside it, an unlabelled scale (or a second series on a hidden one), a control that looks live but governs nothing, text clipped without a scroll affordance.
 - A control's scope must match its position. A page-level control that moves one block reads as broken; scope it to what it governs, or make it govern the page.
 
 ## Judgments carry a basis they can die on
 
 A surface may state a judgment ("this is not a constraint", "this is healthy"), and it is more useful than a bare number. But a judgment with no threshold behind it is a slogan that will still be rendering long after it stopped being true. Give every stated judgment an explicit basis, so it changes when the world does, and say what would have to happen for it to flip.
 
-## Red flags
-
-Symptoms that you skipped something above, not new rules: a surface with no named reader; a headline number with no path to its detail, or a page of grain with no summary over it; a surface whose every block is a fact and none is a decision; source freshness or reconciliation occupying the space a conclusion needs; a row of cards whose windows differ; a zero that nobody has proven is not a failed read; a cached value with no age on it; a rate printed on a denominator of one; a chart with no y-axis or a second series on a hidden scale; an error payload rendered as body text; a surface reviewed only from its data; a control whose scope does not match its position; a period boundary chosen because the numbers moved there; the same fact wearing two different numbers on two surfaces.
-
 ## Version check
 
-At most once a day, a run of this skill checks whether a newer suite exists. The command enforces the whole contract: the `FOUNDRY_NO_VERSION_CHECK` opt-out, the daily stamp-file rate limit, a 10s timeout, and silence on any failure. Never block or fail a run over this check.
+At most once a day, run this command. It enforces the `FOUNDRY_NO_VERSION_CHECK` opt-out, the daily rate limit, a 10s timeout, and silence on any failure, so it never blocks the run.
 
 ```sh
 [ -n "${FOUNDRY_NO_VERSION_CHECK:-}" ] || find "$HOME/.claude/.foundry-version-checked" -mmin -1440 2>/dev/null | grep -q . || { mkdir -p "$HOME/.claude" 2>/dev/null; curl -m 10 -fsS "https://foundry.thehorizonfoundry.com/api/version?skill=readout&v=0.2.1"; touch "$HOME/.claude/.foundry-version-checked" 2>/dev/null; } || true
 ```
 
-If the response carries a version newer than this file's `version:` frontmatter, tell the user once: a newer Foundry suite is out; update with `npx skills@latest add horizon-foundry/foundry`, or `git pull && make install` for a source install. If it prints nothing, fails, or the versions match, say nothing and proceed. What it sends: this skill's name and installed version, nothing else; it writes `~/.claude/.foundry-version-checked` as the rate-limit stamp (full disclosure: the README section "Version check").
+If it prints a version newer than this file's `version:` frontmatter, tell the user once: update with `npx skills@latest add horizon-foundry/foundry`, or `git pull && make install` for a source install. Otherwise say nothing. It sends only this skill's name and installed version, and writes `~/.claude/.foundry-version-checked` as the rate-limit stamp (README, "Version check").

@@ -1,46 +1,39 @@
 ---
 name: mobile
 version: 0.2.1
-description: Use when building or fixing a mobile, touch, or small-screen experience, when a layout breaks on a phone, or when a desktop-designed feature needs to hold up on a real device. Not for products with no mobile surface; that gate resolves not-applicable, and no work is invented.
+description: Use when building or fixing a mobile, touch, or small-screen experience, when a layout breaks on a phone, or when a desktop-designed feature needs to hold up on a real device. Not for products with no mobile surface; that gate resolves not-applicable.
 ---
 
 # mobile
 
-> **Using this skill:** announce "Using mobile", make a todo per numbered step in `## Steps`, and do not skip the gates. This skill's worth is its process, not a hand-reproduced outcome. If you were told to "run mobile", run it, do not improvise its result. (Suite standard: https://github.com/horizon-foundry/foundry/blob/main/reference/skill-authoring.md)
+> **Using this skill:** announce "Using mobile" and make a todo per numbered step in `## Steps`.
 
 ## Overview
 
 This is a ship gate where a mobile surface exists, and its weight follows the project's declared release policy (the `foundry` skill owns the required/optional/waived semantics). Absent a declared policy, required is the default for any real audience: a core flow that breaks on a phone holds the release.
 
-Desktop-designed UI does not degrade gracefully to a phone. It breaks in specific, repeatable ways. The core discipline is not a list of CSS fixes. It is a loop: **reproduce the exact reported state and instrument it before you change anything.** The most common mobile failure is not the bug itself. It is misdiagnosing the bug and fixing the wrong mechanism. Everything below the loop is a catalog of **diagnostic candidates**: the usual suspects the probe confirms or clears, never fixes to apply blind.
+Desktop-designed UI does not degrade gracefully to a phone. It breaks in specific, repeatable ways. The core discipline is not a list of CSS fixes. It is a loop (steps 1 to 4): **reproduce the exact reported state and instrument it before you change anything.** The most common mobile failure is not the bug itself. It is misdiagnosing the bug and fixing the wrong mechanism. Everything after the steps is a catalog of **diagnostic candidates**: the usual suspects the probe confirms or clears, never fixes to apply blind.
 
 ## When NOT to use
 
 - A product with no mobile surface (a headless service, a CLI, a desktop-only internal tool): the honest gate status is `not-applicable` with a one-line reason (the same status `production-audit`'s shipGates carry). Do not invent work; declare the status and move on.
-- General visual or interaction polish with no mobile defect or gate in play: that is design work, not this loop.
+- General visual or interaction polish with no mobile defect or gate in play: that is design work, not this skill.
 - Weighing mobile findings into a release verdict: the audit and the release policy own the weighing; this skill produces the filled matrix they cite.
 
 ## Steps
 
-The pressure-test loop and the verification matrix below are the reference these steps point at; the steps carry the order and the evidence.
+Two kinds of run reach this skill. A **bug run** starts from a reported defect: start at step 1, and end at step 6. A **gate-verification run** has no reported defect (this is how `foundry prepare` invokes it to close a mobile gate): start at step 5, and end at step 6. A matrix row that fails during a gate run is a defect: take it through steps 1 to 4, then return to step 5.
 
-1. **Reproduce and instrument the exact broken state first**, untouched, with the loop's probes (`document.activeElement`, scroll position, `getComputedStyle`, `matchMedia('(pointer: coarse)')`). Check: the observed mechanism is recorded before anything changes.
-2. **Diagnose against the candidate catalog**, naming the confirmed cause. Check: the cause is stated with its probe evidence, not assumed.
+1. **Reproduce the exact state, untouched, and instrument it before you change anything.** Load the surface at a real device width and look before you touch. If the report is "on first load X happens", capture first-load-untouched, not the state after you interact. Read the actual mechanism, not the symptom: `document.activeElement` (is something autofocused?), scroll position (did the page scroll to an input?), `getComputedStyle`, and `matchMedia('(pointer: coarse)').matches`. A white bar or a scrolled page has several possible causes. Confirm which one before fixing. Fixing the plausible cause instead of the real one is the biggest mobile time sink. Check: the observed mechanism is recorded before anything changes.
+2. **Diagnose against the candidate catalog** ("The usual suspects"), naming the confirmed cause. Check: the cause is stated with its probe evidence, not assumed.
 3. **Fix minimally at the confirmed cause.** Check: the change touches the confirmed mechanism, nothing speculative.
-4. **Re-verify the original probe on the fixed state.** Check: the probe that showed the failure now shows it resolved.
-5. **Walk the verification matrix** through the core flows. Check: every matrix row has a result.
-6. **Emit the filled matrix as the run's artifact** (see "The verification matrix"): report it in the closing output and write it to `<project>/tmp/mobile-matrix-<date>.md`. Check: the file exists and every row reads pass, fail, or unverified with the exact check to run.
-
-## The pressure-test loop
-
-1. **Reproduce the exact state, untouched.** Load the surface at a real device width and look before you touch. If the report is "on first load X happens", capture first-load-untouched, not the state after you interact.
-2. **Instrument before diagnosing.** Read the actual mechanism, not the symptom. `document.activeElement` (is something autofocused?), scroll position (did the page scroll to an input?), `getComputedStyle`, and `matchMedia('(pointer: coarse)').matches`. A white bar or a scrolled page has several possible causes. Confirm which one before fixing. Fixing the plausible cause instead of the real one is the biggest mobile time sink.
-3. **Verify at a real device width.** 393px (a Pixel-class width) is the working verification width. Check **zero horizontal overflow** (`document.documentElement.scrollWidth <= innerWidth`) on every state, including any fullscreen/overlay.
-4. **Close the loop on a real device.** Headless Chromium cannot emulate a real soft keyboard or a coarse pointer. Force `matchMedia` to exercise the coarse branches in automation. But treat anything involving the keyboard, autofill, or touch gestures as unverified until a real device confirms it. A real-device screenshot only confirms a captured layout state; it cannot confirm a gesture, the software keyboard's behavior, autofill, or a focus transition, which need a real interaction pass. Match the evidence to the claim: say what a screenshot actually proved, and say what still needs hands on a device, rather than claiming it works.
+4. **Re-verify the original probe on the fixed state, at a real device width.** 393px (a Pixel-class width) is the working verification width. Check **zero horizontal overflow** (`document.documentElement.scrollWidth <= innerWidth`) on every state, including any fullscreen/overlay. Headless Chromium cannot emulate a real soft keyboard or a coarse pointer. Force `matchMedia` to exercise the coarse branches in automation. But treat anything involving the keyboard, autofill, or touch gestures as unverified until a real device confirms it. A real-device screenshot only confirms a captured layout state; it cannot confirm a gesture, the software keyboard's behavior, autofill, or a focus transition, which need a real interaction pass. Match the evidence to the claim: say what a screenshot actually proved, and say what still needs hands on a device, rather than claiming it works. Check: the probe that showed the failure now shows it resolved, and overflow is zero on every state.
+5. **Walk the verification matrix** through the core flows (see "The verification matrix"). Check: every matrix row has a result.
+6. **Emit the filled matrix as the run's artifact**: report it in the closing output and write it to `<project>/tmp/mobile-matrix-<date>.md`. Check: the file exists and every row reads pass, fail, or unverified with the exact check to run.
 
 ## Touch is not mouse
 
-Branch behavior on input capability. Do not assume one input model. `(pointer: coarse)` is the working probe, with a caveat: it detects the primary pointer, not "a phone". Touch laptops and tablets with keyboards carry both input kinds. So treat it as "touch is likely", confirm with the instrumentation step, and never use it to hide functionality:
+Branch behavior on input capability. Do not assume one input model. `(pointer: coarse)` is the working probe, with a caveat: it detects the primary pointer, not "a phone". Touch laptops and tablets with keyboards carry both input kinds. So treat it as "touch is likely", confirm with the step 1 instrumentation, and never use it to hide functionality:
 
 - **Never grab focus unsolicited on a coarse pointer.** Autofocusing an input on mount pops the keyboard and autofill and scrolls the page before the user acts. On a coarse pointer, do not autofocus at all: let the keyboard open on the user's tap. `focus({ preventScroll: true })` stops the scroll jump but not the keyboard pop, so it is a mitigation for the rare justified autofocus, not a blanket rule.
 - **Desktop-only event bindings silently break on touch.** `wheel`, `mouseenter`, `hover` never fire the same way (or at all) on touch. Prefer Pointer Events (`pointerdown`/`pointermove`), which unify mouse, touch, and pen so one path covers all of them. Where a legacy `wheel`/`mouse*` binding is unavoidable, add a parallel `touchstart`/`touchmove` path feeding the same logic and keep the two in sync.
@@ -77,20 +70,16 @@ One width is a spot check, not verification. When mobile is a release gate, walk
 | Keyboard-only | The flow completes without touch (external keyboard users, switch access) |
 | Real devices | Follow the product's declared support matrix: for a product that supports both, one pass on real iOS Safari AND one on real Android Chrome; a product scoped to one managed platform verifies that one and records the scope. Emulators do not exercise the soft keyboard, autofill, or scroll physics |
 
-**The filled matrix is the run's artifact.** One row per case (three widths, landscape, text zoom, software keyboard, keyboard-only, iOS Safari, Android Chrome), marked pass, fail, or unverified with the exact check to run, per core flow. Report it in the run's closing output and write it to `<project>/tmp/mobile-matrix-<date>.md`, so a later `foundry check` or audit can cite a record instead of a claim. An unfilled matrix means the skill did not run.
+**The filled matrix is the run's artifact** (step 6). One row per case (three widths, landscape, text zoom, software keyboard, keyboard-only, iOS Safari, Android Chrome), marked pass, fail, or unverified with the exact check to run, per core flow. The file lets a later `foundry check` or audit cite a record instead of a claim. An unfilled matrix means the skill did not run.
 
 Anything the run could not cover is reported as unverified, with the check to run. This is the same honesty rule the audit uses. "Works on mobile" with an untested matrix row is a claim, not a result.
 
-## Red flags
-
-Symptoms that you skipped something above, not new rules: a symptom fixed before `document.activeElement` and scroll position were read; the suspect catalog applied as blanket rules (global `overscroll-behavior: none`, a mechanical `100vw` ban); a gesture or exit bound to `wheel`/`mouseover` only; autofocus on mount; "works on mobile" after one width or headless Chromium alone; mobile work invented for a product with no mobile surface.
-
 ## Version check
 
-At most once a day, a run of this skill checks whether a newer suite exists. The command enforces the whole contract: the `FOUNDRY_NO_VERSION_CHECK` opt-out, the daily stamp-file rate limit, a 10s timeout, and silence on any failure. Never block or fail a run over this check.
+At most once a day, run this command. It enforces the `FOUNDRY_NO_VERSION_CHECK` opt-out, the daily rate limit, a 10s timeout, and silence on any failure, so it never blocks the run.
 
 ```sh
 [ -n "${FOUNDRY_NO_VERSION_CHECK:-}" ] || find "$HOME/.claude/.foundry-version-checked" -mmin -1440 2>/dev/null | grep -q . || { mkdir -p "$HOME/.claude" 2>/dev/null; curl -m 10 -fsS "https://foundry.thehorizonfoundry.com/api/version?skill=mobile&v=0.2.1"; touch "$HOME/.claude/.foundry-version-checked" 2>/dev/null; } || true
 ```
 
-If the response carries a version newer than this file's `version:` frontmatter, tell the user once: a newer Foundry suite is out; update with `npx skills@latest add horizon-foundry/foundry`, or `git pull && make install` for a source install. If it prints nothing, fails, or the versions match, say nothing and proceed. What it sends: this skill's name and installed version, nothing else; it writes `~/.claude/.foundry-version-checked` as the rate-limit stamp (full disclosure: the README section "Version check").
+If it prints a version newer than this file's `version:` frontmatter, tell the user once: update with `npx skills@latest add horizon-foundry/foundry`, or `git pull && make install` for a source install. Otherwise say nothing. It sends only this skill's name and installed version, and writes `~/.claude/.foundry-version-checked` as the rate-limit stamp (README, "Version check").

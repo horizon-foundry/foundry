@@ -6,8 +6,13 @@ All notable changes to Foundry are recorded here. The format follows [Keep a Cha
 
 ## [Unreleased]
 
+### Fixed
+
+- Skills: `production-audit` now passes its severity rubric, evidence classes, false-positive list and quote rule to every subagent, from a bundled `subagent-brief.md`. Why: the brief told subagents to rate severity "against the rubric", but the material it passed never included the rubric, so each subagent rated against its own idea of severity.
+
 ### Changed
 
+- Skills: a writing pass over all eleven skills. Each meaning now lives in one place: steps hold the action and its check, reference sections hold the definitions, and content that only one branch reaches moves to a file beside the skill. The opening gate is one line (announce, a todo per step). Red flags sections keep only tripwires the body does not state. The Version check section keeps the command, the one instruction and the disclosure. `reference/skill-authoring.md` records the standard. Why: the repeated text made each skill longer than its behavior needed, and a rule stated in two places drifts and gains weight it should not have. No skill changes what it does.
 - Skills: `phase-plan` asks only for decisions that change what gets built and that the work cannot settle itself: a call the agent can make goes in Kickoff decisions or the step, most plans have none to two, and a "does it look right?" review is an acceptance criterion, not a decision. Why: once every plan carried the section, plans filled it, up to seven or eight decisions on trivial points, and each one stopped the work for an answer that changed nothing.
 - Skills: `phase-plan` tells the plan writer never to add a "something else" option to a decision. Why: the human can always answer in their own words, and a tool that collects answers (a review pane, a rendered page) already offers that slot under every option list, so a written-in option shows the slot twice and can end up marked as the recommended default.
 

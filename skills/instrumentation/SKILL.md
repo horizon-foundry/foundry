@@ -6,13 +6,13 @@ description: Use when adding analytics or event tracking, instrumenting a funnel
 
 # instrumentation
 
-> **Using this skill:** announce "Using instrumentation", make a todo per numbered step in `## Steps`, and do not skip the gates. This skill's worth is its process, not a hand-reproduced outcome. If you were told to "run instrumentation", run it, do not improvise its result. (Suite standard: https://github.com/horizon-foundry/foundry/blob/main/reference/skill-authoring.md)
+> **Using this skill:** announce "Using instrumentation" and make a todo per numbered step in `## Steps`.
 
 ## Overview
 
 This is a ship gate, and its weight follows the project's declared release policy. The `foundry` skill owns what required, optional, and waived each do to a release; this skill produces the record they are scored against.
 
-You cannot improve what you do not measure. Most instrumentation is added after the fact, as scattered `capture()` calls that never answer a real question. The discipline: decide what you need to learn first, instrument the whole path to it on one identity, make the capture reliable. Analytics that silently drops events or splits a user across two identities is worse than none: it produces confident, wrong funnels.
+Most instrumentation is added after the fact, as scattered `capture()` calls that never answer a real question. The discipline: decide what you need to learn first, instrument the whole path to it on one identity, make the capture reliable. Analytics that silently drops events or splits a user across two identities is worse than none: it produces confident, wrong funnels.
 
 ## When NOT to use
 
@@ -30,7 +30,7 @@ Each topic section below is the reference a step points at; the steps carry the 
 3. **State the identity model as a short block above the table**: which entities exist, which entity keys each event (see "One identity model, everywhere"). Check: every event row's identity key names one of the declared entities.
 4. **Wire capture** per "Capture reliably on the server" and "Env-gate and stay out of the way". Check: the build passes and capture no-ops without a key.
 5. **Stitch QA**: fire one client stage and one server stage for the same actor and confirm the analytics tool shows one actor, not two. Check: the run report states the result.
-6. **Hand the display side to `readout`.** Reliable events are half the job; whether a reader can act on them without being misled is a separate discipline (see "Reliable events are half the job"). Name the surface the funnel will be read on and hand it off. Check: the closing report names the surface and the handoff, or records that no surface is planned yet.
+6. **Hand the display side to `readout`.** Name the surface the funnel will be read on and hand it off, rather than assembling a dashboard here. Check: the closing report names the surface and the handoff, or records that no surface is planned yet.
 7. **Close with what remains unverified**, each item with the exact check to run. Check: the closing report lists them explicitly.
 
 ## Define the events before you build the feature
@@ -83,28 +83,22 @@ Two different questions, two disciplines. Product analytics answers **"did the i
 
 ## Measure activation, not vanity
 
-Pageviews and raw signups have their uses (traffic mix, reach, channel comparison), but they do not answer whether the feature works. For that, instrument the drop-offs: where does the funnel leak between intent and activation? What fraction of new actors reach value in the first session? The path you instrumented needs a surface where it is actually read, but building that surface is `readout`'s job, not this one: hand it off rather than assembling a dashboard here.
-
-**Reliable events are half the job.** A funnel that emits perfectly can still be displayed in a way that misleads: a rate beside a count on a different window, a throttled source rendering as a zero, a period that spans the release which changed the very page it measures. That failure mode is quiet, because every number in it is individually correct. `readout` owns it, and it is where this skill hands off.
+Pageviews and raw signups have their uses (traffic mix, reach, channel comparison), but they do not answer whether the feature works. For that, instrument the drop-offs: where does the funnel leak between intent and activation? What fraction of new actors reach value in the first session?
 
 ## The gate demands a decision, not necessarily telemetry
 
 The gate is "you can answer whether it is working and you decided how", not "every product emits events". Some products must not carry in-product telemetry: a dev tool that runs in the user's environment, a library, a privacy-sensitive surface. Phoning home from those is a trust violation, not instrumentation. For them, instrument up to the boundary you rightfully control (your site, your registry, the distribution funnel) and waive the rest deliberately.
 
-One shape earns a narrow exception: a version or update check that exists for the user's benefit. It qualifies only when it clears every bar at once: the check does something for the user (tells them they are behind), the disclosure is part of the feature (what is sent, when, where it is written down), the opt-out is enforced in the command that runs the check rather than promised in prose, no user, machine, or install identity is ever attached, and a failed check never blocks or degrades the product. The byproduct counts are the only telemetry such a tool should carry. Foundry's own skills carry exactly this check and nothing more; its contract lives in each skill's "Version check" section.
+One shape earns a narrow exception: a version or update check that exists for the user's benefit. It qualifies only when it clears every bar at once: the check does something for the user (tells them they are behind), the disclosure is part of the feature (what is sent, when, where it is written down), the opt-out is enforced in the command that runs the check rather than promised in prose, no user, machine, or install identity is ever attached, and a failed check never blocks or degrades the product. The byproduct counts are the only telemetry such a tool should carry.
 
 **The waiver has a fixed home**: the release policy block in the project's PRODUCT.md, as the instrumentation gate's entry, `instrumentation: waived (<reason>)`. That is exactly where `foundry check` cites it. A waiver written there is the gate answered; a waiver stated nowhere is not a waiver, it is an undocumented gap, and the gate fails.
 
-## Red flags
-
-Symptoms that you skipped something above, not new rules: `capture()` calls written before the funnel and activation moment are named; mixed keys within one funnel; server capture with no flush on an auto-stopping host; the product breaking when the analytics key is unset; pageviews reported as analytics; an event's meaning redefined in place; a funnel with no named owner.
-
 ## Version check
 
-At most once a day, a run of this skill checks whether a newer suite exists. The command enforces the whole contract: the `FOUNDRY_NO_VERSION_CHECK` opt-out, the daily stamp-file rate limit, a 10s timeout, and silence on any failure. Never block or fail a run over this check.
+At most once a day, run this command. It enforces the `FOUNDRY_NO_VERSION_CHECK` opt-out, the daily rate limit, a 10s timeout, and silence on any failure, so it never blocks the run.
 
 ```sh
 [ -n "${FOUNDRY_NO_VERSION_CHECK:-}" ] || find "$HOME/.claude/.foundry-version-checked" -mmin -1440 2>/dev/null | grep -q . || { mkdir -p "$HOME/.claude" 2>/dev/null; curl -m 10 -fsS "https://foundry.thehorizonfoundry.com/api/version?skill=instrumentation&v=0.2.1"; touch "$HOME/.claude/.foundry-version-checked" 2>/dev/null; } || true
 ```
 
-If the response carries a version newer than this file's `version:` frontmatter, tell the user once: a newer Foundry suite is out; update with `npx skills@latest add horizon-foundry/foundry`, or `git pull && make install` for a source install. If it prints nothing, fails, or the versions match, say nothing and proceed. What it sends: this skill's name and installed version, nothing else; it writes `~/.claude/.foundry-version-checked` as the rate-limit stamp (full disclosure: the README section "Version check").
+If it prints a version newer than this file's `version:` frontmatter, tell the user once: update with `npx skills@latest add horizon-foundry/foundry`, or `git pull && make install` for a source install. Otherwise say nothing. It sends only this skill's name and installed version, and writes `~/.claude/.foundry-version-checked` as the rate-limit stamp (README, "Version check").

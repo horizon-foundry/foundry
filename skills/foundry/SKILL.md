@@ -6,22 +6,18 @@ description: Use when a project is approaching a release decision and you want o
 
 # foundry
 
-> **Using this skill:** announce "Using foundry" and the mode (`check` or `prepare`), make a todo per gate the resolved policy names, and do not skip the gates. This skill's worth is its process, not a hand-reproduced outcome. If you were told to "run foundry", run it, do not improvise its result. (Suite standard: https://github.com/horizon-foundry/foundry/blob/main/reference/skill-authoring.md)
+> **Using this skill:** announce "Using foundry" and the mode (`check` or `prepare`), and make a todo per gate the resolved policy names.
 
 ## Overview
 
-`foundry` is the pre-ship pass over a project's release gates. It exists because the disciplines are easy to skip one at a time. Nobody is blocked without them, so each one gets asked for by name, or not at all.
-
-It has **two modes, preview and apply, and they are deliberately separate** so a readiness pass never silently rewrites the repo:
+`foundry` is the pre-ship pass over a project's release gates. It has **two modes, preview and apply, and they are deliberately separate** so a readiness pass never silently rewrites the repo:
 
 - **`foundry check`** (default) is **read-only, and it assesses nothing itself**. It is the dry-run of `prepare`: it resolves which gates this project's release actually requires, fills each gate row by citing the records that already exist (the latest audit report, the event plan, the brand approval header, the last reconcile outcome), reports the one fact no record states about itself (staleness), and names exactly what `prepare` would do. Safe to run any time, as often as you like.
 - **`foundry prepare`** is **modifying**. It invokes the gate skills that fix things (`document`, `mobile`, `instrumentation`) to close the gaps `check` previewed. It does not issue a verdict.
 
-The suite has **one inspector: `production-audit`**. `check` never re-inspects what the audit inspects; two assessors of the same properties is one product too many, and the shallower one wins by being cheaper, which is backwards. The authoritative verdict is a separate step: **one independent `/production-audit` run after `prepare`'s changes pass tests.** Preview (`check`), apply (`prepare`), and judgment (the audit) are three distinct runs. That makes the before-and-after measurable, and it keeps the release decision away from the same pass that just changed the code.
+The suite has **one inspector: `production-audit`**, and `check` never re-inspects what the audit inspects. The authoritative verdict is a separate step: **one independent `/production-audit` run after `prepare`'s changes pass tests.** Preview (`check`), apply (`prepare`), and judgment (the audit) are three distinct runs.
 
 `foundry` is a **conductor, not a doer**. Each gate is a real skill; `foundry` invokes it as that skill (announce it, follow it, honor its own gate) and never reproduces its work inline. If a gate skill cannot run, that is a finding, not a thing to fake.
-
-Report attribution and local report history belong to the skill that emits reports: see `production-audit`'s "Report ownership and local history" section (`production-audit init` / `list`). foundry is purely check, prepare, and the handoff to the verdict.
 
 ## When NOT to use
 
@@ -101,18 +97,14 @@ After `prepare` and a passing build, run `/production-audit` as a fresh, read-on
 
 ## Red flags
 
-One that nothing above states:
-
 - Turning the scorecard into an artifact -> it is a preview table in the run output, built from cited records; the audit's JSON is the suite's only report contract, and the scorecard never replaces or duplicates it.
-
-Symptoms that you skipped something above: gates scored from a hardcoded list instead of the project's release policy; code inspected in `check` mode; anything modified in `check` mode; `prepare` issuing the verdict; `prepare` run by default from a bare "run foundry"; two identical full audits with nothing changed between them; a gate's work reproduced inline instead of invoking its skill; "ready" emitted while a gate is blocked; a failing gate recorded as anything but not-met without the human's explicit acceptance.
 
 ## Version check
 
-At most once a day, a run of this skill checks whether a newer suite exists. The command enforces the whole contract: the `FOUNDRY_NO_VERSION_CHECK` opt-out, the daily stamp-file rate limit, a 10s timeout, and silence on any failure. Never block or fail a run over this check.
+At most once a day, run this command. It enforces the `FOUNDRY_NO_VERSION_CHECK` opt-out, the daily rate limit, a 10s timeout, and silence on any failure, so it never blocks the run.
 
 ```sh
 [ -n "${FOUNDRY_NO_VERSION_CHECK:-}" ] || find "$HOME/.claude/.foundry-version-checked" -mmin -1440 2>/dev/null | grep -q . || { mkdir -p "$HOME/.claude" 2>/dev/null; curl -m 10 -fsS "https://foundry.thehorizonfoundry.com/api/version?skill=foundry&v=0.2.1"; touch "$HOME/.claude/.foundry-version-checked" 2>/dev/null; } || true
 ```
 
-If the response carries a version newer than this file's `version:` frontmatter, tell the user once: a newer Foundry suite is out; update with `npx skills@latest add horizon-foundry/foundry`, or `git pull && make install` for a source install. If it prints nothing, fails, or the versions match, say nothing and proceed. What it sends: this skill's name and installed version, nothing else; it writes `~/.claude/.foundry-version-checked` as the rate-limit stamp (full disclosure: the README section "Version check").
+If it prints a version newer than this file's `version:` frontmatter, tell the user once: update with `npx skills@latest add horizon-foundry/foundry`, or `git pull && make install` for a source install. Otherwise say nothing. It sends only this skill's name and installed version, and writes `~/.claude/.foundry-version-checked` as the rate-limit stamp (README, "Version check").

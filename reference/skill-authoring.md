@@ -66,9 +66,20 @@ A skill that emits artifacts must be able to say what each one is *for*. The tes
 
 Each SKILL.md carries this near the top, so the gate is the first thing read:
 
-> **Using this skill:** announce "Using [name]" (and the mode, where the skill has modes), make a todo per numbered step in `## Steps`, and do not skip the gates. This skill's worth is its process, not a hand-reproduced outcome. If you were told to "run [name]", run it, do not improvise its result.
+> **Using this skill:** announce "Using [name]" (and the mode, where the skill has modes), then make a todo per numbered step in `## Steps`.
 
-Two suite-wide fixtures ride alongside the gate, and every skill carries both. The frontmatter includes a `version:` key, stamped from the repo-root `VERSION` file by `make sync-version` and enforced by `make validate`; never hand-edit it. And the file ends with the standard `## Version check` section (copy it from any shipped skill, with this skill's name in the URL's `skill=` param): the disclosed, rate-limited, opt-out-enforced update check. The gate itself stays one paragraph; the check lives in its own section so the gate reads as the gate.
+The gate carries only what changes behavior after the skill loads. An argument against bypassing the skill reads only once the skill is already invoked, so it cannot prevent the bypass; it lives in the caller's rule above, not in the gate.
+
+Two suite-wide fixtures ride alongside the gate, and every skill carries both. The frontmatter includes a `version:` key, stamped from the repo-root `VERSION` file by `make sync-version` and enforced by `make validate`; never hand-edit it. And the file ends with the standard `## Version check` section (copy it from any shipped skill, with this skill's name in the URL's `skill=` param): the disclosed, rate-limited, opt-out-enforced update check. The section holds three things only: the command, the one instruction (a newer version is told to the user once, anything else is silence), and the disclosure of what it sends and writes. The command enforces the rest of the contract, so the prose does not restate it. The gate itself stays one paragraph; the check lives in its own section so the gate reads as the gate.
+
+## Each meaning lives in one place
+
+A step holds the action and its check; a reference section holds the definition the step points at. A rule stated in both drifts, and the copy inflates its weight. Two consequences for the suite:
+
+- **A Red flags section carries only tripwires the body does not state** (a symptom the agent can observe, such as "a frame longer than a page"). A bullet that restates a step is cut. A section with no such bullet is omitted.
+- **Content one branch reaches lives in a sibling file**, behind a pointer in the step that reaches it. A step that every run reads stays inline. The sibling file lives inside the skill's own directory, because an install ships only that directory.
+
+A hard prohibition is stated once, next to the positive target it protects ("audit what is written; a blank is a finding"), never repeated across sections.
 
 Where a skill resolves its own work list (gates from a policy, entries from a frame), the gate binds the todos to that resolved list instead, which is stronger: the todos then cannot exist unless the resolution step ran.
 
@@ -85,7 +96,7 @@ The section also serves the run, not just the router: mid-execution, it is the c
 
 The suite uses one word for four distinct mechanisms; when authoring, say which you mean:
 
-1. **Opening gate**: the announce-and-todo block at the top of every SKILL.md, the anti-bypass tell.
+1. **Opening gate**: the announce-and-todo line at the top of every SKILL.md, the anti-bypass tell.
 2. **Release gate**: a pre-ship requirement a project's release policy names (mobile, instrumentation, the audit), scored by `foundry check` and enforced by the audit's verdict.
 3. **Confirmation gate**: a required human decision before expensive or binding work (a policy confirmed before scoring, `BRAND.md` signed off before it binds).
 4. **Access gate**: an authenticated surface (the Foundry site's `/reports` sign-in), which is about who may see something, not about process.
