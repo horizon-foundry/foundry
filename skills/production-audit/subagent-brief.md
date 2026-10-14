@@ -1,6 +1,6 @@
 # Subagent brief reference
 
-Read in full in Phase 2 and pass verbatim to every dimension subagent, including the sequential fallback passes; the orchestrator applies it again in Phases 3 and 4.
+Every run, including `--quick` and a single-dimension run, reads this in full before it produces any finding. Pass it verbatim to every dimension subagent (or read it before the sequential fallback passes) and to every Phase 3 skeptic; the orchestrator applies it again in Phases 3 and 4.
 
 ## Severity rubric
 

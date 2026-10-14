@@ -46,6 +46,8 @@ For `production-audit init` or `production-audit list`, which run no audit, read
 
 ## Phases
 
+Every run, including `--quick` and a single-dimension run, reads `subagent-brief.md` in full before it produces any finding.
+
 | Phase | What | Who |
 |---|---|---|
 | 0 | Context load: flow inventory, trust-boundary map, derived checklists, dimension applicability | Main context |
@@ -110,7 +112,7 @@ The conditional dimensions (only the ones Phase 0 marked applicable) take their 
 
 ### Phase 3: Adversarial verification
 
-Apply the severity rubric, evidence classes, false-positive kill list, and quote rule in `subagent-brief.md` throughout. Every Critical, High, and **verdict-driving** finding goes to a fresh subagent whose only job is to **refute** it against the code: Is it mitigated at another layer? Fixed by a later migration? Covered by an existing test? Is the exploit path actually reachable? A verdict-driving finding is any finding cited in `verdict.blockingFindingIds`, whatever its severity: if it moves the verdict, it gets verified, because the verdict is only as trustworthy as the findings it rests on. Refuted findings are dropped or downgraded, with the refutation recorded in `verification.refutationNotes`. The verification floor is the `kind` line: **every finding classified as a risk gets verified**, whatever its severity, because a risk is by definition something the shipper must consciously accept and nobody should accept an unverified one. Improvements may remain `not-verified` when their uncertainty and impact do not warrant the spend. Hard rule: the final verdict may not ship while any finding in `blockingFindingIds` still has `verification.status: not-verified` (the repo's `make validate` enforces this mechanically).
+Apply the severity rubric, evidence classes, false-positive kill list, and quote rule in `subagent-brief.md` throughout. Every Critical, High, and **verdict-driving** finding goes, with `subagent-brief.md`, to a fresh subagent whose only job is to **refute** it against the code: Is it mitigated at another layer? Fixed by a later migration? Covered by an existing test? Is the exploit path actually reachable? A verdict-driving finding is any finding cited in `verdict.blockingFindingIds`, whatever its severity: if it moves the verdict, it gets verified, because the verdict is only as trustworthy as the findings it rests on. Refuted findings are dropped or downgraded, with the refutation recorded in `verification.refutationNotes`. The verification floor is the `kind` line: **every finding classified as a risk gets verified**, whatever its severity, because a risk is by definition something the shipper must consciously accept and nobody should accept an unverified one. Improvements may remain `not-verified` when their uncertainty and impact do not warrant the spend. Hard rule: the final verdict may not ship while any finding in `blockingFindingIds` still has `verification.status: not-verified` (the repo's `make validate` enforces this mechanically).
 
 **Skeptic independence scales with impact.** A fresh subagent is the default skeptic, but it shares the finder's model and its blind spots. For findings that would block the release or claim a Critical, make the check more independent when you can, and record how in `verification.method`: a different model as the skeptic, a deterministic reproduction script whose exit code settles the question, a runtime test, or a human. The more a finding moves the verdict, the less its verification should share assumptions with whatever produced it.
 

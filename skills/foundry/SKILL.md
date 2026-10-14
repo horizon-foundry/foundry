@@ -24,6 +24,7 @@ The suite has **one inspector: `production-audit`**, and `check` never re-inspec
 - Inspecting code or assessing quality yourself: `production-audit` is the suite's only inspector; `check` cites records, it never re-derives them.
 - The user named a specific discipline ("run document", "run mobile"): invoke that skill directly; foundry earns its place only as the one pass over all gates.
 - A project before its shape exists: a bare repo is `scaffold`'s moment and unframed intent is `frame`'s; `check`'s first step stops there anyway.
+- Connecting a report owner or listing local report history: `production-audit init` / `production-audit list`.
 
 ## The release policy: gates are project-specific
 
