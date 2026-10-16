@@ -683,3 +683,17 @@ A writing-for-agents review of all eleven skills found the bulk was not boilerpl
 **What the review caught.** A cut-only pass looks safe and is not: the first diff review found whole sections deleted with no home (feature-design's six-entry declaration, phase-plan's plan-directory rule), and a move that stranded `--quick` runs without the kill list, because they never reach the Phase 2 step that now passes it. The angle that found them was "for each removed sentence, find where its meaning still lives". It also surfaced a real defect that predated the pass: the audit's subagents were told to rate severity against a rubric they were never given.
 
 **Trade-off accepted.** The site renders only SKILL.md, so `/skills/production-audit` no longer shows the rubric, and `/skills/document` no longer shows the hub, deck and sanitization rules. The sibling files ship with the install; the page is a view of the entry file.
+
+## 2026-10-16: a public readiness checklist, routed to the skills that own each gap
+
+A widely shared "production readiness checklist" (194 items with a friend's expansion) was mapped item by item against the suite. About a third was already covered, about a third was missing and belonged in a skill, and the rest was outside the suite (compliance programs, billing features, staffing) or not a checkable property at all (who wrote the schema, whether code is readable). Every in-suite gap was routed to its owning skill, checked against that skill's text before it was placed.
+
+Decisions, with the alternatives they beat:
+
+- **Declarations live with their owners, checks live in the audit.** Buyer commitments and recovery targets are declared in `foundry`'s release policy, and the regulatory regime and authentication factors on `frame`'s security lines; `production-audit` checks the system against them. The alternative, the audit inferring them, fails because contracts are not in the repo. `check` never proposes a commitment for the same reason.
+- **A privacy policy that disagrees with the code is flagged, never repaired.** `document` repairs docs to match code, but a legal page edited by an agent is a worse defect than a stale one.
+- **Security runs as separate passes.** Adding the authentication lifecycle table, the egress map and the tool authority table to one subagent would have loaded nine obligations on one context, which is the depth collapse the fan-out exists to avoid. The dimension count stays at eleven; the passes share the `SEC` prefix.
+- **Core dimension rows live in `core-dimensions.md`, not in `subagent-brief.md`.** The brief goes verbatim to every subagent and every skeptic; putting every dimension's rows there tripled what each one reads. Each subagent now receives only its own section.
+- **The invariants script stays repo-only for now.** It was bundled into the skill for a few hours, and the diff review showed it fails correct adopter reports: a waived `not-met` gate, a quoted em dash, a quoted `/Users/` path (the last two are this repo's content rules, not audit rules). Fixing that properly needs a schema change, which is the skills-analysis plan's Unit B step 2, so the bundling went back there.
+- **No report join yet.** A first plan joined a readiness map to audit reports (a v5 schema with per-concern coverage rows). It was cut as more machinery than the request needed; the map ships as a pointer index in the next PR, and the join waits until the map earns it.
+

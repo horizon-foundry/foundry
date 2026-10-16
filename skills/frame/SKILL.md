@@ -89,13 +89,15 @@ nine entries. The builder states them. The skill records and audits them. This
 is never threat-modeling facilitation.
 
 - **Data classification.** What classes of data the product will hold (public,
-  user-private, regulated/PII, payments, none). "No sensitive data" is a
-  valid declared entry; an unstated one is a blank.
+  user-private, regulated/PII, payments, none). A regulated class names its
+  regime (for example HIPAA, PCI, GDPR). "No sensitive data" is a valid
+  declared entry; an unstated one is a blank.
 - **Trust boundaries.** Where untrusted input enters and who the untrusted
   parties are (anonymous visitors, signed-in users, third-party webhooks,
   model output).
-- **Authn/authz model.** Who signs in, how, and who may do what, one line
-  each. "No accounts" is a valid entry.
+- **Authn/authz model.** Who signs in, how (the factors and the account
+  recovery path), and who may do what, one line each. "No accounts" is a
+  valid entry.
 - **Secret handling.** Where secrets will live and what never gets committed.
 
 These four lines become the seed of `production-audit`'s trust-boundary map

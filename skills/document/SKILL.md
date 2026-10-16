@@ -53,7 +53,7 @@ The failure this prevents: an agent reads a stale doc, believes it, and acts on 
 
 **The authority model.** Code is the truth for *what the system does*: when a doc describes behavior the code no longer has, repair the doc to match observed behavior. But code is **not** automatically the truth for what the system *should* do. Five sources carry authority over different things: **code** (current behavior), **tests** (expected behavior), **product requirements / the forever spec** (intended behavior), **decision records** (accepted constraints), **docs** (the communicated contract). When they disagree, classify before repairing:
 
-- **Deterministic mismatch** (a renamed flag, a wrong path, a stale count, a moved file): repair the doc directly. This is the common case and it is safe.
+- **Deterministic mismatch** (a renamed flag, a wrong path, a stale count, a moved file): repair the doc directly. This is the common case and it is safe. A privacy policy or other legal page that disagrees with the code is the exception: flag it, never repair it.
 - **Suspected regression** (the doc-vs-code disagreement coincides with a failing test, a contradicted decision record in `NOTES.md`, or a doc that states the behavior as *designed intent*): do **not** silently rewrite the doc to document the new behavior. That would turn a bug into the product's contract. Flag it as a suspected regression and let a human decide which side is wrong.
 - **Recalled memory versus the record** (the harness surfaces a fact from an earlier session that the docs contradict): memory is not one of the five authorities. It is per-user, machine-local, and unreviewable, so it never outranks a declared record and never justifies a repair on its own. Treat the disagreement as a signal that one of the two is stale, and surface it rather than silently reconciling either side.
 
@@ -100,11 +100,12 @@ The presentation surfaces, from least to most drift-prone:
 - **The doc-set tabs** render from source, so they are inherently current. Confirm the whitelist still covers the intended docs (and, for the public hub, that it excludes the raw logs).
 - **The overview deck** is hand-authored, so it is where drift lives. Check each slide against shipped capability: a shipped feature with no beat, or a slide describing something removed or renamed, is drift. Add the missing beat, fix or cut the stale one, leave accurate slides untouched.
 - **The showcase copy**, any hardcoded enumeration of the product: landing demos, command lists, skill counts ("N skills"), feature lists. A new or renamed skill rots exactly here. Reconcile every count and list against reality.
+- **The changelog**, where the project keeps one: every entry traces to shipped work, and no shipped user-visible change is missing.
 - **Cross-surface agreement**: the same fact (a count, an ordering, a name) reads the same on every surface that repeats it.
 
 ### The cold-start drill
 
-A fresh-context subagent is given only the repo and a terse continuation prompt ("continue", "start the next phase") and must: (1) locate the Master Plan index, (2) open the plan file it names, (3) reconcile that plan against git state, (4) name the correct next action. A failure at any step is a doc-set finding, exactly like drift. Where subagents are unavailable, do not skip silently: state the manual drill (the operator runs the same four checks by hand in a fresh session) and open the run's report with a declaration naming the degradation and its reason, per the suite standard's declared-degradation rule.
+A fresh-context subagent is given only the repo and a terse continuation prompt ("continue", "start the next phase") and must: (1) locate the Master Plan index, (2) open the plan file it names, (3) reconcile that plan against git state, (4) name the correct next action, (5) follow the README's setup steps in a fresh checkout to a running app, naming any step that needs a secret as a declared degradation, and (6) say, from the docs alone, how to run, deploy, and roll back the system. A failure at any step is a doc-set finding, exactly like drift. Where subagents are unavailable, do not skip silently: state the manual drill (the operator runs the same checks by hand in a fresh session) and open the run's report with a declaration naming the degradation and its reason, per the suite standard's declared-degradation rule.
 
 ## Idempotence rules
 

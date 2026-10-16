@@ -37,14 +37,18 @@ The policy lives in the project's `PRODUCT.md` as a short block:
 project_type: web-product        # scaffold profile: experiment | internal-tool | web-product | service | library
 risk_tier: standard              # low | standard | high (regulated data, payments, safety)
 launch_audience: public          # personal | internal | invite | public
+commitments: []                  # human-declared, only those in force; each: requirement (SSO, EU residency...), evidence
+recovery:                        # human-declared; production-audit checks the built system against it
+  rto:                           # hours, blank until stated
+  rpo:
 gates:
   document: required
-  mobile: required               # or: waived (<reason>) | optional
+  mobile: required               # or: waived (<reason>, <owner>, <revisit date>) | optional
   instrumentation: required
   production-audit: required     # the authoritative verdict; required for any real audience
 ```
 
-**Resolving the policy is `check`'s first step.** If the block exists, run against it. If it does not, derive a proposal from what the project is (its scaffold profile, its surfaces, its audience), present it, and get the human's confirmation before scoring against it. Where no human can answer this session (no question mechanism is exposed), proceed against the derived proposal and stamp the scorecard's first line "policy: proposed, unconfirmed"; a scorecard against an unconfirmed policy is provisional, never silently authoritative. The scorecard always reproduces the policy block it ran against, verbatim, so persisting a confirmed policy into `PRODUCT.md` is a paste, not a reconstruction; `prepare` (or the human) writes it. Never score a project against gates it never agreed to, and never skip a gate the policy requires.
+**Resolving the policy is `check`'s first step.** If the block exists, run against it. If it does not, derive a proposal from what the project is (its scaffold profile, its surfaces, its audience), with `commitments:` and `recovery:` blank (contracts are not in the repo), present it, and get the human's confirmation before scoring against it. Where no human can answer this session (no question mechanism is exposed), proceed against the derived proposal and stamp the scorecard's first line "policy: proposed, unconfirmed"; a scorecard against an unconfirmed policy is provisional, never silently authoritative. The scorecard always reproduces the policy block it ran against, verbatim, so persisting a confirmed policy into `PRODUCT.md` is a paste, not a reconstruction; `prepare` (or the human) writes it, copying `commitments:` and `recovery:` unchanged; neither mode asks for, suggests, or fills in their values, and a blank `recovery:` is `production-audit`'s finding. Never score a project against gates it never agreed to, and never skip a gate the policy requires.
 
 Higher risk tiers and wider audiences tighten the policy. They never loosen it. A `high` risk tier or `public` audience makes `production-audit` and its runtime pass hard requirements. A `personal` experiment may legitimately run with everything optional.
 
@@ -72,21 +76,21 @@ Gaps, prioritized: ...
 | met | A cited record shows the gate satisfied, and the record is current |
 | not-met | A cited record shows it failing; the specifics are listed |
 | not-applicable | The project has no such surface; the reason is stated |
-| waived | The policy pre-accepted skipping this gate, with the recorded reason |
+| waived | The policy pre-accepted skipping this gate, with its reason, owner, and revisit date |
 | not-assessed | The gate needs evidence this run could not gather (a real-device check, a runtime observation); stated with the exact check to run, never counted as a pass |
 | blocked | The record could not be read or the producing skill could not run at all; an un-run gate is an open risk, never a pass |
 | accepted-risk | Failing on the record, and the human explicitly accepts shipping anyway; recorded on the scorecard so the acceptance is a decision, not a drift |
 
-These seven are scorecard states. The audit report's `shipGates` field carries its own factual status enum (defined in `production-audit`); `waived`, `blocked`, and `accepted-risk` are policy and run dispositions that live here and in the policy block, not in the report.
+These seven are scorecard states. The audit report's `shipGates` field carries its own factual status enum (defined in `production-audit`); `waived` lives in the policy block; `blocked` and `accepted-risk` live only on the scorecard; none of the three is in the report.
 
-Policy strength governs how a gate weighs. A **required** gate that is not-met (or not-assessed, or blocked) holds the release. An **optional** gate is assessed and reported the same way, but a failing optional gate does not by itself cap the verdict; it is information the human weighs, not a stop. **waived** and **not-applicable** are settled before scoring and are left alone.
+Policy strength governs how a gate weighs. A **required** gate that is not-met (or not-assessed, or blocked) holds the release. An **optional** gate is assessed and reported the same way, but a failing optional gate does not by itself cap the verdict; it is information the human weighs, not a stop. **waived** and **not-applicable** are settled before scoring and are left alone. Past its revisit date a waiver lapses: score the gate from its record as a required gate (met, not-met, or not-assessed).
 
 ## `foundry prepare` (modifying)
 
 Invoked explicitly, never as the default. Closes the gaps `check` found.
 
 1. **Take the check scorecard** (run `check` first if you do not have a current one).
-2. **For each not-met required gate, invoke its skill** to close the gap: `document`, `mobile`, `instrumentation`, in that order (docs first, so the later gates and the audit read current docs). Each runs as its own skill, honoring its own gate and process. Waived, not-applicable, and accepted-risk gates are left alone.
+2. **For each not-met required gate, invoke its skill** to close the gap: `document`, `mobile`, `instrumentation`, in that order (docs first, so the later gates and the audit read current docs). Each runs as its own skill, honoring its own gate and process. Waived (before their revisit date), not-applicable, and accepted-risk gates are left alone.
 3. **Verify what code can verify.** Run the project's build and tests; `prepare` is not done until its changes pass. But some gates cannot be closed by changing code and running unit tests: a real-device mobile check, a live activation funnel, a runtime observation. `prepare` does the code work and then leaves those as `not-assessed` with the human check to run. An agent cannot "close" a real-device gate from a headless run; say what remains outstanding rather than marking it met.
 4. **Stop before the verdict.** `prepare` does not judge its own work. Hand off to an independent `/production-audit` for the authoritative decision.
 

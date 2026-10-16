@@ -9,7 +9,7 @@ Severity is earned, never vibes. Judge each finding on **impact x reach x exploi
 | Level | Bar | Examples of the class |
 |---|---|---|
 | critical | An unacceptable outcome is reachable today by an attacker or by routine use | Unauthenticated or cross-tenant read/write; remote code execution; secret or credential compromise; irrecoverable data destruction; systemic payment or billing corruption; a privacy/regulatory breach (PII exposure); total loss of availability with no recovery path |
-| high | An authenticated user can damage other users' data or bypass a business control; or a plausible failure causes serious, hard-to-recover harm | Business-control bypass; supply-chain exposure (a compromised dependency, or an unpinned critical one with a concrete exposure path, lack of pinning alone is not High); data loss with a recovery path that has never been tested |
+| high | An authenticated user can damage other users' data or bypass a business control; or a plausible failure causes serious, hard-to-recover harm | Business-control bypass; supply-chain exposure (a compromised dependency, or an unpinned critical one with a concrete exposure path, lack of pinning alone is not High); denial of wallet (unbounded spend reachable without authentication); data loss with a recovery path that has never been tested |
 | medium | Single-user data loss or a broken flow under realistic conditions | Double-submit corrupts one user's own record; a core flow dead-ends on a realistic error |
 | low | Degraded experience, hard-to-reach edge | Stuck spinner on a rare race; layout break on an uncommon viewport |
 | informational | Hygiene; no user-visible consequence | Dead code, stale comment, redundant check |
@@ -33,7 +33,7 @@ Fits no class: not reported. "Traced" and "reproduced" are deliberately separate
 Do not report:
 
 - Secrets stored in env vars (that is where secrets belong; report exposure, not storage)
-- "Missing rate limiting" without checking every layer it could live at (middleware, handler, DB, platform)
+- A rate limit as missing or wrongly keyed without checking every layer it could live at (middleware, handler, DB, platform); a platform layer static review cannot read is `needs-verification`
 - "Client validation insufficient" when the server validates
 - A gap fixed by a later migration or covered by an existing test (check both before reporting)
 - Generic CSRF on mutation paths already protected by same-site cookies or framework tokens
@@ -42,4 +42,4 @@ Rule: before reporting a missing control, search for it at every layer it could 
 
 ## Quote the motivating line
 
-**Quote the motivating line.** Every finding names its file:line AND quotes the verbatim line(s) that triggered it, in the finding's evidence text. A finding whose motivating line cannot be quoted is not `code-traced`; it drops to `needs-verification` and can never drive the verdict. This is the cheapest kill for the confident, hallucinated finding.
+**Quote the motivating line.** Every finding names its file:line AND quotes the verbatim line(s) that triggered it, in the finding's evidence text, with any secret value masked. An absence (a missing declaration, file, or control) quotes where it belongs instead, or names the path when the file itself is absent. A finding whose motivating line cannot be quoted is not `code-traced`; it drops to `needs-verification` and can never drive the verdict. This is the cheapest kill for the confident, hallucinated finding.

@@ -146,6 +146,10 @@ The ask was to resolve the open questions so the anti-goals work could close and
 
 The ask was to run the release for v0.2.1, gated on a full production-audit passing as safe to ship, and to ship that audit as the public self-audit. The audit ran eleven dimension reviews and a runtime pass, then sent every risk candidate to a skeptic on a different model or a runtime test. None survived as a risk, mostly because no report has an owner yet, but the runtime pass failed the mobile gate. Craig chose to fix the gate in the release, and to fix the sign-in host mismatch that had been open since launch once it was explained. Each review round then found defects in the previous round's fixes, which are recorded in NOTES.
 
+### Every readiness gap, routed to the skill that owns it (2026-10-16)
+
+The ask was to hold a widely shared production readiness checklist against the suite, sort what it covers, what it misses, and what does not belong, and then add the in-suite gaps to the skills that should own them. About a third was already covered, about a third belonged in a skill, and the rest was outside the suite or not a checkable property. A first plan also joined the list to audit reports with a new schema; Craig questioned the complexity, and it was cut to two pull requests. The skill changes went through three diff reviewers, a confirm pass, a real security-dimension run of the audit on this repo, and two bloat reviews. Each round found defects in the round before it, and one fix was reverted outright: bundling the report validator into the skill, which failed correct reports. NOTES has the decisions.
+
 ## Origin and direction
 
 This section records the decisions that shaped the build, in the project's own voice.

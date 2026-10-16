@@ -21,7 +21,7 @@ import { InstallBlock } from "@/components/InstallBlock";
 const DIMENSIONS = [
   {
     k: "Security",
-    d: "An authorization matrix for every mutation, plus tenant isolation, injection surfaces, secret exposure, and how model output is handled.",
+    d: "An authorization matrix for every read and write, plus sign-in, where sensitive data goes, tenant isolation, injection, and model output.",
   },
   {
     k: "Concurrency",

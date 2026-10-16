@@ -26,10 +26,10 @@ Most instrumentation is added after the fact, as scattered `capture()` calls tha
 Each topic section below is the reference a step points at; the steps carry the order and the evidence.
 
 1. **Name the funnel and the activation moment**, and the guardrail metric beside the activation target (see "Define the events" and its guardrail rule). Check: activation and guardrail are named before any code is written.
-2. **Write the event plan table into the project's working-conventions doc**, columns: stage, event name, where it fires, properties, identity key. Beneath it add one `Guardrail:` line and one `Owner and cadence:` line (see "Operate it like production code"). Check: the table plus both lines exist in the doc.
+2. **Write the event plan table into the project's working-conventions doc**, columns: stage, event name, where it fires, properties, identity key. Beneath it add one `Guardrail:` line, one `Owner and cadence:` line (see "Operate it like production code"), and one `Consent:` line (where consent applies, and the code gate that enforces it). Check: the table plus all three lines exist in the doc.
 3. **State the identity model as a short block above the table**: which entities exist, which entity keys each event (see "One identity model, everywhere"). Check: every event row's identity key names one of the declared entities.
 4. **Wire capture** per "Capture reliably on the server" and "Env-gate and stay out of the way". Check: the build passes and capture no-ops without a key.
-5. **Stitch QA**: fire one client stage and one server stage for the same actor and confirm the analytics tool shows one actor, not two. Check: the run report states the result.
+5. **Stitch QA**: fire one client stage and one server stage for the same actor and confirm the analytics tool shows one actor, not two, and, where the plan's `Consent:` line applies, that nothing fires before consent. Check: the run report states the result.
 6. **Hand the display side to `readout`.** Name the surface the funnel will be read on and hand it off, rather than assembling a dashboard here. Check: the closing report names the surface and the handoff, or records that no surface is planned yet.
 7. **Close with what remains unverified**, each item with the exact check to run. Check: the closing report lists them explicitly.
 
@@ -66,7 +66,7 @@ Client events are auto-batched by the SDK; server events are not, and they are w
 ## Env-gate and stay out of the way
 
 - Analytics **no-ops when its key is unset** (local, preview, tests). The product never depends on the analytics backend being up; a failed capture never breaks a user flow.
-- Do not send PII you do not need. Error payloads and full URLs can leak; scrub them. Respect Do-Not-Track and consent where it applies.
+- Send only the properties the event plan names, and scrub error payloads and full URLs. Respect Do-Not-Track.
 
 ## Operate it like production code
 
@@ -91,7 +91,7 @@ The gate is "you can answer whether it is working and you decided how", not "eve
 
 One shape earns a narrow exception: a version or update check that exists for the user's benefit. It qualifies only when it clears every bar at once: the check does something for the user (tells them they are behind), the disclosure is part of the feature (what is sent, when, where it is written down), the opt-out is enforced in the command that runs the check rather than promised in prose, no user, machine, or install identity is ever attached, and a failed check never blocks or degrades the product. The byproduct counts are the only telemetry such a tool should carry.
 
-**The waiver has a fixed home**: the release policy block in the project's PRODUCT.md, as the instrumentation gate's entry, `instrumentation: waived (<reason>)`. That is exactly where `foundry check` cites it. A waiver written there is the gate answered; a waiver stated nowhere is not a waiver, it is an undocumented gap, and the gate fails.
+**The waiver has a fixed home**: the release policy block in the project's PRODUCT.md, as the instrumentation gate's entry, `instrumentation: waived (<reason>, <owner>, <revisit date>)`. That is exactly where `foundry check` cites it. A waiver written there is the gate answered until its revisit date; a waiver stated nowhere is not a waiver, it is an undocumented gap, and the gate fails.
 
 ## Version check
 
