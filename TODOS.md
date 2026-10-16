@@ -126,7 +126,7 @@ Three agents, one angle each, all browser- or build-verified. They found twelve 
 Plan: `~/.claude/plans/foundry-readiness-coverage-map.md`. Two stacked PRs on top of PR #48: PR 1 (the skills) on `feat/readiness-coverage-map`, PR 2 (the readiness map and the read-only `/readiness` page) on `feat/readiness-page`.
 
 - [ ] 2026-10-16 PR 1, steps 1 to 5 (open as #49, stacked on #48; waits on Craig's merge)
-- [ ] 2026-10-16 PR 2, steps 6 to 9
+- [ ] 2026-10-16 PR 2, steps 6 to 9 (built on `feat/readiness-page`, gate green, ready for Craig's "pr"; stacked on #49)
 
 ## Up Next
 
