@@ -1,6 +1,6 @@
 # Core dimensions
 
-Each section holds the rows and checks beyond that dimension's SKILL.md bullet. Phase 0 reads "Stored values"; Phase 2 hands each subagent its own section.
+Each section holds the rows and checks beyond that dimension's SKILL.md bullet.
 
 ## security: base pass
 
@@ -10,15 +10,15 @@ Each section holds the rows and checks beyond that dimension's SKILL.md bullet. 
 
 **Trust-boundary additions.** Import parsers: encoding detection, size and row limits, and malformed rows rejected or reported. Output sinks with their encoding: HTML, CSV formula prefix, shell, SQL, model prompt. Outbound fetchers of a user- or model-supplied URL: allowlist, private and metadata address block, re-check after redirect. Framework public env prefixes (`NEXT_PUBLIC_`, `VITE_`, `EXPO_PUBLIC_`, `PUBLIC_`): report any server secret that reaches the client bundle.
 
-**Declared commitments.** One row per entry in the release policy's `commitments:` that no other row checks (an SSO requirement on an app with no federation code): present in the code or absent.
+**Declared commitments.** One row per entry in the release policy's `commitments:` that no other pass or dimension owns (residency is infra's) (an SSO requirement on an app with no federation code): present in the code or absent.
 
 ## security: authentication pass
 
-**Authentication lifecycle table.** Managed auth (Supabase, Clerk, Auth0) still runs this pass: prune the rows the provider owns, each with a reason, and keep the ones the app wires (redirects, linking, session revocation, enumeration). One row per auth flow, including each credential kind. Properties per row, where they apply:
+**Authentication lifecycle table.** With managed auth (Supabase, Clerk, Auth0), prune the rows the provider owns, each with a reason, and keep the ones the app wires (redirects, linking, session revocation, enumeration). One row per auth flow, including each credential kind. Properties per row, where they apply:
 
 - The identifier is normalized once, and uniqueness and lookup use the normalized form.
 - Reset and magic-link tokens expire, are single use, and a newer token or a password change invalidates them.
-- Session lifetime is bounded. All sessions are revoked server-side on password change, reset, user request, and SCIM deprovisioning where SCIM exists. The session cookie is Secure, HttpOnly, SameSite, and domain-scoped (`code-traced` where code sets it, `configuration-confirmed` where config does).
+- Session lifetime is bounded. All sessions are revoked server-side on password change, reset, user request, and SCIM deprovisioning where SCIM exists. The session cookie is Secure, HttpOnly, SameSite, and domain-scoped.
 - Attempt limits per account and per source on login, reset, verify, and MFA, with the layer. Lockout cannot be triggered by a third party against a named account, or an owner recovery path exists.
 - An address grants access or links accounts only after verification, and linking proves both identities. Email, password, factor, and payout changes need recent authentication.
 - Password hash algorithm and parameters (argon2id, bcrypt, scrypt), and a breached-password check or its declared absence. API keys are stored hashed, scoped, and revocable.

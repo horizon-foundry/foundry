@@ -66,7 +66,7 @@ Client events are auto-batched by the SDK; server events are not, and they are w
 ## Env-gate and stay out of the way
 
 - Analytics **no-ops when its key is unset** (local, preview, tests). The product never depends on the analytics backend being up; a failed capture never breaks a user flow.
-- Send only the properties the event plan names, and scrub error payloads and full URLs (`production-audit`'s egress map checks this). Respect Do-Not-Track.
+- Send only the properties the event plan names, and scrub error payloads and full URLs. Respect Do-Not-Track.
 
 ## Operate it like production code
 
