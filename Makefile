@@ -32,11 +32,12 @@ uninstall:
 	done
 
 # Installs ship ONLY the skill's own directory (make install symlinks
-# skills/<name>/), so anything a skill tells the agent to read must live inside
-# it. Three files are therefore bundled copies of canonical originals, and this
-# target re-copies all three after any change to one.
+# skills/<name>/), so anything a skill tells the agent to read or run must live
+# inside it. Four files are therefore bundled copies of canonical originals, and
+# this target re-copies all four after any change to one.
 sync-bundled:
 	cp schema/audit-report.schema.json skills/production-audit/audit-report.schema.json
+	cp scripts/validate-report-invariants.mjs skills/production-audit/validate-report-invariants.mjs
 	cp reference/templates/BRAND.md skills/brand-voice/BRAND.template.md
 	cp reference/templates/plan.md skills/phase-plan/plan.template.md
 	@echo "Synced bundled copies into skills/production-audit/, skills/brand-voice/, skills/phase-plan/."
@@ -92,6 +93,8 @@ validate:
 	node scripts/check-built-mark.mjs
 	@cmp -s schema/audit-report.schema.json skills/production-audit/audit-report.schema.json || { \
 		echo "ERROR: skills/production-audit/audit-report.schema.json is out of sync with schema/audit-report.schema.json. Run 'make sync-bundled'."; exit 1; }
+	@cmp -s scripts/validate-report-invariants.mjs skills/production-audit/validate-report-invariants.mjs || { \
+		echo "ERROR: skills/production-audit/validate-report-invariants.mjs is out of sync with scripts/validate-report-invariants.mjs. Run 'make sync-bundled'."; exit 1; }
 	@cmp -s reference/templates/BRAND.md skills/brand-voice/BRAND.template.md || { \
 		echo "ERROR: skills/brand-voice/BRAND.template.md is out of sync with reference/templates/BRAND.md. Run 'make sync-bundled'."; exit 1; }
 	@cmp -s reference/templates/plan.md skills/phase-plan/plan.template.md || { \

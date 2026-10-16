@@ -9,7 +9,7 @@ Severity is earned, never vibes. Judge each finding on **impact x reach x exploi
 | Level | Bar | Examples of the class |
 |---|---|---|
 | critical | An unacceptable outcome is reachable today by an attacker or by routine use | Unauthenticated or cross-tenant read/write; remote code execution; secret or credential compromise; irrecoverable data destruction; systemic payment or billing corruption; a privacy/regulatory breach (PII exposure); total loss of availability with no recovery path |
-| high | An authenticated user can damage other users' data or bypass a business control; or a plausible failure causes serious, hard-to-recover harm | Business-control bypass; supply-chain exposure (a compromised dependency, or an unpinned critical one with a concrete exposure path, lack of pinning alone is not High); data loss with a recovery path that has never been tested |
+| high | An authenticated user can damage other users' data or bypass a business control; or a plausible failure causes serious, hard-to-recover harm | Business-control bypass; supply-chain exposure (a compromised dependency, or an unpinned critical one with a concrete exposure path, lack of pinning alone is not High); denial of wallet (unbounded spend reachable without authentication); data loss with a recovery path that has never been tested |
 | medium | Single-user data loss or a broken flow under realistic conditions | Double-submit corrupts one user's own record; a core flow dead-ends on a realistic error |
 | low | Degraded experience, hard-to-reach edge | Stuck spinner on a rare race; layout break on an uncommon viewport |
 | informational | Hygiene; no user-visible consequence | Dead code, stale comment, redundant check |
