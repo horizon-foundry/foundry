@@ -67,9 +67,10 @@ sync-version:
 	sh scripts/sync-version.sh
 
 # Runs in four parts. First, every skill is visible on every public surface and
-# every count claim matches (scripts/check-skill-surfaces.mjs). Then the brand
-# assets: the copies of the design kit against the pin, and the BUILT output
-# against the retired mark (scripts/check-brand-assets.mjs,
+# every count claim matches (scripts/check-skill-surfaces.mjs), and the readiness
+# map parses with valid owners and evidence (scripts/check-readiness-map.mjs).
+# Then the brand assets: the copies of the design kit against the pin, and the
+# BUILT output against the retired mark (scripts/check-brand-assets.mjs,
 # scripts/check-built-mark.mjs). Then the schema example and any published
 # reports against the contract. Last, the version markers, so a stamped copy
 # cannot drift from VERSION.
@@ -88,6 +89,7 @@ sync-version:
 validate:
 	node --test 'scripts/todos/test/*.test.mjs'
 	node scripts/check-skill-surfaces.mjs
+	node scripts/check-readiness-map.mjs
 	node scripts/check-brand-assets.mjs
 	node scripts/check-built-mark.mjs
 	@cmp -s schema/audit-report.schema.json skills/production-audit/audit-report.schema.json || { \
