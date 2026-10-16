@@ -8,7 +8,7 @@ Each section holds the rows and checks beyond that dimension's SKILL.md bullet.
 
 **Abuse table.** One row per unauthenticated or costly endpoint other than the auth flows (their attempt limits are the authentication pass): its limit, keyed per actor, and the layer it lives at. Checkout and card-attach rows add per-actor and per-source limits and bot or provider fraud controls (a live attack is `notAssessed`). Signup and free-tier rows add per-actor caps on costly free actions and verification before a resource grant. Where user content is visible to others: an operator removal path exists in code, is authz-gated and logged, and reaches derived copies (cache, CDN, search).
 
-**Trust-boundary additions.** Import parsers: encoding detection, size and row limits, and malformed rows rejected or reported. Output sinks with their encoding: HTML, CSV formula prefix, shell, SQL, model prompt. Outbound fetchers of a user- or model-supplied URL: allowlist, private and metadata address block, re-check after redirect. Framework public env prefixes (`NEXT_PUBLIC_`, `VITE_`, `EXPO_PUBLIC_`, `PUBLIC_`): report any server secret that reaches the client bundle.
+**Trust-boundary additions.** Import parsers: encoding detection, size and row limits, and malformed rows rejected or reported. Output sinks with their encoding: HTML, CSV formula prefix, shell, SQL, model prompt. Outbound fetchers of a user- or model-supplied URL: allowlist, private and metadata address block, re-check after redirect. Framework public env prefixes (`NEXT_PUBLIC_`, `VITE_`, `EXPO_PUBLIC_`, `PUBLIC_`): report any server secret that reaches the client bundle. Inbound webhooks verify the sender's signature before acting. Uploads have a size and type limit, are stored where they cannot run or be served as code, and are scanned where the declared data class calls for it.
 
 **Declared commitments.** One row per entry in the release policy's `commitments:` that no other pass or dimension owns (residency is infra's), such as an SSO requirement on an app with no federation code: present in the code or absent.
 
@@ -40,7 +40,7 @@ A scheduled job overlapping its previous run, or running on two instances, has a
 
 ## reliability
 
-The failure-path table gains two columns: what happens after retries exhaust (dead-letter, alert, or explicit drop), and whether the response is validated at the boundary, with the behavior on an unexpected shape. Add a row per OAuth integration (refresh on expiry, revoked-grant handling, a user-visible reconnect state). The email row adds: the sending domain authenticated with SPF, DKIM, and DMARC (DNS state `configuration-confirmed` or `notAssessed`); bounce and complaint events feed a suppression list checked before send; bulk and marketing sends carry unsubscribe and check the same list.
+The failure-path table gains two columns: what happens after retries exhaust (dead-letter, alert, or explicit drop), and whether the response is validated at the boundary, with the behavior on an unexpected shape. Add a row per OAuth integration (refresh on expiry, revoked-grant handling, a user-visible reconnect state). The email row adds: the sending domain authenticated with SPF, DKIM, and DMARC (DNS state `configuration-confirmed` or `notAssessed`); bounce and complaint events feed a suppression list checked before send; bulk and marketing sends carry unsubscribe and check the same list. Slow work (email, model calls, exports) runs off the request path. Outbound webhooks record each delivery and retry failures on a schedule.
 
 ## infra
 
@@ -48,10 +48,11 @@ The failure-path table gains two columns: what happens after retries exhaust (de
 - **Credential scope:** CI, deploy, and agent configs in the repo (workflow tokens, MCP and agent settings), each scoped to its job. Operator machine state is `notAssessed`.
 - **CI protections:** secret scanning runs, the default branch is protected, deploy credentials are short-lived (OIDC). Repo settings are `configuration-confirmed` by a read-only API call, else `notAssessed`.
 - **Residency:** a declared region commitment is checked against storage and compute region config.
+- **Transport and origins:** TLS everywhere with HSTS, and data stores encrypted at rest (`configuration-confirmed`, else `notAssessed`). CORS on credentialed routes allows named origins only.
 
 ## ui
 
-Navigation state: the URL reflects meaningful view state, back and refresh restore it, and there is no history trap. `--runtime` confirms it; otherwise `needs-verification`.
+Navigation state: the URL reflects meaningful view state, back and refresh restore it, and there is no history trap. `--runtime` confirms it; otherwise `needs-verification`. A slow or failed request shows a state, never a hang; `--runtime` confirms it, otherwise `needs-verification`.
 
 ## Stored values
 
