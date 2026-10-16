@@ -28,7 +28,7 @@ const csp = [
 
 // The slug of the published self-audit (reports/foundry-<date>.json). Update it
 // in the release that replaces the report.
-const CURRENT_SELF_AUDIT = "foundry-2026-10-07";
+const CURRENT_SELF_AUDIT = "foundry-2026-10-16";
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
@@ -40,7 +40,7 @@ const nextConfig: NextConfig = {
     return [
       // The public self-audit is replaced each release, and its URL is the one
       // people share. Retired slugs land on the current one instead of a 404.
-      ...["foundry-2026-07-16", "foundry-2026-08-14"].map((slug) => ({
+      ...["foundry-2026-07-16", "foundry-2026-08-14", "foundry-2026-10-07"].map((slug) => ({
         source: `/example/${slug}`,
         destination: `/example/${CURRENT_SELF_AUDIT}`,
         permanent: true,
