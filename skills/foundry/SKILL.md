@@ -37,7 +37,7 @@ The policy lives in the project's `PRODUCT.md` as a short block:
 project_type: web-product        # scaffold profile: experiment | internal-tool | web-product | service | library
 risk_tier: standard              # low | standard | high (regulated data, payments, safety)
 launch_audience: public          # personal | internal | invite | public
-commitments: []                  # human-declared; each: requirement (SSO, EU residency...), trigger (day one | named contract | scale threshold), evidence
+commitments: []                  # human-declared, only those in force; each: requirement (SSO, EU residency...), evidence
 recovery:                        # human-declared; production-audit checks the built system against it
   rto:                           # hours, blank until stated
   rpo:
@@ -50,7 +50,7 @@ gates:
 
 The derived proposal below leaves `commitments:` and `recovery:` blank: contracts are not in the repo. `check` and `prepare` never ask for, suggest, or write their values; a blank `recovery:` is `production-audit`'s finding to report.
 
-**Resolving the policy is `check`'s first step.** If the block exists, run against it. If it does not, derive a proposal from what the project is (its scaffold profile, its surfaces, its audience), present it, and get the human's confirmation before scoring against it. Where no human can answer this session (no question mechanism is exposed), proceed against the derived proposal and stamp the scorecard's first line "policy: proposed, unconfirmed"; a scorecard against an unconfirmed policy is provisional, never silently authoritative. The scorecard always reproduces the policy block it ran against, verbatim, so persisting a confirmed policy into `PRODUCT.md` is a paste, not a reconstruction; `prepare` (or the human) writes it. Never score a project against gates it never agreed to, and never skip a gate the policy requires.
+**Resolving the policy is `check`'s first step.** If the block exists, run against it. If it does not, derive a proposal from what the project is (its scaffold profile, its surfaces, its audience), present it, and get the human's confirmation before scoring against it. Where no human can answer this session (no question mechanism is exposed), proceed against the derived proposal and stamp the scorecard's first line "policy: proposed, unconfirmed"; a scorecard against an unconfirmed policy is provisional, never silently authoritative. The scorecard always reproduces the policy block it ran against, verbatim, so persisting a confirmed policy into `PRODUCT.md` is a paste, not a reconstruction; `prepare` (or the human) writes it, carrying `commitments:` and `recovery:` exactly as found, or blank. Never score a project against gates it never agreed to, and never skip a gate the policy requires.
 
 Higher risk tiers and wider audiences tighten the policy. They never loosen it. A `high` risk tier or `public` audience makes `production-audit` and its runtime pass hard requirements. A `personal` experiment may legitimately run with everything optional.
 
@@ -78,12 +78,12 @@ Gaps, prioritized: ...
 | met | A cited record shows the gate satisfied, and the record is current |
 | not-met | A cited record shows it failing; the specifics are listed |
 | not-applicable | The project has no such surface; the reason is stated |
-| waived | The policy pre-accepted skipping this gate, with its reason, owner, and revisit date; past that date `check` reports it not-met |
+| waived | The policy pre-accepted skipping this gate, with its reason, owner, and revisit date; past that date it is scored as required |
 | not-assessed | The gate needs evidence this run could not gather (a real-device check, a runtime observation); stated with the exact check to run, never counted as a pass |
 | blocked | The record could not be read or the producing skill could not run at all; an un-run gate is an open risk, never a pass |
 | accepted-risk | Failing on the record, and the human explicitly accepts shipping anyway; recorded on the scorecard so the acceptance is a decision, not a drift |
 
-These seven are scorecard states. The audit report's `shipGates` field carries its own factual status enum (defined in `production-audit`); `waived`, `blocked`, and `accepted-risk` are policy and run dispositions that live here and in the policy block, not in the report.
+These seven are scorecard states. The audit report's `shipGates` field carries its own factual status enum (defined in `production-audit`); `waived` lives in the policy block; `blocked` and `accepted-risk` live only on the scorecard; none of the three is in the report.
 
 Policy strength governs how a gate weighs. A **required** gate that is not-met (or not-assessed, or blocked) holds the release. An **optional** gate is assessed and reported the same way, but a failing optional gate does not by itself cap the verdict; it is information the human weighs, not a stop. **waived** (until its revisit date) and **not-applicable** are settled before scoring and are left alone.
 

@@ -42,4 +42,4 @@ Rule: before reporting a missing control, search for it at every layer it could 
 
 ## Quote the motivating line
 
-**Quote the motivating line.** Every finding names its file:line AND quotes the verbatim line(s) that triggered it, in the finding's evidence text, with any secret value masked. A finding whose motivating line cannot be quoted is not `code-traced`; it drops to `needs-verification` and can never drive the verdict. This is the cheapest kill for the confident, hallucinated finding.
+**Quote the motivating line.** Every finding names its file:line AND quotes the verbatim line(s) that triggered it, in the finding's evidence text, with any secret value masked. An absence (a missing declaration, file, or control) quotes where it belongs instead. A finding whose motivating line cannot be quoted is not `code-traced`; it drops to `needs-verification` and can never drive the verdict. This is the cheapest kill for the confident, hallucinated finding.
