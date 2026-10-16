@@ -57,7 +57,7 @@ Each skill carries its version in its frontmatter, and at most once a day a skil
 | `phase-plan` | Writes the next unit's plan while context is warm and indexes it, so the next session resumes instead of reconstructing. |
 | `brand-voice` | One voice from one approved source across every surface. Clarity outranks it. |
 
-Shared references: [`reference/doc-set-spec.md`](reference/doc-set-spec.md) (the documentation architecture the skills enforce) and [`reference/skill-authoring.md`](reference/skill-authoring.md) (how the skills are written to resist being ignored). A named skill is invoked and followed, never hand-reproduced.
+Shared references: [`reference/doc-set-spec.md`](reference/doc-set-spec.md) (the documentation architecture the skills enforce) [`reference/skill-authoring.md`](reference/skill-authoring.md) (how the skills are written to resist being ignored), and [`reference/readiness-map.md`](reference/readiness-map.md) (every concern that decides whether a product is ready for real users, who owns it, and what evidence settles it; rendered at `/readiness`). A named skill is invoked and followed, never hand-reproduced.
 
 ## How it fits
 
@@ -133,7 +133,7 @@ foundry/
 ├── PRODUCT.md · BRAND.md · DESIGN.md   # forever spec · voice · looks
 ├── NOTES.md · PROMPTS.md · FRICTION.md # why · what happened · friction
 ├── CLAUDE.md · TODOS.md · README.md · LICENSE
-├── reference/     # doc-set-spec.md + skill-authoring.md + templates/ +
+├── reference/     # doc-set-spec.md + skill-authoring.md + readiness-map.md + templates/ +
 │                  # brand-kit.json (which design kit the brand copies came from)
 ├── skills/        # the suite (each dir symlinks into ~/.claude/skills/<name>;
 │                  # three carry bundled copies: the report schema,
