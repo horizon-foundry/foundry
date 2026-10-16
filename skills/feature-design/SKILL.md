@@ -30,7 +30,7 @@ The builder declares; the skill audits. One page is the norm, as with the produc
 2. **Surface area.** Every call site, module, route, table, or job the change touches, each named as a path.
 3. **Decisions.** Each significant choice with the alternative it beat and why. A decision with no rejected alternative is an assertion, and is reported as one.
 4. **Non-goals.** What this deliberately does not do, including the adjacent thing a reader would assume it does. A non-goal without a reason is a finding.
-5. **Verification.** What observation would show it works, and what observation would show the design is wrong. Both, or the entry is half-filled. When a named customer supplies the criteria, the entry names that source.
+5. **Verification.** What observation would show it works, and what observation would show the design is wrong. Both, or the entry is half-filled. When a named customer supplies the acceptance criteria, the entry names that source.
 6. **Scope.** That this is one unit of work, and what was cut to make it one.
 
 ## Steps
