@@ -37,12 +37,18 @@ The policy lives in the project's `PRODUCT.md` as a short block:
 project_type: web-product        # scaffold profile: experiment | internal-tool | web-product | service | library
 risk_tier: standard              # low | standard | high (regulated data, payments, safety)
 launch_audience: public          # personal | internal | invite | public
+commitments: []                  # human-declared; each: requirement (SSO, EU residency...), trigger (day one | named contract | scale threshold), evidence
+recovery:                        # human-declared; production-audit checks the built system against it
+  rto:                           # hours, blank until stated
+  rpo:
 gates:
   document: required
-  mobile: required               # or: waived (<reason>) | optional
+  mobile: required               # or: waived (<reason>, <owner>, <revisit date>) | optional
   instrumentation: required
   production-audit: required     # the authoritative verdict; required for any real audience
 ```
+
+`commitments:` and `recovery:` are the human's declarations. Contracts are not in the repo, so the derived proposal below leaves both blank and never proposes a commitment. A waived gate and an accepted risk each carry an owner and a revisit date in this block, not on the scorecard. `check` reports an expired one as not-met.
 
 **Resolving the policy is `check`'s first step.** If the block exists, run against it. If it does not, derive a proposal from what the project is (its scaffold profile, its surfaces, its audience), present it, and get the human's confirmation before scoring against it. Where no human can answer this session (no question mechanism is exposed), proceed against the derived proposal and stamp the scorecard's first line "policy: proposed, unconfirmed"; a scorecard against an unconfirmed policy is provisional, never silently authoritative. The scorecard always reproduces the policy block it ran against, verbatim, so persisting a confirmed policy into `PRODUCT.md` is a paste, not a reconstruction; `prepare` (or the human) writes it. Never score a project against gates it never agreed to, and never skip a gate the policy requires.
 
