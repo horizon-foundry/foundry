@@ -57,6 +57,19 @@ export default async function SkillPage({
           {skill.tagline}
         </p>
 
+        {slug === "production-audit" && (
+          <p className="mt-3 max-w-measure text-sm leading-relaxed text-bone-dim">
+            See which concerns it owns, and which skills own the rest, on the{" "}
+            <Link
+              href="/readiness"
+              className="text-bone underline decoration-line-strong underline-offset-4 transition-colors hover:text-signal hover:decoration-bone"
+            >
+              readiness map
+            </Link>
+            .
+          </p>
+        )}
+
         {(skill.why || skill.when) && (
           <div className="mt-8 grid gap-px border border-line bg-line md:grid-cols-[1.15fr_0.85fr]">
             {skill.why && (

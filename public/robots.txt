@@ -2,6 +2,7 @@ User-agent: *
 Allow: /$
 Allow: /behind
 Allow: /skills
+Allow: /readiness
 Allow: /example
 Disallow: /reports
 Disallow: /unlock

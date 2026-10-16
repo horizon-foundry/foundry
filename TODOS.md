@@ -53,8 +53,8 @@
 - [x] 2026-10-06 Site conformance to the new anti-goals (the 2026-10-05 Anti-goals rewrite landed with the one-kicker, 11px and 68ch rules applied site-wide; its render critic found the site still breaks other new lines, several of which contradict older DESIGN.md sections: stacked bordered cards, the report head order, verdict hues outside a report, mono page titles, decorative rules and dots, and the detector's line length against 68ch) -> `~/.claude/plans/foundry-site-anti-goals-conformance.md` (closed 2026-10-06: merged as PR #41; its open findings moved to the follow-ups plan below)
 - [ ] 2026-10-06 Site anti-goals follow-ups (the confirm critic's four open findings from PR #41: the home install section still stacks bordered blocks, the phone first screen sits on the fold under real toolbars, the film grain, and the filled report lists; plus the skill-page title exception for Craig to confirm, and an error role so /unlock stops borrowing the critical hue; four questions are Craig's, steps 2 and 4 can start without them) -> `~/.claude/plans/foundry-site-anti-goals-followups.md`
 - [ ] 2026-10-07 Decision required, when the first owned report is issued (Craig decides). The 2026-10-07 self-audit (`reports/foundry-2026-10-07.json`, remediationPlan item 1) found every sign-in risk latent only because no report has an owner: owned reports would be committed to the public repo (SEC-01), the sign-in email quota can be exhausted by anyone (SEC-03), mail scanners consume magic links (CON-01), sign-in errors mislead (REL-03), and there is no privacy page (DATA-02). The date of the first owner decides when that group must be planned and built; until then it is not the next unit.
-- [ ] 2026-10-15 Decision required, when to regenerate the published self-audit (Craig decides). The skills writing pass changed the audit method (production-audit's subagents and skeptics now receive the rubric, evidence classes, kill list and quote rule from `subagent-brief.md`), and the source-of-truth rule says a method change regenerates `reports/foundry-<date>.json`. Craig deferred it on 2026-10-15; the options are now, or as release procedure step 3 at the next roll-up.
-- [ ] 2026-10-16 Readiness coverage map (every gap a 194-item public readiness checklist exposed lands in its owning skill: release-policy commitments and recovery targets in foundry, two widened frame lines, a disclosure contact in scaffold, cold-start checks in document, consent in instrumentation; in production-audit, reads in the authz matrix, an authentication lifecycle table, a sensitive-data egress map, agent tool authority, abuse and spend, expiry, recovery; plus a readiness map in `reference/` rendered as a read-only `/readiness` page; stacks on PR #48) -> `~/.claude/plans/foundry-readiness-coverage-map.md`
+- [x] 2026-10-15 Decision required, when to regenerate the published self-audit (Craig decides). (closed 2026-10-16: Craig chose after the readiness plan's page, its Decision 2; regenerated as `reports/foundry-2026-10-16.json`) The skills writing pass changed the audit method (production-audit's subagents and skeptics now receive the rubric, evidence classes, kill list and quote rule from `subagent-brief.md`), and the source-of-truth rule says a method change regenerates `reports/foundry-<date>.json`. Craig deferred it on 2026-10-15; the options are now, or as release procedure step 3 at the next roll-up.
+- [x] 2026-10-16 Readiness coverage map (merged 2026-10-16 as #49 and #50, after #48) (every gap a 194-item public readiness checklist exposed lands in its owning skill: release-policy commitments and recovery targets in foundry, two widened frame lines, a disclosure contact in scaffold, cold-start checks in document, consent in instrumentation; in production-audit, reads in the authz matrix, an authentication lifecycle table, a sensitive-data egress map, agent tool authority, abuse and spend, expiry, recovery; plus a readiness map in `reference/` rendered as a read-only `/readiness` page; stacks on PR #48) -> `~/.claude/plans/foundry-readiness-coverage-map.md`
 
 ### Notes carried over from "From the 2026-07-16 fresh external audit (the substantive, queued items)"
 
@@ -121,17 +121,11 @@ Three agents, one angle each, all browser- or build-verified. They found twelve 
 
 ## Now
 
-### Readiness coverage map
-
-Plan: `~/.claude/plans/foundry-readiness-coverage-map.md`. Two stacked PRs on top of PR #48: PR 1 (the skills) on `feat/readiness-coverage-map`, PR 2 (the readiness map and the read-only `/readiness` page) on `feat/readiness-page`.
-
-- [ ] 2026-10-16 PR 1, steps 1 to 5 (open as #49, stacked on #48; waits on Craig's merge)
-- [ ] 2026-10-16 PR 2, steps 6 to 9
-
 ## Up Next
 
 ## Backlog
 
+- [ ] 2026-10-16 **[Bug]** `/unlock` drops the typed email after a failed send, so it must be re-entered (self-audit A11Y-09, WCAG 3.3.7). The audit's suggested redirect with the email would put the address in the URL, which SEC-11 flags as reaching PostHog's `$current_url`; return it through `useActionState` or a server-side flash instead. Fix SEC-11's `?sent=<email>` in the same change.
 - [ ] 2026-10-16 **[Bug]** (suspected, not run) posthog-js autocapture runs with its default config (`instrumentation-client.ts`), so a click on the gated `/reports/[slug]` page probably sends element text, which can be finding text, to PostHog. Check with a real key in dev and the network panel; if confirmed, add `ph-no-capture` to the report body. Found by the readiness plan review.
 
 ### Pre-publish, still open (from the 2026-07-16 audits)
@@ -364,3 +358,7 @@ Plan: `~/.claude/plans/foundry-readiness-coverage-map.md`. Two stacked PRs on to
 ### 2026-10-06
 
 - [x] 2026-09-22 **[Design]** The terminal panel's three macOS window dots do nothing: they are not controls, the panel is not a window, and the "SIMULATED RUN" label above already does the disclosure they imply. Cut-pass candidate on the next hero change. (closed 2026-10-06: cut in the anti-goals conformance, Craig's Q6 answer.)
+
+### 2026-10-16
+
+- [x] 2026-10-16 Readiness coverage map, both PRs merged with the skills writing pass: #48, then #49 (every readiness gap in its owning skill), then #50 (the readiness map, the `/readiness` page, and the 2026-10-16 self-audit). Plan: `~/.claude/plans/foundry-readiness-coverage-map.md`. Not deployed: the release roll-up and `fly deploy` wait on Craig.

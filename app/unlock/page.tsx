@@ -83,7 +83,8 @@ export default async function Unlock({
                 autoComplete="email"
                 placeholder="you@example.com"
                 aria-describedby={message ? "gate-error" : undefined}
-                className="mt-1.5 w-full border border-line bg-ink-raised px-3 py-2.5 font-mono text-sm text-bone outline-none transition-colors placeholder:text-bone-faint focus:border-signal"
+                aria-invalid={message ? true : undefined}
+                className="mt-1.5 w-full border border-line bg-ink-raised px-3 py-2.5 font-mono text-base text-bone outline-none transition-colors placeholder:text-bone-faint focus:border-signal"
               />
             </div>
             {message && (
