@@ -29,7 +29,7 @@
   "verdict": {
     "level": "safe-to-ship",
     "assessedScope": "static-plus-runtime",
-    "posture": "Well built for its surface: no finding survived verification as a risk, and the one gate failure (text enlargement) was fixed before publication; 83 improvements to schedule, led by the work owed before the first owned report and by the shipped skills' untested gates.",
+    "posture": "No finding survived verification as a risk; 83 improvements to schedule, led by the work owed before the first owned report.",
     "justification": "Static review of commit 72a0f99 plus a runtime pass against a production build of that commit (Playwright and axe on 26 routes, a mobile matrix, local load tests, GET probes). That build ran with no Supabase env and no browser analytics key, so signed-in flows, the live funnel, real devices and provider dashboards were not exercised. Seven findings were proposed as risks, one of them high; each went to a skeptic on a different model, and none survived as a risk. The required mobile gate failed at 72a0f99 because six routes scrolled sideways at 200% text; the causes were fixed in this release before publication (ace9ec9) and the text-zoom row was re-run: 26 of 26 routes do not scroll sideways. Both required gates are at risk, which does not cap the verdict: real devices and the live funnel were not exercised.",
     "blockingFindingIds": []
   },
