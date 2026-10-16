@@ -1,8 +1,8 @@
 # Readiness map
 
-This map lists every concern that decides whether a product is ready for real users. Each row states a property that is true or false of the product, names the owner that can show it, says when the concern applies, and names the kind of evidence that settles it. Evidence is one of four kinds: `code` (the source shows it), `config` (a setting shows it), `runtime` (only a live run shows it), or `record` (a written artifact shows it).
+This map lists every concern that decides whether a product is ready for real users. Each row states a property that is true or false of the product, names the owner that can show it, says when the concern applies, and names the kind of evidence that settles it. An owner is a skill, `production-audit/<dimension>` (or `production-audit/phase-1`), or `outside/<role>` for a party outside Foundry's skills. Evidence is one of four kinds: `code` (the source shows it), `config` (a setting shows it), `runtime` (only a live run shows it), or `record` (a written artifact shows it).
 
-A row carries no status. A concern's status comes from running its owning skill or, for a row owned from outside, from the named owner's own record. Nobody ticks a box here. The map says where to look, and the skills hold the method.
+A row carries no status: status comes from running its owner, or from an outside owner's own record, and the skills hold the method.
 
 ## Intent and declarations
 
@@ -14,10 +14,10 @@ A row carries no status. A concern's status comes from running its owning skill 
 | regulated-regime-named | A regulated class of data names the regime that governs it. | frame | the product holds regulated data | record |
 | release-policy-declared | The release policy states the project type, the risk tier and the audience, and lists which gates it requires. | foundry | always | record |
 | commitments-declared | Each buyer or contract requirement in force is listed with the record that proves it. | foundry | a buyer or contract sets a requirement | record |
-| recovery-targets-declared | The release policy states the longest recovery time and the largest data loss the product accepts. | production-audit/data-migration-safety | the product stores data | record |
+| recovery-targets-declared | The release policy states the longest recovery time and the largest data loss the product accepts. | production-audit/data-migration-safety | the product has a datastore | record |
 | gate-exceptions-owned | Each waived gate names a reason, an owner and a revisit date, and past that date the gate is scored as required. | foundry | a gate is waived | record |
 | feature-intent-declared | A substantial feature states what it must do and what observation would show the design wrong, before any plan is written. | feature-design | a substantial feature is being designed | record |
-| acceptance-source-recorded | When a named customer supplies the acceptance criteria, the design record names that customer as the source. | feature-design | a named customer supplies acceptance criteria | record |
+| acceptance-source-recorded | The design record names the customer who supplied the acceptance criteria. | feature-design | a named customer supplies acceptance criteria | record |
 | disclosure-contact-published | The repository says where to send a report of a vulnerability. | scaffold | the project is a web product, a service, or a library | record |
 | doc-set-has-no-placeholders | The project's doc set is complete and no `{placeholder}` marker remains in it. | scaffold | always | record |
 
@@ -27,7 +27,7 @@ A row carries no status. A concern's status comes from running its owning skill 
 |---|---|---|---|---|
 | identifier-normalized | An email address or username is normalized once, and both uniqueness and lookup use the normalized form. | production-audit/security | the product has sign-in | code |
 | reset-links-single-use | A reset or magic link works once, expires soon, and dies when a newer link is issued or the password changes. | production-audit/security | the product has sign-in | code |
-| sessions-bounded | A session has a limited life, and the server ends every session after a password change, after a reset, on the user's request, and on deprovisioning. | production-audit/security | the product has sign-in | code |
+| sessions-bounded | A session has a limited life, and the server ends every session after a password change, after a reset, and on the user's request. | production-audit/security | the product has sign-in | code |
 | session-cookie-hardened | The session cookie is Secure, HttpOnly and SameSite, and is scoped to the right domain. | production-audit/security | the product has sign-in | config |
 | sign-in-attempts-limited | Sign-in, reset, verification and second-factor endpoints cap attempts per account and per source. | production-audit/security | the product has sign-in | code |
 | lockout-not-a-weapon | A stranger cannot lock a named account out, or the owner has a way back in. | production-audit/security | the product locks accounts | code |
@@ -40,18 +40,17 @@ A row carries no status. A concern's status comes from running its owning skill 
 | federation-assertions-checked | A SAML or OIDC response is checked for signature, audience, recipient and replay. | production-audit/security | the product accepts federated sign-in | code |
 | recovery-keeps-factors | Account recovery cannot get around a second factor the product declares. | production-audit/security | the sign-in model declares a second factor | code |
 | deprovisioning-ends-access | Removing a person at the identity provider ends their sessions. | production-audit/security | the product supports SCIM provisioning | code |
-| sso-supported | An SSO commitment in the release policy has federation code present, or is reported absent. | production-audit/security | the release policy declares an SSO commitment | code |
 
 ## Access control
 
 | ID | Concern | Owner | Applies when | Evidence |
 |---|---|---|---|---|
-| reads-checked-per-record | Every read path checks that the caller may see that record, not only every write path. | production-audit/security | always | code |
+| reads-checked-per-record | Every read path checks that the caller may see that record. | production-audit/security | always | code |
 | tenant-isolation | One customer's rows cannot be reached by another customer, enforced per table or per query. | production-audit/security | the product serves more than one tenant | code |
 | side-channels-authorized | Jobs, search indexes, signed download links, cached responses and realtime channels check the viewer's rights. | production-audit/security | the product has jobs, search, downloads, caches or realtime channels | code |
 | privileged-flows-gated | Support and admin overrides sit behind a gate and write down who acted on whom. | production-audit/security | the product has privileged flows | code |
 | impersonation-bounded | Impersonation is time-limited, visibly marked, and attributes its writes to the operator. | production-audit/security | the product supports impersonation | code |
-| regulated-reads-logged | A read of regulated data records who looked at which record, and when. | production-audit/security | frame declares a regulated data class | code |
+| regulated-reads-logged | A read of regulated data records who looked at which record, and when. | production-audit/security | the product holds regulated data | code |
 | commitments-present-in-code | Each commitment in the release policy that no other pass owns is present in the code, or reported absent. | production-audit/security | the release policy declares a commitment | code |
 
 ## Abuse and spend
@@ -70,12 +69,12 @@ A row carries no status. A concern's status comes from running its owning skill 
 | ID | Concern | Owner | Applies when | Evidence |
 |---|---|---|---|---|
 | trust-boundaries-mapped | Every place untrusted input enters and every place privilege changes is listed with the file that handles it. | production-audit | always | code |
-| server-validates-input | The server validates every input, so a client-side check is never the only one. | production-audit/security | always | code |
+| server-validates-input | The server validates every input. | production-audit/security | always | code |
 | injection-surfaces-closed | Untrusted text reaches queries, pages and commands only through parameterization or encoding. | production-audit/security | always | code |
 | csrf-guarded | A state-changing request that rides on a cookie carries a defense against cross-site forgery. | production-audit/security | the product uses cookie sessions | code |
 | uploads-contained | An uploaded file is size-limited, type-checked, scanned where it matters, and never run or served as code. | production-audit/security | the product accepts uploads | code |
 | import-parsers-defensive | A file import detects the encoding, caps size and rows, and rejects or reports a bad row instead of writing half the file. | production-audit/security | the product imports files | code |
-| output-encoded-per-sink | Data written to HTML, CSV, a shell, SQL or a model prompt is encoded for that sink, including the leading characters that make a spreadsheet run a formula. | production-audit/security | always | code |
+| output-encoded-per-sink | Data written to HTML, CSV, a shell, SQL or a model prompt is encoded for that sink. | production-audit/security | always | code |
 | server-fetches-restricted | A server that fetches a URL a user or model supplies uses an allowlist, blocks private and cloud-metadata addresses, and checks again after a redirect. | production-audit/security | the server fetches supplied URLs | code |
 | webhook-signatures-verified | An inbound webhook has its sender's signature verified before the product acts on it. | production-audit/security | the product receives webhooks | code |
 | server-secrets-stay-off-client | No server secret reaches the client bundle through a public environment prefix. | production-audit/security | the framework exposes public environment prefixes | code |
@@ -92,7 +91,7 @@ A row carries no status. A concern's status comes from running its owning skill 
 | credentials-scoped-to-job | CI, deploy and agent credentials in the repo are limited to the job each one serves. | production-audit/infra | the repo has CI, deploy or agent config | config |
 | ci-protections-on | CI scans for secrets, the default branch is protected, and deploy credentials are short-lived. | production-audit/infra | the repo has CI | config |
 | transport-and-storage-encrypted | Traffic is encrypted in transit and stored data is encrypted at rest. | production-audit/infra | always | config |
-| headers-and-cors-set | Security headers are set, and cross-origin access is not open to every origin. | production-audit/infra | the product serves web traffic | config |
+| headers-and-cors-set | Security headers are set, and credentialed cross-origin access allows named origins only. | production-audit/infra | the product serves web traffic | config |
 | debug-surfaces-closed | No development or debug endpoint is reachable in production. | production-audit/infra | always | config |
 | certificates-and-domains-renew | Each certificate, domain and signing key has a known expiry and a renewal mechanism. | production-audit/infra | always | config |
 | runtime-within-support | The runtime and framework versions sit inside the vendor's support window. | production-audit/infra | always | config |
@@ -124,7 +123,7 @@ A row carries no status. A concern's status comes from running its owning skill 
 |---|---|---|---|---|
 | migrations-ordered-and-reversible | Each migration runs in a safe order relative to the code that needs it, and has a way back. | production-audit/data-migration-safety | the product has a datastore | code |
 | migrations-avoid-long-locks | Migrating a large or busy table takes no lock that blocks traffic, and follows an expand then contract order. | production-audit/data-migration-safety | the product has a datastore | code |
-| constraints-enforce-invariants | The database rejects states the product forbids, such as a negative balance, through constraints and transactions rather than application checks alone. | production-audit/concurrency | the product has a datastore | code |
+| constraints-enforce-invariants | The database rejects states the product forbids, such as a negative balance, through constraints and transactions. | production-audit/concurrency | the product has a datastore | code |
 | mutations-idempotent | Repeating a request through a retry, a double click or a refresh has one effect, payments included. | production-audit/concurrency | always | code |
 | simultaneous-edits-handled | Two people or two tabs editing one record get a defined outcome, never a silent overwrite. | production-audit/concurrency | users edit shared records | code |
 | time-stored-as-instants | Timestamps are stored as UTC instants or with their zone, and converted only at the edge. | production-audit/data-migration-safety | the product stores time | code |
@@ -143,7 +142,7 @@ A row carries no status. A concern's status comes from running its owning skill 
 | environment-rebuildable | The environment can be rebuilt from versioned config or written provisioning steps. | production-audit/data-migration-safety | the product has a datastore | config |
 | backups-isolated-from-attackers | Backup credentials differ from the app's, and the backups are protected from deletion. | production-audit/data-migration-safety | the product has a datastore | config |
 | erasures-survive-restore | A restore reapplies earlier deletions from an erasure log. | production-audit/data-migration-safety | the product stores personal data | code |
-| region-loss-planned | The recovery plan says what happens when a whole region is lost, and a second region runs only if the declared target demands one. | production-audit/data-migration-safety | the release policy declares a recovery target | record |
+| region-loss-planned | The recovery plan says what happens when a whole region is lost. | production-audit/data-migration-safety | the release policy declares a recovery target | record |
 
 ## Release and rollout
 
@@ -208,7 +207,7 @@ A row carries no status. A concern's status comes from running its owning skill 
 | external-seams-tested | Each third-party API has contract or integration tests. | production-audit/testing-confidence | the product calls third-party APIs | code |
 | critical-flows-tested-whole | Automated tests run the critical flows from start to finish, money flows first. | production-audit/testing-confidence | always | code |
 | controls-pinned-by-tests | Each control the audit marks verified-safe, such as an authz check or an idempotency guard, has a test that fails without it. | production-audit/testing-confidence | always | code |
-| controls-are-testable | A test can reach each control the audit relies on: no threshold hardcoded where it cannot be replaced, no client built at import time, no allowlist frozen in a constant. | production-audit/testing-confidence | always | code |
+| controls-are-testable | A test can reach each control the audit relies on. | production-audit/testing-confidence | always | code |
 | model-evals-run-on-change | Each model feature has an eval set that runs when the model or the prompt changes. | production-audit/testing-confidence | the product has a model feature | code |
 | agent-tool-gates-tested | A test pins each agent tool gate, including a case where injected content tries to pull data out. | production-audit/testing-confidence | a model can call tools | code |
 
@@ -216,7 +215,7 @@ A row carries no status. A concern's status comes from running its owning skill 
 
 | ID | Concern | Owner | Applies when | Evidence |
 |---|---|---|---|---|
-| meets-wcag-aa | The shared interface primitives and the screens built on them meet the WCAG 2.2 AA criteria that code review can assess. | production-audit/accessibility | the product has a user-facing surface | code |
+| meets-wcag-aa | The shared interface primitives and the screens built on them meet the WCAG 2.2 AA criteria. | production-audit/accessibility | the product has a user-facing surface | code |
 | keyboard-and-screen-reader-paths | Every control works from the keyboard and announces itself to a screen reader. | production-audit/accessibility | the product has a user-facing surface | runtime |
 | states-are-covered | Each screen has its empty, loading, error, hover, focus and disabled states. | production-audit/ui | the product has a user-facing surface | code |
 | forms-keep-input | After a rejected submit, every field still holds its entered value, and the error names the field. | production-audit/ui | the product has forms | code |
@@ -244,8 +243,8 @@ A row carries no status. A concern's status comes from running its owning skill 
 
 | ID | Concern | Owner | Applies when | Evidence |
 |---|---|---|---|---|
-| activation-instrumented-on-one-identity | The path to activation is instrumented, and client and server events resolve to one identity. | instrumentation | the product has a real audience and the instrumentation gate is not waived | runtime |
-| event-plan-written | The events that matter are listed in a plan with their properties and their identity key. | instrumentation | the product has a real audience and the instrumentation gate is not waived | record |
+| activation-instrumented-on-one-identity | The path to activation is instrumented, and client and server events resolve to one identity. | instrumentation | the product has a real audience | runtime |
+| event-plan-written | The events that matter are listed in a plan with their properties and their identity key. | instrumentation | the product has a real audience | record |
 | readouts-keep-states-apart | A surface that shows measurements keeps a failed read, a true zero and a stale value distinguishable. | readout | the product has a surface that displays measurements | runtime |
 
 ## Documentation and handover
@@ -258,7 +257,7 @@ A row carries no status. A concern's status comes from running its owning skill 
 | docs-cover-run-deploy-rollback | The docs alone say how to run, deploy and roll back the system. | document | always | record |
 | decisions-recorded-with-reasons | Decisions are recorded with their reasons and the alternatives that were rejected. | document | always | record |
 | changelog-matches-shipped-work | Every changelog entry traces to shipped work, and no shipped user-visible change is missing. | document | the project keeps a changelog | record |
-| next-step-written | When a unit of work closes, the next unit has a written, indexed plan, or an honest terminal entry. | phase-plan | a unit of work closes at a handoff a later session must resume | record |
+| next-step-written | The next unit of work has a written, indexed plan, or an honest terminal entry. | phase-plan | a unit of work closes at a handoff a later session must resume | record |
 | dead-code-removed | Code that nothing calls is removed. | outside/engineering management | always | code |
 
 ## Audit method

@@ -52,7 +52,7 @@ The failure-path table gains two columns: what happens after retries exhaust (de
 
 ## ui
 
-Navigation state: the URL reflects meaningful view state, back and refresh restore it, and there is no history trap. `--runtime` confirms it; otherwise `needs-verification`. A slow or failed request shows a state, never a hang; `--runtime` confirms it, otherwise `needs-verification`.
+Navigation state: the URL reflects meaningful view state, back and refresh restore it, and there is no history trap. A slow or failed request shows a state, never a hang. `--runtime` confirms both; otherwise `needs-verification`.
 
 ## Stored values
 
