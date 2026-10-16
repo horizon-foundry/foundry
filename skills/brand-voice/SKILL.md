@@ -6,7 +6,7 @@ description: Use when writing or reviewing any user-facing copy, marketing, land
 
 # brand-voice
 
-> **Using this skill:** announce "Using brand-voice" and the resolved mode, make a todo per numbered step in `## Steps` for the resolved path, and do not skip the gates. This skill's worth is its process, not a hand-reproduced outcome. If you were told to "run brand-voice", run it, do not improvise its result. (Suite standard: https://github.com/horizon-foundry/foundry/blob/main/reference/skill-authoring.md)
+> **Using this skill:** announce "Using brand-voice" and the resolved mode, then make a todo per numbered step in `## Steps` for the resolved path.
 
 ## Steps
 
@@ -48,7 +48,7 @@ Copy drifts when every surface invents its own tone. This skill keeps one voice 
 
 ## When NOT to use
 
-- Deciding what capability a surface may claim: shipped truth comes from the forever spec, and unshipped features never appear, whatever the voice.
+- Deciding what capability a surface may claim: the forever spec owns shipped truth, whatever the voice.
 - Visual identity (tokens, type, layout): `DESIGN.md` territory; this skill owns words, not looks.
 - Choosing which docs render on which surface: `document` owns the public/internal boundary; this skill checks the words once they are there.
 - The face copy on a surface that displays measurements (what a failed read, a genuine zero, a stale cache, or a withheld rate says): `readout`. The distinction there is semantic before it is stylistic, and well-voiced copy that collapses those four into one friendly line is the exact failure that skill exists to prevent.
@@ -57,7 +57,7 @@ Copy drifts when every surface invents its own tone. This skill keeps one voice 
 
 You cannot enforce a voice no one has written down, so when there is no `BRAND.md` the first job is to help define one. This part is additive: you draft a positive voice, not a list of bans.
 
-Draft the `BRAND.md` from what the builder already has or has approved: the frame, the forever spec, copy they have written and liked, preferences they have stated. Fill its shape (purpose, positioning, personality, voice and tone, glossary, anti-goals) from those sources. Mark anything you inferred rather than heard as "assumed, unconfirmed." Leave blanks the builder has not filled visibly blank.
+Draft the `BRAND.md` from what the builder already has or has approved: the frame, the forever spec, copy they have written and liked, preferences they have stated. Fill its shape (purpose, positioning, personality, voice and tone, glossary, anti-goals) from those sources. Mark anything you inferred rather than heard as "assumed, unconfirmed." Leave blanks the builder has not filled visibly blank. Never run a discovery interview to pull any of it out of the builder.
 
 **The glossary is observed, not invented.** Its entries are the builder's own
 words for their own concepts, collected from where they already appear: the
@@ -67,11 +67,9 @@ mark any term you supplied rather than observed as "assumed, unconfirmed" like
 every other drafted entry. A vocabulary invented at branding time teaches the
 product a language nobody speaks: the builder keeps using their own word, the
 surfaces drift back to it, and the glossary becomes the thing everyone
-overrules. This stays observation, never elicitation. You read what is already
-written and listen to what is already said; you do not run a session to extract
-vocabulary from the builder.
+overrules.
 
-Two limits keep the draft honest. **Do not invent brand rules the builder never approved:** no made-up personality, no manufactured positioning, and no discovery interview to pull them out of the builder. And **the draft binds only after the builder signs off.** Until then it is a proposal, and copy is not enforced against it.
+Two limits keep the draft honest. **Do not invent brand rules the builder never approved:** no made-up personality and no manufactured positioning. And **the draft binds only after the builder signs off.** Until then it is a proposal, and copy is not enforced against it.
 
 Make that sign-off **machine-readable**, so "is this approved?" is a lookup, not a judgment. `BRAND.md` opens with an approval header the agent reads before enforcing anything:
 
@@ -98,22 +96,18 @@ The priority order is fixed: **comprehension, accessibility, and error recovery 
 
 ## Product surfaces get brand prose, not raw internal docs
 
-A **public, user-facing** surface is hand-written in brand voice. Never drop an internal doc onto it verbatim, not a spec, a session log, or a decision record. Timestamps, internal labels, and working notes do not belong in front of users. Rewrite the substance in the brand's voice. The underlying boundary rule (raw internal logs never reach a public URL; a gated internal portal may render them directly) is owned by the `document` skill.
+A public, user-facing surface is hand-written in brand voice, never an internal doc dropped on verbatim (a spec, a session log, a decision record), and never carries timestamps, internal labels, or working notes; the boundary rule is owned by the `document` skill.
 
 ## Keep outward copy in sync with the product
 
 Marketing and UI copy track shipped reality. When a feature ships, changes, or is superseded, update the copy in the same change. Never describe an unshipped capability as available. Lead with the friendliest currently-shipped path.
 
-## Red flags
-
-Symptoms that you skipped something above, not new rules: copy written with no `BRAND.md` to check against; personality or positioning invented to fill a blank one; a glossary term nobody here was ever heard using; copy enforced against a `BRAND.md` nobody signed off; an error message that is on-brand but unclear; two surfaces using different words for the same thing; a spec or notes doc pasted onto a user-facing page; copy describing a feature that is planned rather than shipped.
-
 ## Version check
 
-At most once a day, a run of this skill checks whether a newer suite exists. The command enforces the whole contract: the `FOUNDRY_NO_VERSION_CHECK` opt-out, the daily stamp-file rate limit, a 10s timeout, and silence on any failure. Never block or fail a run over this check.
+At most once a day, run this command. It enforces the `FOUNDRY_NO_VERSION_CHECK` opt-out, the daily rate limit, a 10s timeout, and silence on any failure, so it never blocks the run.
 
 ```sh
 [ -n "${FOUNDRY_NO_VERSION_CHECK:-}" ] || find "$HOME/.claude/.foundry-version-checked" -mmin -1440 2>/dev/null | grep -q . || { mkdir -p "$HOME/.claude" 2>/dev/null; curl -m 10 -fsS "https://foundry.thehorizonfoundry.com/api/version?skill=brand-voice&v=0.2.1"; touch "$HOME/.claude/.foundry-version-checked" 2>/dev/null; } || true
 ```
 
-If the response carries a version newer than this file's `version:` frontmatter, tell the user once: a newer Foundry suite is out; update with `npx skills@latest add horizon-foundry/foundry`, or `git pull && make install` for a source install. If it prints nothing, fails, or the versions match, say nothing and proceed. What it sends: this skill's name and installed version, nothing else; it writes `~/.claude/.foundry-version-checked` as the rate-limit stamp (full disclosure: the README section "Version check").
+If it prints a version newer than this file's `version:` frontmatter, tell the user once: update with `npx skills@latest add horizon-foundry/foundry`, or `git pull && make install` for a source install. Otherwise say nothing. It sends only this skill's name and installed version, and writes `~/.claude/.foundry-version-checked` as the rate-limit stamp (README, "Version check").

@@ -1,32 +1,30 @@
 ---
 name: frame
 version: 0.2.1
-description: Use before scaffolding or building anything new, or when a project cannot answer who it is for and why it matters. The builder declares a one-page product frame plus a four-line security frame; this skill audits it and reports blank or vague entries as findings. Never runs discovery, never questionnaires the builder, never invents answers.
+description: Use before scaffolding or building anything new, or when a project cannot answer who it is for and why it matters. The builder declares a one-page product frame plus a four-line security frame; this skill audits it and reports blank or vague entries as findings. Not for running discovery with the builder or inventing answers: it audits what is declared.
 ---
 
 # frame
 
-> **Using this skill:** announce "Using frame", make a todo per numbered step in `## Steps` and one per frame entry audited, and do not skip the gates. The frame is the builder's declaration: NEVER invent users, evidence, or outcomes, and never turn this into a questionnaire. This skill's worth is its process, not a hand-reproduced outcome. If you were told to "run frame", run it, do not improvise its result. (Suite standard: https://github.com/horizon-foundry/foundry/blob/main/reference/skill-authoring.md)
+> **Using this skill:** announce "Using frame" and make a todo per numbered step in `## Steps` and one per frame entry audited.
 
 ## Steps
 
 1. **Check for an existing frame.** If `PRODUCT.md` already opens with one,
    audit that frame as it stands; the run's artifact is the finding report,
    never a duplicate frame.
-2. **Obtain the declaration.** The human writes it against the entry list
-   below, or asks for a draft assembled only from existing materials with
-   every drafted entry marked "assumed, unconfirmed". Check: no entry exists
-   that the human did not state and the draft did not mark assumed.
+2. **Obtain the declaration** from the human, one of the two ways in "The
+   gate". Check: no entry exists that the human did not state and the draft
+   did not mark assumed.
 3. **Audit it.** Artifact: a findings list against the entry numbers, per
    "The audit" section below. Check: the list covers every entry, plus one
    pass across entries for contradictions, which a per-entry pass cannot
    see.
 4. **Human resolves and confirms.** Revisions or explicitly accepted gaps.
    On confirmation, write a `Confirmed: <date>` line at the top of the frame
-   section in `PRODUCT.md`; confirmation is that lookup, never a memory. If
-   no way to ask the human exists this session, stamp
-   `Audited, unconfirmed: <date>` instead, and the build handoff does not
-   proceed on it.
+   section in `PRODUCT.md`. If no way to ask the human exists this session,
+   stamp `Audited, unconfirmed: <date>` instead, and the build handoff does
+   not proceed on it.
 5. **Hand off.** `scaffold` fills the doc set around the frame;
    `instrumentation` takes the success measure as an input to its plan,
    deriving the activation moment separately; a release decision later
@@ -44,13 +42,12 @@ declaration of intent: who this is for, what it fixes, what success measurably
 looks like, and what would prove the idea wrong. The skill's job is the same
 job the suite does everywhere else: hold a declared artifact up to checkable
 criteria and report what is blank, vague, or asserted without evidence. It
-audits what the builder already believes; it does not extract it.
+audits what the builder already believes.
 
 ## When NOT to use
 
 - Auditing built code or a release candidate: `production-audit`; frame audits intent before anything exists.
 - Standing up the repo and doc set: `scaffold`, after the frame carries its `Confirmed` stamp.
-- Producing intent the builder has not declared: out of scope by design (see the non-goals section); blanks are honest findings.
 
 ## The gate: the builder declares, the skill audits
 
@@ -59,7 +56,10 @@ directly against the entry list below. Or they ask for a draft assembled ONLY
 from what already exists (the README, existing docs and notes, what they have
 said in the session), with every drafted entry explicitly marked "assumed,
 unconfirmed" for them to correct. Either way, nothing enters the frame that
-the human did not state or confirm. Do not proceed to scaffolding or building
+the human did not state or confirm. Audit what is written; a blank is a
+finding. Never interview the builder, run a question sequence, send a
+questionnaire, or extract intent step by step, and never invent users,
+evidence, or outcomes. Do not proceed to scaffolding or building
 until the frame section in `PRODUCT.md` carries a `Confirmed: <date>` line;
 confirmation is a lookup, never a memory.
 
@@ -149,9 +149,6 @@ sections only with the evidence that promoted it.
 The boundary is deliberate and stays where it is. frame is an **auditor of
 already-declared intent**, nothing more:
 
-- **Not guided discovery.** It never interviews the builder, runs a question
-  sequence, or extracts intent step by step. Structured elicitation is other
-  products' work.
 - **Not strategy facilitation.** It does not help decide what to build, rank
   opportunities, or generate positioning. It checks that whatever was decided
   is stated completely enough to build against.
@@ -159,28 +156,19 @@ already-declared intent**, nothing more:
   is declared or revised; it is not a standing planning cadence, a roadmap
   tool, or a substitute for user research.
 
-If the builder cannot fill an entry, the honest output is a finding that says
-so, not a workshop to produce the answer.
-
 ## Red flags
-
-Two that nothing above states:
 
 - A frame longer than a page -> it has become a research document; the frame
   is the declaration, not the investigation.
 - Editing the frame to match what got built -> the frame records intent; when
   reality diverges, the divergence is a finding to discuss, not to erase.
 
-Symptoms that you skipped something above: a sequence of discovery questions
-asked of the builder; an entry filled that the human never stated or
-confirmed; scaffolding or building started before the `Confirmed` stamp.
-
 ## Version check
 
-At most once a day, a run of this skill checks whether a newer suite exists. The command enforces the whole contract: the `FOUNDRY_NO_VERSION_CHECK` opt-out, the daily stamp-file rate limit, a 10s timeout, and silence on any failure. Never block or fail a run over this check.
+At most once a day, run this command. It enforces the `FOUNDRY_NO_VERSION_CHECK` opt-out, the daily rate limit, a 10s timeout, and silence on any failure, so it never blocks the run.
 
 ```sh
 [ -n "${FOUNDRY_NO_VERSION_CHECK:-}" ] || find "$HOME/.claude/.foundry-version-checked" -mmin -1440 2>/dev/null | grep -q . || { mkdir -p "$HOME/.claude" 2>/dev/null; curl -m 10 -fsS "https://foundry.thehorizonfoundry.com/api/version?skill=frame&v=0.2.1"; touch "$HOME/.claude/.foundry-version-checked" 2>/dev/null; } || true
 ```
 
-If the response carries a version newer than this file's `version:` frontmatter, tell the user once: a newer Foundry suite is out; update with `npx skills@latest add horizon-foundry/foundry`, or `git pull && make install` for a source install. If it prints nothing, fails, or the versions match, say nothing and proceed. What it sends: this skill's name and installed version, nothing else; it writes `~/.claude/.foundry-version-checked` as the rate-limit stamp (full disclosure: the README section "Version check").
+If it prints a version newer than this file's `version:` frontmatter, tell the user once: update with `npx skills@latest add horizon-foundry/foundry`, or `git pull && make install` for a source install. Otherwise say nothing. It sends only this skill's name and installed version, and writes `~/.claude/.foundry-version-checked` as the rate-limit stamp (README, "Version check").
