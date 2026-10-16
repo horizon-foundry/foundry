@@ -391,7 +391,7 @@ export default function Home() {
         {featured && (
           <section className="reveal-fade border-b border-line">
             <div className="mx-auto max-w-[1180px] px-5 py-16 sm:px-8">
-              <div className="grid gap-8 md:grid-cols-[1.1fr_0.9fr] md:items-center">
+              <div className="grid grid-cols-[minmax(0,1fr)] gap-8 md:grid-cols-[1.1fr_0.9fr] md:items-center">
                 <div>
                   <h2 className="font-display text-2xl tracking-normal text-bone sm:text-3xl">
                     We audited Foundry with Foundry.

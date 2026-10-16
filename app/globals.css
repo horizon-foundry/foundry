@@ -296,6 +296,7 @@ body::before {
 .doc-prose li {
   line-height: 1.7;
   color: var(--color-bone-dim);
+  overflow-wrap: break-word;
 }
 .doc-prose strong {
   color: var(--color-bone);

@@ -129,7 +129,7 @@ export default async function ReportsIndex() {
     <div className="space-y-14">
       {email && (
         <section>
-          <h1 className="font-display text-3xl tracking-normal text-bone sm:text-4xl">
+          <h1 className="font-display text-3xl tracking-normal text-bone [overflow-wrap:anywhere] sm:text-4xl">
             {admin ? "Audit reports" : "Your audit reports"}
           </h1>
           {owned.length === 0 ? (
@@ -157,7 +157,7 @@ export default async function ReportsIndex() {
             Example reports
           </h2>
         ) : (
-          <h1 className="font-display text-3xl tracking-normal text-bone sm:text-4xl">
+          <h1 className="font-display text-3xl tracking-normal text-bone [overflow-wrap:anywhere] sm:text-4xl">
             What a Production Audit returns
           </h1>
         )}

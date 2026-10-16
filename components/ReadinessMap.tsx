@@ -153,7 +153,7 @@ export function ReadinessMap({
                 href={`#${areaId(area.slug)}`}
                 className="flex min-h-11 items-baseline justify-between gap-3 px-3 py-2.5 text-sm leading-snug text-bone-dim transition-colors hover:bg-ink-raised hover:text-bone"
               >
-                <span>{area.name}</span>
+                <span className="min-w-0 [overflow-wrap:anywhere]">{area.name}</span>
                 <span className="font-mono text-[0.6875rem] text-bone-faint">
                   {area.rows.length}
                 </span>
