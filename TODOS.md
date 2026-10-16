@@ -54,7 +54,7 @@
 - [ ] 2026-10-06 Site anti-goals follow-ups (the confirm critic's four open findings from PR #41: the home install section still stacks bordered blocks, the phone first screen sits on the fold under real toolbars, the film grain, and the filled report lists; plus the skill-page title exception for Craig to confirm, and an error role so /unlock stops borrowing the critical hue; four questions are Craig's, steps 2 and 4 can start without them) -> `~/.claude/plans/foundry-site-anti-goals-followups.md`
 - [ ] 2026-10-07 Decision required, when the first owned report is issued (Craig decides). The 2026-10-07 self-audit (`reports/foundry-2026-10-07.json`, remediationPlan item 1) found every sign-in risk latent only because no report has an owner: owned reports would be committed to the public repo (SEC-01), the sign-in email quota can be exhausted by anyone (SEC-03), mail scanners consume magic links (CON-01), sign-in errors mislead (REL-03), and there is no privacy page (DATA-02). The date of the first owner decides when that group must be planned and built; until then it is not the next unit.
 - [ ] 2026-10-15 Decision required, when to regenerate the published self-audit (Craig decides). The skills writing pass changed the audit method (production-audit's subagents and skeptics now receive the rubric, evidence classes, kill list and quote rule from `subagent-brief.md`), and the source-of-truth rule says a method change regenerates `reports/foundry-<date>.json`. Craig deferred it on 2026-10-15; the options are now, or as release procedure step 3 at the next roll-up.
-- [ ] 2026-10-16 Readiness coverage map (every gap a 194-item public readiness checklist exposed lands in its owning skill: release-policy commitments and recovery targets in foundry, two widened frame lines, a disclosure contact in scaffold, cold-start checks in document, consent in instrumentation; in production-audit, reads in the authz matrix, an authentication lifecycle table, a sensitive-data egress map, agent tool authority, abuse and spend, expiry, recovery; plus a report `coverage` section and a public, evidence-backed `/readiness` page; stacks on PR #48) -> `~/.claude/plans/foundry-readiness-coverage-map.md`
+- [ ] 2026-10-16 Readiness coverage map (every gap a 194-item public readiness checklist exposed lands in its owning skill: release-policy commitments and recovery targets in foundry, two widened frame lines, a disclosure contact in scaffold, cold-start checks in document, consent in instrumentation; in production-audit, reads in the authz matrix, an authentication lifecycle table, a sensitive-data egress map, agent tool authority, abuse and spend, expiry, recovery; plus a readiness map in `reference/` rendered as a read-only `/readiness` page; stacks on PR #48) -> `~/.claude/plans/foundry-readiness-coverage-map.md`
 
 ### Notes carried over from "From the 2026-07-16 fresh external audit (the substantive, queued items)"
 
@@ -123,15 +123,16 @@ Three agents, one angle each, all browser- or build-verified. They found twelve 
 
 ### Readiness coverage map
 
-Plan: `~/.claude/plans/foundry-readiness-coverage-map.md`. Three stacked PRs on top of PR #48: A1 (the declaring skills) on `feat/readiness-coverage-map`, A2 (production-audit and the coverage map) on `feat/readiness-audit`, B (the public `/readiness` page) on `feat/readiness-page`.
+Plan: `~/.claude/plans/foundry-readiness-coverage-map.md`. Two stacked PRs on top of PR #48: PR 1 (the skills) on `feat/readiness-coverage-map`, PR 2 (the readiness map and the read-only `/readiness` page) on `feat/readiness-page`.
 
-- [ ] 2026-10-16 Unit A1, steps 1 to 2
-- [ ] 2026-10-16 Unit A2, steps 3 to 8
-- [ ] 2026-10-16 Unit B, steps 9 to 12
+- [ ] 2026-10-16 PR 1, steps 1 to 5
+- [ ] 2026-10-16 PR 2, steps 6 to 9
 
 ## Up Next
 
 ## Backlog
+
+- [ ] 2026-10-16 **[Bug]** (suspected, not run) posthog-js autocapture runs with its default config (`instrumentation-client.ts`), so a click on the gated `/reports/[slug]` page probably sends element text, which can be finding text, to PostHog. Check with a real key in dev and the network panel; if confirmed, add `ph-no-capture` to the report body. Found by the readiness plan review.
 
 ### Pre-publish, still open (from the 2026-07-16 audits)
 
