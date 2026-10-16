@@ -125,8 +125,8 @@ Three agents, one angle each, all browser- or build-verified. They found twelve 
 
 Plan: `~/.claude/plans/foundry-readiness-coverage-map.md`. Unit A (the audit absorbs the gaps) on `feat/readiness-coverage-map`, stacked on PR #48; Unit B (the public `/readiness` page) follows on its own branch.
 
-- [ ] 2026-10-16 Unit A, steps 1 to 7
-- [ ] 2026-10-16 Unit B, steps 8 to 11
+- [ ] 2026-10-16 Unit A, steps 1 to 6
+- [ ] 2026-10-16 Unit B, steps 7 to 10
 
 ## Up Next
 
