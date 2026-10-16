@@ -10,7 +10,7 @@ Each section holds the rows and checks beyond that dimension's SKILL.md bullet.
 
 **Trust-boundary additions.** Import parsers: encoding detection, size and row limits, and malformed rows rejected or reported. Output sinks with their encoding: HTML, CSV formula prefix, shell, SQL, model prompt. Outbound fetchers of a user- or model-supplied URL: allowlist, private and metadata address block, re-check after redirect. Framework public env prefixes (`NEXT_PUBLIC_`, `VITE_`, `EXPO_PUBLIC_`, `PUBLIC_`): report any server secret that reaches the client bundle.
 
-**Declared commitments.** One row per entry in the release policy's `commitments:` that no other pass or dimension owns (residency is infra's) (an SSO requirement on an app with no federation code): present in the code or absent.
+**Declared commitments.** One row per entry in the release policy's `commitments:` that no other pass or dimension owns (residency is infra's), such as an SSO requirement on an app with no federation code: present in the code or absent.
 
 ## security: authentication pass
 

@@ -91,7 +91,7 @@ The gate is "you can answer whether it is working and you decided how", not "eve
 
 One shape earns a narrow exception: a version or update check that exists for the user's benefit. It qualifies only when it clears every bar at once: the check does something for the user (tells them they are behind), the disclosure is part of the feature (what is sent, when, where it is written down), the opt-out is enforced in the command that runs the check rather than promised in prose, no user, machine, or install identity is ever attached, and a failed check never blocks or degrades the product. The byproduct counts are the only telemetry such a tool should carry.
 
-**The waiver has a fixed home**: the release policy block in the project's PRODUCT.md, as the instrumentation gate's entry, `instrumentation: waived (<reason>, <owner>, <revisit date>)`. That is exactly where `foundry check` cites it. A waiver written there is the gate answered; a waiver stated nowhere is not a waiver, it is an undocumented gap, and the gate fails.
+**The waiver has a fixed home**: the release policy block in the project's PRODUCT.md, as the instrumentation gate's entry, `instrumentation: waived (<reason>, <owner>, <revisit date>)`. That is exactly where `foundry check` cites it. A waiver written there is the gate answered until its revisit date; a waiver stated nowhere is not a waiver, it is an undocumented gap, and the gate fails.
 
 ## Version check
 

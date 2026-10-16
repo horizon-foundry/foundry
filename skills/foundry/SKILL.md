@@ -83,14 +83,14 @@ Gaps, prioritized: ...
 
 These seven are scorecard states. The audit report's `shipGates` field carries its own factual status enum (defined in `production-audit`); `waived` lives in the policy block; `blocked` and `accepted-risk` live only on the scorecard; none of the three is in the report.
 
-Policy strength governs how a gate weighs. A **required** gate that is not-met (or not-assessed, or blocked) holds the release. An **optional** gate is assessed and reported the same way, but a failing optional gate does not by itself cap the verdict; it is information the human weighs, not a stop. **waived** and **not-applicable** are settled before scoring and are left alone, until a waiver's revisit date passes and it weighs as required.
+Policy strength governs how a gate weighs. A **required** gate that is not-met (or not-assessed, or blocked) holds the release. An **optional** gate is assessed and reported the same way, but a failing optional gate does not by itself cap the verdict; it is information the human weighs, not a stop. **waived** and **not-applicable** are settled before scoring and are left alone. Past its revisit date a waiver lapses: score the gate from its record as a required gate (met, not-met, or not-assessed).
 
 ## `foundry prepare` (modifying)
 
 Invoked explicitly, never as the default. Closes the gaps `check` found.
 
 1. **Take the check scorecard** (run `check` first if you do not have a current one).
-2. **For each not-met required gate, invoke its skill** to close the gap: `document`, `mobile`, `instrumentation`, in that order (docs first, so the later gates and the audit read current docs). Each runs as its own skill, honoring its own gate and process. Waived, not-applicable, and accepted-risk gates are left alone.
+2. **For each not-met required gate, invoke its skill** to close the gap: `document`, `mobile`, `instrumentation`, in that order (docs first, so the later gates and the audit read current docs). Each runs as its own skill, honoring its own gate and process. Waived (before their revisit date), not-applicable, and accepted-risk gates are left alone.
 3. **Verify what code can verify.** Run the project's build and tests; `prepare` is not done until its changes pass. But some gates cannot be closed by changing code and running unit tests: a real-device mobile check, a live activation funnel, a runtime observation. `prepare` does the code work and then leaves those as `not-assessed` with the human check to run. An agent cannot "close" a real-device gate from a headless run; say what remains outstanding rather than marking it met.
 4. **Stop before the verdict.** `prepare` does not judge its own work. Hand off to an independent `/production-audit` for the authoritative decision.
 
