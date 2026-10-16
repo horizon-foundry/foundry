@@ -48,7 +48,7 @@ gates:
   production-audit: required     # the authoritative verdict; required for any real audience
 ```
 
-The derived proposal below leaves `commitments:` and `recovery:` blank: contracts are not in the repo.
+The derived proposal below leaves `commitments:` and `recovery:` blank: contracts are not in the repo. `check` and `prepare` never ask for, suggest, or write their values; a blank `recovery:` is `production-audit`'s finding to report.
 
 **Resolving the policy is `check`'s first step.** If the block exists, run against it. If it does not, derive a proposal from what the project is (its scaffold profile, its surfaces, its audience), present it, and get the human's confirmation before scoring against it. Where no human can answer this session (no question mechanism is exposed), proceed against the derived proposal and stamp the scorecard's first line "policy: proposed, unconfirmed"; a scorecard against an unconfirmed policy is provisional, never silently authoritative. The scorecard always reproduces the policy block it ran against, verbatim, so persisting a confirmed policy into `PRODUCT.md` is a paste, not a reconstruction; `prepare` (or the human) writes it. Never score a project against gates it never agreed to, and never skip a gate the policy requires.
 
@@ -81,7 +81,7 @@ Gaps, prioritized: ...
 | waived | The policy pre-accepted skipping this gate, with its reason, owner, and revisit date; past that date `check` reports it not-met |
 | not-assessed | The gate needs evidence this run could not gather (a real-device check, a runtime observation); stated with the exact check to run, never counted as a pass |
 | blocked | The record could not be read or the producing skill could not run at all; an un-run gate is an open risk, never a pass |
-| accepted-risk | Failing on the record, and the human explicitly accepts shipping anyway; recorded on the scorecard with an owner and a revisit date, so the acceptance is a decision, not a drift |
+| accepted-risk | Failing on the record, and the human explicitly accepts shipping anyway; recorded on the scorecard so the acceptance is a decision, not a drift |
 
 These seven are scorecard states. The audit report's `shipGates` field carries its own factual status enum (defined in `production-audit`); `waived`, `blocked`, and `accepted-risk` are policy and run dispositions that live here and in the policy block, not in the report.
 

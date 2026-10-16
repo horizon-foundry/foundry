@@ -33,7 +33,7 @@ Fits no class: not reported. "Traced" and "reproduced" are deliberately separate
 Do not report:
 
 - Secrets stored in env vars (that is where secrets belong; report exposure, not storage)
-- "Missing rate limiting" without checking every layer it could live at (middleware, handler, DB, platform)
+- A rate limit as missing or wrongly keyed without checking every layer it could live at (middleware, handler, DB, platform); a platform layer static review cannot read is `needs-verification`
 - "Client validation insufficient" when the server validates
 - A gap fixed by a later migration or covered by an existing test (check both before reporting)
 - Generic CSRF on mutation paths already protected by same-site cookies or framework tokens
@@ -42,4 +42,4 @@ Rule: before reporting a missing control, search for it at every layer it could 
 
 ## Quote the motivating line
 
-**Quote the motivating line.** Every finding names its file:line AND quotes the verbatim line(s) that triggered it, in the finding's evidence text. A finding whose motivating line cannot be quoted is not `code-traced`; it drops to `needs-verification` and can never drive the verdict. This is the cheapest kill for the confident, hallucinated finding.
+**Quote the motivating line.** Every finding names its file:line AND quotes the verbatim line(s) that triggered it, in the finding's evidence text, with any secret value masked. A finding whose motivating line cannot be quoted is not `code-traced`; it drops to `needs-verification` and can never drive the verdict. This is the cheapest kill for the confident, hallucinated finding.

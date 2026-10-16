@@ -130,7 +130,7 @@ gates:
 
 Two questions decide a release, and you own one of them.
 
-You set the scope. The release policy is yours: which gates a launch requires, the project's risk tier, its audience, and every risk you accept on the record. What the product actually is decides which audit dimensions apply, and a dimension with no surface is excluded with a reason. A CLI is not a web product, an internal tool is not a public launch, and the policy says so in your words.
+You set the scope. The release policy is yours: which gates a launch requires, the project's risk tier, its audience, the commitments a buyer holds you to, your recovery targets, and every risk you accept on the record. What the product actually is decides which audit dimensions apply, and a dimension with no surface is excluded with a reason. A CLI is not a web product, an internal tool is not a public launch, and the policy says so in your words.
 
 You do not set the bar. The severity rubric, the evidence classes, and the meaning of the verdict are fixed, on purpose. A standard you can loosen until everything reads green is the self-serving "looks fine to me" that a second read exists to replace. Foundry is opinionated where opinion is the product: what "safe to ship" means does not bend to the person shipping. What bends is the scope you declare and the risks you accept, both on the record.
 
