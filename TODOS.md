@@ -125,6 +125,8 @@ Three agents, one angle each, all browser- or build-verified. They found twelve 
 
 ## Backlog
 
+- [ ] 2026-10-19 **[Bug]** `brand-voice` Define step 1 drafts from "copy they have written and liked, preferences they have stated", which is rarely in the repo, and no step asks for it. Give it the same one opening request as frame step 2. Found by the frame fix's sibling sweep (lower confidence: the sign-off gate already stops the file from binding).
+- [ ] 2026-10-19 **[Bug]** `instrumentation` step 2's `Owner and cadence:` line is a fact only a human has, and nothing says to ask for it, so an agent fills it in. Say to ask once and never fill it. Found by the frame fix's sibling sweep (lower confidence).
 - [ ] 2026-10-16 **[Bug]** `/unlock` drops the typed email after a failed send, so it must be re-entered (self-audit A11Y-09, WCAG 3.3.7). The audit's suggested redirect with the email would put the address in the URL, which SEC-11 flags as reaching PostHog's `$current_url`; return it through `useActionState` or a server-side flash instead. Fix SEC-11's `?sent=<email>` in the same change.
 - [ ] 2026-10-16 **[Bug]** (suspected, not run) posthog-js autocapture runs with its default config (`instrumentation-client.ts`), so a click on the gated `/reports/[slug]` page probably sends element text, which can be finding text, to PostHog. Check with a real key in dev and the network panel; if confirmed, add `ph-no-capture` to the report body. Found by the readiness plan review.
 
