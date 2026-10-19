@@ -10,6 +10,8 @@ import { listSkills } from "@/lib/skills";
 
 export const metadata = {
   title: "Readiness map",
+  // ?owner= only filters in the browser, so every variant is this one page.
+  alternates: { canonical: "/readiness" },
   description:
     "Every concern that decides whether a product is ready for real users, with the skill that owns it, when it applies, and the kind of evidence that settles it.",
 };

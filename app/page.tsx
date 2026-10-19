@@ -1,11 +1,12 @@
 import Link from "next/link";
+import type React from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Terminal } from "@/components/Terminal";
-import { ReportSpecimen } from "@/components/ReportSpecimen";
+import { AuditRun } from "@/components/AuditRun";
 import { HeroInstall, InstallBlock } from "@/components/InstallBlock";
 import { OwnershipBar } from "@/components/OwnershipBar";
-import { getPublicReport, listPublicReports } from "@/lib/reports";
+import { selfAudit } from "@/lib/self-audit";
 import { VERDICT_LABEL } from "@/lib/report-types";
 import { listSkills, STAGES } from "@/lib/skills";
 import { readinessOwnership } from "@/lib/readiness-owners";
@@ -22,19 +23,18 @@ import { RESUME_URL, REPO_URL } from "@/lib/site";
 const LINK =
   "text-bone underline decoration-line-strong underline-offset-4 transition-colors hover:text-signal hover:decoration-bone";
 
-const STEPS = [
-  ["Context", "maps every flow and trust boundary"],
-  ["Sweep", "runs the tools first"],
-  ["Fan out", "one reviewer per dimension"],
-  ["Refute", "a skeptic tries to disprove each finding"],
-] as const;
-
 export default function Home() {
-  const publicReports = listPublicReports();
-  const featured =
-    publicReports.find((r) => r.slug.startsWith("foundry-")) ?? publicReports[0];
-  const example = featured ? getPublicReport(featured.slug) : null;
+  const audited = selfAudit();
+  const example = audited?.report ?? null;
+  const featured = audited ? { slug: audited.slug } : null;
   const skills = listSkills();
+  const risks = example?.findings.filter((f) => f.kind === "risk").length ?? 0;
+  const audit = {
+    verdict: example ? VERDICT_LABEL[example.verdict.level] : "",
+    safe: example?.verdict.level === "safe-to-ship",
+    risks,
+    improvements: (example?.findings.length ?? 0) - risks,
+  };
   const owned = readinessOwnership();
 
   return (
@@ -64,7 +64,7 @@ export default function Home() {
               {/* The terminal is the hero's only moving part: it types a real
                   run and ends on a verdict (DESIGN.md, Motion). */}
               <div className="stagger-rise">
-                <Terminal />
+                <Terminal audit={audit} />
               </div>
             </div>
           </div>
@@ -85,113 +85,99 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 3. The cornerstone */}
+        {/* 3. The cornerstone: production-audit as a sub-hero. As substantive
+            as the hero, lower down. The run replays the published self-audit
+            and lands its verdict last (components/AuditRun.tsx). */}
         <section aria-labelledby="audit-heading" className="border-b border-line bg-ink-raised">
-          <div className="mx-auto max-w-[1180px] px-5 py-20 sm:px-8">
-            <p className="font-mono text-sm text-command">/production-audit</p>
-            <div className="mt-4 grid grid-cols-[minmax(0,1fr)] gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start">
+          <div className="mx-auto max-w-[1180px] px-5 py-20 sm:px-8 sm:py-28">
+            <div className="grid grid-cols-[minmax(0,1fr)] gap-12 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-center">
               <div>
+                <p className="font-mono text-sm text-command">/production-audit</p>
                 {/* DRAFT headline and line, for Craig. */}
                 <h2
                   id="audit-heading"
-                  className="max-w-[16ch] font-display text-3xl leading-[1.08] tracking-normal text-bone sm:text-5xl"
+                  className="mt-4 max-w-[14ch] font-display text-4xl leading-[1.05] tracking-normal text-bone sm:text-6xl"
                 >
-                  One verdict. Every finding backed by evidence.
+                  Evidence or it doesn&apos;t ship.
                 </h2>
-                <p className="mt-5 max-w-measure text-lg leading-relaxed text-bone-dim">
+                <p className="mt-6 max-w-measure text-lg leading-relaxed text-bone-dim">
                   It reads the whole app, traces each flow from end to end, and
                   sends every serious finding to a skeptic before it reaches
-                  the report. Then it decides.
+                  the report. Then it decides: safe to ship; ready to ship,
+                  risks noted; or do not ship.
                 </p>
-
-                <figure className="mt-8 flex max-w-sm flex-col gap-2 border border-line bg-ink p-3">
-                  <figcaption className="font-mono text-[0.6875rem] text-bone-faint">
-                    The three verdicts a report returns
-                  </figcaption>
-                  {(
-                    [
-                      ["safe-to-ship", "text-verdict-safe", "border-verdict-safe"],
-                      ["ship-with-known-risks", "text-verdict-risk", "border-verdict-risk"],
-                      ["do-not-ship", "text-verdict-noship", "border-verdict-noship"],
-                    ] as const
-                  ).map(([level, color, border]) => (
-                    <div
-                      key={level}
-                      className={`flex items-center gap-2.5 border-l-2 ${border} bg-ink px-3 py-1.5`}
+                <div className="mt-8 flex flex-wrap items-center gap-3">
+                  {featured && (
+                    <Link
+                      href={`/example/${featured.slug}`}
+                      className="inline-flex min-h-11 items-center border border-line-strong bg-bone px-3 py-2 font-mono text-sm font-semibold text-ink transition-opacity hover:opacity-90"
                     >
-                      <span className={`font-mono text-xs uppercase tracking-wide ${color}`}>
-                        {VERDICT_LABEL[level]}
-                      </span>
-                    </div>
-                  ))}
-                </figure>
+                      Read the self-audit →
+                    </Link>
+                  )}
+                  <Link
+                    href="/skills/production-audit"
+                    className="inline-flex min-h-11 items-center border border-line px-3 py-2 font-mono text-sm text-bone-dim transition-colors hover:border-line-strong hover:text-bone"
+                  >
+                    How it works →
+                  </Link>
+                </div>
               </div>
 
-              <div>
-                {example && <ReportSpecimen report={example} showLink={false} />}
+              <div className="min-w-0">
+                {example && <AuditRun report={example} />}
                 <p className="mt-3 font-mono text-xs leading-relaxed text-bone-faint">
-                  Foundry, audited by Foundry. The repository is public, so you
-                  can read every finding against its source.
+                  Foundry, audited by Foundry. The repository is public, so
+                  every finding can be read against its source.
                 </p>
               </div>
-            </div>
-
-            <ol className="mt-14 grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
-              {STEPS.map(([t, d], i) => (
-                <li key={t} className="bg-ink-raised p-4">
-                  <span className="font-mono text-[0.6875rem] text-bone-faint">0{i}</span>
-                  <p className="mt-1 font-mono text-sm font-semibold text-bone">{t}</p>
-                  <p className="mt-1 text-sm leading-snug text-bone-dim">{d}</p>
-                </li>
-              ))}
-            </ol>
-
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              {featured && (
-                <Link
-                  href={`/example/${featured.slug}`}
-                  className="inline-flex min-h-11 items-center border border-line-strong bg-bone px-3 py-2 font-mono text-sm font-semibold text-ink transition-opacity hover:opacity-90"
-                >
-                  Read the self-audit →
-                </Link>
-              )}
-              <Link
-                href="/skills/production-audit"
-                className="inline-flex min-h-11 items-center border border-line px-3 py-2 font-mono text-sm text-bone-dim transition-colors hover:border-line-strong hover:text-bone"
-              >
-                How it works →
-              </Link>
             </div>
           </div>
         </section>
 
-        {/* 4. The skills, by stage */}
+        {/* 4. The skills, by stage. Each stage is a panel that sticks under
+            the header as the page scrolls, so the next one slides over it and
+            the three stack like a deck: movement from layout, not animation,
+            so reduced motion has nothing to drop. Sticky only from md up: on a
+            phone the Forge panel is taller than the screen, and a panel
+            sliding over it would cover skills nobody has seen yet. */}
         <section aria-labelledby="skills-heading" className="border-b border-line">
-          <div className="mx-auto max-w-[1180px] px-5 py-16 sm:px-8">
+          <div className="mx-auto max-w-[1180px] px-5 pt-16 sm:px-8">
             <h2 id="skills-heading" className="font-display text-2xl tracking-normal text-bone sm:text-3xl">
               Eleven skills, from the idea to the release.
             </h2>
-            <div className="mt-8 grid gap-px border border-line bg-line md:grid-cols-3">
-              {STAGES.map((stage) => (
-                <div key={stage.id} className="bg-ink p-5 sm:p-6">
-                  <p className="font-mono text-xs uppercase tracking-[0.2em] text-signal">
-                    {stage.label}
-                  </p>
-                  <p className="mt-1 font-mono text-[0.6875rem] text-bone-faint">
-                    {stage.caption}
-                  </p>
-                  <p className="mt-3 text-sm leading-relaxed text-bone-dim">{stage.line}</p>
-                  <ul className="mt-5 divide-y divide-line border-y border-line">
+          </div>
+          <div className="mx-auto max-w-[1180px] px-5 pb-16 pt-8 sm:px-8">
+            {STAGES.map((stage, i) => (
+              <div
+                key={stage.id}
+                className="stage-panel border border-line bg-ink md:sticky"
+                style={{ "--stage": i } as React.CSSProperties}
+              >
+                <div className="grid gap-6 p-5 sm:p-8 md:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] md:gap-10">
+                  <div>
+                    <p className="flex items-baseline gap-3">
+                      <span className="font-mono text-xs text-bone-faint">0{i + 1}</span>
+                      <span className="font-display text-3xl tracking-normal text-signal sm:text-5xl">
+                        {stage.label}
+                      </span>
+                    </p>
+                    <p className="mt-2 font-mono text-xs text-bone-faint">{stage.caption}</p>
+                    <p className="mt-4 max-w-measure leading-relaxed text-bone-dim">{stage.line}</p>
+                  </div>
+                  <ul className="divide-y divide-line border-y border-line self-start">
                     {skills
                       .filter((s) => s.stage === stage.id)
                       .map((s) => (
                         <li key={s.slug}>
                           <Link
                             href={`/skills/${s.slug}`}
-                            className="group flex min-h-11 flex-col justify-center py-2"
+                            className="group grid min-h-11 gap-x-4 py-2.5 sm:grid-cols-[11rem_minmax(0,1fr)] sm:items-baseline"
                           >
-                            <span className="font-mono text-sm text-command">/{s.name}</span>
-                            <span className="text-xs leading-snug text-bone-faint transition-colors group-hover:text-bone-dim">
+                            <span className="font-mono text-sm text-command group-hover:underline group-hover:underline-offset-4">
+                              /{s.name}
+                            </span>
+                            <span className="text-sm leading-snug text-bone-dim transition-colors group-hover:text-bone">
                               {s.copy?.headline ?? s.tagline}
                             </span>
                           </Link>
@@ -199,8 +185,8 @@ export default function Home() {
                       ))}
                   </ul>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         </section>
 
@@ -240,8 +226,8 @@ export default function Home() {
               <a href={RESUME_URL} target="_blank" rel="noreferrer" className={LINK}>
                 Craig Martin
               </a>
-              . Every skill was used to build this site: it was framed, planned,
-              documented and audited with Foundry, and the record is public.
+              . This site was built with Foundry: framed, planned, documented and
+              audited by its own skills, and the record is public.
             </p>
             <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 font-mono text-sm">
               <Link href="/behind" className={`inline-flex min-h-11 items-center ${LINK}`}>

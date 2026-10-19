@@ -34,24 +34,34 @@ const C = {
 
 type Cmd = { id: string; cmd: string; out: Span[][] };
 
-const COMMANDS: Cmd[] = [
-  {
-    id: "production-audit",
-    cmd: "/production-audit",
-    out: [
-      [
-        { t: "verdict  ", c: C.faint },
-        { t: "SAFE TO SHIP", c: C.safe },
-      ],
-      [
-        { t: "0", c: C.safe },
-        { t: " risks   ", c: C.faint },
-        { t: "83", c: C.dim },
-        { t: " improvements", c: C.faint },
-      ],
-      [{ t: "improvements don't block the release", c: C.dim }],
+// The audit's lines come from the published self-audit, passed in by the
+// page, so a regenerated report can never leave the hero showing old numbers.
+export type TerminalAudit = {
+  verdict: string;
+  safe: boolean;
+  risks: number;
+  improvements: number;
+};
+
+const auditCommand = (a: TerminalAudit): Cmd => ({
+  id: "production-audit",
+  cmd: "/production-audit",
+  out: [
+    [
+      { t: "verdict  ", c: C.faint },
+      { t: a.verdict.toUpperCase(), c: a.safe ? C.safe : C.risk },
     ],
-  },
+    [
+      { t: String(a.risks), c: a.risks === 0 ? C.safe : C.risk },
+      { t: " risks   ", c: C.faint },
+      { t: String(a.improvements), c: C.dim },
+      { t: " improvements", c: C.faint },
+    ],
+    [{ t: "improvements don't block the release", c: C.dim }],
+  ],
+});
+
+const OTHER_COMMANDS: Cmd[] = [
   {
     id: "foundry",
     cmd: "/foundry check",
@@ -161,7 +171,8 @@ function Screen({ cmd }: { cmd: Cmd }) {
   );
 }
 
-export function Terminal() {
+export function Terminal({ audit }: { audit: TerminalAudit }) {
+  const COMMANDS = [auditCommand(audit), ...OTHER_COMMANDS];
   const [active, setActive] = useState(0);
 
   return (

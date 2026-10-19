@@ -45,7 +45,7 @@ Each skill carries its version in its frontmatter, and at most once a day a skil
 | `frame` | You declare the one-page product frame; the skill audits it like code. Blanks are findings, so a disciplined build cannot ship an unexamined idea. |
 | `feature-design` | You declare a feature's design; the skill audits it against the actual repository, file and line cited: behavior already built (or built and unreachable), call sites that do not exist, dependencies nothing produces. |
 | `scaffold` | Starts a project in the shape its profile needs, experiment through web product, and verifies no placeholder survives. |
-| `document` | Keeps the docs true to the code: repairs drift, flags suspected regressions, and renders the docs as a live surface so they cannot rot unseen. |
+| `document` | Keeps the docs true to the code: repairs drift, flags suspected regressions, and renders the docs as a live surface, so drift shows where people read them. |
 | `mobile` | Reproduces the broken state before fixing anything, then walks a real device matrix and leaves the filled matrix as the record. |
 | `instrumentation` | Defines the funnel before the feature, keys every event on one identity model, and measures activation with a guardrail beside it. |
 | `readout` | Reviews the surfaces that display your numbers: pitched at a named reader with the detail one click down, a window and a population on every face, a failed read that never renders as a zero, and a rendered review by someone who did not build it. |

@@ -9,6 +9,8 @@ import { Figure } from "@/components/SkillFigure";
 import { AuditMethod } from "@/components/AuditMethod";
 import { getSkill, stageOf, type SkillCopy } from "@/lib/skills";
 import { plainPart, readinessOwnership } from "@/lib/readiness-owners";
+import { selfAudit, verificationSpecimen } from "@/lib/self-audit";
+import type { Verification } from "@/components/SkillFigure";
 
 export async function generateMetadata({
   params,
@@ -44,6 +46,14 @@ export default async function SkillPage({
   const owned = readinessOwnership();
   const rows = owned.bySkill.get(slug) ?? [];
 
+  // production-audit's specimen and its skeptic figure come from the
+  // published self-audit, never from typed copy.
+  const audit = slug === "production-audit" ? selfAudit() : null;
+  const reportSpecimen = audit ? verificationSpecimen(audit.report) : null;
+  const verification: Verification | undefined = audit
+    ? { ...audit.report.stats.verification, date: audit.report.meta.date }
+    : undefined;
+
   return (
     <>
       <SiteHeader />
@@ -66,7 +76,14 @@ export default async function SkillPage({
           )}
         </div>
 
-        {copy ? <Sell copy={copy} name={skill.name} /> : (
+        {copy ? (
+          <Sell
+            copy={reportSpecimen ? { ...copy, specimen: reportSpecimen } : copy}
+            tone={reportSpecimen ? "report" : "plain"}
+            verification={verification}
+            name={skill.name}
+          />
+        ) : (
           <p className="mt-4 max-w-measure text-lg leading-relaxed text-bone">
             {skill.tagline}
           </p>
@@ -147,7 +164,17 @@ export default async function SkillPage({
   );
 }
 
-function Sell({ copy, name }: { copy: SkillCopy; name: string }) {
+function Sell({
+  copy,
+  tone,
+  verification,
+  name,
+}: {
+  copy: SkillCopy;
+  tone: "plain" | "report";
+  verification?: Verification;
+  name: string;
+}) {
   return (
     <>
       <div className="mt-8 grid grid-cols-[minmax(0,1fr)] gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] lg:items-start">
@@ -159,7 +186,7 @@ function Sell({ copy, name }: { copy: SkillCopy; name: string }) {
             {copy.sub}
           </p>
         </div>
-        <Specimen specimen={copy.specimen} />
+        <Specimen specimen={copy.specimen} tone={tone} />
       </div>
 
       <ol className="mt-14 grid gap-px border border-line bg-line md:grid-cols-3">
@@ -172,7 +199,7 @@ function Sell({ copy, name }: { copy: SkillCopy; name: string }) {
               {h.title}
             </h2>
             <p className="mt-2 leading-relaxed text-bone-dim">{h.line}</p>
-            {h.figure && <Figure figure={h.figure} />}
+            {h.figure && <Figure figure={h.figure} verification={verification} />}
           </li>
         ))}
       </ol>
@@ -194,7 +221,7 @@ function Sell({ copy, name }: { copy: SkillCopy; name: string }) {
           <div>
             <h2 className="font-mono text-sm font-semibold text-bone">Not for</h2>
             <p className="mt-3 border-y border-line py-2.5 text-sm leading-relaxed text-bone-dim">
-              {copy.notFor.text}{" "}
+              {copy.notFor.text.replace(/^Not for\s+/i, "").replace(/^./, (c) => c.toUpperCase())}{" "}
               <Link href={`/skills/${copy.notFor.skill}`} className={`font-mono ${LINK}`}>
                 /{copy.notFor.skill}
               </Link>

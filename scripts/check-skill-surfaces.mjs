@@ -81,7 +81,14 @@ if (libSrc === null) {
       : new Set([...src.matchAll(/["']([a-z0-9][a-z0-9-]*)["']/g)].map((m) => m[1]));
 
   const order = named(block("ORDER"));
-  const userInvoked = named(block("USER_INVOKED"));
+  const stageBlock = block("SKILL_STAGE");
+  // SKILL_STAGE maps each skill to its stage: `name: "forge"`.
+  const stageEntries = stageBlock
+    ? [...stageBlock.matchAll(/(?:^|\n)\s{2}(?:["']([a-z0-9-]+)["']|([a-z0-9-]+)):\s*["']([a-z]+)["']/g)].map(
+        (m) => [m[1] || m[2], m[3]],
+      )
+    : null;
+  const stageKeys = stageEntries ? new Set(stageEntries.map(([k]) => k)) : null;
   const copyBlock = block("SKILL_COPY");
   // SKILL_COPY keys are the object's top-level keys: `name:` or `"name":`.
   const copyKeys = copyBlock
@@ -94,19 +101,22 @@ if (libSrc === null) {
 
   for (const [label, set] of [
     ["ORDER", order],
-    ["USER_INVOKED", userInvoked],
+    ["SKILL_STAGE", stageKeys],
     ["SKILL_COPY", copyKeys],
   ]) {
     if (set === null) {
       errors.push(`lib/skills.ts: could not parse ${label}`);
       continue;
     }
-    if (label === "USER_INVOKED") continue; // membership is a choice, not a requirement
     for (const s of skills) {
       if (!set.has(s)) {
         errors.push(
           `lib/skills.ts ${label} has no entry for skills/${s}; it will ${
-            label === "ORDER" ? "sort last on /skills" : "fall back to raw agent-facing prose on /skills"
+            label === "ORDER"
+              ? "sort last on /skills"
+              : label === "SKILL_STAGE"
+                ? "appear in no stage on / and /skills"
+                : "fall back to raw agent-facing prose on /skills"
           }`,
         );
       }
@@ -117,11 +127,9 @@ if (libSrc === null) {
       }
     }
   }
-  if (order && userInvoked) {
-    for (const entry of userInvoked) {
-      if (!skills.includes(entry)) {
-        errors.push(`lib/skills.ts USER_INVOKED lists "${entry}", which is not a skill directory`);
-      }
+  for (const [skill, stage] of stageEntries ?? []) {
+    if (!["distill", "forge", "deliver"].includes(stage)) {
+      errors.push(`lib/skills.ts SKILL_STAGE gives ${skill} the stage "${stage}", which is not distill, forge or deliver`);
     }
   }
 }
@@ -198,6 +206,10 @@ const COUNT_FILES = [
   "app/page.tsx",
   "app/skills/page.tsx",
   "app/behind/page.tsx",
+  "lib/skills.ts",
+  "lib/readiness-copy.ts",
+  "components/AuditMethod.tsx",
+  "components/InstallBlock.tsx",
 ];
 
 const CLAIM = new RegExp(

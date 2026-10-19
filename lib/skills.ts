@@ -20,7 +20,7 @@ export const STAGES: { id: Stage; label: string; caption: string; line: string }
   { id: "deliver", label: "Deliver", caption: "before you ship", line: "Ship on a verdict, not a hope." },
 ];
 
-const STAGE: Record<string, Stage> = {
+const SKILL_STAGE: Record<string, Stage> = {
   frame: "distill",
   "feature-design": "distill",
   scaffold: "forge",
@@ -56,9 +56,12 @@ const ORDER = [
 // agent; the full SKILL.md still renders on the page, closed, below this.
 // DRAFT copy (2026-10-19), for Craig's approval. Every claim traces to the
 // skill's own SKILL.md (sources: tmp/skill-copy-draft.json at draft time).
+// "verification" is production-audit's: the skeptics' rulings, read from the
+// published self-audit at render time so the number never goes stale.
 export type SkillFigure =
   | { kind: "stat"; value: string; label: string }
-  | { kind: "states"; items: string[] };
+  | { kind: "states"; items: string[] }
+  | { kind: "verification" };
 
 export type SkillCopy = {
   tagline: string;
@@ -822,9 +825,7 @@ const SKILL_COPY: Record<string, SkillCopy> = {
         "title": "It argues with itself",
         "line": "Every finding that could block your release goes to a fresh reviewer whose only job is to prove it wrong.",
         "figure": {
-          "kind": "stat",
-          "value": "7 → 0",
-          "label": "risks proposed, risks that survived, in the 2026-10-16 self-audit"
+          "kind": "verification"
         }
       },
       {
@@ -890,7 +891,7 @@ const SKILL_COPY: Record<string, SkillCopy> = {
 };
 
 export const stageOf = (slug: string) =>
-  STAGES.find((s) => s.id === STAGE[slug]);
+  STAGES.find((s) => s.id === SKILL_STAGE[slug]);
 
 export interface SkillMeta {
   slug: string;
@@ -942,7 +943,7 @@ export function listSkills(): SkillMeta[] {
         name: name || d.name,
         description,
         tagline: SKILL_COPY[d.name]?.tagline ?? description,
-        stage: STAGE[d.name],
+        stage: SKILL_STAGE[d.name],
         copy: SKILL_COPY[d.name],
       } as SkillMeta;
     })
@@ -964,7 +965,7 @@ export function getSkill(
     name: name || slug,
     description,
     tagline: SKILL_COPY[slug]?.tagline ?? description,
-    stage: STAGE[slug],
+    stage: SKILL_STAGE[slug],
     copy: SKILL_COPY[slug],
     body,
   };

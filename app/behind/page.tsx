@@ -46,7 +46,7 @@ const SLIDES: Slide[] = [
     category: "The Workflow",
     glyph: "workflow",
     heading: "Build and ship it, honestly.",
-    body: "scaffold starts a project in the shape its profile requires, not a blank prototype. document keeps the docs true to the code. It also renders the repo's own docs inside the product, so they cannot drift. phase-plan writes the next unit's plan before you close the current one.",
+    body: "scaffold starts a project in the shape its profile requires, not a blank prototype. document keeps the docs true to the code. It also renders the repo's own docs inside the product, so drift shows where people read them. phase-plan writes the next unit's plan before you close the current one.",
   },
   {
     category: "The Release Gates",

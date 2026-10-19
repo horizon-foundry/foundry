@@ -9,7 +9,10 @@ import { useEffect, useState } from "react";
 // other Foundry skill), "outside", or one skill's name.
 export type FilterOption = { value: string; label: string; count: number };
 
-function apply(value: string) {
+// Returns how many rows match. An owner that matches nothing (a typo, a stale
+// link) shows the whole map rather than an empty page.
+function apply(value: string): number {
+  let total = 0;
   const sections = document.querySelectorAll<HTMLElement>("[data-area]");
   sections.forEach((section) => {
     let shown = 0;
@@ -23,7 +26,9 @@ function apply(value: string) {
       if (match) shown += 1;
     });
     section.hidden = shown === 0;
+    total += shown;
   });
+  return total;
 }
 
 export function ReadinessFilter({ options }: { options: FilterOption[] }) {
@@ -32,8 +37,13 @@ export function ReadinessFilter({ options }: { options: FilterOption[] }) {
   useEffect(() => {
     const read = () => {
       const v = new URLSearchParams(window.location.search).get("owner") ?? "all";
+      const found = apply(v);
+      if (found === 0 && v !== "all") {
+        apply("all");
+        setValue("all");
+        return;
+      }
       setValue(v);
-      apply(v);
     };
     read();
     window.addEventListener("popstate", read);

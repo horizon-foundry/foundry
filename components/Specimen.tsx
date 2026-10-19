@@ -22,16 +22,26 @@ export type SpecimenData = {
   rows: SpecimenRow[];
 };
 
+// Tone: "plain" flags a row by luminance only, so a specimen adds no hue to a
+// marketing page. "report" is for rows taken from a published audit report,
+// which DESIGN.md's report-excerpt license lets carry the verdict hue.
 export function Specimen({
   specimen,
+  tone = "plain",
   className = "",
 }: {
   specimen: SpecimenData;
+  tone?: "plain" | "report";
   className?: string;
 }) {
   const { title, provenance, columns, rows } = specimen;
   const flagAt = rows.findIndex((r) => r.flag);
-  const template = `repeat(${columns.length}, minmax(0, auto))`;
+  // Every column sizes to its content except the last, which takes the rest,
+  // so cells sit left-aligned under their headers instead of spreading out.
+  const template =
+    columns.length > 1
+      ? `repeat(${columns.length - 1}, minmax(0, max-content)) minmax(0, 1fr)`
+      : "minmax(0, 1fr)";
 
   return (
     <SpecimenFill
@@ -83,7 +93,13 @@ export function Specimen({
               </span>
             ))}
             {row.flag && (
-              <span className="specimen-flag col-span-full mt-1 inline-flex w-fit items-center border border-line border-l-2 border-l-verdict-risk px-1.5 text-[0.6875rem] uppercase tracking-wide text-verdict-risk">
+              <span
+                className={`specimen-flag col-span-full mt-1 inline-flex w-fit items-center border border-line border-l-2 px-1.5 text-[0.6875rem] uppercase tracking-wide ${
+                  tone === "report"
+                    ? "border-l-verdict-risk text-verdict-risk"
+                    : "border-l-signal text-signal"
+                }`}
+              >
                 {row.flag}
               </span>
             )}

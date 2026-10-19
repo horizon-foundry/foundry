@@ -353,9 +353,6 @@ body::before {
   list-style: decimal;
 }
 /* Preflight strips list markers; skill text cites its steps and entries by number. */
-.doc-prose ol {
-  list-style: decimal;
-}
 .doc-prose blockquote {
   border-left: 2px solid var(--color-line-strong);
   padding-left: 1rem;
@@ -398,28 +395,9 @@ body::before {
    the reduced-motion block below disables every effect.
    ============================================================ */
 
-/* Scroll-triggered section reveal. Timeline-driven, so no duration is set;
-   browsers without view() support skip straight to the end (visible) state. */
-@keyframes reveal-rise {
-  from {
-    opacity: 0;
-    transform: translateY(18px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-.reveal {
-  animation: reveal-rise linear both;
-  animation-timeline: view();
-  animation-range: entry 5% cover 22%;
-}
-
-/* The quieter sibling: opacity only, no travel. Sections alternate between
-   .reveal and .reveal-fade so the scroll rhythm varies instead of repeating
-   one identical entrance (the uniform-reveal reflex). Same no-support and
-   reduced-motion behavior as .reveal. */
+/* A plain fade, used by the specimen fill under reduced motion. The scroll
+   reveals that once used it (.reveal, .reveal-fade) were retired on
+   2026-10-19: the site has one motion idea, the specimen fill. */
 @keyframes reveal-fade {
   from {
     opacity: 0;
@@ -428,22 +406,22 @@ body::before {
     opacity: 1;
   }
 }
-.reveal-fade {
-  animation: reveal-fade linear both;
-  animation-timeline: view();
-  animation-range: entry 5% cover 20%;
+
+/* The homepage's stage panels stick below the header and stack, each one a
+   tab's height lower than the last, so the earlier stages stay readable as a
+   deck while the next slides over. Sticky from md up only (app/page.tsx says
+   why), where the header is one row. */
+.stage-panel {
+  top: calc(4.5rem + var(--stage) * 3.25rem);
+  margin-bottom: 1.5rem;
 }
-
-/* Print and full-page capture: scroll timelines never advance, so revealed
-   sections would render blank. Show everything, kill the atmosphere layers. */
-@media print {
-  .reveal,
-  .reveal-fade {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
+.stage-panel:last-child {
+  margin-bottom: 0;
+}
+@media (min-width: 768px) {
+  .stage-panel {
+    margin-bottom: 3rem;
   }
-
 }
 
 /* The specimen fill (components/Specimen.tsx, SpecimenFill.tsx; DESIGN.md,
@@ -522,12 +500,6 @@ a:hover .text-command,
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .reveal,
-  .reveal-fade {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
-  }
   /* .text-command used to animate a text-shadow and was killed outright here.
      It is colour-only now, which is exactly what this preference keeps, so the
      kill is gone. */
