@@ -150,6 +150,10 @@ The ask was to run the release for v0.2.1, gated on a full production-audit pass
 
 The ask was to hold a widely shared production readiness checklist against the suite, sort what it covers, what it misses, and what does not belong, and then add the in-suite gaps to the skills that should own them. About a third was already covered, about a third belonged in a skill, and the rest was outside the suite or not a checkable property. A first plan also joined the list to audit reports with a new schema; Craig questioned the complexity, and it was cut to two pull requests. The skill changes went through three diff reviewers, a confirm pass, a real security-dimension run of the audit on this repo, and two bloat reviews. Each round found defects in the round before it, and one fix was reverted outright: bundling the report validator into the skill, which failed correct reports. NOTES has the decisions.
 
+### Frame asks before it drafts (2026-10-19)
+
+The ask came from using the suite on a real client project: scaffold sent the work to frame, and frame drafted from history without ever asking for the product detail the builder was holding. Craig asked whether the skill had gone wrong, and it had: the step never said how to obtain the declaration. The fix went through a coherence review, a sibling sweep that found the same gap in two more skills, a second review pass, and the rendered critic, which also caught that numbered lists on the skill pages showed no numbers.
+
 ## Origin and direction
 
 This section records the decisions that shaped the build, in the project's own voice.
