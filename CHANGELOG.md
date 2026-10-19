@@ -16,6 +16,7 @@ All notable changes to Foundry are recorded here. The format follows [Keep a Cha
 
 ### Fixed
 
+- Skills: `frame` opens by asking for the declaration. Step 2 sends one request (the entry names, anything the human already stated, and the two ways to answer) and then stops until the human replies. Why: the step said to obtain the declaration but never said how, so a run sent from `scaffold` drafted a near-blank frame from session history while the builder waited with the real detail.
 - Site: six routes no longer scroll sideways at 200% text on a phone (doc prose wraps long words, the readiness index and the home specimen grid can shrink, and the /reports heading wraps), and the /unlock email field is marked invalid while an error shows and is 16px so iOS Safari does not zoom on focus. Why: the regenerated self-audit failed the mobile gate on text enlargement.
 - Skills: `production-audit` now passes its severity rubric, evidence classes, false-positive list and quote rule to every subagent, from a bundled `subagent-brief.md`. Why: the brief told subagents to rate severity "against the rubric", but the material it passed never included the rubric, so each subagent rated against its own idea of severity.
 
