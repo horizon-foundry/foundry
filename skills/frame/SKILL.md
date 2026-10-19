@@ -14,12 +14,17 @@ description: Use before scaffolding or building anything new, or when a project 
    audit that frame as it stands; the run's artifact is the finding report,
    never a duplicate frame.
 2. **Obtain the declaration** from the human, one of the two ways in "The
-   gate". Open with one request: list the nine entries and four security
-   lines by name, carry forward anything the human already stated (a
-   `scaffold` answer, a line in this session), and ask them to write the
-   entries or paste their source material for a draft. Then stop: draft and
-   audit nothing until they reply. Check: no entry exists that the human did
-   not state and the draft did not mark assumed.
+   gate". If step 1 found no frame, open with one request: the nine entries
+   and four security lines by name only, as a template, never rephrased as
+   questions; under an entry, quote anything the human already stated that
+   seems to answer it (a `scaffold` answer, a line in this session), marked
+   assumed, unconfirmed; then ask them to write the entries or paste their
+   source material for a draft. Then stop: draft and audit nothing until
+   they reply. If no way to ask exists this session, draft from existing
+   material by the gate's second way, and open the report by saying the
+   request could not be sent. Check: the request went out before any draft,
+   or the report says why it could not; and no entry exists that the human
+   did not state and the draft did not mark assumed.
 3. **Audit it.** Artifact: a findings list against the entry numbers, per
    "The audit" section below. Check: the list covers every entry, plus one
    pass across entries for contradictions, which a per-entry pass cannot
