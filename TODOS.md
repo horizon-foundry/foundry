@@ -55,6 +55,7 @@
 - [ ] 2026-10-07 Decision required, when the first owned report is issued (Craig decides). The 2026-10-07 self-audit (`reports/foundry-2026-10-07.json`, remediationPlan item 1) found every sign-in risk latent only because no report has an owner: owned reports would be committed to the public repo (SEC-01), the sign-in email quota can be exhausted by anyone (SEC-03), mail scanners consume magic links (CON-01), sign-in errors mislead (REL-03), and there is no privacy page (DATA-02). The date of the first owner decides when that group must be planned and built; until then it is not the next unit.
 - [x] 2026-10-15 Decision required, when to regenerate the published self-audit (Craig decides). (closed 2026-10-16: Craig chose after the readiness plan's page, its Decision 2; regenerated as `reports/foundry-2026-10-16.json`) The skills writing pass changed the audit method (production-audit's subagents and skeptics now receive the rubric, evidence classes, kill list and quote rule from `subagent-brief.md`), and the source-of-truth rule says a method change regenerates `reports/foundry-<date>.json`. Craig deferred it on 2026-10-15; the options are now, or as release procedure step 3 at the next roll-up.
 - [x] 2026-10-16 Readiness coverage map (merged 2026-10-16 as #49 and #50, after #48) (every gap a 194-item public readiness checklist exposed lands in its owning skill: release-policy commitments and recovery targets in foundry, two widened frame lines, a disclosure contact in scaffold, cold-start checks in document, consent in instrumentation; in production-audit, reads in the authz matrix, an authentication lifecycle table, a sensitive-data egress map, agent tool authority, abuse and spend, expiry, recovery; plus a readiness map in `reference/` rendered as a read-only `/readiness` page; stacks on PR #48) -> `~/.claude/plans/foundry-readiness-coverage-map.md`
+- [ ] 2026-10-19 Site overhaul (the homepage tells one story with production-audit as the cornerstone; each skill page sells the skill with specimen highlights and puts the full SKILL.md behind a toggle; `/readiness` in the nav and cross-linked from every skill; ships in one release with #48 to #50) -> `~/.claude/plans/foundry-site-overhaul.md`
 
 ### Notes carried over from "From the 2026-07-16 fresh external audit (the substantive, queued items)"
 
@@ -120,6 +121,12 @@ Given only the after-screenshots at 1440 and 390 and DESIGN.md's anti-goals, no 
 Three agents, one angle each, all browser- or build-verified. They found twelve real defects in the fix wave, two of them regressions units A and B had just introduced and five that defeat the band's own thesis. All are fixed in this branch except the four logged as open below.
 
 ## Now
+
+### Site overhaul
+
+Plan: `~/.claude/plans/foundry-site-overhaul.md`. Branch `feat/site-overhaul`. The release of #48 to #50 waits for it (Craig, 2026-10-19).
+
+- [ ] 2026-10-19 Steps 1 to 6 built rough, then Craig's taste gate (step 7)
 
 ## Up Next
 

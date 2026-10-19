@@ -194,12 +194,12 @@ export async function InstallBlock() {
             <div className="mt-3 border border-line bg-ink-raised px-3 py-2 font-mono text-xs">
               <div>
                 <span className="text-bone-faint">verdict  </span>
-                <span className="uppercase text-verdict-risk">
-                  {VERDICT_LABEL["ship-with-known-risks"]}
+                <span className="uppercase text-verdict-safe">
+                  {VERDICT_LABEL["safe-to-ship"]}
                 </span>
               </div>
               <div className="mt-1 text-bone-dim">
-                0 critical, 0 high, 4 risks noted, every finding cited to file and line
+                0 risks, 83 improvements, every finding cited to file and line
               </div>
             </div>
           </div>

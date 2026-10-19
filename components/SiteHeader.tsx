@@ -3,17 +3,16 @@ import { NavLink } from "./NavLink";
 import { REPO_URL, REPORTS_HREF } from "@/lib/site";
 
 // Top chrome. Nav is ordered for a new visitor, not for what was interesting to
-// build: Overview, Skills, Reports, Method, then the source repo (issue 5
-// from the product audit). Behind-the-Build and the private reports live in the
+// build: Skills, Readiness, Reports, then the source repo. The wordmark is the
+// way home, so there is no Overview item. Behind-the-Build and the private reports live in the
 // footer now. Links are plain ink with a hover, no filled pills (DESIGN.md).
 // Below sm the same links move to a second header row (they were previously
 // hidden entirely, leaving phones with no site navigation). All targets are
 // 44px tall (min-h-11), the number the site itself markets.
 const NAV = [
-  { href: "/", label: "Overview" },
   { href: "/skills", label: "Skills" },
+  { href: "/readiness", label: "Readiness" },
   { href: REPORTS_HREF, label: "Reports", match: "/reports" },
-  { href: "/#method", label: "Method" },
 ];
 
 export function SiteHeader() {

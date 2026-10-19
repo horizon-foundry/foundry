@@ -349,6 +349,9 @@ body::before {
 .doc-prose ul {
   list-style: square;
 }
+.doc-prose ol {
+  list-style: decimal;
+}
 /* Preflight strips list markers; skill text cites its steps and entries by number. */
 .doc-prose ol {
   list-style: decimal;

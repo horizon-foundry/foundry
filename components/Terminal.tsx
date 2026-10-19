@@ -57,20 +57,18 @@ const COMMANDS: Cmd[] = [
     cmd: "/foundry check",
     out: [
       [
-        { t: "readiness  ", c: C.faint },
-        { t: "SAFE TO SHIP", c: C.safe },
+        { t: "policy  ", c: C.faint },
+        { t: "web product, 3 gates required", c: C.dim },
       ],
       [
         { t: "document ", c: C.dim },
-        { t: "✓", c: C.safe },
+        { t: "met", c: C.safe },
         { t: "   mobile ", c: C.dim },
-        { t: "✓", c: C.safe },
+        { t: "not-met", c: C.risk },
         { t: "   instrumentation ", c: C.dim },
-        { t: "✓", c: C.safe },
-        { t: "   audit ", c: C.dim },
-        { t: "✓", c: C.safe },
+        { t: "not-met", c: C.risk },
       ],
-      [{ t: "read-only release-gate scorecard", c: C.dim }],
+      [{ t: "next: foundry prepare, then /production-audit for the verdict", c: C.dim }],
     ],
   },
   {
@@ -78,7 +76,7 @@ const COMMANDS: Cmd[] = [
     cmd: "/scaffold",
     out: [
       [{ t: "cloned template, doc set filled, deploy + license in place", c: C.dim }],
-      [{ t: "production-ready from the first commit", c: C.safe }],
+      [{ t: "production-shaped from the first commit", c: C.safe }],
     ],
   },
   {
@@ -86,7 +84,7 @@ const COMMANDS: Cmd[] = [
     cmd: "/document",
     out: [
       [{ t: "Behind the Build hub live, overview deck authored", c: C.dim }],
-      [{ t: "docs render from source, so they cannot drift", c: C.safe }],
+      [{ t: "docs checked against the code, drift reported", c: C.safe }],
     ],
   },
   {
