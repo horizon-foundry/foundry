@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { listSkills } from "@/lib/skills";
+import { listSkills, STAGES } from "@/lib/skills";
 
 export const metadata = {
   title: "Skills",
   description:
-    "Software delivery integrity, as Claude Code skills: declared intent, a design checked against the code before it is built, preserved context, an instrumented outcome, docs that match reality, and an audited release.",
+    "Eleven Claude Code skills, grouped by when they help: before you build, while you build, and before you ship.",
 };
 
 // One tile shape for the whole directory: a full-surface link, an amber
@@ -18,11 +18,13 @@ function Tile({
   href,
   heading,
   body,
+  detail,
   className = "",
 }: {
   href: string;
   heading: string;
   body: string;
+  detail?: string;
   className?: string;
 }) {
   return (
@@ -33,7 +35,10 @@ function Tile({
       <span className="font-mono text-sm font-semibold text-command underline-offset-4 group-hover:underline">
         {heading}
       </span>
-      <p className="mt-2 max-w-measure text-sm leading-relaxed text-bone-dim">{body}</p>
+      <p className="mt-2 max-w-measure leading-snug text-bone">{body}</p>
+      {detail && (
+        <p className="mt-2 max-w-measure text-sm leading-relaxed text-bone-dim">{detail}</p>
+      )}
       <span className="mt-4 pt-1 font-mono text-[0.7rem] uppercase tracking-wide text-bone-faint transition-colors group-hover:text-bone">
         View
       </span>
@@ -43,8 +48,6 @@ function Tile({
 
 export default function SkillsIndex() {
   const skills = listSkills();
-  const user = skills.filter((s) => s.invocation === "user");
-  const model = skills.filter((s) => s.invocation === "model");
 
   return (
     <>
@@ -52,18 +55,14 @@ export default function SkillsIndex() {
       <main id="main">
         <section className="border-b border-line">
           <div className="mx-auto max-w-[1180px] px-5 py-14 sm:px-8">
-            <h1 className="max-w-3xl font-display text-3xl tracking-normal text-bone sm:text-4xl">
-              Software delivery integrity, as Claude Code skills.
+            {/* DRAFT lead, for Craig. */}
+            <h1 className="max-w-3xl font-display text-3xl tracking-normal text-bone sm:text-5xl">
+              Eleven skills, from the idea to the release.
             </h1>
-            <p className="mt-4 max-w-measure leading-relaxed text-bone-dim">
-              For people who build products with an AI in the loop. The suite
-              makes six promises between an idea and its release. Product
-              intent is declared and audited. A feature&apos;s design is checked
-              against the code before it is built. Execution context survives
-              every session. The intended outcome is instrumented. The
-              documentation matches reality. Technical readiness is audited
-              before real users arrive. Each promise is kept by a skill you can
-              run.
+            <p className="mt-4 max-w-measure text-lg leading-relaxed text-bone-dim">
+              Each one keeps a single discipline that fast building tends to
+              skip. Type its name in Claude Code, or let Claude start it when the
+              work fits.
             </p>
             <div className="mt-7 inline-flex max-w-full items-center gap-3 border border-line bg-ink-raised px-4 py-2.5">
               <span className="font-mono text-xs uppercase tracking-wide text-bone-faint">
@@ -74,112 +73,41 @@ export default function SkillsIndex() {
           </div>
         </section>
 
-        <section className="border-b border-line">
-          <div className="mx-auto max-w-[1180px] px-5 py-12 sm:px-8">
-            <h2 className="font-display text-xl tracking-normal text-bone sm:text-2xl">
-              User-invoked · commands you type
-            </h2>
-            {/* An odd count would leave an empty grid slot where the bg-line
-                backdrop shows through as a broken cell. The slot is filled by
-                a real tile (same component, full-surface link, arrow): the
-                gated report history, which otherwise lives only in the footer.
-                Hidden below sm, where a single column has no gap. */}
-            <div className="mt-5 grid gap-px border border-line bg-line sm:grid-cols-2">
-              {user.map((s) => (
-                <Tile
-                  key={s.slug}
-                  href={`/skills/${s.slug}`}
-                  heading={`/${s.name}`}
-                  body={s.tagline}
-                />
-              ))}
-              {/* Always rendered. This is the only /unlock entry point outside
-                  the footer, so it is a functional tile, not a grid filler. It
-                  used to render only on an odd user-invoked count to keep the
-                  two-column grid square, which meant adding a tenth skill
-                  silently deleted the sign-in path from this page. */}
-              <Tile
-                href="/unlock"
-                heading="Your reports"
-                body="Published reports are private to their owner. Sign in to see any that belong to you."
-              />
-            </div>
-          </div>
-        </section>
-
-        <section className="border-b border-line">
-          <div className="mx-auto max-w-[1180px] px-5 py-12 sm:px-8">
-            <h2 className="font-display text-xl tracking-normal text-bone sm:text-2xl">
-              Model-invoked · applied automatically by the agent
-            </h2>
-            <div className="mt-5 grid gap-px border border-line bg-line sm:grid-cols-2">
-              {model.map((s) => (
-                <Tile
-                  key={s.slug}
-                  href={`/skills/${s.slug}`}
-                  heading={`/${s.name}`}
-                  body={s.tagline}
-                />
-              ))}
-              {/* Odd count: a plain ink cell keeps the backdrop from showing
-                  through as a broken slot. */}
-              {model.length % 2 === 1 && (
-                <div className="hidden bg-ink sm:block" aria-hidden="true" />
-              )}
-            </div>
-          </div>
-        </section>
-
-        <section className="border-b border-line">
-          <div className="mx-auto max-w-[1180px] px-5 py-12 sm:px-8">
-            <h2 className="font-display text-xl tracking-normal text-bone sm:text-2xl">
-              Where it fits
-            </h2>
-            <p className="mt-5 max-w-measure leading-relaxed text-bone-dim">
-              Foundry is the release gate at the end of the build loop. The
-              inner-loop skills you already use to write and review code stay
-              where they are; Foundry is the pass that decides whether the
-              result is safe to ship. It composes with them rather than
-              replacing them, and installs through the same{" "}
-              <code className="font-mono text-sm text-command">
-                npx skills add
-              </code>{" "}
-              channel, so it joins your workflow instead of asking for a new
-              one.
-            </p>
-          </div>
-        </section>
-
-        <section>
-          <div className="mx-auto max-w-[1180px] px-5 py-14 sm:px-8">
-            <h2 className="font-display text-xl tracking-normal text-bone sm:text-2xl">
-              What they share
-            </h2>
-            <div className="mt-5 grid gap-px border border-line bg-line sm:grid-cols-2">
-              <div className="bg-ink p-5">
-                <h3 className="font-mono text-sm font-semibold text-bone">
-                  A documentation architecture
-                </h3>
+        {STAGES.map((stage) => {
+          const inStage = skills.filter((s) => s.stage === stage.id);
+          return (
+            <section key={stage.id} aria-labelledby={`stage-${stage.id}`} className="border-b border-line">
+              <div className="mx-auto max-w-[1180px] px-5 py-12 sm:px-8">
+                <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+                  <h2 id={`stage-${stage.id}`} className="font-display text-xl tracking-normal text-bone sm:text-2xl">
+                    {stage.label}
+                  </h2>
+                  <span className="font-mono text-xs text-bone-faint">{stage.caption}</span>
+                </div>
                 <p className="mt-2 max-w-measure text-sm leading-relaxed text-bone-dim">
-                  The skills enforce one doc set, engineered as the agent&apos;s
-                  memory so a cold start can&apos;t go wrong. One owner per fact,
-                  a forever spec, an unbroken plan chain.
+                  {stage.line}
                 </p>
+                <div className="mt-5 grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+                  {inStage.map((s) => (
+                    <Tile
+                      key={s.slug}
+                      href={`/skills/${s.slug}`}
+                      heading={`/${s.name}`}
+                      body={s.copy?.headline ?? s.tagline}
+                      detail={s.copy ? s.tagline : undefined}
+                    />
+                  ))}
+                  {Array.from({ length: (3 - (inStage.length % 3)) % 3 }, (_, i) => (
+                    <div key={i} className="hidden bg-ink lg:block" aria-hidden="true" />
+                  ))}
+                  {inStage.length % 2 === 1 && (
+                    <div className="hidden bg-ink sm:block lg:hidden" aria-hidden="true" />
+                  )}
+                </div>
               </div>
-              <div className="bg-ink p-5">
-                <h3 className="font-mono text-sm font-semibold text-bone">
-                  Skills that resist being ignored
-                </h3>
-                <p className="mt-2 max-w-measure text-sm leading-relaxed text-bone-dim">
-                  Each skill opens with a mandatory gate. A named skill is
-                  invoked and followed, never hand-reproduced, so the discipline
-                  is explicit and hard to skip. Where an invariant must truly
-                  hold, a schema, script, or CI check enforces it.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
+            </section>
+          );
+        })}
       </main>
       <SiteFooter />
     </>

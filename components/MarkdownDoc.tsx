@@ -17,23 +17,47 @@ const shift = {
   h5: "h6",
 } as const;
 
-function heading(level: keyof typeof shift) {
+// With `anchors`, each heading gets an id from its text, so a link can point
+// into a long doc (the skill page's full SKILL.md is opened by such a link).
+function textOf(node: ReactNode): string {
+  if (typeof node === "string" || typeof node === "number") return String(node);
+  if (Array.isArray(node)) return node.map(textOf).join("");
+  if (node && typeof node === "object" && "props" in node) {
+    return textOf((node.props as { children?: ReactNode }).children);
+  }
+  return "";
+}
+
+export const headingId = (text: string) =>
+  text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+
+function heading(level: keyof typeof shift, anchors: boolean) {
   return function H({ children }: { children?: ReactNode }) {
-    return createElement(shift[level], null, children);
+    const id = anchors ? headingId(textOf(children)) || undefined : undefined;
+    return createElement(shift[level], { id }, children);
   };
 }
 
-export function MarkdownDoc({ content }: { content: string }) {
+export function MarkdownDoc({
+  content,
+  anchors = false,
+}: {
+  content: string;
+  anchors?: boolean;
+}) {
   return (
     <article className="doc-prose">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
-          h1: heading("h1"),
-          h2: heading("h2"),
-          h3: heading("h3"),
-          h4: heading("h4"),
-          h5: heading("h5"),
+          h1: heading("h1", anchors),
+          h2: heading("h2", anchors),
+          h3: heading("h3", anchors),
+          h4: heading("h4", anchors),
+          h5: heading("h5", anchors),
         }}
       >
         {content}

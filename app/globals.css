@@ -446,6 +446,65 @@ body::before {
 
 }
 
+/* The specimen fill (components/Specimen.tsx, SpecimenFill.tsx; DESIGN.md,
+   Motion). A specimen below the fold is armed by script; on entry its rows
+   land in order on the draw easing and the flag arrives last. The stagger
+   between rows is its own token because no duration token is a gap. */
+:root {
+  --specimen-stagger: 70ms;
+}
+@keyframes specimen-row {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes specimen-flag {
+  from {
+    opacity: 0;
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+  }
+}
+[data-fill="armed"] .specimen-row,
+[data-fill="armed"] .specimen-flag {
+  opacity: 0;
+}
+[data-fill="run"] .specimen-row {
+  animation: specimen-row var(--transition-duration-settle) var(--ease-draw)
+    both;
+  animation-delay: calc(var(--i) * var(--specimen-stagger));
+}
+[data-fill="run"] .specimen-flag {
+  animation: specimen-flag var(--transition-duration-draw) var(--ease-draw)
+    both;
+  animation-delay: calc(
+    var(--rows) * var(--specimen-stagger) + var(--transition-duration-settle)
+  );
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-fill="run"] .specimen-row {
+    animation-name: reveal-fade;
+  }
+  [data-fill="run"] .specimen-flag {
+    animation-name: reveal-fade;
+  }
+}
+@media print {
+  [data-fill] .specimen-row,
+  [data-fill] .specimen-flag {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+}
+
 /* Command micro-interaction: the amber tokens warm slightly and lift on hover,
    reinforcing "this is executable". */
 /* The hover warms the colour and nothing else. It used to add a 14px amber

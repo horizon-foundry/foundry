@@ -3,478 +3,259 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Terminal } from "@/components/Terminal";
 import { ReportSpecimen } from "@/components/ReportSpecimen";
+import { HeroInstall, InstallBlock } from "@/components/InstallBlock";
+import { OwnershipBar } from "@/components/OwnershipBar";
 import { getPublicReport, listPublicReports } from "@/lib/reports";
 import { VERDICT_LABEL } from "@/lib/report-types";
-import { InstallBlock } from "@/components/InstallBlock";
+import { listSkills, STAGES } from "@/lib/skills";
+import { readinessOwnership } from "@/lib/readiness-owners";
+import { RESUME_URL, REPO_URL } from "@/lib/site";
 
 /*
-  Section-opening cadence (a deliberate, named system; not one reflex):
-  - The KICKER (tracked mono caps) appears exactly once, on the hero.
-  - RULE + TITLE (the draw-rule hairline gesture + heading) opens the
-    sequence-flavored sections: the flagship divider, the method, run it.
-  - A bare display h2 opens the prose sections: problem, dimensions,
-    principles, worked example.
-  Scroll entrances alternate .reveal (rise) and .reveal-fade so the page
-  breathes instead of repeating one move (globals.css).
+  One story, in seven beats (plan: foundry-site-overhaul, Decision 2):
+  the hero, the problem, the cornerstone (production-audit, the largest
+  moment on the page), the skills by stage, what ready means, install, and
+  who built this. The method, dimensions and principles live on
+  /skills/production-audit. Copy marked DRAFT below is for Craig's approval.
 */
 
-const DIMENSIONS = [
-  {
-    k: "Security",
-    d: "An authorization matrix for every read and write, plus sign-in, where sensitive data goes, tenant isolation, injection, and model output.",
-  },
-  {
-    k: "Concurrency",
-    d: "Idempotency on every write, check-then-write races (TOCTOU), effect cleanup, and state that stays correct across multiple tabs.",
-  },
-  {
-    k: "Reliability",
-    d: "A failure-path table per dependency: timeout, retry, user-visible failure, partial success, rollback.",
-  },
-  {
-    k: "Accessibility",
-    d: "Primitives first: focus traps, labels, roles, and keyboard paths, checked against WCAG 2.2 AA as far as static review can reach.",
-  },
-  {
-    k: "UI consistency",
-    d: "Token conformance, component divergence, state coverage, and copy drift across the whole surface.",
-  },
-  {
-    k: "Infra",
-    d: "Deploy config, security headers, CSP, env handling, and a dependency audit triaged by real exposure.",
-  },
-];
+const LINK =
+  "text-bone underline decoration-line-strong underline-offset-4 transition-colors hover:text-signal hover:decoration-bone";
 
-const PHASES = [
-  {
-    n: "00",
-    t: "Context",
-    d: "Read the docs, map the stack, build the flow inventory and trust-boundary map. The audit works flow by flow, not file by file.",
-  },
-  {
-    n: "01",
-    t: "Sweep",
-    d: "Mechanical passes first: dependency audit, secret scan, typecheck, lint. That way the deeper review never spends time on something a tool could have caught.",
-  },
-  {
-    n: "02",
-    t: "Fan out",
-    d: "One reviewer per dimension, each producing its required artifact. Every finding cites a file and line, or it is not a finding.",
-  },
-  {
-    n: "03",
-    t: "Refute",
-    d: "Every critical, high, and verdict-driving finding goes to a fresh skeptic who tries to disprove it against the code. The ones that survive make the report.",
-  },
-];
-
-const PRINCIPLES = [
-  {
-    t: "Flows, not files",
-    d: "A bug lives in the seam between two files more often than inside one. The unit of work is a flow traced end to end.",
-  },
-  {
-    t: "Artifacts, not vibes",
-    d: "An authorization matrix and a failure-path table can be finished, and a blank cell is a finding. 'Look harder' can't be finished, so it finds nothing.",
-  },
-  {
-    t: "Adversarial verification",
-    d: "The default failure of an AI audit is the confident, wrong finding. So every finding that drives the verdict has to survive someone trying to refute it.",
-  },
-  {
-    t: "Evidence classes",
-    d: "Runtime-reproduced means observed live. Code-traced means the full path was read. High-confidence names its one assumption. If a finding fits none of these, it isn't reported.",
-  },
-  {
-    t: "The kill list",
-    d: "The predictable false positives are named and forbidden. Before calling a control missing, check every layer it could live at.",
-  },
-  {
-    t: "The honest boundary",
-    d: "Anything that needs a running browser is labeled needs-verification or listed as not assessed. The verdict names the evidence it stands on: a static-only run is clear within the scope it checked, never a flat safe-to-ship.",
-  },
-];
+const STEPS = [
+  ["Context", "maps every flow and trust boundary"],
+  ["Sweep", "runs the tools first"],
+  ["Fan out", "one reviewer per dimension"],
+  ["Refute", "a skeptic tries to disprove each finding"],
+] as const;
 
 export default function Home() {
-  // Two public examples: the self-audit (Foundry auditing its own repo, the
-  // real credibility anchor) is featured; Perch is the illustrative
-  // traditional-SaaS sample. The self-audit tracks the suite (see CLAUDE.md):
-  // regenerate it when the suite changes so this proof stays true to what ships.
   const publicReports = listPublicReports();
   const featured =
     publicReports.find((r) => r.slug.startsWith("foundry-")) ?? publicReports[0];
-  const illustrative = publicReports.find((r) => r.slug !== featured?.slug);
-  // The full featured report backs the worked-example specimen further down.
   const example = featured ? getPublicReport(featured.slug) : null;
+  const skills = listSkills();
+  const owned = readinessOwnership();
 
   return (
     <>
       <SiteHeader />
       <main id="main">
-        {/* Hero */}
+        {/* 1. Hero */}
         <section className="relative overflow-hidden border-b border-line">
           <div className="relative mx-auto max-w-[1180px] px-5 pb-20 pt-16 sm:px-8 sm:pt-24">
             <div className="grid grid-cols-[minmax(0,1fr)] gap-12 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-center">
-            <div className="stagger-rise">
-              <p className="font-mono text-xs uppercase tracking-[0.25em] text-bone-faint">
-                A Horizon Foundry suite · Distill. Forge. Deliver.
-              </p>
-              <h1 className="mt-5 font-display text-4xl leading-[1.05] tracking-normal text-bone sm:text-6xl">
-                Forge shippable software{" "}
-                <br />
-                from <span className="text-signal">AI-built code</span>.
-              </h1>
-              <p className="mt-6 max-w-measure text-lg leading-relaxed text-bone-dim">
-                Foundry is eleven Claude Code skills that turn fast, AI-built
-                code into something you can ship. The flagship audits the whole
-                application and ends in one verdict that names its evidence:
-                safe to ship; ready to ship, risks noted; or do not ship.
-              </p>
-              <div className="mt-8 flex flex-wrap items-center gap-3">
-                <Link
-                  href="#install"
-                  className="press inline-flex min-h-11 items-center border border-line-strong bg-bone px-3.5 py-2 font-mono text-sm font-semibold text-ink transition-opacity hover:opacity-90"
-                >
-                  Install Foundry →
-                </Link>
-                <Link
-                  href="/skills"
-                  className="inline-flex min-h-11 items-center border border-line px-3 py-2 font-mono text-sm text-bone-dim transition-colors hover:border-line-strong hover:text-bone"
-                >
-                  See the skills →
-                </Link>
+              <div className="stagger-rise">
+                <p className="font-mono text-xs uppercase tracking-[0.25em] text-bone-faint">
+                  A Horizon Foundry suite · Distill. Forge. Deliver.
+                </p>
+                <h1 className="mt-5 font-display text-4xl leading-[1.05] tracking-normal text-bone sm:text-6xl">
+                  Forge shippable software <br />
+                  from <span className="text-signal">AI-built code</span>.
+                </h1>
+                {/* DRAFT body, for Craig. */}
+                <p className="mt-6 max-w-measure text-lg leading-relaxed text-bone-dim">
+                  Eleven Claude Code skills for building with an AI in the
+                  loop. The flagship reads your whole application and ends in
+                  one verdict you can act on.
+                </p>
+                <HeroInstall />
+              </div>
+              {/* The terminal is the hero's only moving part: it types a real
+                  run and ends on a verdict (DESIGN.md, Motion). */}
+              <div className="stagger-rise">
+                <Terminal />
               </div>
             </div>
-            {/* The panel is the hero's only moving part, and that is the
-                point: it types out a real run and ends on a verdict, so the
-                motion is the product demonstrating itself. A measuring band
-                with a crosshair used to sit above it, snapping a reading to a
-                lattice. Three rendered critics called it decoration, and the
-                last word was Craig's on 2026-09-23: a crosshair is a gunsight,
-                which is the wrong mark for this brand at any level of craft,
-                and it occupied one small region of one breakpoint. Cut whole
-                rather than redesigned. */}
-            <div className="stagger-rise">
-              <Terminal />
-            </div>
-            </div>
-
-            {/* Distill / Forge / Deliver, the brand triad mapped to the arc. */}
-            <div className="stagger-rise mt-14 grid gap-px border border-line bg-line sm:grid-cols-3">
-              {(
-                [
-                  ["Distill", "Melt messy context down to what is clear and current."],
-                  ["Forge", "Build with the discipline that survives a cold start."],
-                  ["Deliver", "Ship on a verdict, not a hope."],
-                ] as const
-              ).map(([verb, line]) => (
-                <div key={verb} className="bg-ink px-5 py-5">
-                  <span className="font-mono text-xs uppercase tracking-[0.2em] text-signal">
-                    {verb}
-                  </span>
-                  <p className="mt-2 text-sm leading-relaxed text-bone-dim">
-                    {line}
-                  </p>
-                </div>
-              ))}
-            </div>
-
           </div>
         </section>
 
-        <InstallBlock />
-
-        {/* The six promises: the suite's whole claim, each kept by a named
-            skill. Placed after the install so the pitch never outranks the
-            quick start. Delivery integrity, not product strategy. */}
-        <section className="reveal border-b border-line">
-          <div className="mx-auto max-w-[1180px] px-5 py-12 sm:px-8">
-            <h2 className="font-display text-2xl tracking-normal text-bone sm:text-3xl">
-              Six promises, each kept by a skill
-            </h2>
-            <ol className="mt-6 divide-y divide-line border-y border-line">
-              {(
-                [
-                  ["Product intent is declared and audited", "/frame"],
-                  ["The design is checked against the code before it is built", "/feature-design"],
-                  ["Execution context survives every session", "/phase-plan"],
-                  ["The intended outcome is instrumented", "/instrumentation"],
-                  ["The documentation matches reality", "/document"],
-                  ["Technical readiness is audited before real users", "/foundry + /production-audit"],
-                ] as const
-              ).map(([promise, cmd], i) => (
-                <li
-                  key={cmd}
-                  className="flex flex-col gap-1 py-3 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6"
-                >
-                  <span className="text-sm leading-relaxed text-bone-dim">
-                    <span className="mr-3 font-mono text-xs tabular-nums text-bone-faint">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    {promise}
-                  </span>
-                  <span className="pl-8 font-mono text-xs text-command sm:pl-0">
-                    {cmd}
-                  </span>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </section>
-
-        {/* The flagship divider */}
-        <section className="reveal border-b border-line bg-ink-raised">
-          <div className="mx-auto grid max-w-[1180px] grid-cols-[minmax(0,1fr)] gap-8 px-5 py-12 sm:px-8 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
-            <div>
-              <div className="flex items-center gap-3">
-                <span className="draw-rule h-px w-8 bg-signal" aria-hidden="true" />
-                <h2 className="font-display text-2xl tracking-normal text-bone sm:text-3xl">
-                  Production Audit
-                </h2>
-              </div>
-              <p className="mt-2 max-w-measure text-sm leading-relaxed text-bone-dim">
-                The deliver step of the suite: a whole-application pre-launch
-                audit across the dimensions your product calls for, from a
-                standing set of eleven, separating risks from improvements. It
-                ends in a ship or no-ship verdict that names the evidence it
-                stands on.
-              </p>
-              {featured && (
-                <Link
-                  href={`/example/${featured.slug}`}
-                  className="mt-4 inline-flex min-h-11 items-center font-mono text-xs uppercase tracking-wide text-bone-dim transition-colors hover:text-bone"
-                >
-                  See our audit of this repo →
-                </Link>
-              )}
-            </div>
-            {/* The three verdicts it can return, drawn inside a visible
-                excerpt frame: the frame is what licenses the verdict hues on a
-                marketing page (DESIGN.md Colors, settled 2026-10-06). */}
-            <figure className="flex flex-col gap-2 border border-line bg-ink p-3">
-              <figcaption className="font-mono text-[0.6875rem] text-bone-faint">
-                The verdicts a report returns
-              </figcaption>
-              {(
-                [
-                  ["safe-to-ship", "text-verdict-safe", "border-verdict-safe"],
-                  ["ship-with-known-risks", "text-verdict-risk", "border-verdict-risk"],
-                  ["do-not-ship", "text-verdict-noship", "border-verdict-noship"],
-                ] as const
-              ).map(([level, color, border]) => (
-                <div
-                  key={level}
-                  className={`flex items-center gap-2.5 border-l-2 ${border} bg-ink px-3 py-1.5`}
-                >
-                  <span className={`font-mono text-xs uppercase tracking-wide ${color}`}>
-                    {VERDICT_LABEL[level]}
-                  </span>
-                </div>
-              ))}
-            </figure>
-          </div>
-        </section>
-
-        {/* The problem */}
-        <section className="reveal-fade border-b border-line">
-          <div className="mx-auto grid max-w-[1180px] gap-8 px-5 py-16 sm:px-8 md:grid-cols-[0.9fr_1.1fr]">
+        {/* 2. The problem */}
+        <section className="border-b border-line">
+          <div className="mx-auto grid max-w-[1180px] gap-6 px-5 py-16 sm:px-8 md:grid-cols-[0.9fr_1.1fr] md:gap-8">
             <h2 className="font-display text-2xl tracking-normal text-bone sm:text-3xl">
               Software built fast ships confident and unverified.
             </h2>
-            <div className="space-y-4 text-bone-dim">
-              <p className="max-w-measure leading-relaxed">
-                A security review looks at security. A diff review looks at a
-                diff. A frontend audit looks at the frontend. None of them
-                answer the question you actually ask the night before an invite
-                wave: is this safe to put in front of real people.
-              </p>
-              <p className="max-w-measure leading-relaxed">
-                That question covers the whole app, and it needs a verdict, not a
-                list. Production Audit traces the flows that cross file
-                boundaries, produces artifacts a reviewer can finish, and refuses
-                to report anything it cannot back with evidence.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Dimensions */}
-        <section id="dimensions" className="reveal border-b border-line">
-          <div className="mx-auto max-w-[1180px] px-5 py-16 sm:px-8">
-            <h2 className="max-w-2xl font-display text-2xl tracking-normal text-bone sm:text-3xl">
-              Eleven dimensions, resolved per project.
-            </h2>
-            <div className="mt-6 grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
-              {DIMENSIONS.map((dim) => (
-                <div key={dim.k} className="bg-ink p-5">
-                  <h3 className="font-mono text-sm font-semibold uppercase tracking-wide text-bone">
-                    {dim.k}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-bone-dim">
-                    {dim.d}
-                  </p>
-                </div>
-              ))}
-            </div>
-            <p className="mt-4 max-w-measure text-sm leading-relaxed text-bone-dim">
-              These six usually apply. Five more resolve per project, operability,
-              testing confidence, data and migration safety, release safety, and
-              performance, and even these six drop out where there is no surface,
-              accessibility or UI on a headless service. Anything left out is
-              named with a reason, never quietly skipped.
+            {/* DRAFT, shortened from the earlier two paragraphs. */}
+            <p className="max-w-measure text-lg leading-relaxed text-bone-dim">
+              A security review looks at security. A diff review looks at a
+              diff. None of them answers the question you ask the night before
+              real users arrive: is this safe to ship?
             </p>
           </div>
         </section>
 
-        {/* The method, numbered ledger. The nav's "Method" link lands here
-            (it previously anchored to the dimensions section). */}
-        <section id="method" className="reveal-fade border-b border-line">
-          <div className="mx-auto max-w-[1180px] px-5 py-16 sm:px-8">
-            <div className="flex items-center gap-3">
-              <span className="draw-rule h-px w-8 bg-signal" aria-hidden="true" />
-              <h2 className="font-display text-2xl tracking-normal text-bone sm:text-3xl">
-                The method
-              </h2>
-            </div>
-            <div className="mt-6 divide-y divide-line border-y border-line">
-              {PHASES.map((p) => (
-                <div
-                  key={p.n}
-                  className="grid gap-3 py-6 sm:grid-cols-[auto_1fr] sm:gap-8"
+        {/* 3. The cornerstone */}
+        <section aria-labelledby="audit-heading" className="border-b border-line bg-ink-raised">
+          <div className="mx-auto max-w-[1180px] px-5 py-20 sm:px-8">
+            <p className="font-mono text-sm text-command">/production-audit</p>
+            <div className="mt-4 grid grid-cols-[minmax(0,1fr)] gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start">
+              <div>
+                {/* DRAFT headline and line, for Craig. */}
+                <h2
+                  id="audit-heading"
+                  className="max-w-[16ch] font-display text-3xl leading-[1.08] tracking-normal text-bone sm:text-5xl"
                 >
-                  <div className="font-mono text-3xl font-semibold tabular-nums text-bone-faint sm:w-24">
-                    {p.n}
-                  </div>
-                  <div>
-                    <h3 className="font-mono text-base font-semibold uppercase tracking-wide text-bone">
-                      {p.t}
-                    </h3>
-                    <p className="mt-1.5 max-w-measure text-sm leading-relaxed text-bone-dim">
-                      {p.d}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+                  One verdict. Every finding backed by evidence.
+                </h2>
+                <p className="mt-5 max-w-measure text-lg leading-relaxed text-bone-dim">
+                  It reads the whole app, traces each flow from end to end, and
+                  sends every serious finding to a skeptic before it reaches
+                  the report. Then it decides.
+                </p>
 
-        {/* Principles */}
-        <section className="reveal border-b border-line">
-          <div className="mx-auto max-w-[1180px] px-5 py-16 sm:px-8">
-            <h2 className="max-w-2xl font-display text-2xl tracking-normal text-bone sm:text-3xl">
-              What makes the findings trustworthy.
-            </h2>
-            <div className="mt-6 grid gap-px border border-line bg-line md:grid-cols-2 lg:grid-cols-3">
-              {PRINCIPLES.map((pr) => (
-                <div key={pr.t} className="bg-ink p-5">
-                  <h3 className="text-sm font-semibold text-bone">{pr.t}</h3>
-                  <p className="mt-2 max-w-measure text-sm leading-relaxed text-bone-dim">
-                    {pr.d}
-                  </p>
-                </div>
-              ))}
-            </div>
-            {/* The tune-vs-fixed answer, given its own line rather than buried
-                as one principle among many: it is the sharpest trust claim. */}
-            <p className="mt-6 max-w-measure text-sm leading-relaxed text-bone-dim">
-              You set the scope, not the bar. Which dimensions apply comes from
-              what your product is, and which risks you accept is your call, on
-              the record. The severity rubric and the meaning of the verdict are
-              fixed on purpose. A bar you could lower until it turns green is the
-              false comfort this exists to replace.
-            </p>
-          </div>
-        </section>
-
-        {/* First run: case study, aggregate only */}
-        {featured && (
-          <section className="reveal-fade border-b border-line">
-            <div className="mx-auto max-w-[1180px] px-5 py-16 sm:px-8">
-              <div className="grid grid-cols-[minmax(0,1fr)] gap-8 md:grid-cols-[1.1fr_0.9fr] md:items-center">
-                <div>
-                  <h2 className="font-display text-2xl tracking-normal text-bone sm:text-3xl">
-                    We audited Foundry with Foundry.
-                  </h2>
-                  <p className="mt-4 max-w-measure leading-relaxed text-bone-dim">
-                    The same <span className="font-mono text-command">/production-audit</span> this suite ships, run against
-                    Foundry&apos;s own repository. What the audit verified clean and what it
-                    flagged are both on the record, finding by finding. The
-                    repository is public, so you can read the report against its
-                    source and see exactly what the method checked and what it
-                    found.
-                  </p>
-                  <p className="mt-4 font-mono text-sm text-bone-dim">
-                    Verdict:{" "}
-                    {/* Bone, not the verdict hue: this line sits outside the
-                        framed specimen beside it, which already shows the
-                        verdict in color (DESIGN.md Colors, settled 2026-10-06). */}
-                    <span className="text-bone">
-                      {VERDICT_LABEL[featured.verdictLevel]}
-                    </span>
-                  </p>
-                  <div className="mt-6 flex flex-wrap items-center gap-3">
-                    <Link
-                      href={`/example/${featured.slug}`}
-                      className="inline-flex min-h-11 items-center border border-line-strong bg-bone px-3 py-2 font-mono text-sm font-semibold text-ink transition-opacity hover:opacity-90"
+                <figure className="mt-8 flex max-w-sm flex-col gap-2 border border-line bg-ink p-3">
+                  <figcaption className="font-mono text-[0.6875rem] text-bone-faint">
+                    The three verdicts a report returns
+                  </figcaption>
+                  {(
+                    [
+                      ["safe-to-ship", "text-verdict-safe", "border-verdict-safe"],
+                      ["ship-with-known-risks", "text-verdict-risk", "border-verdict-risk"],
+                      ["do-not-ship", "text-verdict-noship", "border-verdict-noship"],
+                    ] as const
+                  ).map(([level, color, border]) => (
+                    <div
+                      key={level}
+                      className={`flex items-center gap-2.5 border-l-2 ${border} bg-ink px-3 py-1.5`}
                     >
-                      Read the full report →
-                    </Link>
-                    {illustrative && (
-                      <span className="font-mono text-xs text-bone-faint">
-                        Prefer a traditional SaaS shape? See the{" "}
-                        <Link
-                          href={`/example/${illustrative.slug}`}
-                          className="text-bone-dim underline decoration-line-strong underline-offset-4 transition-colors hover:text-bone"
-                        >
-                          {illustrative.project} example
-                        </Link>
-                        , a fictional booking app audited in full.
+                      <span className={`font-mono text-xs uppercase tracking-wide ${color}`}>
+                        {VERDICT_LABEL[level]}
                       </span>
-                    )}
-                  </div>
-                </div>
-                {/* The real artifact, where evidence belongs: the specimen
-                    renders the actual report (stamp, ledger, trust line) via
-                    the report components. Its footer link is off; the section
-                    already carries the primary CTA. */}
+                    </div>
+                  ))}
+                </figure>
+              </div>
+
+              <div>
                 {example && <ReportSpecimen report={example} showLink={false} />}
+                <p className="mt-3 font-mono text-xs leading-relaxed text-bone-faint">
+                  Foundry, audited by Foundry. The repository is public, so you
+                  can read every finding against its source.
+                </p>
               </div>
             </div>
-          </section>
-        )}
 
-        {/* Usage */}
-        <section className="reveal">
-          <div className="mx-auto max-w-[1180px] px-5 py-16 sm:px-8">
-            <div className="flex items-center gap-3">
-              <span className="draw-rule h-px w-8 bg-signal" aria-hidden="true" />
-              <h2 className="font-display text-2xl tracking-normal text-bone sm:text-3xl">
-                Run it
-              </h2>
-            </div>
-            <div className="mt-6 max-w-2xl space-y-2 border border-line bg-ink-raised p-5 font-mono text-sm">
-              {[
-                ["/production-audit", "full audit: core + applicable dimensions"],
-                ["/production-audit security", "one dimension, scoped posture"],
-                ["/production-audit --quick", "security + reliability triage"],
-                ["/production-audit --runtime", "add a live browser pass"],
-              ].map(([cmd, note]) => (
-                <div
-                  key={cmd}
-                  className="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6"
+            <ol className="mt-14 grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
+              {STEPS.map(([t, d], i) => (
+                <li key={t} className="bg-ink-raised p-4">
+                  <span className="font-mono text-[0.6875rem] text-bone-faint">0{i}</span>
+                  <p className="mt-1 font-mono text-sm font-semibold text-bone">{t}</p>
+                  <p className="mt-1 text-sm leading-snug text-bone-dim">{d}</p>
+                </li>
+              ))}
+            </ol>
+
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              {featured && (
+                <Link
+                  href={`/example/${featured.slug}`}
+                  className="inline-flex min-h-11 items-center border border-line-strong bg-bone px-3 py-2 font-mono text-sm font-semibold text-ink transition-opacity hover:opacity-90"
                 >
-                  <span className="text-command">{cmd}</span>
-                  <span className="text-bone-faint">{note}</span>
+                  Read the self-audit →
+                </Link>
+              )}
+              <Link
+                href="/skills/production-audit"
+                className="inline-flex min-h-11 items-center border border-line px-3 py-2 font-mono text-sm text-bone-dim transition-colors hover:border-line-strong hover:text-bone"
+              >
+                How it works →
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* 4. The skills, by stage */}
+        <section aria-labelledby="skills-heading" className="border-b border-line">
+          <div className="mx-auto max-w-[1180px] px-5 py-16 sm:px-8">
+            <h2 id="skills-heading" className="font-display text-2xl tracking-normal text-bone sm:text-3xl">
+              Eleven skills, from the idea to the release.
+            </h2>
+            <div className="mt-8 grid gap-px border border-line bg-line md:grid-cols-3">
+              {STAGES.map((stage) => (
+                <div key={stage.id} className="bg-ink p-5 sm:p-6">
+                  <p className="font-mono text-xs uppercase tracking-[0.2em] text-signal">
+                    {stage.label}
+                  </p>
+                  <p className="mt-1 font-mono text-[0.6875rem] text-bone-faint">
+                    {stage.caption}
+                  </p>
+                  <p className="mt-3 text-sm leading-relaxed text-bone-dim">{stage.line}</p>
+                  <ul className="mt-5 divide-y divide-line border-y border-line">
+                    {skills
+                      .filter((s) => s.stage === stage.id)
+                      .map((s) => (
+                        <li key={s.slug}>
+                          <Link
+                            href={`/skills/${s.slug}`}
+                            className="group flex min-h-11 flex-col justify-center py-2"
+                          >
+                            <span className="font-mono text-sm text-command">/{s.name}</span>
+                            <span className="text-xs leading-snug text-bone-faint transition-colors group-hover:text-bone-dim">
+                              {s.copy?.headline ?? s.tagline}
+                            </span>
+                          </Link>
+                        </li>
+                      ))}
+                  </ul>
                 </div>
               ))}
             </div>
-            <p className="mt-4 max-w-measure text-sm leading-relaxed text-bone-dim">
-              The audit is read-only. It never changes your code. It produces a
-              structured report and a verdict, and it tells you what it did not
-              look at. It reads code and traces flows; it is not a penetration
-              test.
+          </div>
+        </section>
+
+        {/* 5. What ready means */}
+        <section aria-labelledby="ready-heading" className="border-b border-line">
+          <div className="mx-auto grid max-w-[1180px] gap-8 px-5 py-16 sm:px-8 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:items-end">
+            <div>
+              <h2 id="ready-heading" className="font-display text-2xl tracking-normal text-bone sm:text-3xl">
+                What ready means, written down.
+              </h2>
+              {/* DRAFT, for Craig. */}
+              <p className="mt-4 max-w-measure leading-relaxed text-bone-dim">
+                {owned.total} concerns decide whether a product is ready for
+                real users. The readiness map names who checks each one,
+                including the {owned.outsideRows} that no skill can.
+              </p>
+              <Link href="/readiness" className={`mt-5 inline-flex min-h-11 items-center font-mono text-sm ${LINK}`}>
+                Open the readiness map →
+              </Link>
+            </div>
+            <OwnershipBar owned={owned} />
+          </div>
+        </section>
+
+        {/* 6. Install */}
+        <InstallBlock />
+
+        {/* 7. Who built this. DRAFT, for Craig: Horizon Foundry's voice, with
+            Craig named. */}
+        <section aria-labelledby="who-heading">
+          <div className="mx-auto max-w-[1180px] px-5 py-16 sm:px-8">
+            <h2 id="who-heading" className="font-display text-2xl tracking-normal text-bone sm:text-3xl">
+              Built the way it tells you to build.
+            </h2>
+            <p className="mt-4 max-w-measure leading-relaxed text-bone-dim">
+              Foundry is made by Horizon Foundry, the studio of{" "}
+              <a href={RESUME_URL} target="_blank" rel="noreferrer" className={LINK}>
+                Craig Martin
+              </a>
+              . Every skill was used to build this site: it was framed, planned,
+              documented and audited with Foundry, and the record is public.
             </p>
+            <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 font-mono text-sm">
+              <Link href="/behind" className={`inline-flex min-h-11 items-center ${LINK}`}>
+                How it was built
+              </Link>
+              {featured && (
+                <Link href={`/example/${featured.slug}`} className={`inline-flex min-h-11 items-center ${LINK}`}>
+                  The self-audit
+                </Link>
+              )}
+              <a href={REPO_URL} target="_blank" rel="noreferrer" className={`inline-flex min-h-11 items-center ${LINK}`}>
+                The source
+              </a>
+            </div>
           </div>
         </section>
       </main>

@@ -110,10 +110,17 @@ function Row({ row, skills }: { row: ReadinessRow; skills: ReadonlySet<string> }
   return (
     <li
       id={row.id}
-      className={`grid scroll-mt-28 gap-x-6 gap-y-3 py-4 lg:items-baseline ${LG_COLUMNS}`}
+      data-owner={row.owner.split("/")[0]}
+      className={`group/row grid scroll-mt-28 gap-x-6 gap-y-3 py-4 target:bg-ink-raised lg:items-baseline ${LG_COLUMNS}`}
     >
       <p className="max-w-measure leading-relaxed text-bone">
-        <Inline text={row.concern} />
+        <Inline text={row.concern} />{" "}
+        <a
+          href={`#${row.id}`}
+          className="font-mono text-[0.6875rem] text-bone-faint opacity-60 transition-opacity hover:text-bone hover:opacity-100 focus-visible:opacity-100 group-hover/row:opacity-100"
+        >
+          {row.id}
+        </a>
       </p>
       <dl className="grid gap-y-2 sm:grid-cols-3 sm:gap-x-6 lg:contents">
         <Field label="Owner">
@@ -167,6 +174,7 @@ export function ReadinessMap({
         <section
           key={area.slug}
           aria-labelledby={areaId(area.slug)}
+          data-area
           className="mt-14"
         >
           <h2

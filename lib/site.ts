@@ -28,3 +28,6 @@ export const SKILL_SLUGS = ["brand-voice", "document", "feature-design", "foundr
 // there is one consistent destination for both states. Individual public
 // reports still render ungated at /example/<slug>.
 export const REPORTS_HREF = "/reports";
+
+// Craig's own site, linked from the homepage's "Who built this" beat.
+export const RESUME_URL = "https://resume-chatgpt.fly.dev/";

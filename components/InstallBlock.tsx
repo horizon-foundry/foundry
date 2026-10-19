@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { CopyButton } from "./CopyButton";
-import { VERDICT_LABEL } from "@/lib/report-types";
 import {
   REPO_SLUG,
   REPO_URL,
@@ -21,7 +20,7 @@ const SOURCE_CMDS = [`git clone ${REPO_URL}`, "cd foundry", "make install"].join
 
 // Server-side star count. Returns null on any failure (private repo, rate limit,
 // network), in which case the button shows with no count. Cached for an hour.
-async function getStars(): Promise<number | null> {
+export async function getStars(): Promise<number | null> {
   try {
     const res = await fetch(`https://api.github.com/repos/${REPO_SLUG}`, {
       headers: { Accept: "application/vnd.github+json" },
@@ -35,13 +34,13 @@ async function getStars(): Promise<number | null> {
   }
 }
 
-function StarButton({ stars }: { stars: number | null }) {
+export function StarButton({ stars }: { stars: number | null }) {
   return (
     <a
       href={REPO_URL}
       target="_blank"
       rel="noreferrer"
-      className="lift inline-flex items-center gap-2 border border-line-strong px-3 py-2 font-mono text-xs uppercase tracking-wide text-bone transition-colors hover:border-bone-faint"
+      className="lift inline-flex min-h-11 items-center gap-2 border border-line-strong px-3 py-2 font-mono text-xs uppercase tracking-wide text-bone transition-colors hover:border-bone-faint"
     >
       <svg viewBox="0 0 16 16" className="size-3.5 fill-current" aria-hidden="true">
         <path d="M8 1.5l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 11.8 4.2 13.3l.7-4.3-3.1-3 4.3-.6z" />
@@ -96,59 +95,57 @@ const DETAIL: { k: string; d: React.ReactNode }[] = [
 export async function InstallBlock() {
   const stars = await getStars();
 
+  // One command and the first thing to run, then everything else folded. The
+  // version-check disclosure stays visible: it is part of the feature, not a
+  // footnote (instrumentation skill, "The gate demands a decision").
   return (
-    <section id="install" className="reveal border-b border-line bg-ink-raised">
+    <section id="install" className="scroll-mt-20 border-b border-line bg-ink-raised">
       <div className="mx-auto max-w-[1180px] px-5 py-16 sm:px-8">
         <div className="flex flex-wrap items-end justify-between gap-4">
-          <div className="min-w-0 [overflow-wrap:anywhere]">
-            <h2 className="font-display text-2xl tracking-normal text-bone sm:text-3xl">
-              Install Foundry
-            </h2>
-            <p className="mt-2 max-w-measure text-sm leading-relaxed text-bone-dim">
-              One command adds the skills to Claude Code. No build step, no
-              account. One disclosed call home: at most once a day, a skill
-              asks this site for the current version so it can tell you when
-              you are behind. It sends the skill name and installed version,
-              nothing else, and FOUNDRY_NO_VERSION_CHECK turns it off.
-            </p>
-          </div>
+          <h2 className="font-display text-2xl tracking-normal text-bone sm:text-3xl">
+            Install Foundry
+          </h2>
           <StarButton stars={stars} />
         </div>
 
-        {/* min-w-0 on both columns: without it the pre's intrinsic width
-            propagates through the grid and widens the whole page on phones,
-            clipping the install command (the conversion moment). */}
-        <div className="mt-8 grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="min-w-0 divide-y divide-line self-start border border-line bg-ink">
-            {/* Recommended: npx. */}
-            <div>
-              <div className="flex items-center justify-between border-b border-line px-4 py-2">
-                {/* Emphasis by luminance, not hue: amber is reserved for
-                    commands you fire (DESIGN.md report-excerpt exception). */}
-                <span className="font-mono text-[0.6875rem] uppercase tracking-wide text-signal">
-                  recommended
-                </span>
-                <CopyButton
-                  text={NPX_CMD}
-                  analytics={{ command_kind: "npx", surface: "install-block" }}
-                />
-              </div>
-              <pre className="whitespace-pre-wrap break-all px-4 py-4 font-mono text-sm leading-relaxed sm:overflow-x-auto sm:whitespace-pre sm:break-normal">
-                <code>
-                  <span className="text-bone-faint">$ </span>
-                  <span className="text-command">{NPX_CMD}</span>
-                </code>
-              </pre>
-              <p className="border-t border-line px-4 py-2.5 font-mono text-xs leading-relaxed text-bone-faint">
-                Runs the open-source skills CLI: it copies the skills you pick
-                into your Claude Code setup and nothing more. Then run{" "}
-                <span className="text-command">claude</span> and{" "}
-                <span className="text-command">/foundry check</span>.
-              </p>
-            </div>
+        <div className="mt-6 max-w-3xl min-w-0 border border-line bg-ink">
+          <div className="flex items-center justify-between border-b border-line px-4 py-2">
+            <span className="font-mono text-[0.6875rem] uppercase tracking-wide text-signal">
+              one command
+            </span>
+            <CopyButton
+              text={NPX_CMD}
+              analytics={{ command_kind: "npx", surface: "install-block" }}
+            />
+          </div>
+          <pre className="whitespace-pre-wrap break-all px-4 py-4 font-mono text-sm leading-relaxed sm:overflow-x-auto sm:whitespace-pre sm:break-normal">
+            <code>
+              <span className="text-bone-faint">$ </span>
+              <span className="text-command">{NPX_CMD}</span>
+            </code>
+          </pre>
+          <p className="border-t border-line px-4 py-2.5 font-mono text-xs leading-relaxed text-bone-dim">
+            Then open Claude Code in your project and run{" "}
+            <span className="text-command">/production-audit</span>.
+          </p>
+        </div>
 
-            {/* Alternative: from source. */}
-            <div>
+        <p className="mt-4 max-w-measure text-sm leading-relaxed text-bone-faint">
+          No account, no build step. At most once a day a skill asks this site
+          for the current version, sending only its name and version.{" "}
+          <span className="font-mono text-bone-dim">FOUNDRY_NO_VERSION_CHECK</span>{" "}
+          turns it off.
+        </p>
+
+        <details className="group mt-8 max-w-3xl border-y border-line">
+          <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between font-mono text-xs uppercase tracking-wide text-bone-dim transition-colors hover:text-bone [&::-webkit-details-marker]:hidden">
+            From source, requirements, and what it installs
+            <span aria-hidden="true" className="transition-transform duration-quick group-open:rotate-90">
+              →
+            </span>
+          </summary>
+          <div className="pb-6">
+            <div className="min-w-0 border border-line bg-ink">
               <div className="flex items-center justify-between border-b border-line px-4 py-2">
                 <span className="font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
                   from source
@@ -170,56 +167,22 @@ export async function InstallBlock() {
                   <span className="text-command">make install</span>
                 </code>
               </pre>
-              <p className="border-t border-line px-4 py-2.5 font-mono text-xs leading-relaxed text-bone-faint">
-                Symlinks every skill so it tracks the repo. Update with{" "}
-                <span className="text-command">git pull &amp;&amp; make install</span>,
-                remove with <span className="text-command">make uninstall</span>.
-              </p>
             </div>
+            <dl className="mt-4 divide-y divide-line border-y border-line">
+              {DETAIL.map((item) => (
+                <div key={item.k} className="grid gap-1 py-3 sm:grid-cols-[11rem_minmax(0,1fr)] sm:gap-6">
+                  <dt className="font-mono text-xs font-semibold uppercase tracking-wide text-bone">
+                    {item.k}
+                  </dt>
+                  <dd className="max-w-measure text-sm leading-relaxed text-bone-dim">
+                    {item.d}
+                  </dd>
+                </div>
+              ))}
+            </dl>
           </div>
+        </details>
 
-          {/* What happens when you invoke it. self-start keeps the card sized
-              to its content instead of stretching to the taller command column
-              (which left ~40% dead panel at lg). */}
-          <div className="min-w-0 border border-line bg-ink p-5 lg:self-start">
-            <p className="font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
-              What happens when you invoke it
-            </p>
-            <p className="mt-3 max-w-measure text-sm leading-relaxed text-bone-dim">
-              A skill is something Claude Code runs against your project.{" "}
-              <span className="text-command">/production-audit</span> reads your
-              code (never writes), traces the flows that cross file boundaries,
-              refutes its own findings, and returns a verdict:
-            </p>
-            <div className="mt-3 border border-line bg-ink-raised px-3 py-2 font-mono text-xs">
-              <div>
-                <span className="text-bone-faint">verdict  </span>
-                <span className="uppercase text-verdict-safe">
-                  {VERDICT_LABEL["safe-to-ship"]}
-                </span>
-              </div>
-              <div className="mt-1 text-bone-dim">
-                0 risks, 83 improvements, every finding cited to file and line
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Requirements, behavior, lifecycle. */}
-        <dl className="mt-8 grid gap-px border border-line bg-line md:grid-cols-3">
-          {DETAIL.map((item) => (
-            <div key={item.k} className="bg-ink p-5">
-              <dt className="font-mono text-sm font-semibold uppercase tracking-wide text-bone">
-                {item.k}
-              </dt>
-              <dd className="mt-2 max-w-measure text-sm leading-relaxed text-bone-dim">
-                {item.d}
-              </dd>
-            </div>
-          ))}
-        </dl>
-
-        {/* Version, license, source, contribution. */}
         <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-xs text-bone-faint">
           <span>
             <span className="text-bone-dim">v{suiteVersion()}</span> · pre-1.0
@@ -236,11 +199,42 @@ export async function InstallBlock() {
           <a href={REPO_CONTRIBUTING_URL} target="_blank" rel="noreferrer" className="transition-colors hover:text-bone-dim">
             Contributing
           </a>
-          <Link href="/skills" className="transition-colors hover:text-bone-dim">
-            Browse all skills →
-          </Link>
         </div>
       </div>
     </section>
+  );
+}
+
+// The install command where a visitor first lands, so installing never waits
+// for the bottom of the page. Same command, same install_copied event; the
+// surface property says it came from the hero.
+export async function HeroInstall() {
+  const stars = await getStars();
+  return (
+    <div className="mt-8 max-w-xl">
+      <div className="flex min-w-0 items-stretch border border-line-strong bg-ink-raised">
+        <pre className="min-w-0 flex-1 overflow-x-auto px-3 py-2.5 font-mono text-sm leading-relaxed">
+          <code>
+            <span className="text-bone-faint">$ </span>
+            <span className="text-command">{NPX_CMD}</span>
+          </code>
+        </pre>
+        <div className="flex items-center border-l border-line px-2">
+          <CopyButton
+            text={NPX_CMD}
+            analytics={{ command_kind: "npx", surface: "hero" }}
+          />
+        </div>
+      </div>
+      <div className="mt-3 flex flex-wrap items-center gap-3">
+        <Link
+          href="/skills"
+          className="inline-flex min-h-11 items-center border border-line px-3 py-2 font-mono text-sm text-bone-dim transition-colors hover:border-line-strong hover:text-bone"
+        >
+          See the skills →
+        </Link>
+        <StarButton stars={stars} />
+      </div>
+    </div>
   );
 }
