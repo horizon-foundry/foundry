@@ -16,6 +16,12 @@
    first and removed after a build proved it changed not one selector. The .tsx
    comment in HeroForge that named the same two utilities DID mint them. */
 @import "tailwindcss" source(none);
+/* One stylesheet per surface, so the steps that build the homepage, the skill
+   pages and the readiness page each own one file. Imports precede every other
+   rule; the primitives they share are at the end of this file. */
+@import "./styles/home.css";
+@import "./styles/skill.css";
+@import "./styles/readiness.css";
 @source "../app";
 @source "../components";
 /* One file in lib/, named explicitly rather than by directory: report-types.ts
@@ -592,5 +598,268 @@ a:hover .text-command,
     stroke-dasharray: none !important;
     stroke-dashoffset: 0 !important;
     animation: none !important;
+  }
+}
+
+/* ============================================================
+   Figure primitives (components/Cells.tsx, Frame.tsx, Reveal.tsx).
+   The cell is the site's one visual atom: a square that is filled, hollow or
+   hatched. Hue appears only on a severity or a verdict (DESIGN.md, Colors);
+   an owner or a map state is told apart by luminance and outline.
+   ============================================================ */
+
+:root {
+  /* The mid slate of a skill-owned cell, between bone (production-audit) and
+     the hollow outline (outside the suite). Not a theme color: no utility. */
+  --cell-sk: #6f7a8a;
+}
+
+.cells {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.cells-big {
+  --cs: 22px;
+  gap: 6px;
+}
+.cells-xl {
+  --cs: 44px;
+  gap: 10px;
+}
+@media (max-width: 600px) {
+  .cells-xl {
+    --cs: 26px;
+    gap: 7px;
+  }
+}
+.c {
+  display: inline-block;
+  flex: none;
+  width: var(--cs, 14px);
+  height: var(--cs, 14px);
+  border: 1.5px solid transparent;
+}
+/* Owner and map state */
+.c-pa,
+.c-lit {
+  background: var(--color-bone);
+}
+.c-sk {
+  background: var(--cell-sk);
+}
+.c-out {
+  border-color: var(--color-line-strong);
+}
+.c-off {
+  border-color: var(--color-line);
+}
+/* Severity */
+.s-critical {
+  background: var(--color-critical);
+}
+.s-high {
+  background: var(--color-high);
+}
+.s-medium {
+  background: var(--color-medium);
+}
+.s-low {
+  background: var(--color-low);
+}
+.s-informational {
+  background: var(--color-informational);
+}
+/* A skeptic's ruling: solid held, hatched downgraded, dashed not assessed */
+.v-confirmed {
+  background: var(--color-bone);
+}
+.v-downgraded {
+  border-color: var(--color-bone);
+  background: repeating-linear-gradient(
+    135deg,
+    transparent 0 3px,
+    color-mix(in srgb, var(--color-bone) 55%, transparent) 3px 4.5px
+  );
+}
+.v-na {
+  border-color: var(--color-line-strong);
+  border-style: dashed;
+}
+
+/* The frame: a bordered excerpt with a caption at each end of its head. */
+.frame {
+  border: 1px solid var(--color-line-strong);
+  background: var(--color-ink-raised);
+}
+.frame-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--color-line);
+  font: 400 12px/1.4 var(--font-mono);
+  color: var(--color-bone-faint);
+}
+.frame figcaption {
+  padding: 0 18px 16px;
+  font: 400 12px/1.5 var(--font-mono);
+  color: var(--color-bone-faint);
+}
+@media (max-width: 600px) {
+  .frame-head {
+    flex-direction: column;
+    gap: 2px;
+  }
+}
+
+/* The stamp for a verdict drawn outside VerdictStamp (the verdict trio). The
+   hue class sets --hue; the ticks are the corner registration marks. */
+.hue-safe {
+  --hue: var(--color-verdict-safe);
+}
+.hue-risk {
+  --hue: var(--color-verdict-risk);
+}
+.hue-noship {
+  --hue: var(--color-verdict-noship);
+}
+.hue-text {
+  color: var(--hue);
+}
+.stamp {
+  position: relative;
+  padding: 18px 22px;
+  border: 1px solid var(--hue, var(--color-line-strong));
+}
+.tk {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border: 0 solid var(--hue, var(--color-line-strong));
+}
+.tk-tl {
+  top: -4px;
+  left: -4px;
+  border-top-width: 3px;
+  border-left-width: 3px;
+}
+.tk-tr {
+  top: -4px;
+  right: -4px;
+  border-top-width: 3px;
+  border-right-width: 3px;
+}
+.tk-bl {
+  bottom: -4px;
+  left: -4px;
+  border-bottom-width: 3px;
+  border-left-width: 3px;
+}
+.tk-br {
+  bottom: -4px;
+  right: -4px;
+  border-bottom-width: 3px;
+  border-right-width: 3px;
+}
+
+/* ------------------------------------------------------------
+   Figure reveal (components/Reveal.tsx; DESIGN.md, Motion).
+   Reveal sets data-reveal="armed" on a figure that starts below the fold, and
+   "in" once it scrolls into view. The server HTML never carries either value,
+   so nothing here hides anything until script has armed a figure.
+   Hooks inside a figure: .c (a cell, scales in), [data-rv] (a row, rises
+   8px), [data-rv="bar"] (a bar that draws to its --w), [data-stamp] (lands
+   after the rest). --d is a child's own delay, set inline.
+   ------------------------------------------------------------ */
+[data-reveal="armed"] .c {
+  opacity: 0;
+  transform: scale(0.4);
+}
+[data-reveal="armed"] [data-rv] {
+  opacity: 0;
+  transform: translateY(8px);
+}
+[data-reveal="armed"] [data-rv="bar"] {
+  transform: scaleX(0);
+  transform-origin: left;
+}
+[data-reveal="armed"] [data-stamp] {
+  opacity: 0;
+  transform: translateY(6px);
+}
+[data-reveal="in"] .c,
+[data-reveal="in"] [data-rv] {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity var(--transition-duration-settle) var(--ease-entrance)
+      var(--d, 0ms),
+    transform var(--transition-duration-settle) var(--ease-entrance)
+      var(--d, 0ms);
+}
+/* A bar ends exactly on its width, so it takes the draw easing. */
+[data-reveal="in"] [data-rv="bar"] {
+  transform: scaleX(var(--w, 1));
+  transition:
+    opacity var(--transition-duration-settle) var(--ease-draw) var(--d, 0ms),
+    transform var(--transition-duration-draw) var(--ease-draw) var(--d, 0ms);
+}
+/* The stamp is the last thing to land: it is the conclusion of the figure. */
+[data-reveal="in"] [data-stamp] {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity var(--transition-duration-settle) var(--ease-entrance) 700ms,
+    transform var(--transition-duration-settle) var(--ease-entrance) 700ms;
+}
+@media (prefers-reduced-motion: reduce) {
+  /* Reveal never arms under this preference; this is the second guard, and it
+     keeps the order of arrival (opacity) while dropping the movement. */
+  [data-reveal] .c,
+  [data-reveal] [data-rv],
+  [data-reveal] [data-stamp] {
+    transform: none !important;
+  }
+  [data-reveal] [data-rv="bar"] {
+    transform: scaleX(var(--w, 1)) !important;
+  }
+}
+
+/* ------------------------------------------------------------
+   Collapsible panels (tabs, accordion). The server HTML renders every panel
+   open. The inline script in app/layout.tsx sets .js before first paint, and
+   only then does a panel without data-open collapse. So with no script,
+   nothing is hidden. .js is used for nothing else: never for reveal.
+   ------------------------------------------------------------ */
+.js [data-panel]:not([data-open]) {
+  display: none;
+}
+
+@media print {
+  /* Everything is on the page: revealed children at rest, collapsed panels
+     open. */
+  [data-reveal] .c,
+  [data-reveal] [data-rv],
+  [data-reveal] [data-stamp] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  [data-reveal] [data-rv="bar"] {
+    transform: scaleX(var(--w, 1)) !important;
+  }
+}
+/* Tailwind's preflight hides [hidden] with !important inside @layer base, and
+   for important declarations an earlier layer outranks the unlayered styles.
+   An unlayered print rule would lose to it, so this one joins the same layer
+   and wins on specificity. It covers a panel collapsed with data-panel and
+   one collapsed with the hidden attribute. */
+@layer base {
+  @media print {
+    .js [data-panel],
+    .js [data-panel][hidden] {
+      display: block !important;
+    }
   }
 }

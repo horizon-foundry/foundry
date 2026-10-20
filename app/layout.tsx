@@ -88,14 +88,27 @@ const JSON_LD = {
   author: { "@type": "Organization", name: "Horizon Foundry" },
 };
 
+// Runs before first paint. The `js` class has ONE job: it lets the CSS collapse
+// panels (tabs, accordions) that the server renders open, so with no script
+// nothing is ever hidden. It is not a motion flag; figure reveals arm
+// themselves (components/Reveal.tsx). The script is inline, which the CSP
+// allows ('unsafe-inline' in script-src, next.config.ts).
+const JS_CLASS = "document.documentElement.classList.add('js')";
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
+    // suppressHydrationWarning: the script above adds a class React did not
+    // render, which is the one intended difference between server and client.
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${archivoBlack.variable} ${plexSans.variable} ${plexMono.variable} ${plexSerif.variable}`}
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: JS_CLASS }} />
+      </head>
       <body className="min-h-screen antialiased">
         <script
           type="application/ld+json"

@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import type { SpecimenData } from "@/components/Specimen";
+import type { SpecimenData } from "@/lib/specimen-types";
 
 // Reads the suite's own SKILL.md files so the /skills pages render from the
 // canonical source and cannot drift from what's installed. Skills live in
@@ -19,6 +19,35 @@ export const STAGES: { id: Stage; label: string; caption: string; line: string }
   { id: "forge", label: "Forge", caption: "while you build", line: "Build with the discipline that survives a cold start." },
   { id: "deliver", label: "Deliver", caption: "before you ship", line: "Ship on a verdict, not a hope." },
 ];
+
+// DRAFT copy for Craig: what each stage passes on, and the line under the
+// stages. Every mechanism is one a SKILL.md states: frame declares the product
+// and security frame, foundry check cites the event plan, the brand approval
+// and the docs reconcile, and production-audit reads those declarations, where
+// a blank one is a finding. Approved copy replaces this block in place.
+export const HANDOFF: Record<Stage, { to: string; what: string }> = {
+  distill: {
+    to: "hands Forge",
+    what: "A declared frame: who it is for, what success looks like, four security lines.",
+  },
+  forge: {
+    to: "hands Deliver",
+    what: "Records that match the code: the event plan, the brand approval, the docs reconcile.",
+  },
+  deliver: {
+    to: "hands you",
+    what: "One verdict. A missing frame or record comes back as a finding, not a refusal.",
+  },
+};
+
+// Stored as parts so the page can render the command as a link to its skill.
+export const THREAD = {
+  line: "Start anywhere. Each stage sharpens the next.",
+  lead: "You can start at the end:",
+  command: "/production-audit",
+  skill: "production-audit",
+  tail: "runs on any codebase.",
+};
 
 const SKILL_STAGE: Record<string, Stage> = {
   frame: "distill",

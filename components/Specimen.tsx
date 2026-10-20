@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import type { SpecimenData, SpecimenRow } from "@/lib/specimen-types";
 import { SpecimenFill } from "./SpecimenFill";
 
 // A specimen: a framed excerpt of what a skill actually produces, a few rows
@@ -13,14 +14,8 @@ import { SpecimenFill } from "./SpecimenFill";
 // once-on-entry fill for a specimen that starts below the fold, so with no
 // script, or a specimen already on screen, nothing is ever hidden.
 
-export type SpecimenRow = { cells: string[]; flag?: string };
-
-export type SpecimenData = {
-  title: string;
-  provenance: string;
-  columns: string[];
-  rows: SpecimenRow[];
-};
+// The data types live in lib/specimen-types.ts; re-exported for compatibility.
+export type { SpecimenData, SpecimenRow };
 
 // Tone: "plain" flags a row by luminance only, so a specimen adds no hue to a
 // marketing page. "report" is for rows taken from a published audit report,

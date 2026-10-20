@@ -4,7 +4,11 @@ import type {
   AssessedScope,
   AuditReport,
 } from "@/lib/report-types";
-import { SEV_SHORT, VERDICT_LABEL } from "@/lib/report-types";
+import {
+  SEV_SHORT,
+  SEVERITY_ORDER,
+  VERDICT_LABEL,
+} from "@/lib/report-types";
 
 // Literal class maps so Tailwind's JIT sees every class. Color is the ONLY
 // saturated ink in the system and it always means a severity or a verdict
@@ -56,15 +60,29 @@ export function SeverityChip({ severity }: { severity: Severity }) {
   );
 }
 
+// Visual labels for the stamp's severity row. The full name stays for screen
+// readers beside each one, as in StatStrip.
+const SEV_LABEL: Record<Severity, string> = {
+  critical: "crit",
+  high: "high",
+  medium: "med",
+  low: "low",
+  informational: "info",
+};
+
 export function VerdictStamp({
   level,
   posture,
   assessedScope,
+  severityRow,
   className = "",
 }: {
   level: VerdictLevel;
   posture?: string;
   assessedScope?: AssessedScope;
+  // Opt-in: the five severity counts as a row under the posture. A caller that
+  // already shows the counts (ReportView's strip) leaves it off.
+  severityRow?: Record<Severity, number>;
   className?: string;
 }) {
   // Plain, human recommendation. The evidence base (static vs runtime) is stated
@@ -106,6 +124,28 @@ export function VerdictStamp({
         <p className="mt-4 max-w-measure text-lg font-semibold leading-snug text-bone sm:text-xl">
           {posture}
         </p>
+      )}
+      {severityRow && (
+        <dl className="mt-4 grid grid-cols-5 border-t border-line">
+          {SEVERITY_ORDER.map((sev) => (
+            <div
+              key={sev}
+              className={`border-l-[3px] pl-2 pt-2.5 ${SEV_BORDER[sev]}`}
+            >
+              <dt className="font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
+                <span aria-hidden="true">{SEV_LABEL[sev]}</span>
+                <span className="sr-only select-none">{sev}</span>
+              </dt>
+              <dd
+                className={`mt-1.5 font-mono text-xl font-medium tabular-nums ${
+                  severityRow[sev] ? "text-bone" : "text-bone-faint"
+                }`}
+              >
+                {severityRow[sev]}
+              </dd>
+            </div>
+          ))}
+        </dl>
       )}
     </div>
   );

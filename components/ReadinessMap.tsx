@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import type { ReadinessArea, ReadinessRow } from "@/lib/readiness-types";
 
 // The readiness map as a read-only reference: an index of areas, then one
 // ruled list per area. Server component, no client state. It shows no status
@@ -8,19 +9,9 @@ import type { ReactNode } from "react";
 // Cells arrive exactly as written in reference/readiness-map.md, backticks
 // included, and are rendered through Inline below.
 
-export type ReadinessRow = {
-  id: string;
-  concern: string;
-  owner: string;
-  appliesWhen: string;
-  evidence: string;
-};
-
-export type ReadinessArea = {
-  name: string;
-  slug: string;
-  rows: ReadinessRow[];
-};
+// The types live in lib/ so data files can import them; re-exported here for
+// the callers that already read them from the component.
+export type { ReadinessRow, ReadinessArea };
 
 // Backticks in a cell render as inline code. Bone, not amber: amber is the
 // invocable command (DESIGN.md), and a code span in a concern is not one.
