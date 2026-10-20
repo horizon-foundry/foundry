@@ -14,7 +14,7 @@ The three lines above are the machine-readable sign-off the `brand-voice` skill 
 
 The inherited display face is Archivo Black, decided 2026-07-24 (revised from the initial Big Shoulders pick on 2026-07-23, reversed on letterform grounds before any merge). Type is [DESIGN.md](DESIGN.md)'s fact, not duplicated here.
 
-The mark is the parent's too, and it was redrawn: this site carries the revision of 2026-09-19, taken from the parent's design kit (kit v1.3). The drawing before it is retired, and no surface here may still show it. The kit permits the mark bone on ink or slate, ink on bone or white, and slate on white or bone, never slate with ink either way; it also draws one amber alternate, an outline on a full ink ground at 96px and up, which this site does not use because amber here means a command. How the mark is set, in which cut and at which sizes, is again [DESIGN.md](DESIGN.md)'s fact.
+The mark is the parent's too, and it was redrawn: this site carries the revision of 2026-09-19, taken from the parent's design kit (kit v1.4). The drawing before it is retired, and no surface here may still show it. The kit permits the mark bone on ink or slate, ink on bone or white, and slate on white or bone, never slate with ink either way; it also draws one amber alternate, an outline on a full ink ground at 96px and up, which this site does not use because amber here means a command. How the mark is set, in which cut and at which sizes, is again [DESIGN.md](DESIGN.md)'s fact.
 
 ## Purpose
 
