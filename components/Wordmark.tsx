@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 // The Horizon Foundry mark, transcribed from the design kit that lives in the
-// parent brand repo at logo/horizon-foundry-kit (kit v1.3, the mark as revised
+// parent brand repo at logo/horizon-foundry-kit (kit v1.4, the mark as revised
 // 2026-09-19). The kit is the source of truth and these paths are COPIES with
 // no build-time link to it, so a kit revision is a change here in the same
 // pass. The kit's own web/HfSymbol.tsx carries the canonical path and viewBox
@@ -13,7 +13,7 @@ import Link from "next/link";
 // each path:
 //
 //   hf-mark        the canonical cut, for the mark at 48px wide and up
-//   hf-mark-small  the small cut (wider channels, heavier echo ridge), the
+//   hf-mark-small  the small cut (both channels opened, weights unchanged), the
 //                  kit's one permitted second master, required below 48px
 //                  wide or the channels close up when rasterized
 //
@@ -23,7 +23,7 @@ const MARK_ID = "hf-mark";
 const MARK_SMALL_ID = "hf-mark-small";
 
 const MARK_VIEWBOX = "0 0 378.19 246";
-const MARK_SMALL_VIEWBOX = "0 0 384.21 246";
+const MARK_SMALL_VIEWBOX = "0 0 364.4 246";
 
 export function HfSymbolDefs() {
   return (
@@ -38,7 +38,7 @@ export function HfSymbolDefs() {
         <path d="M0 246 L67.03 170.59 L194.58 142.25 L235.69 96 L378.19 246 L303.7 246 L237.01 175.79 L174.6 246 L102.35 246 L158.27 183.1 L120.75 191.43 L72.25 246 Z M82.92 152.72 L218.67 0 L255.99 39.29 L172.95 132.71 Z M245.02 85.5 L286.1 39.29 L378.19 136.23 L328.53 136.23 L286.98 92.49 L269.9 111.69 Z" />
       </symbol>
       <symbol id={MARK_SMALL_ID} viewBox={MARK_SMALL_VIEWBOX}>
-        <path d="M0 246 L65.55 172.26 L200.6 142.25 L241.71 96 L384.21 246 L309.72 246 L243.03 175.79 L180.62 246 L108.37 246 L159.75 188.2 L114.73 198.21 L72.25 246 Z M92.78 141.62 L218.67 0 L255.99 39.29 L182.82 121.61 Z M257.71 78 L292.12 39.29 L384.21 136.23 L323.52 136.23 L293.19 104.31 L288.12 110.01 Z" />
+        <path d="M0 246 L67.03 170.59 L194.58 142.25 L229.03 103.51 L364.4 246 L289.91 246 L230.34 183.29 L174.6 246 L102.35 246 L158.27 183.1 L120.75 191.43 L72.25 246 Z M94.26 139.96 L218.67 0 L255.99 39.29 L184.28 119.95 Z M245.02 85.5 L286.1 39.29 L364.4 121.71 L314.74 121.71 L286.98 92.49 L269.9 111.69 Z" />
       </symbol>
     </svg>
   );
