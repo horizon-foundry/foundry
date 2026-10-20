@@ -1,3 +1,315 @@
 /* Readiness page (app/readiness/page.tsx). Imported by globals.css. The shared
-   figure primitives live in globals.css; only what is specific to this page
-   goes here. */
+   figure primitives (cells, reveal, collapsible panels) live at the end of
+   globals.css; only what is specific to this page goes here. This file comes
+   before them in the cascade, so a selector that must beat one of theirs is
+   written with more weight, not later. Ported from the approved prototype
+   (tmp/directions/instrument/readiness.html), in the site's tokens. */
+
+/* The side column stays in view beside the long list on a wide window. On a
+   short one it is capped to the viewport and scrolls inside itself, so no
+   filter is ever out of reach. Static on a phone. */
+@media (min-width: 901px) {
+  .rd-side {
+    position: sticky;
+    top: 80px;
+    max-height: calc(100dvh - 96px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
+
+/* The whole map as one block of cells. */
+.rd-side .rd-block {
+  gap: 3px;
+  margin-top: 28px;
+  --cs: 12px;
+}
+@media (max-width: 600px) {
+  .rd-side .rd-block {
+    --cs: 11px;
+  }
+}
+
+/* Owner filters: a ruled list, each a link with its cell swatch and count. */
+.rd-filters {
+  display: flex;
+  flex-direction: column;
+  margin-top: 32px;
+  border-top: 1px solid var(--color-line);
+}
+.rd-f {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  padding: 0 6px;
+  border-bottom: 1px solid var(--color-line);
+  font: 400 14px/1 var(--font-mono);
+  color: var(--color-bone-dim);
+  text-decoration: none;
+  transition:
+    background-color var(--transition-duration-tick) var(--ease-exit),
+    color var(--transition-duration-tick) var(--ease-exit);
+}
+.rd-f b {
+  margin-left: auto;
+  font-weight: 500;
+  color: var(--color-bone);
+}
+.rd-f:hover {
+  color: var(--color-bone);
+  background: var(--color-ink-raised);
+  transition-duration: var(--transition-duration-quick);
+  transition-timing-function: var(--ease-entrance);
+}
+.rd-f[aria-current] {
+  color: var(--color-signal);
+  background: var(--color-ink-raised-2);
+  border-left: 2px solid var(--color-bone);
+}
+.rd-f .c {
+  --cs: 14px;
+}
+
+/* Evidence filters: four tiles in one row, sharing their borders. */
+.rd-f-lab {
+  margin-top: 24px;
+  font: 400 12px/1 var(--font-mono);
+  color: var(--color-bone-faint);
+}
+.rd-filters-ev {
+  display: flex;
+  margin-top: 10px;
+}
+.rd-fe {
+  flex: 1 1 25%;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  min-width: 0;
+  min-height: 56px;
+  padding: 8px 4px;
+  margin: 0 -1px -1px 0;
+  border: 1px solid var(--color-line);
+}
+.rd-fe b {
+  margin: 0;
+}
+.rd-fe[aria-current] {
+  position: relative;
+  z-index: 1;
+  border-color: var(--color-bone);
+}
+
+/* The active-filter line and the standing hint. */
+.rd-chip {
+  margin-top: 20px;
+  font: 400 14px/1.4 var(--font-mono);
+  color: var(--color-bone);
+}
+.rd-clear {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--color-bone-dim);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.rd-clear:hover {
+  color: var(--color-bone);
+}
+.rd-hint {
+  display: none;
+  margin-top: 24px;
+  font: 400 13px/1.4 var(--font-mono);
+  color: var(--color-bone-faint);
+}
+/* The hint tells you to select an area, which only does anything with script. */
+.js .rd-hint {
+  display: block;
+}
+.rd-cmd-text {
+  color: var(--color-command);
+}
+
+/* The areas: one ruled block, each area a button over its cells. */
+.rd-areas {
+  --cs: 20px;
+  border-top: 1px solid var(--color-line);
+}
+@media (max-width: 600px) {
+  .rd-areas {
+    --cs: 15px;
+  }
+}
+.rd-area {
+  border-bottom: 1px solid var(--color-line);
+  /* A hash or a pushed filter lands below the sticky header. */
+  scroll-margin-top: 80px;
+}
+.rd-area-h {
+  margin: 0;
+}
+.rd-area-btn {
+  display: grid;
+  grid-template-columns: 240px 1fr 20px;
+  gap: 20px;
+  align-items: center;
+  width: 100%;
+  min-height: 52px;
+  padding: 10px 6px;
+  text-align: left;
+  transition: background-color var(--transition-duration-tick) var(--ease-exit);
+}
+/* With no script the panels are all open and the buttons do nothing, so they
+   look like headings until script arrives. */
+.js .rd-area-btn {
+  cursor: pointer;
+}
+.js .rd-area-btn::after {
+  /* The glyph is decoration: the empty alternative keeps "plus" and "minus"
+     out of the button's name. The plain declaration is the fallback. */
+  content: "+";
+  content: "+" / "";
+  font: 400 16px/1 var(--font-mono);
+  color: var(--color-bone-faint);
+}
+.js .rd-area-btn[aria-expanded="true"]::after {
+  content: "\2212";
+  content: "\2212" / "";
+}
+.js .rd-area-btn:hover {
+  background: var(--color-ink-raised);
+  transition-duration: var(--transition-duration-quick);
+  transition-timing-function: var(--ease-entrance);
+}
+.rd-area-name {
+  font: 400 15px/1.3 var(--font-sans);
+  color: var(--color-bone-dim);
+}
+.rd-area-btn[aria-expanded="true"] .rd-area-name {
+  color: var(--color-signal);
+}
+.rd-area-cells {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+/* Cells dim under a filter; text never does. None of this applies while the
+   list is armed for its entrance (the cells are hidden then, and the reveal
+   owns their opacity and transition). Once the reveal has played, the filter
+   owns opacity, and the reveal keeps its transform transition and --d stagger. */
+.rd-areas-wrap:not([data-reveal="armed"]) .rd-areas[data-filtered] .c[data-dim] {
+  opacity: 0.14;
+}
+.rd-areas-wrap:not([data-reveal]) .rd-areas[data-filtered] .c {
+  transition: opacity var(--transition-duration-quick) var(--ease-exit);
+}
+.rd-areas-wrap[data-reveal="in"] .rd-areas[data-filtered] .c {
+  transition:
+    opacity var(--transition-duration-quick) var(--ease-exit),
+    transform var(--transition-duration-settle) var(--ease-entrance)
+      var(--d, 0ms);
+}
+
+@media (max-width: 600px) {
+  .rd-area-btn {
+    grid-template-columns: 1fr 20px;
+    gap: 10px 12px;
+    padding: 14px 4px;
+  }
+  .rd-area-name {
+    grid-column: 1;
+    font-size: 16px;
+    color: var(--color-bone);
+  }
+  .rd-area-cells {
+    grid-column: 1;
+    gap: 4px;
+  }
+  .js .rd-area-btn::after {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+}
+
+/* A panel: its concerns as one block divided by rules. The collapse itself is
+   the shared [data-panel] contract in globals.css. */
+.rd-panel {
+  padding: 4px 6px 24px;
+}
+.rd-row {
+  margin: 0 -6px;
+  padding: 16px 6px;
+  border-top: 1px solid var(--color-line);
+  scroll-margin-top: 80px;
+}
+.rd-row:first-child {
+  border-top: 0;
+}
+.rd-row:target {
+  background: var(--color-ink-raised);
+}
+.rd-concern {
+  max-width: 62ch;
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--color-bone);
+}
+@media (max-width: 600px) {
+  .rd-concern {
+    font-size: 16px;
+  }
+}
+.rd-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin-top: 8px;
+  font: 400 13px/1.4 var(--font-mono);
+  color: var(--color-bone-faint);
+  overflow-wrap: anywhere;
+}
+
+/* A skill owner is an invocable command, so it takes the command amber. */
+.rd-cmd {
+  color: var(--color-command);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--transition-duration-quick) var(--ease-entrance);
+}
+.rd-cmd:hover {
+  border-color: var(--color-command);
+}
+.rd-cmd:focus-visible {
+  outline-color: var(--color-command);
+}
+.rd-id {
+  color: var(--color-bone-faint);
+  text-decoration: underline;
+  text-decoration-color: var(--color-line-strong);
+  text-underline-offset: 3px;
+}
+.rd-id:hover {
+  color: var(--color-bone);
+}
+
+.rd-empty {
+  padding: 24px 6px;
+  font: 400 14px/1.4 var(--font-mono);
+  color: var(--color-bone-dim);
+}
+
+/* Print: the panels are all open, so the open and close glyphs mean nothing,
+   and the side column flows with the page instead of scrolling inside itself. */
+@media print {
+  .js .rd-area-btn::after {
+    display: none;
+  }
+  .rd-side {
+    position: static;
+    max-height: none;
+    overflow: visible;
+  }
+}

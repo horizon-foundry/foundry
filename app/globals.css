@@ -670,7 +670,8 @@ a:hover .text-command,
 .s-informational {
   background: var(--color-informational);
 }
-/* A skeptic's ruling: solid held, hatched downgraded, dashed not assessed */
+/* A skeptic's ruling: solid held, hatched downgraded, hollow and struck
+   refuted, dashed not assessed */
 .v-confirmed {
   background: var(--color-bone);
 }
@@ -680,6 +681,15 @@ a:hover .text-command,
     135deg,
     transparent 0 3px,
     color-mix(in srgb, var(--color-bone) 55%, transparent) 3px 4.5px
+  );
+}
+.v-refuted {
+  border-color: var(--color-bone);
+  background: linear-gradient(
+    to top right,
+    transparent calc(50% - 0.75px),
+    var(--color-bone) calc(50% - 0.75px) calc(50% + 0.75px),
+    transparent calc(50% + 0.75px)
   );
 }
 .v-na {

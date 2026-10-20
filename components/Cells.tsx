@@ -2,7 +2,7 @@ import type { CSSProperties } from "react";
 
 // A row of cells, the one visual atom the figures share (globals.css, "Cells").
 // Each entry names a variant: an owner group (pa, sk, out), a map state (lit,
-// off), a severity, or a skeptic ruling (confirmed, downgraded, na). Color
+// off), a severity, or a skeptic ruling (confirmed, downgraded, refuted, na). Color
 // means severity or verdict only, so the owner and map variants are luminance.
 const VARIANT = {
   pa: "c-pa",
@@ -17,6 +17,7 @@ const VARIANT = {
   informational: "s-informational",
   confirmed: "v-confirmed",
   downgraded: "v-downgraded",
+  refuted: "v-refuted",
   na: "v-na",
 } as const;
 

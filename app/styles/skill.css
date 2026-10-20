@@ -1,3 +1,1039 @@
-/* Skill pages (app/skills/[slug]/page.tsx). Imported by globals.css. The
-   shared figure primitives live in globals.css; only what is specific to a
-   skill page goes here. */
+/* Skill pages (app/skills/[slug]/page.tsx and the components it lays out:
+   SkillTabs, SkillFigure, Specimen, OwnedBand, AuditMethod). Imported by
+   globals.css. The shared figure primitives (.c, .cells, .frame, .stamp, .tk,
+   the reveal and the collapsible panel contract) live at the end of
+   globals.css; only what is specific to a skill page goes here. Prefix: sk-.
+
+   Ported from the approved Instrument prototype (tmp/directions/instrument,
+   skill-frame.html and skill-production-audit.html). Where the prototype broke
+   a DESIGN.md rule the codebase rule wins: mono labels are sentence case with
+   no letter tracking, text is never dimmed, nothing animates by scroll
+   position, and hue appears only inside a frame that excerpts the real report
+   (the verdict trio). Hover and press states are colour and border only. */
+
+/* ---------- page ---------- */
+.sk-page {
+  min-height: 70vh;
+}
+.sk-wrap {
+  max-width: 1228px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+.sk-d-md,
+.sk-d-sm,
+.sk-d-xs {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--color-bone);
+}
+.sk-d-md {
+  font-size: clamp(30px, 3.6vw, 48px);
+  line-height: 1.06;
+}
+.sk-d-sm {
+  font-size: clamp(26px, 2.6vw, 36px);
+  line-height: 1.08;
+}
+.sk-d-xs {
+  font-size: clamp(22px, 2vw, 28px);
+  line-height: 1.12;
+}
+.sk-n {
+  margin-bottom: 18px;
+  font: 400 13px/1 var(--font-mono);
+  color: var(--color-bone-faint);
+}
+.sk-band {
+  padding: 112px 0;
+  border-top: 1px solid var(--color-line);
+}
+.sk-en {
+  font: 400 12px/1 var(--font-mono);
+  color: var(--color-bone-faint);
+}
+
+/* ---------- hero ---------- */
+.sk-hero {
+  padding: 72px 0 96px;
+}
+/* The lead, the tablist and the figure are three grid children. Wide: the lead
+   and the tabs stack in the left column and the figure spans the right, with a
+   flexible row above and below so the left column stays centered against a
+   taller figure instead of opening a gap between lead and tabs. */
+.sk-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: 1fr auto auto 1fr;
+  grid-template-areas:
+    ". fig"
+    "lead fig"
+    "tabs fig"
+    ". fig";
+  column-gap: 72px;
+}
+.sk-hero-grid > * {
+  min-width: 0;
+}
+.sk-hero-lead {
+  grid-area: lead;
+}
+.sk-hero-fig {
+  grid-area: fig;
+  align-self: center;
+}
+/* A page with no hero figure (production-audit without a published report). */
+.sk-hero-solo {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto;
+  grid-template-areas:
+    "lead"
+    "tabs";
+}
+.sk-crumb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+  align-items: center;
+  margin-bottom: 28px;
+  font: 400 13px/1 var(--font-mono);
+  color: var(--color-bone-faint);
+}
+.sk-crumb a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  color: var(--color-bone-dim);
+  text-decoration: none;
+  transition: color var(--transition-duration-quick) var(--ease-entrance);
+}
+.sk-crumb a:hover {
+  color: var(--color-signal);
+}
+/* The page's h1 is its command: amber, mono, larger than the lede and smaller
+   than the headline beneath it. */
+.sk-cmd {
+  margin: 0 0 18px;
+  font: 400 clamp(22px, 2.2vw, 30px) / 1.2 var(--font-mono);
+  color: var(--color-command);
+  overflow-wrap: anywhere;
+}
+.sk-headline {
+  font: 400 clamp(38px, 5vw, 68px) / 1.02 var(--font-display);
+  letter-spacing: 0;
+  color: var(--color-bone);
+  overflow-wrap: break-word;
+}
+.sk-lede {
+  max-width: 46ch;
+  margin-top: 24px;
+  font-size: clamp(17px, 1.4vw, 20px);
+  line-height: 1.5;
+  color: var(--color-bone-dim);
+}
+
+/* The tablist exists only with script (the .js class); without it both
+   panels simply render, the sell and then the spec. */
+.sk-tabs {
+  grid-area: tabs;
+  display: none;
+  gap: 4px;
+  margin-top: 36px;
+  border-bottom: 1px solid var(--color-line);
+  scroll-margin-top: 112px;
+}
+.js .sk-tabs {
+  display: flex;
+}
+.sk-tabs button {
+  min-height: 48px;
+  padding: 0 16px;
+  margin-bottom: -1px;
+  border-bottom: 2px solid transparent;
+  font: 400 14px/1 var(--font-mono);
+  color: var(--color-bone-faint);
+  cursor: pointer;
+  transition: color var(--transition-duration-quick) var(--ease-entrance);
+}
+.sk-tabs button:hover {
+  color: var(--color-bone);
+}
+.sk-tabs button[aria-selected="true"] {
+  color: var(--color-bone);
+  border-bottom-color: var(--color-bone);
+}
+@media print {
+  .sk-tabs {
+    display: none !important;
+  }
+}
+
+/* ---------- buttons and links ---------- */
+.sk-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 18px;
+  border: 1px solid var(--color-line-strong);
+  font: 400 14px/1 var(--font-mono);
+  color: var(--color-bone);
+  text-decoration: none;
+  transition:
+    border-color var(--transition-duration-quick) var(--ease-entrance),
+    color var(--transition-duration-quick) var(--ease-entrance),
+    background-color var(--transition-duration-quick) var(--ease-entrance);
+}
+.sk-btn:hover {
+  border-color: var(--color-signal);
+  color: var(--color-signal);
+}
+.sk-btn:active {
+  background: var(--color-ink-raised-2);
+  transition-duration: var(--transition-duration-tick);
+}
+.sk-cmdlink {
+  font-family: var(--font-mono);
+  color: var(--color-command);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--transition-duration-quick)
+    var(--ease-entrance);
+}
+.sk-cmdlink:hover {
+  border-bottom-color: var(--color-command);
+}
+
+/* ---------- figures, shared ---------- */
+.sk-fig {
+  min-width: 0;
+}
+.sk-fig figcaption {
+  padding-top: 16px;
+  font: 400 12px/1.5 var(--font-mono);
+  color: var(--color-bone-faint);
+}
+
+/* Highlights with a figure: a band, text and figure alternating. The text is
+   first in the document so it reads first; the figure of an odd band takes the
+   wide column on the left. */
+.sk-hl-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: 88px;
+  align-items: center;
+}
+.sk-hl-grid > * {
+  min-width: 0;
+}
+.sk-hl:not(.sk-hl-flip) .sk-hl-fig {
+  order: -1;
+}
+.sk-hl-line {
+  max-width: 40ch;
+  margin-top: 18px;
+  font-size: 19px;
+  line-height: 1.5;
+  color: var(--color-bone-dim);
+}
+
+/* Highlights without a figure: one numbered row. */
+.sk-plain {
+  padding: 96px 0;
+}
+.sk-plain-grid {
+  display: grid;
+  gap: 56px 48px;
+}
+.sk-cols-1 {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 52ch;
+}
+.sk-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.sk-cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.sk-plain-grid li {
+  padding-top: 24px;
+  border-top: 1px solid var(--color-line-strong);
+}
+.sk-plain-grid .sk-hl-line {
+  font-size: 18px;
+}
+
+/* stat and states */
+.sk-stat-n {
+  font: 400 clamp(56px, 6vw, 96px) / 1 var(--font-display);
+  color: var(--color-bone);
+}
+.sk-states {
+  display: flex;
+  flex-wrap: wrap;
+}
+.sk-states li {
+  display: flex;
+  align-items: center;
+  max-width: 100%;
+  min-height: 64px;
+  margin: 0 -1px -1px 0;
+  padding: 18px 22px;
+  border: 1px solid var(--color-line-strong);
+  font: 400 16px/1.3 var(--font-mono);
+  color: var(--color-bone);
+}
+
+/* ---------- production-audit ---------- */
+/* The verdict trio: the lit verdict is a stamp in its hue (R1's .stamp, .tk
+   and .hue-*), and it is the one thing on the page whose hue is derived from
+   the report. */
+.sk-trio-list {
+  padding: 18px;
+}
+.sk-trio-list li {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 4px 16px;
+  margin-top: -1px;
+  padding: 18px 20px;
+  border: 1px solid var(--color-line);
+}
+.sk-trio-list li strong {
+  font: 500 18px/1.2 var(--font-mono);
+  text-transform: uppercase;
+}
+.sk-trio-list li:not(.sk-trio-on) strong {
+  color: var(--color-bone-faint);
+}
+.sk-trio-list li span:not(.tk) {
+  font: 400 12px/1.2 var(--font-mono);
+  color: var(--color-bone-faint);
+}
+.sk-trio-list .sk-trio-on {
+  z-index: 1;
+  padding: 26px 20px;
+  border-color: var(--hue);
+}
+.sk-trio-list .sk-trio-on strong {
+  font-size: 28px;
+}
+.sk-trio-list .sk-trio-scope {
+  flex-basis: 100%;
+}
+
+.sk-nums {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 48px;
+  margin-bottom: 28px;
+}
+.sk-nums b {
+  display: block;
+  font: 400 clamp(56px, 6vw, 96px) / 1 var(--font-display);
+  color: var(--color-bone);
+}
+.sk-nums span {
+  font: 400 13px/1 var(--font-mono);
+  color: var(--color-bone-faint);
+}
+
+.sk-bars ul {
+  border-top: 1px solid var(--color-line);
+}
+.sk-bars li {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr) 36px;
+  gap: 16px;
+  align-items: center;
+  min-height: 34px;
+  border-bottom: 1px solid var(--color-line);
+}
+.sk-bl {
+  font: 400 13px/1.2 var(--font-mono);
+  color: var(--color-bone-dim);
+}
+.sk-bt {
+  position: relative;
+  display: block;
+  height: 12px;
+}
+/* A bar rests at its width; Reveal's armed state draws it from zero. */
+.sk-bt i {
+  position: absolute;
+  inset: 0;
+  background: var(--color-bone);
+  transform-origin: left;
+  transform: scaleX(var(--w));
+}
+.sk-bn {
+  font: 500 14px/1 var(--font-mono);
+  text-align: right;
+  color: var(--color-bone);
+}
+
+.sk-na-top {
+  display: flex;
+  gap: 28px;
+  align-items: center;
+}
+.sk-na-top b {
+  font: 400 clamp(72px, 8vw, 128px) / 1 var(--font-display);
+  color: var(--color-bone);
+}
+.sk-na-top .cells {
+  max-width: 300px;
+}
+.sk-na-list {
+  margin-top: 28px;
+  border-top: 1px solid var(--color-line);
+}
+.sk-na-list li {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-line);
+  font: 400 14px/1.4 var(--font-mono);
+  color: var(--color-bone-dim);
+}
+.sk-na-list .sk-more {
+  color: var(--color-bone-faint);
+}
+
+/* ---------- frame ---------- */
+.sk-ent-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  padding: 18px;
+}
+.sk-ent-grid li {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 112px;
+  margin: 0 -1px -1px 0;
+  padding: 14px;
+  border: 1px solid var(--color-line);
+}
+.sk-et {
+  font: 500 16px/1.25 var(--font-sans);
+  color: var(--color-bone-dim);
+}
+.sk-ef {
+  margin-top: auto;
+  font: 500 12px/1 var(--font-mono);
+  color: var(--color-bone);
+}
+.sk-ew {
+  font: 400 12px/1.35 var(--font-mono);
+  color: var(--color-bone-dim);
+  overflow-wrap: anywhere;
+}
+.sk-ok {
+  margin-top: auto;
+  font: 400 13px/1 var(--font-mono);
+  color: var(--color-bone-faint);
+}
+.sk-ent-grid li.sk-flag {
+  z-index: 1;
+  border-color: var(--color-bone);
+}
+.sk-ent-grid li.sk-flag .sk-et {
+  color: var(--color-bone);
+}
+.sk-ent-grid li.sk-flag-blank {
+  background: repeating-linear-gradient(
+    135deg,
+    transparent 0 6px,
+    color-mix(in srgb, var(--color-bone) 8%, transparent) 6px 8px
+  );
+}
+
+.sk-pair-row {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1fr;
+  align-items: center;
+}
+.sk-pt {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 120px;
+  padding: 22px 18px;
+  border: 1px solid var(--color-bone);
+  font: 500 20px/1.2 var(--font-sans);
+  color: var(--color-bone);
+}
+.sk-pl {
+  position: relative;
+  text-align: center;
+  font: 400 13px/1 var(--font-mono);
+  color: var(--color-bone-dim);
+}
+.sk-pl span {
+  position: relative;
+  top: -14px;
+}
+.sk-pl i {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: var(--color-bone);
+}
+.sk-pl i::before,
+.sk-pl i::after {
+  content: "";
+  position: absolute;
+  top: -4px;
+  width: 9px;
+  height: 9px;
+  background: var(--color-bone);
+}
+.sk-pl i::before {
+  left: 0;
+}
+.sk-pl i::after {
+  right: 0;
+}
+.sk-pair-cap {
+  margin-top: 24px;
+  font: 400 14px/1.4 var(--font-mono);
+  color: var(--color-bone-dim);
+}
+
+.sk-sec-list {
+  padding: 6px 18px;
+}
+.sk-sec-list li {
+  display: grid;
+  grid-template-columns: 24px 190px minmax(0, 1fr);
+  gap: 14px;
+  align-items: baseline;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--color-line);
+}
+.sk-sec-list li:last-child {
+  border-bottom: 0;
+}
+.sk-sk {
+  font: 500 16px/1.3 var(--font-sans);
+  color: var(--color-bone);
+}
+.sk-sv {
+  font: 400 14px/1.4 var(--font-mono);
+  color: var(--color-bone-dim);
+}
+.sk-sec-list li.sk-blank .sk-sv {
+  justify-self: start;
+  padding: 2px 8px;
+  border: 1px solid var(--color-bone);
+  font-size: 12px;
+  color: var(--color-bone);
+  background: repeating-linear-gradient(
+    135deg,
+    transparent 0 6px,
+    color-mix(in srgb, var(--color-bone) 8%, transparent) 6px 8px
+  );
+}
+.sk-sec-to {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  align-items: baseline;
+  padding: 16px 18px;
+  border-top: 1px solid var(--color-line);
+  font: 400 14px/1.5 var(--font-mono);
+  color: var(--color-bone-dim);
+}
+.sk-sec-out {
+  margin-left: auto;
+  color: var(--color-bone);
+}
+
+/* ---------- the specimen (every other skill's hero figure) ---------- */
+.sk-spec-table {
+  padding: 6px 18px 18px;
+  font: 400 13px/1.5 var(--font-mono);
+}
+.sk-spec-row {
+  display: grid;
+  column-gap: 20px;
+  padding: 10px 0;
+  border-top: 1px solid var(--color-line);
+  color: var(--color-bone-dim);
+}
+.sk-spec-row > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.sk-spec-head {
+  border-top: 0;
+  border-bottom: 1px solid var(--color-line-strong);
+  font-size: 12px;
+  color: var(--color-bone-faint);
+}
+/* The one flagged row, in signal white, with a bar. Luminance, not hue. */
+.sk-spec-row.sk-spec-flagged {
+  margin: 0 -18px;
+  padding: 10px 18px;
+  color: var(--color-signal);
+  background: var(--color-ink-raised-2);
+  box-shadow: inset 2px 0 0 var(--color-signal);
+}
+.sk-spec-flag {
+  grid-column: 1 / -1;
+  justify-self: start;
+  margin-top: 6px;
+  padding: 0 8px;
+  border: 1px solid var(--color-line-strong);
+  font-size: 12px;
+  color: var(--color-signal);
+}
+
+/* ---------- moments ---------- */
+.sk-moments {
+  padding: 112px 0 96px;
+}
+.sk-mo-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: 72px;
+}
+.sk-rule {
+  display: block;
+  width: 48px;
+  height: 1px;
+  margin-bottom: 24px;
+  background: var(--color-bone);
+}
+.sk-mo-list {
+  border-top: 1px solid var(--color-line);
+}
+.sk-mo-list li {
+  display: flex;
+  gap: 28px;
+  padding: 26px 0;
+  border-bottom: 1px solid var(--color-line);
+  font-size: clamp(19px, 1.7vw, 24px);
+  line-height: 1.35;
+  color: var(--color-bone);
+}
+.sk-mo-n {
+  font: 400 13px/2 var(--font-mono);
+  color: var(--color-bone-faint);
+}
+.sk-notfor {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 72px;
+}
+.sk-notfor p {
+  font-size: 17px;
+  color: var(--color-bone-dim);
+}
+/* The compact install line: the command, its copy button, a link to the full
+   install section. Colour and border only on hover. */
+.sk-install {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin-top: 32px;
+  padding: 8px 8px 8px 16px;
+  border: 1px solid var(--color-line);
+  background: var(--color-ink-raised);
+}
+.sk-install code {
+  flex: 1 1 18rem;
+  min-width: 0;
+  font: 400 14px/1.5 var(--font-mono);
+  color: var(--color-command);
+  overflow-wrap: anywhere;
+}
+.sk-install code span {
+  color: var(--color-bone-faint);
+}
+.sk-install-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  font: 400 13px/1 var(--font-mono);
+  color: var(--color-bone-dim);
+  text-decoration: none;
+  transition: color var(--transition-duration-quick) var(--ease-entrance);
+}
+.sk-install-more:hover {
+  color: var(--color-signal);
+}
+
+/* ---------- the share of the readiness map ---------- */
+.sk-own-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: 88px;
+  align-items: start;
+}
+.sk-own-grid > * {
+  min-width: 0;
+}
+.sk-own-n {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.sk-own-n b {
+  font: 400 clamp(80px, 9vw, 140px) / 0.9 var(--font-display);
+  color: var(--color-bone);
+}
+.sk-own-n span[aria-hidden] {
+  font: 400 clamp(28px, 2.6vw, 40px) / 1 var(--font-display);
+  color: var(--color-bone-faint);
+}
+.sk-own-cap {
+  margin: 14px 0 28px;
+  font: 400 13px/1.4 var(--font-mono);
+  color: var(--color-bone-faint);
+}
+.sk-own-rows {
+  border-top: 1px solid var(--color-line);
+}
+.sk-own-rows li {
+  border-bottom: 1px solid var(--color-line);
+}
+.sk-own-rows a {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  min-height: 48px;
+  padding: 14px 0;
+  text-decoration: none;
+}
+.sk-or-id {
+  font: 500 16px/1.3 var(--font-mono);
+  color: var(--color-bone);
+  transition: color var(--transition-duration-quick) var(--ease-entrance);
+}
+.sk-own-rows a:hover .sk-or-id {
+  color: var(--color-signal);
+}
+.sk-or-when {
+  font: 400 13px/1.3 var(--font-mono);
+  color: var(--color-bone-faint);
+  text-align: right;
+}
+/* production-audit's rows are too many to list: the map, its cells lit. One
+   cluster per area, settled in by area. */
+.sk-map {
+  --cs: 15px;
+  display: grid;
+  grid-template-columns: repeat(6, auto);
+  justify-content: start;
+  gap: 22px;
+}
+.sk-map .cells {
+  display: grid;
+  grid-template-columns: repeat(4, var(--cs));
+  gap: 3px;
+  align-content: start;
+}
+
+/* ---------- How it works (production-audit) ---------- */
+.sk-method {
+  padding: 112px 0 120px;
+}
+
+/* ---------- the SKILL.md panel ---------- */
+.sk-md-wrap {
+  padding-top: 24px;
+  padding-bottom: 120px;
+}
+.sk-md-src {
+  margin-bottom: 32px;
+  font: 400 12px/1 var(--font-mono);
+  color: var(--color-bone-faint);
+}
+.sk-md {
+  max-width: 68ch;
+  font-size: 1.0625rem;
+}
+/* A link into a heading of the spec lands below the sticky header. */
+.sk-md :is(h2, h3, h4, h5, h6) {
+  scroll-margin-top: 112px;
+}
+
+/* ---------- tablet and phone ---------- */
+@media (max-width: 900px) {
+  /* Lead, figure, tabs: the tablist is the last thing before the panels, so a
+     tab change is seen where the tabs are. */
+  .sk-hero-grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
+    grid-template-areas:
+      "lead"
+      "fig"
+      "tabs";
+    row-gap: 40px;
+  }
+  .sk-hero-solo {
+    grid-template-areas:
+      "lead"
+      "tabs";
+  }
+  .sk-hero-fig {
+    align-self: start;
+  }
+  .sk-hero {
+    padding-bottom: 32px;
+  }
+  .sk-tabs {
+    margin-top: 0;
+  }
+  .sk-hl-grid,
+  .sk-mo-grid,
+  .sk-own-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 40px;
+  }
+  .sk-hl:not(.sk-hl-flip) .sk-hl-fig {
+    order: 0;
+  }
+  .sk-cols-2,
+  .sk-cols-3 {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 40px;
+  }
+}
+@media (max-width: 600px) {
+  .sk-wrap {
+    padding: 0 16px;
+  }
+  .sk-band {
+    padding: 88px 0;
+  }
+  .sk-plain {
+    padding: 72px 0;
+  }
+  .sk-moments {
+    padding: 88px 0 72px;
+  }
+  .sk-method {
+    padding: 88px 0 96px;
+  }
+  .sk-hero {
+    padding: 24px 0 32px;
+  }
+  .sk-hero-grid {
+    row-gap: 48px;
+  }
+  .sk-crumb {
+    margin-bottom: 18px;
+  }
+  .sk-headline {
+    font-size: 38px;
+  }
+  .sk-d-md {
+    font-size: 32px;
+  }
+  .sk-d-sm {
+    font-size: 28px;
+  }
+  .sk-tabs button {
+    flex: 1;
+    padding: 0 8px;
+  }
+  .sk-hl-grid {
+    gap: 36px;
+  }
+  .sk-hl-line {
+    font-size: 17px;
+  }
+  .sk-btn {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .sk-notfor {
+    margin-top: 48px;
+  }
+  .sk-mo-list li {
+    gap: 16px;
+    padding: 20px 0;
+    font-size: 19px;
+  }
+  .sk-md {
+    font-size: 1rem;
+  }
+  .sk-md-wrap {
+    padding-bottom: 96px;
+  }
+
+  .sk-trio-list {
+    padding: 12px;
+  }
+  .sk-trio-list li {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 16px;
+  }
+  .sk-trio-list li strong {
+    font-size: 15px;
+  }
+  .sk-trio-list .sk-trio-on strong {
+    font-size: 24px;
+  }
+  .sk-nums {
+    gap: 16px 28px;
+  }
+  .sk-nums b {
+    font-size: 64px;
+  }
+  .sk-bars li {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 6px 10px;
+    min-height: 0;
+    padding: 10px 0;
+  }
+  .sk-bars .sk-bt {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    height: 10px;
+  }
+  .sk-bars .sk-bn {
+    grid-row: 1;
+    grid-column: 2;
+  }
+  .sk-bl {
+    font-size: 12px;
+  }
+  .sk-na-top {
+    gap: 18px;
+  }
+  .sk-na-top b {
+    font-size: 80px;
+  }
+  .sk-states li {
+    min-height: 56px;
+    padding: 14px 16px;
+    font-size: 15px;
+  }
+
+  .sk-ent-grid {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 12px;
+  }
+  .sk-ent-grid li {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    min-height: 0;
+    margin: 0 0 -1px 0;
+    padding: 12px 14px;
+  }
+  .sk-ent-grid li .sk-ef,
+  .sk-ent-grid li .sk-ok {
+    margin: 0 0 0 auto;
+  }
+  .sk-ent-grid li .sk-ew {
+    flex-basis: 100%;
+    padding-left: 24px;
+  }
+  .sk-pair-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .sk-pt {
+    min-height: 0;
+    padding: 18px;
+  }
+  .sk-pl {
+    height: 64px;
+  }
+  .sk-pl span {
+    position: absolute;
+    left: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .sk-pl i {
+    left: 50%;
+    right: auto;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    height: auto;
+  }
+  .sk-pl i::before {
+    left: -4px;
+    top: 0;
+  }
+  .sk-pl i::after {
+    left: -4px;
+    right: auto;
+    top: auto;
+    bottom: 0;
+  }
+  .sk-sec-list li {
+    grid-template-columns: 24px minmax(0, 1fr);
+    gap: 4px 10px;
+  }
+  .sk-sec-list .sk-sv {
+    grid-column: 2;
+  }
+  .sk-sec-out {
+    margin-left: 0;
+  }
+
+  /* A specimen's table reads as cards: the first cell is the row's name, the
+     rest are labelled by their column. */
+  .sk-spec-head {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .sk-spec-row:not(.sk-spec-head) {
+    display: block;
+  }
+  .sk-spec-row > span[role="cell"]:not(.sk-spec-flag) {
+    display: block;
+  }
+  .sk-spec-row > span[role="cell"]:first-child {
+    font: 500 15px/1.35 var(--font-sans);
+    color: var(--color-bone);
+  }
+  .sk-spec-row > span[role="cell"]:not(:first-child, .sk-spec-flag)::before {
+    content: attr(data-label) ": ";
+    color: var(--color-bone-faint);
+  }
+  .sk-spec-flag {
+    display: inline-block;
+    margin-top: 8px;
+  }
+
+  .sk-own-rows a {
+    flex-direction: column;
+    gap: 4px;
+  }
+  .sk-or-when {
+    text-align: left;
+  }
+  .sk-map {
+    --cs: 13px;
+    grid-template-columns: repeat(4, auto);
+    gap: 16px 20px;
+  }
+}

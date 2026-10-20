@@ -1,13 +1,21 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
+import type { CSSProperties } from "react";
+import { Reveal } from "@/components/Reveal";
+import { plainPart } from "@/lib/readiness-owners";
+import { READINESS_COPY } from "@/lib/readiness-copy";
+import { ownerGroup } from "@/lib/readiness-types";
 import type { ReadinessArea, ReadinessRow } from "@/lib/readiness-types";
 
-// The readiness map as a read-only reference: an index of areas, then one
-// ruled list per area. Server component, no client state. It shows no status
-// because the map holds none: a concern's state comes from running its owner.
+// The readiness map as an accordion: one row per area, its cells shaded by
+// owner group, and a panel that lists each concern with its owner, when it
+// applies and the evidence that settles it. A server component with no state.
+// Every concern is in the static HTML and every panel is open there; the
+// collapse is CSS under the .js class (data-panel, globals.css), and
+// ReadinessFilter owns the behavior: opening, filtering, the hash.
 //
-// Cells arrive exactly as written in reference/readiness-map.md, backticks
-// included, and are rendered through Inline below.
+// The map shows no status because it holds none: a concern's state comes from
+// running its owner. Cells arrive exactly as written in
+// reference/readiness-map.md, backticks included, and render through Inline.
 
 // The types live in lib/ so data files can import them; re-exported here for
 // the callers that already read them from the component.
@@ -34,98 +42,73 @@ export function Inline({ text }: { text: string }) {
 
 const areaId = (slug: string) => `area-${slug}`;
 
-// "data-migration-safety" reads as "data migration safety".
-const plain = (s: string) => s.replace(/-/g, " ");
-
-const LINK =
-  "text-bone underline decoration-line-strong underline-offset-4 transition-colors hover:text-signal hover:decoration-bone";
-
-// The owner is a skill, a production-audit dimension, or a role outside
-// Foundry's skills. A skill that has no page falls back to plain text, so a
-// link never points at a 404.
-function Owner({ owner, skills }: { owner: string; skills: ReadonlySet<string> }) {
+// The owner is a skill, a production-audit part, or a role that signs off
+// outside the skills. A skill with no page falls back to plain text, so a link
+// never points at a 404.
+function Owner({
+  owner,
+  skills,
+}: {
+  owner: string;
+  skills: ReadonlySet<string>;
+}) {
   const [head, ...rest] = owner.split("/");
-  const tail = rest.join("/");
+  const tail = plainPart(rest.join("/"));
 
   if (head === "outside") {
     return (
-      <>
-        <span className="text-bone">{plain(tail)}</span>
-        <span className="block text-bone-faint">outside Foundry&apos;s skills</span>
-      </>
+      <span>
+        {READINESS_COPY.signedOffBy} {tail}
+      </span>
     );
   }
 
-  const name = skills.has(head) ? (
-    <Link href={`/skills/${head}`} className={`font-mono ${LINK}`}>
-      {head}
-    </Link>
-  ) : (
-    <span className="font-mono text-bone">{head}</span>
-  );
-
   return (
-    <>
-      {name}
-      {tail && <span className="block text-bone-faint">{plain(tail)}</span>}
-    </>
+    <span>
+      {skills.has(head) ? (
+        <Link href={`/skills/${head}`} className="rd-cmd">
+          /{head}
+        </Link>
+      ) : (
+        <span className="font-mono text-bone">{head}</span>
+      )}
+      {tail && <span> · {tail}</span>}
+    </span>
   );
 }
 
-// Same four tracks in the header row and in every row, so the columns line up.
-const LG_COLUMNS = "lg:grid-cols-[minmax(0,1fr)_13rem_14rem_5rem]";
-
-function Field({
-  label,
-  children,
+function Row({
+  row,
+  skills,
 }: {
-  label: string;
-  children: ReactNode;
+  row: ReadinessRow;
+  skills: ReadonlySet<string>;
 }) {
-  // Below sm each field is a label and a value on one line. From sm up the
-  // label sits above its value, and from lg up the column header says it, so
-  // the label stays only for assistive technology.
-  return (
-    <div className="flex gap-x-4 sm:block">
-      <dt className="w-[6.5rem] shrink-0 font-mono text-[0.6875rem] leading-5 text-bone-faint sm:mb-0.5 sm:w-auto lg:sr-only">
-        {label}
-      </dt>
-      <dd className="min-w-0 text-sm leading-5 text-bone-dim [overflow-wrap:anywhere]">
-        {children}
-      </dd>
-    </div>
-  );
-}
-
-function Row({ row, skills }: { row: ReadinessRow; skills: ReadonlySet<string> }) {
   return (
     <li
       id={row.id}
-      data-owner={row.owner.split("/")[0]}
-      className={`group/row grid scroll-mt-28 gap-x-6 gap-y-3 py-4 target:bg-ink-raised lg:items-baseline ${LG_COLUMNS}`}
+      className="rd-row"
+      data-g={ownerGroup(row.owner)}
+      data-s={row.owner.split("/")[0]}
+      data-e={row.evidence}
     >
-      <p className="max-w-measure leading-relaxed text-bone">
-        <Inline text={row.concern} />{" "}
-        <a
-          href={`#${row.id}`}
-          className="font-mono text-[0.6875rem] text-bone-faint opacity-60 transition-opacity hover:text-bone hover:opacity-100 focus-visible:opacity-100 group-hover/row:opacity-100"
-        >
-          {row.id}
+      <p className="rd-concern">
+        <Inline text={row.concern} />
+      </p>
+      <p className="rd-meta">
+        <Owner owner={row.owner} skills={skills} />
+        <span>
+          <span className="sr-only">Evidence: </span>
+          {row.evidence}
+        </span>
+        <span>
+          <span className="sr-only">Applies when: </span>
+          <Inline text={row.appliesWhen} />
+        </span>
+        <a href={`#${row.id}`} className="rd-id">
+          #{row.id}
         </a>
       </p>
-      <dl className="grid gap-y-2 sm:grid-cols-3 sm:gap-x-6 lg:contents">
-        <Field label="Owner">
-          <Owner owner={row.owner} skills={skills} />
-        </Field>
-        <Field label="Applies when">
-          <Inline text={row.appliesWhen} />
-        </Field>
-        <Field label="Evidence">
-          <span className="font-mono">
-            <Inline text={row.evidence} />
-          </span>
-        </Field>
-      </dl>
     </li>
   );
 }
@@ -138,60 +121,64 @@ export function ReadinessMap({
   skills: string[];
 }) {
   const known = new Set(skills);
+  // One stagger across all the cells, so the list lands as a single figure.
+  let n = 0;
 
   return (
-    <>
-      <nav aria-label="Areas">
-        {/* A hairline grid, not cards: 1px gaps over the line colour. The 24
-            areas divide evenly by 2 and by 3, so no cell is left blank. */}
-        <ul className="grid grid-cols-2 gap-px border border-line bg-line md:grid-cols-3">
-          {areas.map((area) => (
-            <li key={area.slug} className="bg-ink">
-              <a
-                href={`#${areaId(area.slug)}`}
-                className="flex min-h-11 items-baseline justify-between gap-3 px-3 py-2.5 text-sm leading-snug text-bone-dim transition-colors hover:bg-ink-raised hover:text-bone"
-              >
-                <span className="min-w-0 [overflow-wrap:anywhere]">{area.name}</span>
-                <span className="font-mono text-[0.6875rem] text-bone-faint">
-                  {area.rows.length}
-                </span>
-              </a>
-            </li>
-          ))}
-        </ul>
-      </nav>
-
-      {areas.map((area) => (
-        <section
-          key={area.slug}
-          aria-labelledby={areaId(area.slug)}
-          data-area
-          className="mt-14"
-        >
-          <h2
-            id={areaId(area.slug)}
-            className="scroll-mt-28 font-display text-xl tracking-normal text-bone sm:text-2xl"
-          >
-            {area.name}
-          </h2>
-          <div className="mt-5 border-y border-line">
-            <div
-              aria-hidden="true"
-              className={`hidden gap-x-6 border-b border-line py-2 font-mono text-[0.6875rem] text-bone-faint lg:grid ${LG_COLUMNS}`}
-            >
-              <span>Concern</span>
-              <span>Owner</span>
-              <span>Applies when</span>
-              <span>Evidence</span>
-            </div>
-            <ul className="divide-y divide-line">
-              {area.rows.map((row) => (
-                <Row key={row.id} row={row} skills={known} />
-              ))}
-            </ul>
-          </div>
-        </section>
-      ))}
-    </>
+    <div>
+      <Reveal className="rd-areas-wrap">
+        <ol className="rd-areas" data-areas>
+          {areas.map((area) => {
+            const panel = `panel-${area.slug}`;
+            return (
+              <li key={area.slug} id={areaId(area.slug)} className="rd-area" data-area>
+                <h2 className="rd-area-h">
+                  {/* Rendered expanded, like the panel: with no script every
+                      panel is open. ReadinessFilter syncs it to the real
+                      state once the page hydrates. */}
+                  <button
+                    type="button"
+                    className="rd-area-btn"
+                    aria-expanded="true"
+                    aria-controls={panel}
+                  >
+                    <span className="rd-area-name">{area.name}</span>
+                    <span className="rd-area-cells" aria-hidden="true">
+                      {area.rows.map((row) => (
+                        <i
+                          key={row.id}
+                          className={`c c-${ownerGroup(row.owner)}`}
+                          data-g={ownerGroup(row.owner)}
+                          data-s={row.owner.split("/")[0]}
+                          data-e={row.evidence}
+                          style={{ "--d": `${3 * n++}ms` } as CSSProperties}
+                        />
+                      ))}
+                    </span>
+                    <span
+                      className="sr-only"
+                      data-count
+                      data-n={area.rows.length}
+                    >
+                      {READINESS_COPY.areaConcerns(area.rows.length)}
+                    </span>
+                  </button>
+                </h2>
+                <div className="rd-panel" id={panel} data-panel>
+                  <ol>
+                    {area.rows.map((row) => (
+                      <Row key={row.id} row={row} skills={known} />
+                    ))}
+                  </ol>
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+      </Reveal>
+      <p className="rd-empty" data-empty hidden>
+        {READINESS_COPY.empty}
+      </p>
+    </div>
   );
 }

@@ -1,37 +1,54 @@
 import Link from "next/link";
-import type React from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Terminal } from "@/components/Terminal";
-import { AuditRun } from "@/components/AuditRun";
 import { HeroInstall, InstallBlock } from "@/components/InstallBlock";
-import { OwnershipBar } from "@/components/OwnershipBar";
-import { selfAudit } from "@/lib/self-audit";
-import { VERDICT_LABEL } from "@/lib/report-types";
-import { listSkills, STAGES } from "@/lib/skills";
+import { Cells, type CellVariant } from "@/components/Cells";
+import { Frame } from "@/components/Frame";
+import { Reveal } from "@/components/Reveal";
+import { StageRail } from "@/components/StageRail";
+import { AreaGrid } from "@/components/AreaGrid";
+import { VerdictStamp } from "@/components/report-ui";
+import { auditFacts, selfAudit } from "@/lib/self-audit";
+import { SEVERITY_ORDER } from "@/lib/report-types";
+import { listSkills } from "@/lib/skills";
 import { readinessOwnership } from "@/lib/readiness-owners";
 import { RESUME_URL, REPO_URL } from "@/lib/site";
 
 /*
-  One story, in seven beats (plan: foundry-site-overhaul, Decision 2):
-  the hero, the problem, the cornerstone (production-audit, the largest
-  moment on the page), the skills by stage, what ready means, install, and
-  who built this. The method, dimensions and principles live on
-  /skills/production-audit. Copy marked DRAFT below is for Craig's approval.
+  One story, in seven beats (plan: foundry-site-overhaul, Decision 2, and the
+  approved Instrument prototype): the hero, the problem, the cornerstone
+  (production-audit, the largest moment on the page), the skills by stage,
+  what ready means, install, and who built this. The method, dimensions and
+  principles live on /skills/production-audit. Every number below is read from
+  the published self-audit or the readiness map, never typed here.
 */
 
 const LINK =
   "text-bone underline decoration-line-strong underline-offset-4 transition-colors hover:text-signal hover:decoration-bone";
 
+// A count as the word a sentence wants. Counts come from the directory and the
+// map; this only spells them.
+const NUMBER_WORD = [
+  "Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight",
+  "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen",
+  "Sixteen", "Seventeen", "Eighteen", "Nineteen", "Twenty",
+];
+const spell = (n: number) => NUMBER_WORD[n] ?? String(n);
+
+const repeat = (variant: CellVariant, n: number): CellVariant[] =>
+  Array.from({ length: n }, () => variant);
+
 export default function Home() {
   const audited = selfAudit();
   const example = audited?.report ?? null;
+  const facts = example ? auditFacts(example) : null;
   const featured = audited ? { slug: audited.slug } : null;
-  const skills = listSkills();
+  const skillCount = listSkills().length;
   const risks = example?.findings.filter((f) => f.kind === "risk").length ?? 0;
   const audit = {
-    verdict: example ? VERDICT_LABEL[example.verdict.level] : "",
-    safe: example?.verdict.level === "safe-to-ship",
+    verdict: facts?.label ?? "",
+    safe: facts?.level === "safe-to-ship",
     risks,
     improvements: (example?.findings.length ?? 0) - risks,
   };
@@ -41,206 +58,258 @@ export default function Home() {
     <>
       <SiteHeader />
       <main id="main">
-        {/* 1. Hero */}
-        <section className="relative overflow-hidden border-b border-line">
-          <div className="relative mx-auto max-w-[1180px] px-5 pb-20 pt-16 sm:px-8 sm:pt-24">
-            <div className="grid grid-cols-[minmax(0,1fr)] gap-12 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-center">
-              <div className="stagger-rise">
-                <p className="font-mono text-xs uppercase tracking-[0.25em] text-bone-faint">
-                  A Horizon Foundry suite · Distill. Forge. Deliver.
-                </p>
-                <h1 className="mt-5 font-display text-4xl leading-[1.05] tracking-normal text-bone sm:text-6xl">
-                  Forge shippable software <br />
-                  from <span className="text-signal">AI-built code</span>.
-                </h1>
-                {/* DRAFT body, for Craig. */}
-                <p className="mt-6 max-w-measure text-lg leading-relaxed text-bone-dim">
-                  Eleven Claude Code skills for building with an AI in the
-                  loop. The flagship reads your whole application and ends in
-                  one verdict you can act on.
-                </p>
-                <HeroInstall />
-              </div>
-              {/* The terminal is the hero's only moving part: it types a real
-                  run and ends on a verdict (DESIGN.md, Motion). */}
-              <div className="stagger-rise">
-                <Terminal audit={audit} />
-              </div>
+        {/* 1. Hero: the kept copy, the prototype's scale. */}
+        <section className="home-hero" aria-labelledby="hero-heading">
+          <div className="home-wrap home-hero-grid">
+            <div className="home-hero-copy stagger-rise">
+              <p className="font-mono text-xs uppercase tracking-[0.25em] text-bone-faint">
+                A Horizon Foundry suite · Distill. Forge. Deliver.
+              </p>
+              <h1 id="hero-heading" className="home-d-xl mt-7">
+                Forge shippable software from{" "}
+                <span className="text-signal">AI-built code</span>.
+              </h1>
+              {/* DRAFT body, for Craig. */}
+              <p className="home-lede mt-7">
+                Eleven Claude Code skills for building with an AI in the
+                loop. The flagship reads your whole application and ends in
+                one verdict you can act on.
+              </p>
+              <HeroInstall />
+            </div>
+            {/* The terminal is the hero's only moving part: it types a real
+                run and ends on a verdict (DESIGN.md, Motion). */}
+            <div className="stagger-rise min-w-0">
+              <Terminal audit={audit} />
             </div>
           </div>
         </section>
 
         {/* 2. The problem */}
-        <section className="border-b border-line">
-          <div className="mx-auto grid max-w-[1180px] gap-6 px-5 py-16 sm:px-8 md:grid-cols-[0.9fr_1.1fr] md:gap-8">
-            <h2 className="font-display text-2xl tracking-normal text-bone sm:text-3xl">
+        <section className="home-band" aria-labelledby="problem-heading">
+          <div className="home-wrap home-band-grid">
+            <h2 id="problem-heading" className="home-d-md">
               Software built fast ships confident and unverified.
             </h2>
-            {/* DRAFT, shortened from the earlier two paragraphs. */}
-            <p className="max-w-measure text-lg leading-relaxed text-bone-dim">
+            <p className="home-lede">
               A security review looks at security. A diff review looks at a
-              diff. None of them answers the question you ask the night before
-              real users arrive: is this safe to ship?
+              diff. Neither tells you if it is safe to ship.
             </p>
           </div>
         </section>
 
-        {/* 3. The cornerstone: production-audit as a sub-hero. As substantive
-            as the hero, lower down. The run replays the published self-audit
-            and lands its verdict last (components/AuditRun.tsx). */}
-        <section aria-labelledby="audit-heading" className="border-b border-line bg-ink-raised">
-          <div className="mx-auto max-w-[1180px] px-5 py-20 sm:px-8 sm:py-28">
-            <div className="grid grid-cols-[minmax(0,1fr)] gap-12 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-center">
-              <div>
-                <p className="font-mono text-sm text-command">/production-audit</p>
-                {/* DRAFT headline and line, for Craig. */}
-                <h2
-                  id="audit-heading"
-                  className="mt-4 max-w-[14ch] font-display text-4xl leading-[1.05] tracking-normal text-bone sm:text-6xl"
-                >
-                  Evidence or it doesn&apos;t ship.
-                </h2>
-                <p className="mt-6 max-w-measure text-lg leading-relaxed text-bone-dim">
-                  It reads the whole app, traces each flow from end to end, and
-                  sends every serious finding to a skeptic before it reaches
-                  the report. Then it decides: safe to ship; ready to ship,
-                  risks noted; or do not ship.
-                </p>
-                <div className="mt-8 flex flex-wrap items-center gap-3">
-                  {featured && (
-                    <Link
-                      href={`/example/${featured.slug}`}
-                      className="inline-flex min-h-11 items-center border border-line-strong bg-bone px-3 py-2 font-mono text-sm font-semibold text-ink transition-opacity hover:opacity-90"
-                    >
-                      Read the self-audit →
-                    </Link>
-                  )}
+        {/* 3. The cornerstone: production-audit as a sub-hero. The run frame is
+            the published self-audit in its own cells (findings by severity,
+            what the skeptics ruled, what could not be run), and the verdict
+            lands last. Hue lives only inside the frame, which excerpts the
+            real report (DESIGN.md, the report-excerpt exception). */}
+        <section className="home-sub" aria-labelledby="audit-heading">
+          <div className="home-wrap home-sub-grid">
+            <div>
+              <p className="font-mono text-base text-command">/production-audit</p>
+              <h2 id="audit-heading" className="home-d-lg mt-5">
+                Evidence or it doesn&apos;t ship.
+              </h2>
+              <p className="home-lede mt-6">
+                It reads the whole app, tries to disprove its own findings,
+                then makes one call.
+              </p>
+              <div className="home-actions">
+                {featured && (
                   <Link
-                    href="/skills/production-audit"
-                    className="inline-flex min-h-11 items-center border border-line px-3 py-2 font-mono text-sm text-bone-dim transition-colors hover:border-line-strong hover:text-bone"
+                    href={`/example/${featured.slug}`}
+                    className="home-btn home-btn-solid"
                   >
-                    How it works →
+                    Read the self-audit <span aria-hidden="true">→</span>
                   </Link>
-                </div>
-              </div>
-
-              <div className="min-w-0">
-                {example && <AuditRun report={example} />}
-                <p className="mt-3 font-mono text-xs leading-relaxed text-bone-faint">
-                  Foundry, audited by Foundry. The repository is public, so
-                  every finding can be read against its source.
-                </p>
+                )}
+                <Link href="/skills/production-audit" className="home-btn">
+                  How it works <span aria-hidden="true">→</span>
+                </Link>
               </div>
             </div>
-          </div>
-        </section>
 
-        {/* 4. The skills, by stage. Each stage is a panel that sticks under
-            the header as the page scrolls, so the next one slides over it and
-            the three stack like a deck: movement from layout, not animation,
-            so reduced motion has nothing to drop. Sticky only from md up: on a
-            phone the Forge panel is taller than the screen, and a panel
-            sliding over it would cover skills nobody has seen yet. */}
-        <section aria-labelledby="skills-heading" className="border-b border-line">
-          <div className="mx-auto max-w-[1180px] px-5 pt-16 sm:px-8">
-            <h2 id="skills-heading" className="font-display text-2xl tracking-normal text-bone sm:text-3xl">
-              Eleven skills, from the idea to the release.
-            </h2>
-          </div>
-          <div className="mx-auto max-w-[1180px] px-5 pb-16 pt-8 sm:px-8">
-            {STAGES.map((stage, i) => (
-              <div
-                key={stage.id}
-                className="stage-panel border border-line bg-ink md:sticky"
-                style={{ "--stage": i } as React.CSSProperties}
+            {example && facts && (
+              <Frame
+                reveal
+                className="home-run"
+                left={
+                  <>
+                    <span className="text-command">/production-audit</span> on
+                    Foundry
+                  </>
+                }
+                right={facts.commit ? `${facts.date} · ${facts.commit}` : facts.date}
+                caption="Foundry, audited by Foundry. The repository is public, so every finding can be read against its source."
               >
-                <div className="grid gap-6 p-5 sm:p-8 md:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] md:gap-10">
-                  <div>
-                    <p className="flex items-baseline gap-3">
-                      <span className="font-mono text-xs text-bone-faint">0{i + 1}</span>
-                      <span className="font-display text-3xl tracking-normal text-signal sm:text-5xl">
-                        {stage.label}
-                      </span>
-                    </p>
-                    <p className="mt-2 font-mono text-xs text-bone-faint">{stage.caption}</p>
-                    <p className="mt-4 max-w-measure leading-relaxed text-bone-dim">{stage.line}</p>
+                <div className="home-run-row">
+                  <div className="home-run-lab">
+                    <b>{facts.findings}</b> findings
+                    <span>
+                      {facts.severity.critical} critical, {facts.severity.high} high
+                    </span>
                   </div>
-                  <ul className="divide-y divide-line border-y border-line self-start">
-                    {skills
-                      .filter((s) => s.stage === stage.id)
-                      .map((s) => (
-                        <li key={s.slug}>
-                          <Link
-                            href={`/skills/${s.slug}`}
-                            className="group grid min-h-11 gap-x-4 py-2.5 sm:grid-cols-[11rem_minmax(0,1fr)] sm:items-baseline"
-                          >
-                            <span className="font-mono text-sm text-command group-hover:underline group-hover:underline-offset-4">
-                              /{s.name}
-                            </span>
-                            <span className="text-sm leading-snug text-bone-dim transition-colors group-hover:text-bone">
-                              {s.copy?.headline ?? s.tagline}
-                            </span>
-                          </Link>
-                        </li>
-                      ))}
-                  </ul>
+                  <Cells
+                    items={SEVERITY_ORDER.flatMap((sev) =>
+                      repeat(sev, facts.severity[sev]),
+                    )}
+                    stagger={520 / Math.max(1, facts.findings)}
+                    label={`${facts.findings} findings: ${facts.severity.critical} critical, ${facts.severity.high} high, ${facts.severity.medium} medium, ${facts.severity.low} low, ${facts.severity.informational} informational`}
+                  />
                 </div>
-              </div>
-            ))}
+                <div className="home-run-row">
+                  <div className="home-run-lab">
+                    <b>{facts.skeptic.checked}</b> sent to a skeptic
+                    <span>
+                      {facts.skeptic.confirmed} confirmed,{" "}
+                      {facts.skeptic.downgraded} downgraded,{" "}
+                      {facts.skeptic.refuted} refuted
+                    </span>
+                  </div>
+                  <Cells
+                    size="big"
+                    items={[
+                      ...repeat("confirmed", facts.skeptic.confirmed),
+                      ...repeat("downgraded", facts.skeptic.downgraded),
+                      ...repeat("refuted", facts.skeptic.refuted),
+                    ]}
+                    stagger={50}
+                    label={`${facts.skeptic.confirmed} confirmed, ${facts.skeptic.downgraded} downgraded, ${facts.skeptic.refuted} refuted`}
+                  />
+                </div>
+                <div className="home-run-row">
+                  <div className="home-run-lab">
+                    <b>{facts.notAssessed.count}</b> checks it could not run
+                    <span>listed by name</span>
+                  </div>
+                  <Cells
+                    size="big"
+                    items={repeat("na", facts.notAssessed.count)}
+                    stagger={30}
+                    label={`${facts.notAssessed.count} checks not assessed`}
+                  />
+                </div>
+                <div data-stamp className="home-stamp">
+                  <VerdictStamp
+                    level={facts.level}
+                    posture={facts.posture}
+                    assessedScope={example.verdict.assessedScope}
+                    severityRow={facts.severity}
+                  />
+                </div>
+              </Frame>
+            )}
           </div>
         </section>
 
-        {/* 5. What ready means */}
-        <section aria-labelledby="ready-heading" className="border-b border-line">
-          <div className="mx-auto grid max-w-[1180px] gap-8 px-5 py-16 sm:px-8 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:items-end">
-            <div>
-              <h2 id="ready-heading" className="font-display text-2xl tracking-normal text-bone sm:text-3xl">
-                What ready means, written down.
+        {/* 4. The skills, by stage. */}
+        <section
+          id="stages"
+          className="home-stages-sec"
+          aria-labelledby="skills-heading"
+        >
+          <div className="home-wrap">
+            <Reveal className="home-sec-head">
+              <span className="home-rule" aria-hidden="true" />
+              <h2 id="skills-heading" className="home-d-md">
+                {spell(skillCount)} skills, from the idea to the release.
               </h2>
-              {/* DRAFT, for Craig. */}
-              <p className="mt-4 max-w-measure leading-relaxed text-bone-dim">
-                {owned.total} concerns decide whether a product is ready for
-                real users. The readiness map names who checks each one,
-                including the {owned.outsideRows} that no skill can.
+            </Reveal>
+            <StageRail />
+          </div>
+        </section>
+
+        {/* 5. What ready means: the map as one figure. */}
+        <section className="home-ready" aria-labelledby="ready-heading">
+          <div className="home-wrap home-ready-grid">
+            <Reveal className="home-ready-copy">
+              <span className="home-rule" aria-hidden="true" />
+              <h2 id="ready-heading" className="home-d-md">
+                {owned.total} concerns decide whether it is ready.
+              </h2>
+              <p className="home-lede mt-6">
+                Each one names who can show it, including the ones no skill can.
               </p>
-              <Link href="/readiness" className={`mt-5 inline-flex min-h-11 items-center font-mono text-sm ${LINK}`}>
-                Open the readiness map →
+            </Reveal>
+            <div className="home-ready-vis">
+              <ul className="home-legend" role="list" aria-label="Owner">
+                <li>
+                  <i className="c c-pa" aria-hidden="true" />
+                  production-audit <b>{owned.auditRows}</b>
+                </li>
+                <li>
+                  <i className="c c-sk" aria-hidden="true" />
+                  {spell(skillCount - 1)} other skills <b>{owned.otherSkillRows}</b>
+                </li>
+                <li>
+                  <i className="c c-out" aria-hidden="true" />
+                  Your team signs off <b>{owned.outsideRows}</b>
+                </li>
+              </ul>
+              <p className="home-legend-note">
+                No skill can prove these: billing, legal, support, staffing.
+                The map names who signs off.
+              </p>
+              <AreaGrid />
+            </div>
+            <div className="home-ready-btn">
+              <Link href="/readiness" className="home-btn">
+                Open the readiness map <span aria-hidden="true">→</span>
               </Link>
             </div>
-            <OwnershipBar owned={owned} />
           </div>
         </section>
 
-        {/* 6. Install */}
-        <InstallBlock />
+        {/* 6. Install. The heading is this page's, passed into the shared block
+            so #install lands on it and the section has one h2. */}
+        <InstallBlock
+          heading={
+            <Reveal className="home-sec-head">
+              <span className="home-rule" aria-hidden="true" />
+              <h2 className="home-d-md">
+                One command. {spell(skillCount)} skills.
+              </h2>
+              <p className="home-lede mt-5">
+                Pick the skills you want. Each one installs as a command.
+              </p>
+            </Reveal>
+          }
+        />
 
         {/* 7. Who built this. DRAFT, for Craig: Horizon Foundry's voice, with
             Craig named. */}
-        <section aria-labelledby="who-heading">
-          <div className="mx-auto max-w-[1180px] px-5 py-16 sm:px-8">
-            <h2 id="who-heading" className="font-display text-2xl tracking-normal text-bone sm:text-3xl">
+        <section className="home-who" aria-labelledby="who-heading">
+          <div className="home-wrap home-who-grid">
+            <h2 id="who-heading" className="home-d-md">
               Built the way it tells you to build.
             </h2>
-            <p className="mt-4 max-w-measure leading-relaxed text-bone-dim">
-              Foundry is made by Horizon Foundry, the studio of{" "}
-              <a href={RESUME_URL} target="_blank" rel="noreferrer" className={LINK}>
-                Craig Martin
-              </a>
-              . This site was built with Foundry: framed, planned, documented and
-              audited by its own skills, and the record is public.
-            </p>
-            <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 font-mono text-sm">
-              <Link href="/behind" className={`inline-flex min-h-11 items-center ${LINK}`}>
-                How it was built
-              </Link>
-              {featured && (
-                <Link href={`/example/${featured.slug}`} className={`inline-flex min-h-11 items-center ${LINK}`}>
-                  The self-audit
+            <div>
+              <p className="home-lede">
+                Foundry is made by Horizon Foundry, the studio of{" "}
+                <a href={RESUME_URL} target="_blank" rel="noreferrer" className={LINK}>
+                  Craig Martin
+                </a>
+                . This site was built with Foundry: framed, planned, documented and
+                audited by its own skills, and the record is public.
+              </p>
+              <div className="home-actions">
+                {featured && (
+                  <Link href={`/example/${featured.slug}`} className="home-btn">
+                    The self-audit <span aria-hidden="true">→</span>
+                  </Link>
+                )}
+                <Link href="/behind" className="home-btn">
+                  How it was built <span aria-hidden="true">→</span>
                 </Link>
-              )}
-              <a href={REPO_URL} target="_blank" rel="noreferrer" className={`inline-flex min-h-11 items-center ${LINK}`}>
-                The source
-              </a>
+                <a
+                  href={REPO_URL}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="home-btn home-btn-q"
+                >
+                  The source <span aria-hidden="true">→</span>
+                </a>
+              </div>
             </div>
           </div>
         </section>

@@ -1,3 +1,660 @@
-/* Homepage surface (app/page.tsx). Imported by globals.css. The shared
-   figure primitives live in globals.css; only what is specific to this page
-   goes here. */
+/* Homepage surface (app/page.tsx, components/StageRail.tsx,
+   components/AreaGrid.tsx). Imported by globals.css. The shared figure
+   primitives (.c, .cells, .frame, .stamp, the reveal hooks) live in
+   globals.css; only what is specific to this page goes here, ported from the
+   approved Instrument prototype (tmp/directions/instrument/src/style.css).
+   Every duration and easing is a DESIGN.md token. */
+
+.home-wrap {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+@media (min-width: 640px) {
+  .home-wrap {
+    padding: 0 32px;
+  }
+}
+
+/* ---- type ---- */
+.home-d-xl,
+.home-d-lg,
+.home-d-md {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--color-bone);
+}
+.home-d-xl {
+  font-size: clamp(42px, 5.8vw, 80px);
+  line-height: 1.02;
+}
+.home-d-lg {
+  font-size: clamp(38px, 5vw, 68px);
+  line-height: 1.02;
+}
+.home-d-md {
+  font-size: clamp(30px, 3.6vw, 48px);
+  line-height: 1.06;
+}
+.home-lede {
+  color: var(--color-bone-dim);
+  font-size: clamp(17px, 1.4vw, 20px);
+  line-height: 1.5;
+  max-width: 46ch;
+}
+
+/* ---- buttons ---- */
+.home-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+}
+.home-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 18px;
+  border: 1px solid var(--color-line-strong);
+  font: 400 14px/1 var(--font-mono);
+  color: var(--color-bone);
+  text-decoration: none;
+  /* Out is fast and straight, in is quick and eased (DESIGN.md, Motion). */
+  transition:
+    border-color var(--transition-duration-tick) var(--ease-exit),
+    color var(--transition-duration-tick) var(--ease-exit),
+    background-color var(--transition-duration-tick) var(--ease-exit);
+}
+.home-btn:hover {
+  border-color: var(--color-signal);
+  color: var(--color-signal);
+  transition:
+    border-color var(--transition-duration-quick) var(--ease-entrance),
+    color var(--transition-duration-quick) var(--ease-entrance),
+    background-color var(--transition-duration-quick) var(--ease-entrance);
+}
+.home-btn:active {
+  background: var(--color-ink-raised-2);
+  transition-duration: var(--transition-duration-tick);
+  transition-timing-function: var(--ease-exit);
+}
+.home-btn-solid {
+  background: var(--color-bone);
+  color: var(--color-ink);
+  border-color: var(--color-bone);
+}
+.home-btn-solid:hover {
+  background: var(--color-signal);
+  color: var(--color-ink);
+}
+.home-btn-q {
+  border-color: transparent;
+  padding-left: 4px;
+}
+.home-btn-q:hover {
+  border-color: transparent;
+}
+
+/* ---- the section rule: a mark that draws once, with its section ---- */
+.home-rule {
+  display: block;
+  width: 48px;
+  height: 1px;
+  background: var(--color-bone);
+  margin-bottom: 24px;
+  transform-origin: left;
+}
+[data-reveal="armed"] .home-rule {
+  transform: scaleX(0);
+}
+[data-reveal="in"] .home-rule {
+  transform: scaleX(1);
+  transition: transform var(--transition-duration-draw) var(--ease-draw);
+}
+
+/* ---- 1. hero ---- */
+.home-hero {
+  padding: 96px 0 104px;
+}
+.home-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: 64px;
+  align-items: center;
+}
+
+/* ---- 2. problem ---- */
+.home-band {
+  border-top: 1px solid var(--color-line);
+  border-bottom: 1px solid var(--color-line);
+  background: color-mix(in srgb, var(--color-ink) 60%, var(--color-ink-raised));
+  padding: 72px 0;
+}
+.home-band-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+.home-band .home-d-md {
+  max-width: 19ch;
+}
+
+/* ---- 3. production-audit sub-hero ---- */
+.home-sub {
+  padding: 128px 0;
+}
+.home-sub-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 72px;
+  align-items: center;
+}
+.home-run {
+  --cs: 13px;
+  min-width: 0;
+}
+.home-run-row {
+  padding: 18px 18px 4px;
+}
+.home-run-lab {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  align-items: baseline;
+  margin-bottom: 10px;
+  font: 400 13px/1.4 var(--font-mono);
+  color: var(--color-bone-dim);
+}
+.home-run-lab b {
+  font-weight: 500;
+  font-size: 20px;
+  color: var(--color-bone);
+}
+.home-run-lab span {
+  font-size: 12px;
+  color: var(--color-bone-faint);
+}
+.home-stamp {
+  margin: 22px 18px 18px;
+}
+
+/* ---- 4. stages ---- */
+.home-stages-sec {
+  border-top: 1px solid var(--color-line);
+  padding: 120px 0 40px;
+}
+.home-sec-head {
+  margin-bottom: 0;
+}
+.home-stages {
+  position: relative;
+  margin-top: 72px;
+  padding-left: 72px;
+}
+/* The rail is drawn complete and never moves with the scroll. */
+.home-rail {
+  position: absolute;
+  left: 5px;
+  top: 6px;
+  bottom: 0;
+  width: 2px;
+  background: var(--color-line-strong);
+}
+.home-stage {
+  position: relative;
+  padding-bottom: 88px;
+}
+.home-stage:last-child {
+  padding-bottom: 24px;
+}
+.home-node {
+  position: absolute;
+  left: -72px;
+  top: 14px;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--color-bone);
+  background: var(--color-bone);
+}
+/* A node lights once, with its stage's reveal. */
+[data-reveal="armed"] .home-node {
+  background: var(--color-ink);
+  border-color: var(--color-line-strong);
+}
+[data-reveal="in"] .home-node {
+  transition:
+    background-color var(--transition-duration-settle) var(--ease-entrance),
+    border-color var(--transition-duration-settle) var(--ease-entrance);
+}
+.home-stage-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 64px;
+  align-items: start;
+}
+/* Sentence-case mono, no tracking: the one tracked-caps kicker is the hero's. */
+.home-stage-n {
+  font: 400 13px/1 var(--font-mono);
+  color: var(--color-bone-faint);
+}
+.home-stage-title {
+  font: 400 clamp(64px, 8.4vw, 128px) / 0.9 var(--font-display);
+  margin: 18px 0 22px;
+  color: var(--color-bone);
+}
+.home-stage-line {
+  color: var(--color-bone-dim);
+  font-size: 20px;
+  max-width: 30ch;
+}
+.home-cmds {
+  border-top: 1px solid var(--color-line);
+  margin-top: 44px;
+}
+.home-cmds li {
+  border-bottom: 1px solid var(--color-line);
+}
+/* Two columns only while the widest command fits whole in a column. --cmd-ch
+   is that command's length in characters (StageRail); Plex Mono advances 0.6em
+   per character. A column is the name plus its padding (the arrow's track and
+   gap, or nothing where the arrow is hidden). At most two columns: each track
+   is at least half the row, less 1px so rounding cannot push the pair to one. */
+.home-cmds {
+  --cmd-fs: 18px;
+  --cmd-pad: 32px;
+  --cmd-gap: 32px;
+}
+.home-cmds-2 {
+  --cmd-min: calc(var(--cmd-ch, 16) * 0.6 * var(--cmd-fs) + var(--cmd-pad));
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(max(var(--cmd-min), calc((100% - var(--cmd-gap)) / 2 - 1px)), 1fr)
+  );
+  column-gap: var(--cmd-gap);
+}
+.home-cmd-link {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 12px;
+  min-height: 52px;
+  padding: 6px 0;
+  text-decoration: none;
+}
+.home-cmd-link::after {
+  content: "→";
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  color: var(--color-bone-faint);
+  transition:
+    transform var(--transition-duration-tick) var(--ease-exit),
+    color var(--transition-duration-tick) var(--ease-exit);
+}
+.home-cmd-link:hover::after {
+  transform: translateX(4px);
+  color: var(--color-command);
+  transition:
+    transform var(--transition-duration-quick) var(--ease-entrance),
+    color var(--transition-duration-quick) var(--ease-entrance);
+}
+/* A command is never split: a column too narrow for it overflows visibly. */
+.home-cmd-name {
+  font: 400 var(--cmd-fs) / 1.3 var(--font-mono);
+  color: var(--color-command);
+  overflow-wrap: normal;
+}
+.home-cmd-link:hover .home-cmd-name {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.home-cmd-tag {
+  grid-column: 1;
+  font: 400 15px/1.4 var(--font-sans);
+  color: var(--color-bone-dim);
+}
+.home-handoff {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 6px 20px;
+  align-items: baseline;
+  max-width: 880px;
+  margin-top: 56px;
+  padding: 18px 0 0;
+  border-top: 1px dashed var(--color-line-strong);
+}
+.home-handoff::before {
+  content: "";
+  position: absolute;
+  left: -66px;
+  top: -1px;
+  width: 58px;
+  height: 1px;
+  background: var(--color-line-strong);
+}
+.home-handoff-end {
+  border-top-style: solid;
+  border-top-color: var(--color-bone);
+}
+.home-ho-k {
+  font: 400 13px/1 var(--font-mono);
+  color: var(--color-bone-faint);
+}
+.home-ho-v {
+  font: 400 clamp(18px, 1.6vw, 22px) / 1.4 var(--font-sans);
+  color: var(--color-bone);
+}
+.home-thread {
+  max-width: 26ch;
+  margin: 56px 0 0 72px;
+  font: 400 clamp(22px, 2.4vw, 32px) / 1.25 var(--font-display);
+  color: var(--color-bone);
+}
+.home-thread-sub {
+  margin: 14px 0 0 72px;
+  font: 400 17px/1.5 var(--font-sans);
+  color: var(--color-bone-dim);
+}
+.home-thread-link {
+  font-family: var(--font-mono);
+  color: var(--color-command);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--transition-duration-tick) var(--ease-exit);
+}
+.home-thread-link:hover {
+  border-bottom-color: var(--color-command);
+  transition: border-color var(--transition-duration-quick) var(--ease-entrance);
+}
+
+/* ---- 5. readiness ---- */
+.home-ready {
+  border-top: 1px solid var(--color-line);
+  padding: 120px 0;
+}
+.home-ready-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  grid-template-areas:
+    "copy vis"
+    "btn  vis";
+  column-gap: 72px;
+}
+.home-ready-copy {
+  grid-area: copy;
+  align-self: end;
+}
+.home-ready-vis {
+  grid-area: vis;
+  align-self: center;
+  min-width: 0;
+}
+.home-ready-btn {
+  grid-area: btn;
+  align-self: start;
+  margin-top: 32px;
+}
+.home-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 28px;
+  font: 400 13px/1 var(--font-mono);
+  color: var(--color-bone-dim);
+}
+.home-legend li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.home-legend b {
+  font-weight: 500;
+  color: var(--color-bone);
+}
+.home-legend-note {
+  max-width: 56ch;
+  margin-top: 12px;
+  font: 400 13px/1.5 var(--font-mono);
+  color: var(--color-bone-faint);
+}
+.home-agrid {
+  --cs: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 40px;
+  margin-top: 28px;
+  border-top: 1px solid var(--color-line);
+}
+.home-ag-row {
+  display: grid;
+  grid-template-columns: minmax(0, 150px) minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  min-height: 40px;
+  border-bottom: 1px solid var(--color-line);
+}
+.home-ag-name {
+  font: 400 13px/1.25 var(--font-sans);
+  color: var(--color-bone-dim);
+}
+.home-ag-cells {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+
+/* ---- 6. install ---- */
+/* The heading sits inside the shared InstallBlock (components/InstallBlock.tsx),
+   which owns the ground and the spacing. */
+
+/* ---- 7. who built this ---- */
+.home-who {
+  padding: 112px 0 128px;
+}
+.home-who-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 72px;
+  align-items: start;
+}
+
+/* ---- tablet and phone ---- */
+@media (max-width: 900px) {
+  .home-hero-grid,
+  .home-band-grid,
+  .home-sub-grid,
+  .home-who-grid,
+  .home-stage-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 40px;
+  }
+  .home-ready-grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "copy"
+      "vis"
+      "btn";
+  }
+  .home-ready-copy {
+    align-self: start;
+  }
+}
+
+@media (max-width: 600px) {
+  .home-d-xl {
+    font-size: 52px;
+    line-height: 0.98;
+  }
+  .home-d-lg {
+    font-size: 38px;
+  }
+  .home-d-md {
+    font-size: 32px;
+  }
+  .home-lede {
+    font-size: 17px;
+  }
+  .home-actions {
+    margin-top: 14px;
+    gap: 8px;
+  }
+
+  /* The hero fills the first screen and the replay waits below it. */
+  .home-hero {
+    padding: 0 0 72px;
+  }
+  .home-hero-grid {
+    gap: 16px;
+  }
+  .home-hero-copy {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: calc(100svh - 8rem);
+    padding-bottom: 24px;
+  }
+
+  .home-band {
+    padding: 64px 0;
+  }
+  .home-band-grid {
+    gap: 20px;
+  }
+  .home-sub {
+    padding: 88px 0;
+  }
+  .home-sub-grid {
+    gap: 56px;
+  }
+  .home-sub .home-btn,
+  .home-who .home-btn,
+  .home-ready-btn .home-btn {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .home-run {
+    --cs: 11px;
+  }
+  .home-run .cells {
+    gap: 3px;
+  }
+  .home-run .cells-big {
+    --cs: 16px;
+    gap: 5px;
+  }
+
+  .home-stages-sec {
+    padding: 88px 0 8px;
+  }
+  .home-stages {
+    margin-top: 48px;
+    padding-left: 32px;
+  }
+  .home-node {
+    left: -32px;
+  }
+  .home-stage {
+    padding-bottom: 96px;
+  }
+  .home-stage:last-child {
+    padding-bottom: 24px;
+  }
+  .home-stage-grid {
+    gap: 28px;
+  }
+  .home-stage-title {
+    font-size: 68px;
+    margin: 14px 0 14px;
+  }
+  .home-stage-line {
+    font-size: 17px;
+  }
+  .home-cmds {
+    margin-top: 0;
+  }
+  /* No arrow here, so its track and gap go too: the name has the column. */
+  .home-cmds {
+    --cmd-fs: 15px;
+    --cmd-pad: 4px;
+    --cmd-gap: 16px;
+  }
+  .home-cmd-link {
+    grid-template-columns: minmax(0, 1fr);
+    column-gap: 0;
+    min-height: 48px;
+  }
+  .home-cmd-link::after {
+    content: none;
+  }
+  .home-handoff {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-top: 36px;
+  }
+  .home-handoff::before {
+    left: -26px;
+    width: 22px;
+  }
+  .home-ho-v {
+    font-size: 17px;
+  }
+  .home-thread {
+    margin: 40px 0 0 0;
+    font-size: 24px;
+  }
+  .home-thread-sub {
+    margin-left: 0;
+  }
+
+  .home-ready {
+    padding: 88px 0;
+  }
+  .home-ready-copy .home-lede {
+    margin-bottom: 36px;
+  }
+  .home-legend {
+    flex-direction: column;
+    gap: 14px;
+    font-size: 14px;
+  }
+  /* Compact, one column, every area still shown. */
+  .home-agrid {
+    --cs: 10px;
+    grid-template-columns: 1fr;
+  }
+  .home-ag-row {
+    grid-template-columns: minmax(0, 130px) minmax(0, 1fr);
+    min-height: 34px;
+    padding: 4px 0;
+  }
+  .home-ready-btn {
+    margin-top: 32px;
+  }
+
+  .home-who {
+    padding: 88px 0 96px;
+  }
+}
+
+/* ---- motion guards ---- */
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] .home-rule {
+    transform: none !important;
+  }
+  /* The hover arrow changes colour only; it does not move. */
+  .home-cmd-link:hover::after {
+    transform: none;
+  }
+}
+@media print {
+  [data-reveal] .home-rule {
+    transform: none !important;
+  }
+  [data-reveal] .home-node {
+    background: var(--color-bone) !important;
+    border-color: var(--color-bone) !important;
+  }
+}

@@ -92,7 +92,9 @@ const DETAIL: { k: string; d: React.ReactNode }[] = [
   },
 ];
 
-export async function InstallBlock() {
+// `heading` replaces the default "Install Foundry" h2, so a page that titles
+// the section itself (the homepage) keeps one heading on the #install anchor.
+export async function InstallBlock({ heading }: { heading?: React.ReactNode } = {}) {
   const stars = await getStars();
 
   // One command and the first thing to run, then everything else folded. The
@@ -102,9 +104,11 @@ export async function InstallBlock() {
     <section id="install" className="scroll-mt-20 border-b border-line bg-ink-raised">
       <div className="mx-auto max-w-[1180px] px-5 py-16 sm:px-8">
         <div className="flex flex-wrap items-end justify-between gap-4">
-          <h2 className="font-display text-2xl tracking-normal text-bone sm:text-3xl">
-            Install Foundry
-          </h2>
+          {heading ?? (
+            <h2 className="font-display text-2xl tracking-normal text-bone sm:text-3xl">
+              Install Foundry
+            </h2>
+          )}
           <StarButton stars={stars} />
         </div>
 
