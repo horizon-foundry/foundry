@@ -19,6 +19,7 @@
 /* One stylesheet per surface, so the steps that build the homepage, the skill
    pages and the readiness page each own one file. Imports precede every other
    rule; the primitives they share are at the end of this file. */
+@import "./styles/stages.css";
 @import "./styles/home.css";
 @import "./styles/skill.css";
 @import "./styles/readiness.css";
@@ -400,94 +401,6 @@ body::before {
    scroll-timeline support the reveal state is simply "shown", and
    the reduced-motion block below disables every effect.
    ============================================================ */
-
-/* A plain fade, used by the specimen fill under reduced motion. The scroll
-   reveals that once used it (.reveal, .reveal-fade) were retired on
-   2026-10-19: the site has one motion idea, the specimen fill. */
-@keyframes reveal-fade {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-/* The homepage's stage panels stick below the header and stack, each one a
-   tab's height lower than the last, so the earlier stages stay readable as a
-   deck while the next slides over. Sticky from md up only (app/page.tsx says
-   why), where the header is one row. */
-.stage-panel {
-  top: calc(4.5rem + var(--stage) * 3.25rem);
-  margin-bottom: 1.5rem;
-}
-.stage-panel:last-child {
-  margin-bottom: 0;
-}
-@media (min-width: 768px) {
-  .stage-panel {
-    margin-bottom: 3rem;
-  }
-}
-
-/* The specimen fill (components/Specimen.tsx, SpecimenFill.tsx; DESIGN.md,
-   Motion). A specimen below the fold is armed by script; on entry its rows
-   land in order on the draw easing and the flag arrives last. The stagger
-   between rows is its own token because no duration token is a gap. */
-:root {
-  --specimen-stagger: 70ms;
-}
-@keyframes specimen-row {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-@keyframes specimen-flag {
-  from {
-    opacity: 0;
-    clip-path: inset(0 100% 0 0);
-  }
-  to {
-    opacity: 1;
-    clip-path: inset(0 0 0 0);
-  }
-}
-[data-fill="armed"] .specimen-row,
-[data-fill="armed"] .specimen-flag {
-  opacity: 0;
-}
-[data-fill="run"] .specimen-row {
-  animation: specimen-row var(--transition-duration-settle) var(--ease-draw)
-    both;
-  animation-delay: calc(var(--i) * var(--specimen-stagger));
-}
-[data-fill="run"] .specimen-flag {
-  animation: specimen-flag var(--transition-duration-draw) var(--ease-draw)
-    both;
-  animation-delay: calc(
-    var(--rows) * var(--specimen-stagger) + var(--transition-duration-settle)
-  );
-}
-@media (prefers-reduced-motion: reduce) {
-  [data-fill="run"] .specimen-row {
-    animation-name: reveal-fade;
-  }
-  [data-fill="run"] .specimen-flag {
-    animation-name: reveal-fade;
-  }
-}
-@media print {
-  [data-fill] .specimen-row,
-  [data-fill] .specimen-flag {
-    animation: none !important;
-    opacity: 1 !important;
-  }
-}
 
 /* Command micro-interaction: the amber tokens warm slightly and lift on hover,
    reinforcing "this is executable". */
