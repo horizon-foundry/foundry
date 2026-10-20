@@ -1,7 +1,9 @@
 {
   "detector": {
     "ignoreRules": [],
-    "ignoreFiles": [],
+    "ignoreFiles": [
+      "tmp/directions/**"
+    ],
     "ignoreValues": [
       {
         "rule": "all-caps-body",
