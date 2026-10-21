@@ -9,20 +9,21 @@ export const dynamic = "force-dynamic";
 /**
  * GET /api/health
  *
- * Supabase keep-alive target, pinged ONCE A DAY by the scheduled workflow in
+ * Supabase keep-alive target, pinged FOUR TIMES A DAY by the scheduled workflow in
  * the Save-Savor repo (that repo covers every app, because GitHub disables
  * schedules in repos quiet for 60 days and a keep-alive lives in quiet repos).
  *
  * NOT the Fly health check target. fly.toml checks `/` every 30 seconds; point
  * that at this route and it would fire a Postgres query 2,880 times a day,
- * forever, on a free-tier project. Frequency is the whole design here: daily.
+ * forever, on a free-tier project. Frequency is the whole design here: every
+ * six hours (one a day was not enough; Save-Savor NOTES, 2026-10-21).
  *
  * Because the URL is public, unauthenticated, and uncacheable, frequency
  * cannot be left to the caller's good manners: a loop against it would drive
  * sustained load through a free-tier PostgREST pool that real /reports
  * sign-ins share. THROTTLE_MS bounds that to one real query per minute per
  * machine, and requests inside the window are answered from the last verdict.
- * The daily ping is many orders of magnitude outside the window, so the
+ * The six-hourly ping is many orders of magnitude outside the window, so the
  * keep-alive itself always performs a real query; only abuse gets the cache.
  * A shared-secret header would be tighter, but it needs a secret set in two
  * repos, and the cheap bound that ships today beats the tight one that waits.
@@ -81,7 +82,7 @@ function healthy() {
 
 // One real database query per minute per machine. Module scope, so it resets
 // when Fly auto-stops the machine; a cold start therefore always probes for
-// real, which is the behaviour the daily ping needs anyway.
+// real, which is the behaviour the scheduled ping needs anyway.
 const THROTTLE_MS = 60_000;
 let lastVerdict: { at: number; ok: boolean } | null = null;
 
