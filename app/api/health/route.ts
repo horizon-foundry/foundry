@@ -31,11 +31,22 @@ export const dynamic = "force-dynamic";
  * Free-tier projects pause after seven days of inactivity, and Supabase
  * documents the criterion as "user database activity", so a query that reaches
  * Postgres is the reading that cannot be wrong. This project's Supabase is
- * auth-only (no tables; reports are JSON files), so the target is a SQL
- * function that stores nothing:
+ * auth-only (reports are JSON files), so its one table exists for this ping.
+ * The function WRITES a row, because a read of `now()` reached Postgres every
+ * day and Supabase still warned on 2026-10-21 that the project lacked
+ * "sufficient activity" (NOTES, 2026-10-21). Row level security is on with no
+ * policies, so anon can run the function but cannot touch the table:
  *
- *   create function public.ping() returns timestamptz language sql
- *     as $$ select now() $$;
+ *   create table public.keepalive (
+ *     id int primary key default 1 check (id = 1),
+ *     pinged_at timestamptz not null default now()
+ *   );
+ *   insert into public.keepalive default values;
+ *   alter table public.keepalive enable row level security;
+ *   create or replace function public.ping() returns timestamptz
+ *     language sql security definer set search_path = public
+ *     as $$ update public.keepalive set pinged_at = now() where id = 1
+ *       returning pinged_at $$;
  *   grant execute on function public.ping() to anon;
  *
  * The DDL has no other home in this repo, so keep this comment authoritative.
