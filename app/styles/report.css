@@ -1,0 +1,838 @@
+/* The report surfaces: a report view (components/ReportView.tsx, report-ui.tsx
+   and ReportScorecard.tsx, shown at /example/[slug] and /reports/[slug]), the
+   reports index (app/reports/) and the sign-in page (app/unlock/). Imported
+   by globals.css. The grounds, the type ramp, the content cap (.wrap), the
+   button, the text link, the cell (.c) and the sheet live in globals.css;
+   only what is specific to these pages goes here. Prefixes: rp- (a report),
+   rps- (the index), ul- (sign-in).
+
+   A report in the dark instrument. It opens on Slate with what was audited
+   and the verdict as the White sheet, the one light object on the page. On
+   the sheet the verdict hue fills a band under Ink type. Everything under it
+   is on Ink, and only on Ink, because that is where a severity or a verdict
+   hue is legible as type. Measured on Ink: critical 5.84, high 8.66, medium
+   11.62, low 7.39, informational 5.70, safe 8.44. On Slate, critical (3.31),
+   low (4.19) and informational (3.23) fail, so no hue is ever type on Slate.
+
+   Values are IBM Plex Mono and are set as written: a path, a commit and a
+   finding ID are never forced to capitals. Headings are Zalando Sans. Rules
+   are 2px Slate between sections; the 1px ledger line divides the rows of one
+   list. Nothing is raised, tinted or rounded. */
+
+/* ---- shared parts ---- */
+/* A key: the small mono capital that names a value beside or under it. */
+.rp-k {
+  font: 500 0.75rem/1.4 var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+/* A mid heading: Zalando Extrabold on the h3 step. */
+.rp-h {
+  font: 800 var(--text-h3) / var(--text-h3--line-height) var(--font-display);
+  letter-spacing: var(--tracking-head);
+  color: var(--fg);
+}
+/* A small text link: semibold, the site's underline. The anchor is the 44px
+   target. */
+.rp-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font: 600 var(--text-small) / 1.5 var(--font-sans);
+  color: var(--fg);
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 5px;
+  cursor: pointer;
+}
+.rp-link:hover {
+  text-decoration-thickness: 3px;
+}
+/* The open and close glyph of a disclosure, as on the readiness map. It is
+   decoration: the empty alternative keeps it out of the summary's name. */
+.rp-toggle::after {
+  content: "+";
+  content: "+" / "";
+  flex: none;
+  width: 20px;
+  font: 400 1.125rem/1.2 var(--font-mono);
+  text-align: center;
+  color: var(--fg-2);
+}
+details[open] > .rp-toggle::after {
+  content: "\2212";
+  content: "\2212" / "";
+  color: var(--fg);
+}
+.rp summary {
+  list-style: none;
+  cursor: pointer;
+}
+.rp summary::-webkit-details-marker {
+  display: none;
+}
+/* A severity or a verdict named in its hue: the cell, then the word. */
+.rp-sev {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: 500 0.75rem/1.3 var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.rp-sev .c {
+  --cs: 10px;
+}
+.rp-ok {
+  background: var(--color-verdict-safe);
+}
+
+/* ---- the head, on Slate: what was audited, and the verdict sheet ---- */
+.rp {
+  overflow-wrap: break-word;
+}
+.rp-head {
+  padding: clamp(24px, 3vw, 40px) 0 clamp(40px, 5vw, 64px);
+}
+.rp-head-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 28px;
+}
+.rp-head-grid > * {
+  min-width: 0;
+}
+.rp-back {
+  margin-bottom: 8px;
+}
+.rp-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 20px;
+  margin-top: 16px;
+  font: 400 var(--text-meta) / var(--text-meta--line-height) var(--font-mono);
+  color: var(--fg-2);
+}
+.rp-note {
+  max-width: 34rem;
+  margin-top: 20px;
+  font-size: var(--text-small);
+  line-height: var(--text-small--line-height);
+  color: var(--fg-2);
+}
+.rp-note strong {
+  font-weight: 600;
+  color: var(--fg);
+}
+/* The sheet's word is sized from the sheet so the verdict stays whole: one
+   line for the two short verdicts, two for the long one. */
+.rp-sheet {
+  margin: 18px 0;
+}
+.rp-sheet .sheet-word {
+  font-size: 12.75cqw;
+  line-height: 0.9;
+  overflow-wrap: normal;
+}
+.rp-sheet[data-level="ship-with-known-risks"] .sheet-word {
+  font-size: 11cqw;
+}
+/* A sheet with the verdict alone: the band is the whole page. */
+.rp-sheet {
+  display: flex;
+  flex-direction: column;
+}
+.rp-sheet .sheet-verdict:last-child {
+  flex: 1;
+  border-bottom: 0;
+}
+.rp-sheet .sheet-posture {
+  max-width: 40rem;
+}
+.rp-why {
+  max-width: 40rem;
+}
+.rp-why summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  font: 600 var(--text-small) / 1.5 var(--font-sans);
+  color: var(--fg);
+}
+.rp-why summary > span {
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 5px;
+}
+.rp-why summary:hover > span {
+  text-decoration-thickness: 3px;
+}
+.rp-why p {
+  margin-top: 4px;
+  font-size: var(--text-small);
+  line-height: 1.55;
+  color: var(--fg-2);
+}
+
+/* ---- the body, on Ink ---- */
+.rp-body {
+  padding-bottom: var(--section-y);
+}
+/* A section of the report: its name on the left, its rows on the right,
+   under one 2px rule. Below the split the name sits on top. */
+.rp-block {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 20px;
+  padding: 26px 0 52px;
+  border-top: 2px solid var(--rule);
+  scroll-margin-top: calc(var(--header-h) + 8px);
+}
+.rp-block:first-child {
+  border-top: 0;
+  padding-top: clamp(32px, 4vw, 48px);
+}
+.rp-block > * {
+  min-width: 0;
+}
+.rp-intro {
+  max-width: 26rem;
+  margin-top: 10px;
+  font-size: var(--text-small);
+  line-height: var(--text-small--line-height);
+  color: var(--fg-2);
+}
+@media (width >= 68.75rem) {
+  .rp-head-grid,
+  .rp-block {
+    grid-template-columns: 420px minmax(0, 1fr);
+    column-gap: 52px;
+  }
+  .rp-head-grid {
+    row-gap: 0;
+  }
+  .rp-ident {
+    grid-row: 1 / span 2;
+  }
+  .rp-block-head {
+    align-self: start;
+    position: sticky;
+    top: calc(var(--header-h) + 24px);
+  }
+}
+
+/* The scorecard: five counts, each in its severity hue, and a jump table
+   into the report. */
+.rp-score {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  border: 2px solid var(--rule);
+  overflow-wrap: normal;
+}
+.rp-score-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  min-height: 84px;
+  padding: 14px 0 12px 14px;
+  border-left: 1px solid var(--ledger);
+  text-align: left;
+}
+.rp-score-cell:first-child {
+  border-left: 0;
+}
+/* A count that has findings behind it is a button; a zero is inert. */
+button.rp-score-cell:not([aria-disabled="true"]) {
+  cursor: pointer;
+}
+.rp-score-cell:focus-visible {
+  outline-offset: -4px;
+}
+.rp-score-n {
+  font: 500 2rem/1 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  text-underline-offset: 6px;
+  text-decoration-thickness: 2px;
+}
+button.rp-score-cell:not([aria-disabled="true"]):hover .rp-score-n {
+  text-decoration-line: underline;
+}
+button.rp-score-cell:not([aria-disabled="true"]):hover .rp-k {
+  color: var(--fg);
+}
+.rp-tally {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 22px;
+  margin-top: 6px;
+  font: 400 var(--text-meta) / 1.4 var(--font-mono);
+  color: var(--fg-2);
+}
+.rp-tally > * {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+}
+.rp-tally button {
+  min-height: 44px;
+  color: var(--fg);
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 5px;
+  cursor: pointer;
+}
+.rp-tally button:hover {
+  text-decoration-thickness: 3px;
+}
+
+/* The gates and what the run left out. */
+.rp-gates {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 24px;
+  font: 500 var(--text-meta) / 1.4 var(--font-mono);
+  color: var(--fg);
+}
+.rp-gates b {
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.rp-gate-note {
+  max-width: 40rem;
+  margin-top: 14px;
+  font-size: var(--text-small);
+  line-height: 1.55;
+  color: var(--fg-2);
+}
+.rp-gate-note .rp-k {
+  color: inherit;
+}
+.rp-left-out {
+  margin-top: 16px;
+}
+.rp-left-out span {
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--fg-2);
+}
+
+/* A list of the report: rows under the section's rule, a ledger line between
+   them. */
+.rp-list > li,
+.rp-list > details,
+.rp-fold-rows > details {
+  border-bottom: 1px solid var(--ledger);
+}
+.rp-list > :last-child {
+  border-bottom: 0;
+}
+.rp-row {
+  padding: 16px 0;
+}
+.rp-title {
+  font: 600 var(--text-small) / 1.4 var(--font-sans);
+  color: var(--fg);
+}
+.rp-text {
+  max-width: 40rem;
+  margin-top: 6px;
+  font-size: var(--text-small);
+  line-height: 1.55;
+  color: var(--fg-2);
+}
+.rp-ids {
+  margin-top: 8px;
+  font: 400 var(--text-meta) / 1.4 var(--font-mono);
+  color: var(--fg-3);
+}
+.rp-empty {
+  font-size: var(--text-body);
+  color: var(--fg-2);
+}
+
+/* A finding: its ID and severity in the severity's hue, the issue, and where
+   it is. The columns hold across rows, so the list reads as a ledger. */
+.rp-finding > summary {
+  display: grid;
+  grid-template-columns: 5.25rem 8rem minmax(0, 1fr) 20px;
+  gap: 4px 16px;
+  align-items: baseline;
+  padding: 15px 0;
+  scroll-margin-top: calc(var(--header-h) + 8px);
+}
+.rp-finding {
+  scroll-margin-top: calc(var(--header-h) + 8px);
+}
+.rp-fid {
+  font: 600 var(--text-meta) / 1.4 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.rp-issue {
+  display: block;
+  font: 600 var(--text-small) / 1.4 var(--font-sans);
+  color: var(--fg);
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1.5px;
+}
+.rp-finding > summary:hover .rp-issue,
+.rp-strength > summary:hover .rp-title {
+  text-decoration-line: underline;
+}
+.rp-where {
+  display: block;
+  margin-top: 4px;
+  font: 400 var(--text-meta) / 1.4 var(--font-mono);
+  color: var(--fg-3);
+}
+.rp-detail {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  padding: 4px 36px 24px calc(13.25rem + 32px);
+}
+.rp-field-v {
+  max-width: 40rem;
+  margin-top: 4px;
+  font-size: var(--text-small);
+  line-height: 1.55;
+  color: var(--fg-2);
+}
+/* Evidence and locations: mono, in an Ink well, kept as written. */
+.rp-field-mono {
+  max-width: none;
+  margin-top: 6px;
+  padding: 10px 12px;
+  border: 2px solid var(--rule);
+  background: var(--color-ink);
+  font: 400 var(--text-meta) / 1.55 var(--font-mono);
+  white-space: pre-wrap;
+  color: var(--fg);
+}
+.rp-conf {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 24px;
+  padding-top: 14px;
+  border-top: 1px solid var(--ledger);
+}
+.rp-refute {
+  max-width: 40rem;
+  font: 400 var(--text-meta) / 1.55 var(--font-mono);
+  color: var(--fg-2);
+}
+/* The low and informational rows, folded into one disclosure. */
+.rp-fold > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 52px;
+  font: 400 var(--text-meta) / 1.4 var(--font-mono);
+  color: var(--fg);
+}
+.rp-fold-rows {
+  border-top: 1px solid var(--ledger);
+}
+.rp-fold-rows > details:last-child {
+  border-bottom: 0;
+}
+
+/* What drives the verdict: the finding's ID, as a link, and its issue. */
+.rp-driver {
+  display: grid;
+  grid-template-columns: 5.25rem minmax(0, 1fr);
+  gap: 0 16px;
+  align-items: baseline;
+  padding: 4px 0 8px;
+}
+.rp-driver a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 4px;
+}
+.rp-driver a:hover {
+  text-decoration-thickness: 3px;
+}
+.rp-driver span {
+  font-size: var(--text-small);
+  line-height: 1.45;
+  color: var(--fg-2);
+}
+
+/* What is solid: a safe-green cell, the area, and its note behind it. */
+.rp-strength > summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  padding: 10px 0;
+}
+.rp-strength > summary .c {
+  --cs: 10px;
+}
+.rp-strength > summary .rp-title {
+  flex: 1;
+  min-width: 0;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1.5px;
+}
+.rp-strength > p {
+  max-width: 40rem;
+  padding: 0 36px 18px 22px;
+  font-size: var(--text-small);
+  line-height: 1.55;
+  color: var(--fg-2);
+}
+
+/* The plan: a step's number, then the step. */
+.rp-step {
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr);
+  gap: 0 16px;
+  align-items: baseline;
+}
+.rp-step-n {
+  font: 500 var(--text-meta) / 1.4 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--fg-3);
+}
+.rp-win-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2px 16px;
+}
+.rp-win-head .rp-ids {
+  margin-top: 0;
+}
+/* The sweeps: the tool, its outcome, what it found. */
+.rp-sweep {
+  display: grid;
+  grid-template-columns: 11rem 7rem minmax(0, 1fr);
+  gap: 2px 16px;
+  align-items: baseline;
+  padding: 12px 0;
+}
+.rp-sweep-name {
+  font: 500 var(--text-meta) / 1.4 var(--font-mono);
+  color: var(--fg);
+}
+.rp-sweep-out {
+  font: 400 var(--text-meta) / 1.4 var(--font-mono);
+  color: var(--fg-2);
+}
+.rp-sweep .rp-text {
+  margin-top: 0;
+}
+
+@media (width < 40rem) {
+  /* A report must not bury the verdict: on a phone the first screen reaches
+     the sheet and the scorecard, so the head is set tighter here. */
+  .rp-head {
+    padding: 12px 0 8px;
+  }
+  .rp-head-grid {
+    gap: 6px;
+  }
+  .rp-back {
+    margin-bottom: 0;
+  }
+  .rp-facts {
+    margin-top: 10px;
+  }
+  .rp-note {
+    margin-top: 12px;
+  }
+  .rp-sheet .sheet-head {
+    padding-block: 9px;
+  }
+  .rp-sheet .sheet-verdict {
+    padding-block: 14px 16px;
+  }
+  .rp-sheet .sheet-body {
+    padding-block: 14px 18px;
+  }
+  .rp-block:first-child {
+    padding-top: 20px;
+  }
+  .rp-score-cell {
+    min-height: 76px;
+    padding: 12px 0 10px 8px;
+  }
+  .rp-score-n {
+    font-size: 1.625rem;
+  }
+  .rp-score .rp-k {
+    letter-spacing: 0;
+  }
+  /* The ID and the severity sit above the issue: sharing one row squeezed
+     the issue to a few words a line on a phone. */
+  .rp-finding > summary {
+    grid-template-columns: auto minmax(0, 1fr) 20px;
+  }
+  .rp-finding > summary > .rp-what {
+    grid-column: 1 / span 2;
+    grid-row: 2;
+  }
+  .rp-finding > summary::after {
+    grid-column: 3;
+    grid-row: 1;
+  }
+  .rp-detail {
+    padding: 0 0 22px;
+  }
+  .rp-strength > p {
+    padding-right: 0;
+  }
+  .rp-sweep {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .rp-sweep .rp-text {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ---- the reports index ---- */
+/* The strip that says who is signed in, on Ink under the header. */
+.rps-who {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0 24px;
+  min-height: 56px;
+  padding-block: 6px;
+  font: 400 var(--text-meta) / 1.4 var(--font-mono);
+  color: var(--fg-2);
+  overflow-wrap: anywhere;
+}
+.rps-who b {
+  font-weight: 500;
+  color: var(--fg);
+}
+.rps-who i {
+  margin-left: 12px;
+  font-style: normal;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg);
+}
+.rps-head {
+  padding: clamp(40px, 5vw, 72px) 0 clamp(40px, 5vw, 64px);
+}
+.rps-head .d-title {
+  max-width: 13em;
+  overflow-wrap: break-word;
+}
+.rps-head .t-lead {
+  max-width: 40rem;
+  margin-top: 24px;
+}
+.rps-sec {
+  padding: clamp(40px, 5vw, 64px) 0 var(--section-y);
+}
+.rps-sec + .rps-sec {
+  padding-top: 0;
+}
+.rps-sec .d-h2 + .t-lead {
+  max-width: 40rem;
+  margin-top: 20px;
+}
+.rps-list {
+  border-top: 2px solid var(--rule);
+  border-bottom: 2px solid var(--rule);
+}
+.rps-sec .t-lead + .rps-list,
+.rps-sec .d-h2 + .rps-list {
+  margin-top: 36px;
+}
+.rps-list > li + li {
+  border-top: 2px solid var(--rule);
+}
+.rps-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px 32px;
+  align-items: baseline;
+  padding: 28px 0 24px;
+  text-decoration: none;
+}
+.rps-name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 18px;
+}
+.rps-name > :first-child {
+  font: 900 var(--text-statement) / var(--text-statement--line-height)
+    var(--font-display);
+  letter-spacing: var(--tracking-display);
+  color: var(--fg);
+  overflow-wrap: anywhere;
+  text-underline-offset: 6px;
+  text-decoration-thickness: 3px;
+}
+.rps-row:hover .rps-name > :first-child {
+  text-decoration-line: underline;
+}
+.rps-facts {
+  grid-column: 1 / -1;
+  font: 400 var(--text-meta) / 1.4 var(--font-mono);
+  color: var(--fg-2);
+}
+.rps-what {
+  grid-column: 1 / -1;
+  max-width: 40rem;
+  color: var(--fg-2);
+}
+.rps-go {
+  grid-column: 1 / -1;
+  justify-self: start;
+}
+.rps-row:hover .rps-go {
+  text-decoration-thickness: 3px;
+}
+/* An owned report: the project and its date, then its counts and verdict. */
+.rps-owned {
+  align-items: center;
+  padding: 22px 0;
+}
+.rps-owned .rps-name > :first-child {
+  font: 800 var(--text-h3) / var(--text-h3--line-height) var(--font-display);
+  letter-spacing: var(--tracking-head);
+  text-decoration-thickness: 2px;
+}
+.rps-owned .rps-facts {
+  grid-column: auto;
+  margin-top: 4px;
+}
+.rps-state {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 24px;
+}
+.rps-counts {
+  display: flex;
+  gap: 10px;
+  font: 500 var(--text-meta) / 1.4 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.rps-empty {
+  max-width: 40rem;
+  color: var(--fg-2);
+}
+/* The way to a visitor's own reports: the words, then the one button. */
+.rps-own {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px 40px;
+  margin-top: 48px;
+}
+.rps-own p:last-child {
+  max-width: 40rem;
+  margin-top: 8px;
+  color: var(--fg-2);
+}
+@media (width < 40rem) {
+  .rps-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .rps-own .btn {
+    width: 100%;
+  }
+}
+
+/* ---- sign-in, on Slate ---- */
+.ul {
+  min-height: 70vh;
+  padding: clamp(40px, 6vw, 88px) 0 var(--section-y);
+}
+.ul-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+}
+@media (width >= 68.75rem) {
+  .ul-grid {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: 52px;
+  }
+}
+.ul-body {
+  max-width: 34rem;
+}
+.ul-body .t-lead + .t-lead {
+  margin-top: 16px;
+}
+.ul-form {
+  display: grid;
+  gap: 12px;
+  margin-top: 32px;
+}
+.ul-form label {
+  display: block;
+  margin-bottom: 8px;
+}
+/* The field is the command field's own well: Ink, a 2px Bone edge, Bone mono.
+   Never under 16px, so iOS Safari does not zoom on focus. */
+.ul-input {
+  width: 100%;
+  min-height: 54px;
+  padding: 10px 18px;
+  border: 2px solid var(--fg);
+  background: var(--field);
+  font: 500 1rem/1.4 var(--font-mono);
+  color: var(--fg);
+  caret-color: var(--fg);
+}
+.ul-input::placeholder {
+  font-weight: 400;
+  color: var(--color-fog);
+  opacity: 1;
+}
+/* An error: Bone type in an Ink box with the critical red as its edge and its
+   cell. Red is never type on Slate (3.31 to 1). */
+.ul-error {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 12px 16px;
+  border: 2px solid var(--color-critical);
+  background: var(--color-ink);
+  font-size: var(--text-small);
+  line-height: 1.45;
+  color: var(--color-bone);
+}
+.ul-error .c {
+  --cs: 10px;
+}
+.ul-submit {
+  width: 100%;
+}
+.ul-submit:active {
+  background: var(--color-white);
+}
+.ul-submit:disabled {
+  cursor: progress;
+  background: var(--color-mist);
+}
+.ul-sent {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  color: var(--fg);
+  overflow-wrap: anywhere;
+}

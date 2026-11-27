@@ -16,7 +16,14 @@ import {
 
 const words = (id: string) => id.replace(/-/g, " ");
 
-export function OwnedBand({ slug }: { slug: string }) {
+export function OwnedBand({
+  slug,
+  ground,
+}: {
+  slug: string;
+  // The band's ground: the skill page alternates Ink and Slate.
+  ground: "ink" | "slate";
+}) {
   const rows = rowsOwnedBy(slug);
   if (rows.length === 0) return null;
   const { total } = readinessOwnership();
@@ -28,8 +35,12 @@ export function OwnedBand({ slug }: { slug: string }) {
   );
 
   return (
-    <section className="sk-band sk-own" aria-labelledby="sk-own-h">
-      <div className="sk-wrap sk-own-grid">
+    <section
+      className="sk-band sk-own"
+      data-ground={ground}
+      aria-labelledby="sk-own-h"
+    >
+      <div className="wrap sk-own-grid">
         <div>
           <h2 id="sk-own-h" className="sr-only">
             What this skill owns on the readiness map
@@ -44,8 +55,8 @@ export function OwnedBand({ slug }: { slug: string }) {
               ? "readiness concern is this skill's to show"
               : "readiness concerns are this skill's to show"}
           </p>
-          <Link href={`/readiness?owner=${slug}`} className="sk-btn">
-            See its rows in the map <span aria-hidden="true">→</span>
+          <Link href={`/readiness?owner=${slug}`} className="tl">
+            See its rows in the map
           </Link>
         </div>
 

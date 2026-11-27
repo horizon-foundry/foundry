@@ -205,6 +205,6 @@ export const SHIP_GATE_STATUS_COLOR: Record<ShipGateStatus, string> = {
   met: "text-verdict-safe",
   "at-risk": "text-medium",
   "not-met": "text-verdict-noship",
-  "not-assessed": "text-bone-faint",
-  "not-applicable": "text-bone-faint",
+  "not-assessed": "text-fg-3",
+  "not-applicable": "text-fg-3",
 };

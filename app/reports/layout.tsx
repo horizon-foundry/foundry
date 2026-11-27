@@ -8,7 +8,9 @@ import { SignOutButton } from "@/components/SignOutButton";
 // sign-in prompt, signed-in visitors additionally see the reports they own. The
 // index page filters what each viewer may see, and the per-report DETAIL route
 // (/reports/[slug]) gates itself independently (redirect when signed out, 404
-// for a non-owner), so this layout is chrome only, not the gate. force-dynamic
+// for a non-owner), so this layout is chrome only, not the gate: the Ink strip
+// that says who is signed in, over pages that draw their own grounds
+// (app/styles/report.css). force-dynamic
 // keeps the session read per-request rather than statically cached.
 export const dynamic = "force-dynamic";
 
@@ -25,16 +27,12 @@ export default async function ReportsLayout({
       {/* Stitches this browser to the Supabase user id, THE distinct id. */}
       {user && <PostHogIdentify userId={user.id} email={user.email} />}
       <SiteHeader />
-      <main id="main" className="mx-auto min-h-[70vh] max-w-[1180px] px-5 py-10 sm:px-8">
+      <main id="main" data-ground="ink">
         {email && (
-          <div className="mb-8 flex flex-wrap items-center justify-between gap-3 border-b border-line pb-4">
-            <p className="min-w-0 break-words font-mono text-xs text-bone-faint">
-              Signed in as <span className="text-bone-dim">{email}</span>
-              {isAdmin(email) && (
-                <span className="ml-2 border border-line px-1.5 py-0.5 uppercase tracking-wide">
-                  admin
-                </span>
-              )}
+          <div className="wrap rps-who">
+            <p>
+              Signed in as <b>{email}</b>
+              {isAdmin(email) && <i>admin</i>}
             </p>
             <SignOutButton />
           </div>

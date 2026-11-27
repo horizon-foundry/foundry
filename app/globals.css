@@ -23,6 +23,7 @@
 @import "./styles/home.css";
 @import "./styles/skill.css";
 @import "./styles/readiness.css";
+@import "./styles/report.css"; /* rebrand/build-2 */
 @source "../app";
 @source "../components";
 /* One file in lib/, named explicitly rather than by directory: report-types.ts

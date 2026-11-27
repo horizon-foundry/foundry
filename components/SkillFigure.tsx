@@ -20,10 +20,17 @@ import type { SkillCopy } from "@/lib/skills";
 // The figures of a skill page, in the site's frame grammar. Every figure is
 // complete in the server HTML and arms its own once-on-entry reveal only when
 // it starts below the fold (Reveal.tsx). Hue appears only inside a frame that
-// excerpts the real report (the verdict trio); everything else is luminance.
+// excerpts the real report (the verdict trio), as a fill under Ink type;
+// everything else is luminance. A count is mono. A figure outside a frame
+// sits on its band's ground, so its colors are ground-relative (skill.css).
 // Every number about the self-audit is read through auditFacts(), never typed.
 
 const delay = (ms: number) => ({ "--d": `${ms}ms` }) as CSSProperties;
+
+// A date in a caption stays whole: a line may not break at its hyphens.
+const Day = ({ children }: { children: string }) => (
+  <span className="whitespace-nowrap">{children}</span>
+);
 
 function Verdicts({ facts }: { facts: AuditFacts }) {
   const levels = Object.keys(VERDICT_LABEL) as VerdictLevel[];
@@ -41,13 +48,9 @@ function Verdicts({ facts }: { facts: AuditFacts }) {
             <li
               key={level}
               data-stamp
-              className={`stamp hue-${facts.hue} sk-trio-on`}
+              className={`hue-${facts.hue} sk-trio-on`}
             >
-              <span className="tk tk-tl" aria-hidden="true" />
-              <span className="tk tk-tr" aria-hidden="true" />
-              <span className="tk tk-bl" aria-hidden="true" />
-              <span className="tk tk-br" aria-hidden="true" />
-              <strong className="hue-text">{VERDICT_LABEL[level]}</strong>
+              <strong>{VERDICT_LABEL[level]}</strong>
               <span>where Foundry landed</span>
               <span className="sk-trio-scope">{facts.scope}</span>
             </li>
@@ -88,9 +91,19 @@ function FrameGrid() {
                 <span className="sk-ew">{e.flag.why}</span>
               </>
             ) : (
-              <span className="sk-ok" role="img" aria-label="passed">
-                ✓
-              </span>
+              <svg
+                className="sk-ok"
+                viewBox="0 0 14 14"
+                role="img"
+                aria-label="passed"
+              >
+                <path
+                  d="M1.5 7.5 5.5 11.5 12.5 3"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                />
+              </svg>
             )}
           </li>
         ))}
@@ -149,7 +162,8 @@ function Skeptic({ facts }: { facts: AuditFacts }) {
         label={`${s.checked} findings checked: ${s.confirmed} confirmed, ${s.downgraded} downgraded, ${s.refuted} refuted`}
       />
       <figcaption>
-        {s.checked} findings sent to a skeptic in the {facts.date} self-audit
+        {s.checked} findings sent to a skeptic in the <Day>{facts.date}</Day>{" "}
+        self-audit
       </figcaption>
     </Reveal>
   );
@@ -179,7 +193,7 @@ function Dimensions({ facts }: { facts: AuditFacts }) {
         ))}
       </ul>
       <figcaption>
-        Findings per dimension, {facts.date} self-audit
+        Findings per dimension, <Day>{facts.date}</Day> self-audit
         {facts.loc ? ` of ${facts.loc.toLocaleString("en-US")} lines` : ""}
       </figcaption>
     </Reveal>
@@ -219,7 +233,9 @@ function Skipped({ facts }: { facts: AuditFacts }) {
           </li>
         )}
       </ul>
-      <figcaption>Not assessed, in the {facts.date} self-audit</figcaption>
+      <figcaption>
+        Not assessed, in the <Day>{facts.date}</Day> self-audit
+      </figcaption>
     </Reveal>
   );
 }
@@ -275,7 +291,7 @@ function Security() {
         <span aria-hidden="true">↓</span>
         <span>
           read by{" "}
-          <Link href="/skills/production-audit" className="text-command">
+          <Link href="/skills/production-audit" className="sk-cmdlink">
             /production-audit
           </Link>{" "}
           before it reads the code

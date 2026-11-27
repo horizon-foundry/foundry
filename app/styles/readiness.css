@@ -1,18 +1,51 @@
-/* Readiness page (app/readiness/page.tsx). Imported by globals.css. The shared
-   figure primitives (cells, reveal, collapsible panels) live at the end of
-   globals.css; only what is specific to this page goes here. This file comes
-   before them in the cascade, so a selector that must beat one of theirs is
-   written with more weight, not later. Ported from the approved prototype
-   (tmp/directions/instrument/readiness.html), in the site's tokens. */
+/* Readiness page (app/readiness/page.tsx, components/ReadinessMap.tsx,
+   components/ReadinessFilter.tsx). Imported by globals.css. The grounds, the
+   type ramp, the content cap and the shared figure primitives (cells, reveal,
+   collapsible panels) live in globals.css; only what is specific to this page
+   goes here. This file comes before them in the cascade, so a selector that
+   must beat one of theirs is written with more weight, not later.
 
-/* The side column stays in view beside the long list on a wide window. On a
-   short one it is capped to the viewport and scrolls inside itself, so no
-   filter is ever out of reach. Static on a phone. */
-@media (min-width: 901px) {
+   The page in the dark instrument: a Slate head with the headline, then the
+   map on Ink. The map carries no hue, so every state is luminance and line:
+   Bone, Mist and Fog type, 2px Slate rules between areas, the 1px ledger
+   line between the concerns of one area. A current filter is a Bone box. */
+
+/* ---- the head, on Slate ---- */
+.rd-head {
+  padding: clamp(40px, 5vw, 72px) 0 clamp(40px, 5vw, 64px);
+}
+.rd-head .d-title {
+  max-width: 13em;
+}
+.rd-head .t-lead {
+  margin-top: 24px;
+}
+
+/* ---- the map, on Ink: the side column beside the areas ---- */
+.rd {
+  padding: clamp(40px, 5vw, 64px) 0 var(--section-y);
+}
+.rd-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 40px;
+  align-items: start;
+}
+@media (width >= 68.75rem) {
+  .rd-grid {
+    grid-template-columns: 380px minmax(0, 1fr);
+    gap: 72px;
+  }
+  /* The side column stays in view beside the long list on a wide window. On
+     a short one it is capped to the viewport and scrolls inside itself, so no
+     filter is ever out of reach. Static below the split. The 6px of padding
+     keeps a focus ring inside the scroll box. */
   .rd-side {
     position: sticky;
-    top: 80px;
-    max-height: calc(100dvh - 96px);
+    top: calc(var(--header-h) + 24px);
+    max-height: calc(100dvh - var(--header-h) - 40px);
+    margin: -6px;
+    padding: 6px;
     overflow-y: auto;
     overscroll-behavior: contain;
   }
@@ -21,10 +54,9 @@
 /* The whole map as one block of cells. */
 .rd-side .rd-block {
   gap: 3px;
-  margin-top: 28px;
   --cs: 12px;
 }
-@media (max-width: 600px) {
+@media (width < 40rem) {
   .rd-side .rd-block {
     --cs: 11px;
   }
@@ -34,132 +66,157 @@
 .rd-filters {
   display: flex;
   flex-direction: column;
-  margin-top: 32px;
-  border-top: 1px solid var(--color-line);
+  margin-top: 28px;
+  border-top: 2px solid var(--rule);
+  border-bottom: 2px solid var(--rule);
 }
 .rd-f {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 12px;
   min-height: 48px;
-  padding: 0 6px;
-  border-bottom: 1px solid var(--color-line);
-  font: 400 14px/1 var(--font-mono);
-  color: var(--color-bone-dim);
+  padding: 0 10px;
+  border-bottom: 1px solid var(--ledger);
+  font: 400 0.875rem/1 var(--font-mono);
+  color: var(--fg-2);
   text-decoration: none;
-  transition:
-    background-color var(--transition-duration-tick) var(--ease-exit),
-    color var(--transition-duration-tick) var(--ease-exit);
+  text-underline-offset: 5px;
+  text-decoration-thickness: 1.5px;
+  transition: color 240ms var(--ease);
+}
+.rd-filters .rd-f:last-child {
+  border-bottom: 0;
 }
 .rd-f b {
   margin-left: auto;
   font-weight: 500;
-  color: var(--color-bone);
+  font-variant-numeric: tabular-nums;
+  color: var(--fg);
 }
 .rd-f:hover {
-  color: var(--color-bone);
-  background: var(--color-ink-raised);
-  transition-duration: var(--transition-duration-quick);
-  transition-timing-function: var(--ease-entrance);
+  color: var(--fg);
 }
+.rd-f:hover > span:not(.sr-only) {
+  text-decoration-line: underline;
+}
+/* The filter that is on: Bone type inside a Bone box, drawn over the row's
+   own lines so nothing moves when it is chosen. */
 .rd-f[aria-current] {
-  color: var(--color-signal);
-  background: var(--color-ink-raised-2);
-  border-left: 2px solid var(--color-bone);
+  font-weight: 500;
+  color: var(--fg);
+}
+.rd-f[aria-current]::after {
+  content: "";
+  position: absolute;
+  inset: -2px 0;
+  border: 2px solid var(--fg);
+  pointer-events: none;
 }
 .rd-f .c {
   --cs: 14px;
 }
 
-/* Evidence filters: four tiles in one row, sharing their borders. */
+/* Evidence filters: four tiles in one row, sharing their edges. */
 .rd-f-lab {
-  margin-top: 24px;
-  font: 400 12px/1 var(--font-mono);
-  color: var(--color-bone-faint);
+  margin-top: 28px;
+  font: 600 var(--text-label) / var(--text-label--line-height) var(--font-sans);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--fg-2);
 }
 .rd-filters-ev {
   display: flex;
-  margin-top: 10px;
+  margin-top: 12px;
+  padding-right: 2px;
 }
 .rd-fe {
   flex: 1 1 25%;
   flex-direction: column;
   justify-content: center;
-  gap: 4px;
+  gap: 6px;
   min-width: 0;
-  min-height: 56px;
+  min-height: 60px;
   padding: 8px 4px;
-  margin: 0 -1px -1px 0;
-  border: 1px solid var(--color-line);
+  margin: 0 -2px 0 0;
+  border: 2px solid var(--rule);
 }
 .rd-fe b {
   margin: 0;
 }
 .rd-fe[aria-current] {
-  position: relative;
   z-index: 1;
-  border-color: var(--color-bone);
+}
+.rd-fe[aria-current]::after {
+  inset: -2px;
 }
 
 /* The active-filter line and the standing hint. */
 .rd-chip {
-  margin-top: 20px;
-  font: 400 14px/1.4 var(--font-mono);
-  color: var(--color-bone);
+  margin-top: 16px;
+  font: 400 0.875rem/1.4 var(--font-mono);
+  color: var(--fg);
 }
 .rd-clear {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  color: var(--color-bone-dim);
+  font: 600 var(--text-small) / 1.5 var(--font-sans);
+  color: var(--fg);
   text-decoration: underline;
-  text-underline-offset: 4px;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 5px;
 }
 .rd-clear:hover {
-  color: var(--color-bone);
+  text-decoration-thickness: 3px;
 }
 .rd-hint {
   display: none;
-  margin-top: 24px;
-  font: 400 13px/1.4 var(--font-mono);
-  color: var(--color-bone-faint);
+  margin-top: 20px;
+  font-size: var(--text-small);
+  line-height: var(--text-small--line-height);
+  color: var(--fg-3);
 }
 /* The hint tells you to select an area, which only does anything with script. */
 .js .rd-hint {
   display: block;
 }
+/* The skill a filter names: a command, so Bone mono, a step heavier. */
 .rd-cmd-text {
-  color: var(--color-command);
+  font-weight: 500;
+  color: var(--fg);
 }
 
 /* The areas: one ruled block, each area a button over its cells. */
 .rd-areas {
   --cs: 20px;
-  border-top: 1px solid var(--color-line);
+  border-top: 2px solid var(--rule);
 }
-@media (max-width: 600px) {
+@media (width < 40rem) {
   .rd-areas {
     --cs: 15px;
   }
 }
 .rd-area {
-  border-bottom: 1px solid var(--color-line);
-  /* A hash or a pushed filter lands below the sticky header. */
-  scroll-margin-top: 80px;
+  border-bottom: 2px solid var(--rule);
+  /* A hash or a pushed filter lands below the pinned header. */
+  scroll-margin-top: calc(var(--header-h) + 16px);
 }
 .rd-area-h {
   margin: 0;
 }
 .rd-area-btn {
   display: grid;
-  grid-template-columns: 240px 1fr 20px;
+  grid-template-columns: 250px 1fr 20px;
   gap: 20px;
   align-items: center;
   width: 100%;
-  min-height: 52px;
-  padding: 10px 6px;
+  min-height: 56px;
+  padding: 10px 0;
   text-align: left;
-  transition: background-color var(--transition-duration-tick) var(--ease-exit);
+}
+.rd-area-btn:focus-visible {
+  outline-offset: -2px;
 }
 /* With no script the panels are all open and the buttons do nothing, so they
    look like headings until script arrives. */
@@ -171,24 +228,28 @@
      out of the button's name. The plain declaration is the fallback. */
   content: "+";
   content: "+" / "";
-  font: 400 16px/1 var(--font-mono);
-  color: var(--color-bone-faint);
+  font: 400 1.125rem/1 var(--font-mono);
+  text-align: center;
+  color: var(--fg-2);
 }
 .js .rd-area-btn[aria-expanded="true"]::after {
   content: "\2212";
   content: "\2212" / "";
-}
-.js .rd-area-btn:hover {
-  background: var(--color-ink-raised);
-  transition-duration: var(--transition-duration-quick);
-  transition-timing-function: var(--ease-entrance);
+  color: var(--fg);
 }
 .rd-area-name {
-  font: 400 15px/1.3 var(--font-sans);
-  color: var(--color-bone-dim);
+  font: 600 var(--text-body) / 1.3 var(--font-sans);
+  color: var(--fg-2);
+  text-underline-offset: 5px;
+  text-decoration-thickness: 2px;
+  transition: color 240ms var(--ease);
+}
+.js .rd-area-btn:hover .rd-area-name {
+  color: var(--fg);
+  text-decoration-line: underline;
 }
 .rd-area-btn[aria-expanded="true"] .rd-area-name {
-  color: var(--color-signal);
+  color: var(--fg);
 }
 .rd-area-cells {
   display: flex;
@@ -213,16 +274,15 @@
       var(--d, 0ms);
 }
 
-@media (max-width: 600px) {
+@media (width < 40rem) {
   .rd-area-btn {
     grid-template-columns: 1fr 20px;
     gap: 10px 12px;
-    padding: 14px 4px;
+    padding: 14px 0;
   }
   .rd-area-name {
     grid-column: 1;
-    font-size: 16px;
-    color: var(--color-bone);
+    color: var(--fg);
   }
   .rd-area-cells {
     grid-column: 1;
@@ -234,71 +294,88 @@
   }
 }
 
-/* A panel: its concerns as one block divided by rules. The collapse itself is
-   the shared [data-panel] contract in globals.css. */
+/* A panel: its concerns as one block divided by ledger lines. The collapse
+   itself is the shared [data-panel] contract in globals.css. */
 .rd-panel {
-  padding: 4px 6px 24px;
+  padding: 0 0 20px;
 }
 .rd-row {
-  margin: 0 -6px;
-  padding: 16px 6px;
-  border-top: 1px solid var(--color-line);
-  scroll-margin-top: 80px;
+  padding: 16px 0;
+  border-top: 1px solid var(--ledger);
+  scroll-margin-top: calc(var(--header-h) + 16px);
 }
-.rd-row:first-child {
-  border-top: 0;
-}
+/* The row a link landed on: a Bone edge, standing clear of the text. */
 .rd-row:target {
-  background: var(--color-ink-raised);
+  margin: 0 -14px;
+  padding: 14px 12px;
+  border: 2px solid var(--fg);
+}
+.rd-row:target + .rd-row {
+  border-top-color: transparent;
 }
 .rd-concern {
-  max-width: 62ch;
-  font-size: 17px;
-  line-height: 1.5;
-  color: var(--color-bone);
+  max-width: 40rem;
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
+  color: var(--fg);
 }
-@media (max-width: 600px) {
-  .rd-concern {
-    font-size: 16px;
-  }
+.rd-code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  font-weight: 500;
+  color: var(--fg);
 }
 .rd-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px 18px;
+  gap: 6px 20px;
   margin-top: 8px;
-  font: 400 13px/1.4 var(--font-mono);
-  color: var(--color-bone-faint);
+  font: 400 var(--text-meta) / 1.4 var(--font-mono);
+  color: var(--fg-3);
   overflow-wrap: anywhere;
 }
+.rd-meta .rd-code {
+  font-size: inherit;
+}
 
-/* A skill owner is an invocable command, so it takes the command amber. */
+/* A skill owner is a command: Bone mono, underlined because it is a link.
+   Amber only fills a bar. */
 .rd-cmd {
-  color: var(--color-command);
-  text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: border-color var(--transition-duration-quick) var(--ease-entrance);
+  font-weight: 500;
+  color: var(--fg);
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 4px;
 }
 .rd-cmd:hover {
-  border-color: var(--color-command);
-}
-.rd-cmd:focus-visible {
-  outline-color: var(--color-command);
+  text-decoration-thickness: 3px;
 }
 .rd-id {
-  color: var(--color-bone-faint);
+  color: var(--fg-3);
   text-decoration: underline;
-  text-decoration-color: var(--color-line-strong);
-  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
 }
 .rd-id:hover {
-  color: var(--color-bone);
+  color: var(--fg);
+}
+/* The two links of a meta line are small type, so each carries a 44px target
+   around it that takes no room in the line. */
+.rd-cmd,
+.rd-id {
+  position: relative;
+}
+.rd-cmd::after,
+.rd-id::after {
+  content: "";
+  position: absolute;
+  inset: -14px -4px;
 }
 
 .rd-empty {
-  padding: 24px 6px;
-  font: 400 14px/1.4 var(--font-mono);
-  color: var(--color-bone-dim);
+  padding: 24px 0;
+  font-size: var(--text-body);
+  color: var(--fg-2);
 }
 
 /* Print: the panels are all open, so the open and close glyphs mean nothing,

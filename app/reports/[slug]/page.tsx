@@ -41,22 +41,21 @@ export default async function ReportPage({
   if (!report) notFound();
 
   return (
-    <div>
+    <>
       {/* Funnel B activation: a gated report actually viewed (client-side so
           link prefetch cannot fire it). */}
       <CaptureView
         event="report_viewed"
         properties={{ slug, access: admin ? "admin" : "owner" }}
       />
-      <Link
-        href="/reports"
-        className="font-mono text-xs uppercase tracking-wide text-bone-faint transition-colors hover:text-bone"
-      >
-        ← All reports
-      </Link>
-      <div className="mt-6">
-        <ReportView report={report} />
-      </div>
-    </div>
+      <ReportView
+        report={report}
+        back={
+          <Link href="/reports" className="rp-link">
+            All reports
+          </Link>
+        }
+      />
+    </>
   );
 }
