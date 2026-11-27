@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect } from "react";
+import { SiteHeader } from "@/components/SiteHeader";
 
 // Root error boundary. An unexpected server or render error degrades to a
 // recoverable page (retry + a link home) instead of an unstyled 500. The report
@@ -18,36 +19,39 @@ export default function Error({
     console.error("Unhandled error rendering a page:", error);
   }, [error]);
 
+  // The header is here because an error replaces the whole page, header
+  // included, and a visitor needs the way out. The footer is not: it reads
+  // the version from disk, which a client component cannot do.
   return (
-    <main
-      id="main"
-      className="mx-auto flex min-h-[70vh] max-w-[720px] flex-col justify-center px-5 py-16 sm:px-8"
-    >
-      <p className="font-mono text-sm text-bone-dim">
-        Something broke
-      </p>
-      <h1 className="mt-2 font-display text-2xl tracking-normal text-bone sm:text-3xl">
-        This page hit an unexpected error.
-      </h1>
-      <p className="mt-4 max-w-measure text-sm leading-relaxed text-bone-dim">
-        The error was logged. You can retry, or head back to the start. Nothing
-        you did is stuck.
-      </p>
-      <div className="mt-8 flex flex-wrap items-center gap-3">
-        <button
-          type="button"
-          onClick={reset}
-          className="inline-flex min-h-11 items-center border border-line-strong bg-bone px-4 py-2 font-mono text-sm font-semibold text-ink transition-opacity hover:opacity-90"
-        >
-          Try again
-        </button>
-        <Link
-          href="/"
-          className="inline-flex min-h-11 items-center border border-line px-4 py-2 font-mono text-sm text-bone transition-colors hover:border-line-strong"
-        >
-          Back to start
-        </Link>
-      </div>
-    </main>
+    <>
+      <SiteHeader />
+      <main id="main" className="fstate" data-ground="slate">
+        <div className="wrap">
+          <h1 className="d-h2">This page hit an unexpected error.</h1>
+          <div className="fstate-grid">
+            <div>
+              <p className="readout">
+                <span>Something broke</span>
+                {error.digest && (
+                  <span className="readout-detail">{error.digest}</span>
+                )}
+              </p>
+              <p className="t-lead">
+                The error was logged. You can retry, or head back to the start.
+                Nothing you did is stuck.
+              </p>
+              <div className="home-actions">
+                <button type="button" onClick={reset} className="btn">
+                  Try again
+                </button>
+                <Link href="/" className="tl">
+                  Back to start
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </>
   );
 }

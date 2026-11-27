@@ -1430,3 +1430,234 @@ footer[data-ground="ink"] {
     width: 100%;
   }
 }
+
+/* rebrand/build-1 */
+/* ============================================================
+   Builder 1: the frame of the site. The pressed state of every shared
+   control, the open phone menu, the ruled row link, the readout well and
+   the two pages a visitor never asks for (404, error). Nothing above this
+   line is changed by it: a rule here only adds a state or a new class.
+   ============================================================ */
+
+/* The page's own scrollbar, where the browser draws one, is Slate on Ink. */
+html {
+  scrollbar-color: var(--color-slate) var(--color-ink);
+}
+
+/* ---- States ----
+   One rule for the whole site. Hover brings a control forward: a fill goes
+   White, a line is drawn or thickens, quiet text goes Bone. Pressed sets it
+   back one step, at once and with no movement: a fill goes Mist, text goes
+   to the ground's second color. Focus is the 2px outline above. Mist under
+   Ink type is 11.36 to 1. */
+.btn:active,
+.cmd-copy:active,
+.hdr-menu > summary:active {
+  background: var(--color-mist);
+  color: var(--color-ink);
+  transition-duration: 0s;
+}
+.hdr-menu > summary:active {
+  border-color: var(--color-mist);
+}
+:is([data-ground="white"], [data-ground="bone"]) .btn:active {
+  background: var(--color-ink);
+  color: var(--color-white);
+}
+.tl:active,
+.home-thread-link:active,
+.home-cmd-link:active .home-cmd-name,
+.row-link:active .row-name {
+  color: var(--fg-2);
+}
+.hdr-link:active {
+  color: var(--fg-2);
+  text-decoration-line: underline;
+}
+.ftr-nav a:active {
+  color: var(--fg-3);
+  text-decoration-line: underline;
+}
+/* The Menu box at rest has a Fog edge; pointing at it makes the edge Bone.
+   Its word is a control's name, so a double press does not select it. */
+.hdr-menu > summary {
+  user-select: none;
+}
+.hdr-menu > summary:hover {
+  border-color: var(--fg);
+}
+
+/* ---- The open phone menu (components/PhoneMenu.tsx) ----
+   Open, the menu is the whole screen under the header band: an Ink ground,
+   the three pages as display words on 2px Slate rules, and the one button
+   the header has, full width. The page behind does not scroll. It is a
+   <details>, so it opens with no script; the script only closes it (Escape,
+   a link, focus leaving, the window passing 48rem). The box says Close
+   while it is open. */
+.hdr-menu-close,
+.hdr-menu[open] .hdr-menu-open {
+  display: none;
+}
+.hdr-menu[open] .hdr-menu-close {
+  display: inline;
+}
+@media (width < 48rem) {
+  html:has(.hdr-menu[open]) {
+    overflow: hidden;
+  }
+  /* 1px under the band's own height: the band's rule stays in view. */
+  .hdr-menu[open] > .hdr-menu-panel {
+    position: fixed;
+    inset: calc(var(--header-h) + 1px) 0 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 28px var(--gutter) 40px;
+    border-bottom: 0;
+  }
+}
+.hdr-menu-panel a:not(.btn) {
+  min-height: 76px;
+  padding: 12px 0;
+  border-top: 0;
+  border-bottom: 2px solid var(--color-slate);
+  font: 900 var(--text-title) / 1 var(--font-display);
+}
+.hdr-menu-panel a:not(.btn):first-child {
+  border-top: 2px solid var(--color-slate);
+}
+.hdr-menu-panel a:not(.btn):hover {
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 8px;
+}
+.hdr-menu-panel a[aria-current="page"] {
+  text-decoration-thickness: 3px;
+  text-underline-offset: 8px;
+}
+.hdr-menu-panel a:not(.btn):active {
+  color: var(--fg-2);
+}
+.hdr-menu-panel a.btn {
+  justify-content: center;
+  min-height: 52px;
+  margin-top: 32px;
+  border: 0;
+  font: 600 var(--text-body) / 1.25 var(--font-sans);
+  letter-spacing: 0;
+  color: var(--on-fg);
+}
+.hdr-menu-panel a.btn:hover,
+.hdr-menu-panel a.btn:active {
+  color: var(--color-ink);
+}
+
+/* ---- The ruled row link ----
+   A list of places as ruled rows: the name at the lead size, and its address
+   (a path, a date and a commit) in mono at the row's far end. The row is the
+   link, 56px at least, with no resting underline, because the rule already
+   marks it. Rules are the ground's: 2px Bone on Slate, 2px Slate on Ink. */
+.rows {
+  border-bottom: 2px solid var(--rule);
+}
+.rows > li {
+  border-top: 2px solid var(--rule);
+}
+.row-link {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  align-content: center;
+  justify-content: space-between;
+  gap: 2px 24px;
+  min-height: 56px;
+  padding: 12px 0;
+  color: var(--fg);
+  text-decoration: none;
+}
+.row-name {
+  font: 600 var(--text-lead) / 1.3 var(--font-sans);
+}
+.row-meta {
+  min-width: 0;
+  font: 400 var(--text-meta) / 1.4 var(--font-mono);
+  color: var(--fg-2);
+  overflow-wrap: anywhere;
+}
+.row-link:hover .row-name {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 5px;
+}
+/* The ring stands clear of the row's own rules, which on Slate are the
+   ring's color and weight. */
+.row-link:focus-visible {
+  outline-offset: 7px;
+}
+
+/* ---- The readout ----
+   What the instrument says about a request: a status, then what it was
+   about (the address asked for, an error's digest), in the same Ink well a
+   command sits in. No bar: nothing here is a command to run. */
+.readout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  align-content: center;
+  gap: 2px 20px;
+  max-width: 38rem;
+  min-height: 58px;
+  padding: 12px 18px;
+  border: 2px solid var(--fg);
+  background: var(--field);
+  font: 500 1rem/1.4 var(--font-mono);
+  color: var(--fg);
+}
+.readout-detail {
+  min-width: 0;
+  font-weight: 400;
+  color: var(--fg-2);
+  overflow-wrap: anywhere;
+}
+
+/* ---- The frame-state pages (app/not-found.tsx, app/error.tsx) ----
+   Slate under the Ink header, like every page's opening. The page is a
+   column, so the Slate runs to the footer (or the foot of the screen) however
+   little the page holds. */
+body:has(> .fstate) {
+  display: flex;
+  flex-direction: column;
+}
+.fstate {
+  flex: 1 0 auto;
+  padding: clamp(48px, 7vw, 104px) 0 var(--section-y);
+}
+.fstate-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 48px 52px;
+  align-items: start;
+  margin-top: 40px;
+}
+.fstate-grid .readout + .btn {
+  margin-top: 28px;
+}
+/* A heading here is one of two sentences; at a large font size on a phone a
+   long word breaks before it pushes the page sideways. */
+.fstate h1 {
+  overflow-wrap: break-word;
+}
+.fstate .t-lead {
+  margin-top: 24px;
+}
+@media (width < 68.75rem) {
+  .fstate-grid {
+    grid-template-columns: minmax(0, 1fr);
+    margin-top: 32px;
+  }
+}
+@media (width < 40rem) {
+  .fstate-grid .btn,
+  .fstate .home-actions .btn {
+    width: 100%;
+  }
+}
