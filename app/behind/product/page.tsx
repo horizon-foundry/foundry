@@ -1,4 +1,4 @@
-import { MarkdownDoc } from "@/components/MarkdownDoc";
+import { BehindDoc } from "@/components/BehindDoc";
 import { readDoc, stripSection } from "@/lib/docs";
 
 export const metadata = { title: "Product" };
@@ -10,5 +10,5 @@ export default function ProductDoc() {
   // product tab renders the present-tense truth sections only; the frame stays
   // in the gated internal portal (the repo).
   const content = stripSection(readDoc("PRODUCT.md"), "The frame");
-  return <MarkdownDoc content={content} />;
+  return <BehindDoc content={content} />;
 }

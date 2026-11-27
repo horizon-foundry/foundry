@@ -1,7 +1,12 @@
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { BehindNav } from "@/components/BehindNav";
+import "../styles/behind.css";
 
+// The hub's frame, in the dark instrument's grammar: a Slate head under the
+// pinned Ink header (the h1, the lead and the four tabs), then the tab's own
+// page, which opens on Ink. The current tab is Ink too, so it and its page
+// read as one piece. Each page states the ground of each of its sections.
 export default function BehindLayout({
   children,
 }: {
@@ -10,24 +15,26 @@ export default function BehindLayout({
   return (
     <>
       <SiteHeader />
-      <div className="border-b border-line">
-        <div className="mx-auto max-w-[1180px] px-5 pb-4 pt-10 sm:px-8">
-          <p className="font-mono text-sm text-bone-dim">
-            Behind the Build
-          </p>
-          <h1 className="mt-2 font-display text-3xl tracking-normal text-bone sm:text-4xl">
-            How this was made
-          </h1>
-          <p className="mt-2 max-w-measure text-sm leading-relaxed text-bone-dim">
-            The project&apos;s own curated artifacts, rendered in product: the
-            overview, the design system, the review philosophy, and the brand.
-          </p>
-          <div className="mt-6">
+      <main id="main" data-ground="ink">
+        <section
+          className="bh-head"
+          data-ground="slate"
+          aria-labelledby="behind-heading"
+        >
+          <div className="wrap">
+            <div className="bh-head-grid">
+              <h1 id="behind-heading" className="d-h2">
+                How this was made
+              </h1>
+              <p className="t-lead">
+                The project&apos;s own curated artifacts, rendered in product:
+                the overview, the design system, the review philosophy, and
+                the brand.
+              </p>
+            </div>
             <BehindNav />
           </div>
-        </div>
-      </div>
-      <main id="main" className="mx-auto flex min-h-[60vh] max-w-[1180px] flex-col px-5 py-10 sm:px-8">
+        </section>
         {children}
       </main>
       <SiteFooter />

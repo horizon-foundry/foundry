@@ -21,20 +21,20 @@ export const metadata: Metadata = {
   // app/icon.* file conventions are deliberately NOT used alongside it:
   // `icons` is a single metadata key, so declaring any icon by hand replaces
   // every convention-generated tag. Mixing the two silently drops whichever
-  // the convention was providing. The files are the design kit's foundry set
-  // (bone on ink), installed verbatim under public/; the studio set is the
-  // inverse and belongs to the parent site, so the two stay apart in a row of
-  // tabs. mask-icon takes the ink, not the tile: Safari tints a monochrome
-  // mask against the tab bar, so it follows the mark.
+  // the convention was providing. The files are the company's own (an Ink
+  // tile, the Bone HF mark, the amber bar), byte copies of the Horizon
+  // Foundry handoff under public/, because the product shares the company's
+  // icon. The 16 is pixel-fitted, so nothing here is scaled or generated.
+  // No favicon.ico, no maskable tile and no mask-icon: the handoff supplies
+  // none, and a one-color tint cannot keep the amber bar.
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "48x48", type: "image/x-icon" },
-      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon-16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-48.png", sizes: "48x48", type: "image/png" },
     ],
-    apple: [{ url: "/apple-touch-icon.png" }],
-    other: [
-      { rel: "mask-icon", url: "/safari-pinned-tab.svg", color: "#14191F" },
-    ],
+    apple: [{ url: "/apple-touch-icon-180.png", sizes: "180x180" }],
   },
   manifest: "/site.webmanifest",
   openGraph: {
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
         // LinkedIn cache og:image by URL for weeks and ignore cache headers,
         // so a re-rendered card at an unchanged URL reaches nobody who has
         // already shared a link. `make og-card` prints the new token.
-        url: "/og.png?v=84f096a3",
+        url: "/og.png?v=9316f375",
         width: 1200,
         height: 630,
         alt: "Foundry: forge shippable software from AI-built code. Claude Code skills, audit, verdict.",
@@ -61,7 +61,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
-    images: ["/og.png?v=84f096a3"],
+    images: ["/og.png?v=9316f375"],
   },
   robots: {
     index: true,

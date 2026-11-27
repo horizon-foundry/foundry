@@ -102,10 +102,11 @@ npm run build
 npm run build && make validate
 
 # Brand assets: re-render the share card (this records both digests and prints
-# the og:image token), and check the design-kit pin against a checkout of the
-# kit, which lives in the parent brand repo and is not vendored here.
+# the og:image token), and check the brand pin against a checkout of the
+# Horizon Foundry company repo, which holds the mark, the icons and the font
+# this site copies and is not vendored here.
 make og-card
-make check-kit KIT=<path to logo/horizon-foundry-kit>
+make check-kit KIT=<path to the Horizon Foundry company repo>
 
 # Local /reports testing needs the Supabase env (see .env.example); copy it to
 # .env.local and add http://localhost:3000/auth/confirm to the Supabase
@@ -134,7 +135,7 @@ foundry/
 ├── NOTES.md · PROMPTS.md · FRICTION.md # why · what happened · friction
 ├── CLAUDE.md · TODOS.md · README.md · LICENSE
 ├── reference/     # doc-set-spec.md + skill-authoring.md + readiness-map.md + templates/ +
-│                  # brand-kit.json (which design kit the brand copies came from)
+│                  # brand-kit.json (what was copied from the company's brand handoff)
 ├── skills/        # the suite (each dir symlinks into ~/.claude/skills/<name>;
 │                  # three carry bundled copies: the report schema,
 │                  # BRAND.template.md, plan.template.md)

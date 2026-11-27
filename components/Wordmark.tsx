@@ -1,24 +1,5 @@
 import Link from "next/link";
-import { Mark } from "./brand/Mark";
 import { ProductLockup } from "./brand/ProductLockup";
-
-// The HF monogram where an older surface still asks for "the mark" (the
-// overview deck, the design-system page). Both sit on Ink, so the body is
-// Bone. `small` chose between the retired mark's two cuts and means nothing
-// now: the monogram has one drawing. It stays in the signature so those
-// surfaces compile until the rebrand reaches them.
-export function BrandMark({
-  className = "",
-}: {
-  className?: string;
-  small?: boolean;
-}) {
-  return (
-    <span role="img" aria-label="Horizon Foundry" className="inline-flex">
-      <Mark ground="dark" className={className} />
-    </span>
-  );
-}
 
 // The way home in the site chrome: the product lockup, which is the untouched
 // HF mark and FOUNDRY SKILLS in Zalando Sans Black capitals

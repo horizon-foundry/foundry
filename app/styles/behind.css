@@ -1,0 +1,742 @@
+/* Behind the Build: the hub's head and tabs, the overview deck, the rendered
+   docs and the design-system page. Imported by app/behind/layout.tsx, not by
+   globals.css, so these rules load only on the hub's four pages. Plain CSS:
+   it reads the theme's tokens and the ground-relative colors (--fg, --fg-2,
+   --fg-3, --rule, --ledger, --field) that app/globals.css sets by ground.
+
+   The dark instrument's rules hold here as everywhere: Ink and Slate, flat,
+   alternating by section; Zalando Sans for headings and text; IBM Plex Mono
+   for a command, a path, a date, a commit, a count and a token's value;
+   amber only as the fill of a bar; section rules 2px, the line inside a dense
+   figure 1px (--ledger); no radius, no shadow, no gradient. */
+
+/* ------------------------------------------------------------
+   The hub's head: Slate under the pinned Ink header, the h1 and its lead on
+   one line of the grid, and the four tabs standing on the head's lower edge.
+   The current tab is Ink, the ground of the page under it, so the tab and
+   its page are one piece.
+   ------------------------------------------------------------ */
+.bh-head {
+  padding-top: clamp(40px, 22px + 4.6vw, 72px);
+}
+.bh-head-grid {
+  display: grid;
+  gap: 16px 52px;
+}
+@media (width >= 68.75rem) {
+  .bh-head-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 34rem);
+    align-items: end;
+  }
+}
+.bh-head .t-lead {
+  max-width: 34rem;
+}
+.bh-tabs {
+  display: flex;
+  align-items: stretch;
+  margin-top: clamp(28px, 16px + 3vw, 48px);
+}
+.bh-tab {
+  display: inline-flex;
+  align-items: center;
+  min-height: 52px;
+  padding: 8px 22px;
+  font: 600 var(--text-nav) / var(--text-nav--line-height) var(--font-sans);
+  color: var(--fg-2);
+  text-decoration: none;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 7px;
+}
+.bh-tab:hover {
+  color: var(--fg);
+  text-decoration-line: underline;
+}
+.bh-tab[aria-current="page"] {
+  background: var(--color-ink);
+  color: var(--color-bone);
+  text-decoration-line: none;
+}
+.bh-tab:focus-visible {
+  outline-offset: -5px;
+}
+/* On a phone the four tabs share the row, and a two-word name may take two
+   lines inside its own tab. */
+@media (width < 40rem) {
+  .bh-tab {
+    flex: 1 1 auto;
+    justify-content: center;
+    padding-inline: 8px;
+    text-align: center;
+  }
+}
+
+/* A section of a hub page: a full-bleed ground with the content cap inside. */
+.bh-sec {
+  padding-block: var(--section-y);
+}
+
+/* ------------------------------------------------------------
+   The overview deck (components/SlideDeck.tsx). A frame on Ink: the head row
+   holds the slide's place, its category and every control, so the controls
+   never move when a slide is taller or shorter than the last.
+   ------------------------------------------------------------ */
+.dk {
+  display: flex;
+  flex-direction: column;
+}
+.dk-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0 24px;
+  padding: 8px 12px 8px 28px;
+  border-bottom: 2px solid var(--rule);
+}
+.dk-place {
+  display: flex;
+  align-items: baseline;
+  gap: 18px;
+  min-height: 44px;
+  padding-block: 12px;
+}
+.dk-count {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.dk-ctl {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+/* Each dot's button IS its target: 24px wide and 44px tall, side by side
+   with no gap, so no two targets overlap. Sized in px: a row of nine has to
+   fit a 320 phone at any text size. */
+.dk-dots {
+  display: flex;
+  align-items: center;
+  margin-inline: 8px;
+}
+.dk-dot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.dk-dot > span {
+  display: block;
+  width: 6px;
+  height: 6px;
+  background: var(--fg-3);
+  transition:
+    width var(--transition-duration-quick) var(--ease),
+    background-color var(--transition-duration-quick) var(--ease);
+}
+.dk-dot:hover > span {
+  background: var(--fg);
+}
+.dk-dot[aria-current="true"] > span {
+  width: 20px;
+  background: var(--fg);
+}
+.dk-step {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 0;
+  background: none;
+  font: 600 var(--text-nav) / 1.25 var(--font-sans);
+  color: var(--fg);
+  cursor: pointer;
+  transition:
+    background-color 240ms var(--ease),
+    color 240ms var(--ease);
+}
+/* Only where a pointer can hover: on a touch screen a hover sticks to the
+   step that was last tapped. */
+@media (hover: hover) {
+  .dk-step:hover:not(:disabled) {
+    background: var(--fg);
+    color: var(--on-fg);
+  }
+}
+.dk-step:active:not(:disabled) {
+  background: var(--fg);
+  color: var(--on-fg);
+}
+.dk-step:disabled {
+  color: var(--color-slate);
+  cursor: not-allowed;
+}
+.dk-step svg {
+  flex: none;
+  width: 14px;
+  height: 14px;
+}
+.dk-body {
+  display: grid;
+  min-height: 26rem;
+  padding: clamp(28px, 12px + 4vw, 56px) clamp(20px, 2px + 4.6vw, 56px)
+    clamp(32px, 16px + 4vw, 60px);
+}
+/* Every slide lies in the one cell; a slide that is not the current one is
+   not drawn. */
+.dk-slide {
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.dk-slide[hidden] {
+  display: none;
+}
+
+/* The cover: the product lockup, the suite in one statement, three labels. */
+.dk-cover {
+  justify-content: center;
+  gap: clamp(24px, 12px + 3vw, 40px);
+}
+.dk-cover-title {
+  line-height: 0;
+}
+.dk-cover .d-statement {
+  max-width: 21em;
+}
+.dk-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 40px;
+  padding-top: 20px;
+  border-top: 2px solid var(--rule);
+}
+
+/* A content slide: the heading with its glyph beside it, the text, then what
+   the slide carries (a ruled list, the stage words or commands, a quote). */
+.dk-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 32px;
+}
+.dk-top .d-statement {
+  max-width: 19em;
+}
+.dk-glyph {
+  flex: none;
+  width: clamp(40px, 28px + 3vw, 64px);
+  aspect-ratio: 1;
+  color: var(--fg-3);
+}
+.dk-text {
+  max-width: 46rem;
+  margin-top: 20px;
+  color: var(--fg-2);
+}
+.dk-items {
+  max-width: 46rem;
+  margin-top: 28px;
+  border-bottom: 1px solid var(--ledger);
+}
+.dk-items > li {
+  padding: 12px 0;
+  border-top: 1px solid var(--ledger);
+  font-size: var(--text-small);
+  line-height: var(--text-small--line-height);
+  color: var(--fg-2);
+}
+/* On a wide screen a slide's text is the lead step: it is a slide, not a page. */
+@media (width >= 64rem) {
+  .dk-text {
+    font-size: var(--text-lead);
+    line-height: var(--text-lead--line-height);
+  }
+  .dk-items > li {
+    font-size: var(--text-body);
+  }
+}
+/* The three stage words, each behind its unit bar: Slate, Amber, Bone, the
+   order the stage rail uses on Ink. */
+.dk-stages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 40px;
+  margin-top: 28px;
+}
+.dk-stages > li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  font: 800 var(--text-h3) / var(--text-h3--line-height) var(--font-display);
+  letter-spacing: var(--tracking-head);
+  color: var(--fg);
+}
+.dk-stages svg {
+  flex: none;
+  height: 0.62em;
+  width: auto;
+}
+/* Commands to run: Bone mono in the deck's Ink well, behind one amber unit
+   bar, the mark of a command you fire. */
+.dk-cmds {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 32px;
+  margin-top: 28px;
+}
+.dk-cmds > li {
+  font: 500 1rem/1.4 var(--font-mono);
+  color: var(--fg);
+}
+.dk-cmds > li:first-child {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+}
+.dk-cmds svg {
+  flex: none;
+  width: 26px;
+  height: auto;
+}
+/* A quote closes a slide. It is set apart by space and weight, with no rule
+   of its own: the list above it already ends on one. */
+.dk-quote {
+  max-width: 46rem;
+  margin-top: auto;
+  padding-top: 40px;
+}
+.dk-quote blockquote {
+  font: 600 var(--text-lead) / 1.35 var(--font-sans);
+  color: var(--fg);
+}
+/* The deck is a .frame, and a frame's figcaption is its own mono caption
+   with its own padding. A quote's attribution is a label. */
+.dk .dk-quote figcaption {
+  margin-top: 10px;
+  padding: 0;
+  font: 600 var(--text-label) / var(--text-label--line-height) var(--font-sans);
+}
+.dk-hint {
+  margin-top: 16px;
+  font-size: var(--text-small);
+  line-height: var(--text-small--line-height);
+  color: var(--fg-3);
+}
+@media (width < 40rem) {
+  .dk-head {
+    padding: 4px 4px 4px 20px;
+  }
+  .dk-ctl {
+    justify-content: space-between;
+    width: calc(100% + 16px);
+    margin-left: -16px;
+  }
+  .dk-step {
+    padding: 0;
+  }
+  .dk-dots {
+    margin-inline: 0;
+  }
+  .dk-body {
+    min-height: 0;
+  }
+  .dk-top {
+    gap: 16px;
+  }
+}
+/* Nine 24px dots and two 24px steps are 264px, which a 320 phone's row
+   (268px) still holds. In px on purpose: the dots are px. */
+@media (width < 360px) {
+  .dk-step {
+    min-width: 24px;
+  }
+}
+
+/* ------------------------------------------------------------
+   A rendered doc (components/BehindDoc.tsx): the doc's name and its sections
+   in the heading column, the text beside it. The rules below sit on top of
+   .doc-prose and replace its look on these pages only: Zalando Sans for
+   headings and text, mono only for code, 2px rules, no raised field.
+   ------------------------------------------------------------ */
+.bh-doc-grid {
+  display: grid;
+  gap: 28px 52px;
+}
+.bh-doc-grid > * {
+  min-width: 0;
+}
+.bh-toc {
+  display: none;
+}
+@media (width >= 68.75rem) {
+  .bh-doc-grid {
+    grid-template-columns: 420px minmax(0, 1fr);
+    align-items: start;
+  }
+  .bh-doc-side {
+    position: sticky;
+    top: calc(var(--header-h) + 40px);
+  }
+  .bh-toc {
+    display: block;
+    margin-top: 28px;
+    border-bottom: 1px solid var(--ledger);
+  }
+}
+.bh-toc a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 0;
+  border-top: 1px solid var(--ledger);
+  font-size: var(--text-small);
+  line-height: 1.3;
+  color: var(--fg-2);
+  text-decoration: none;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 5px;
+}
+.bh-toc a:hover {
+  color: var(--fg);
+  text-decoration-line: underline;
+}
+
+.doc-prose.bh-doc {
+  max-width: 38rem;
+  font-family: var(--font-sans);
+  color: var(--fg-2);
+}
+.doc-prose.bh-doc > :first-child {
+  margin-top: 0;
+}
+.doc-prose.bh-doc :is(h2, h3, h4, h5, h6) {
+  font-family: var(--font-display);
+  color: var(--fg);
+  text-wrap: balance;
+  scroll-margin-top: calc(var(--header-h) + 24px);
+}
+.doc-prose.bh-doc h3 {
+  margin: 56px 0 0;
+  padding: 20px 0 0;
+  border-top: 2px solid var(--rule);
+  border-bottom: 0;
+  font-size: var(--text-h3);
+  font-weight: 800;
+  line-height: var(--text-h3--line-height);
+  letter-spacing: var(--tracking-head);
+}
+.doc-prose.bh-doc h4 {
+  margin: 32px 0 0;
+  font-size: var(--text-lead);
+  font-weight: 800;
+  line-height: 1.3;
+  letter-spacing: var(--tracking-head);
+}
+.doc-prose.bh-doc :is(h5, h6) {
+  margin: 24px 0 0;
+  font-size: var(--text-body);
+  font-weight: 600;
+  letter-spacing: 0;
+}
+.doc-prose.bh-doc :is(p, ul, ol, blockquote, pre, table) {
+  margin: 16px 0 0;
+}
+.doc-prose.bh-doc :is(p, li) {
+  font-size: var(--text-body);
+  line-height: 1.6;
+  color: var(--fg-2);
+}
+.doc-prose.bh-doc li + li {
+  margin-top: 6px;
+}
+.doc-prose.bh-doc :is(ul, ol) {
+  padding-left: 1.25rem;
+}
+.doc-prose.bh-doc ::marker {
+  color: var(--fg-3);
+}
+.doc-prose.bh-doc strong {
+  font-weight: 600;
+  color: var(--fg);
+}
+/* The file carries no italic, so emphasis is the text color and a step of
+   weight, never a slanted upright. */
+.doc-prose.bh-doc em {
+  font-style: normal;
+  color: var(--fg);
+}
+.doc-prose.bh-doc a {
+  font-weight: 600;
+  color: var(--fg);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 4px;
+}
+.doc-prose.bh-doc a:hover {
+  text-decoration-thickness: 3px;
+}
+/* Code in a line of text: mono in the heading color, a step heavier. No
+   field and no line around it. */
+.doc-prose.bh-doc :not(pre) > code {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 0.9em;
+  font-weight: 500;
+  color: var(--fg);
+}
+.doc-prose.bh-doc pre {
+  padding: 18px 20px;
+  border: 2px solid var(--rule);
+  background: var(--field);
+  font-size: var(--text-meta);
+  line-height: 1.6;
+  color: var(--fg);
+}
+.doc-prose.bh-doc blockquote {
+  padding: 0;
+  border: 0;
+  font-style: normal;
+  color: var(--fg);
+}
+.doc-prose.bh-doc blockquote p {
+  font-size: var(--text-lead);
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--fg);
+}
+/* A table is a ledger: 2px rules open and close it, 1px lines divide its
+   rows, and nothing divides its columns. */
+.doc-prose.bh-doc table {
+  margin-top: 20px;
+  border-top: 2px solid var(--rule);
+  border-bottom: 2px solid var(--rule);
+  font-size: var(--text-small);
+}
+.doc-prose.bh-doc :is(th, td) {
+  padding: 12px 20px 12px 0;
+  border: 0;
+  border-top: 1px solid var(--ledger);
+  vertical-align: top;
+  line-height: 1.45;
+}
+.doc-prose.bh-doc thead th {
+  border-top: 0;
+  background: none;
+  font: 600 var(--text-label) / var(--text-label--line-height) var(--font-sans);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--fg-2);
+}
+.doc-prose.bh-doc td {
+  color: var(--fg-2);
+}
+.doc-prose.bh-doc td:first-child {
+  font-weight: 600;
+  color: var(--fg);
+}
+.doc-prose.bh-doc hr {
+  margin: 40px 0 0;
+  border-top: 2px solid var(--rule);
+}
+
+/* ------------------------------------------------------------
+   The design-system page (app/behind/design-system/page.tsx). Each part of
+   the system is one section on its own ground: the heading and the rule in
+   the heading column, the specimen beside it.
+   ------------------------------------------------------------ */
+.ds-grid {
+  display: grid;
+  gap: 32px 52px;
+}
+@media (width >= 68.75rem) {
+  .ds-grid {
+    grid-template-columns: 420px minmax(0, 1fr);
+    align-items: start;
+  }
+}
+.ds-note {
+  max-width: 30rem;
+  margin-top: 16px;
+  color: var(--fg-2);
+}
+.ds-spec {
+  min-width: 0;
+}
+/* A ruled list of specimens: 2px to open and close, 1px between rows. */
+.ds-rows {
+  border-top: 2px solid var(--rule);
+  border-bottom: 2px solid var(--rule);
+}
+.ds-row {
+  display: grid;
+  gap: 8px 32px;
+  align-items: center;
+  padding: 20px 0;
+}
+.ds-row + .ds-row {
+  border-top: 1px solid var(--ledger);
+}
+@media (width >= 40rem) {
+  .ds-row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 18rem);
+  }
+}
+.ds-row .meta {
+  overflow-wrap: anywhere;
+}
+.ds-caption {
+  margin-top: 14px;
+}
+/* A caption is a sentence, so it is the small sans step, never mono. */
+.ds-cap {
+  font-size: var(--text-small);
+  line-height: var(--text-small--line-height);
+  color: var(--fg-2);
+}
+
+/* The palette: one swatch per value. A swatch keeps a 2px edge in the text
+   color, so Ink shows on Ink and Slate on Slate. Amber has no square: it only
+   ever fills a bar, so its swatch is one. */
+.ds-swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+  gap: 28px 24px;
+}
+.ds-chip {
+  display: block;
+  height: 72px;
+  border: 2px solid var(--fg);
+}
+.ds-chip-bar {
+  display: block;
+  height: 72px;
+  width: auto;
+}
+.ds-swatch-name {
+  margin-top: 12px;
+  font: 600 var(--text-body) / 1.3 var(--font-sans);
+  color: var(--fg);
+}
+.ds-swatch .meta {
+  margin-top: 2px;
+}
+.ds-swatch-role {
+  margin-top: 6px;
+  font-size: var(--text-small);
+  line-height: 1.4;
+  color: var(--fg-2);
+}
+
+/* Type specimens. Each line is set in the step it names. */
+.ds-type-900 {
+  font: 900 var(--text-h2) / 1 var(--font-display);
+  letter-spacing: var(--tracking-display);
+}
+.ds-type-800 {
+  font: 800 var(--text-h3) / var(--text-h3--line-height) var(--font-display);
+  letter-spacing: var(--tracking-head);
+}
+.ds-type-600 {
+  font: 600 var(--text-lead) / 1.3 var(--font-sans);
+}
+.ds-type-400 {
+  font: 400 var(--text-body) / var(--text-body--line-height) var(--font-sans);
+  color: var(--fg-2);
+}
+.ds-type-mono {
+  font: 500 var(--text-lead) / 1.3 var(--font-mono);
+}
+.ds-mono-list {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 10px 28px;
+  align-items: baseline;
+  margin-top: 28px;
+}
+.ds-mono-list dd {
+  font: 500 var(--text-body) / 1.4 var(--font-mono);
+  color: var(--fg);
+  overflow-wrap: anywhere;
+}
+
+/* The bar: the three stage fills at one height, and the unit bar's cut. */
+.ds-bars {
+  display: grid;
+  gap: 14px;
+}
+.ds-bar {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.ds-bar svg {
+  flex: none;
+  height: 44px;
+  width: auto;
+}
+.ds-bar-word {
+  font: 900 var(--text-statement) / 1 var(--font-display);
+  letter-spacing: var(--tracking-display);
+  color: var(--fg);
+}
+
+/* Severity and verdict: the hue is a fill with its name beside it. */
+.ds-hue-id {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.ds-hue-id .c {
+  --cs: 18px;
+}
+.ds-hue-name {
+  min-width: 9.5em;
+  font: 500 var(--text-meta) / 1.3 var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg);
+}
+.ds-verdicts {
+  display: grid;
+  gap: 0;
+  margin-top: 36px;
+  border: 2px solid var(--rule);
+}
+@media (width >= 40rem) {
+  .ds-verdicts {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+/* The verdict hue is a fill under Ink type, as on the sheet: Ink on the safe
+   green is 8.4 to 1, on the risk yellow 11.6, on the no-ship red 5.6. */
+.ds-verdict {
+  padding: 16px 18px 18px;
+  background: var(--hue);
+  color: var(--color-ink);
+}
+.ds-verdict-word {
+  font: 900 var(--text-h3) / 1.05 var(--font-display);
+  letter-spacing: var(--tracking-display);
+  text-transform: uppercase;
+}
+.ds-verdict .meta {
+  margin-top: 8px;
+  color: var(--color-ink);
+}
+
+/* The sheet specimen keeps room above and below for its registration ticks.
+   At the sides they stand in the column's gap, or in the gutter on a phone. */
+.ds-sheet {
+  max-width: 36rem;
+  margin-block: 18px;
+}
