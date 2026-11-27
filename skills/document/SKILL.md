@@ -1,7 +1,7 @@
 ---
 name: document
 version: 0.2.1
-description: Use to keep a project's documentation true to the code and current across every surface, or to turn the repo's own docs into a product surface (the public hub, the overview deck, showcase copy). Modes: public, internal, reconcile. Not for creating a doc set from nothing (that is scaffold) or judging release readiness (that is production-audit).
+description: "Use to keep a project's documentation true to the code and current across every surface, or to turn the repo's own docs into a product surface (the public hub, the overview deck, showcase copy). Modes: public, internal, reconcile. Not for creating a doc set from nothing (that is scaffold) or judging release readiness (that is production-audit)."
 ---
 
 # document

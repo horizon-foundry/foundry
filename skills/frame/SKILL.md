@@ -1,7 +1,7 @@
 ---
 name: frame
 version: 0.2.1
-description: Use before scaffolding or building anything new, or when a project cannot answer who it is for and why it matters. The builder declares a one-page product frame plus a four-line security frame; this skill audits it and reports blank or vague entries as findings. Not for running discovery with the builder or inventing answers: it audits what is declared.
+description: "Use before scaffolding or building anything new, or when a project cannot answer who it is for and why it matters. The builder declares a one-page product frame plus a four-line security frame; this skill audits it and reports blank or vague entries as findings. Not for running discovery with the builder or inventing answers: it audits what is declared."
 ---
 
 # frame

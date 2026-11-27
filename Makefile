@@ -88,6 +88,7 @@ sync-version:
 # URL, lib/site.ts, and SECURITY.md, and SKILL_SLUGS matches skills/ exactly.
 validate:
 	node --test 'scripts/todos/test/*.test.mjs'
+	node scripts/check-skill-frontmatter.mjs
 	node scripts/check-skill-surfaces.mjs
 	node scripts/check-readiness-map.mjs
 	node scripts/check-brand-assets.mjs
