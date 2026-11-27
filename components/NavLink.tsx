@@ -5,8 +5,9 @@ import { usePathname } from "next/navigation";
 
 // Header nav link with a current-page state: without it every link renders
 // identically on every page and interior pages lose "where am I" (Nielsen 6,
-// recognition over recall). Active = bone text + an underline rule;
-// aria-current carries the same fact to assistive tech.
+// recognition over recall). The link carries aria-current, and the stylesheet
+// draws the current page from that one fact (.hdr-link in globals.css), so
+// what a screen reader hears and what the eye sees cannot disagree.
 export function NavLink({
   href,
   label,
@@ -33,11 +34,7 @@ export function NavLink({
     <Link
       href={href}
       aria-current={active ? "page" : undefined}
-      className={`${className} ${
-        active
-          ? "text-bone underline decoration-line-strong underline-offset-8"
-          : "hover:text-bone"
-      }`}
+      className={className}
     >
       {label}
     </Link>

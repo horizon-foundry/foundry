@@ -1,6 +1,8 @@
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { StageRail } from "@/components/StageRail";
+import { CommandField } from "@/components/CommandField";
+import { REPO_SLUG } from "@/lib/site";
 
 export const metadata = {
   title: "Skills",
@@ -15,30 +17,28 @@ export default function SkillsIndex() {
   return (
     <>
       <SiteHeader />
-      <main id="main">
-        <section className="home-hero" aria-labelledby="skills-heading">
-          <div className="home-wrap">
-            <h1 id="skills-heading" className="home-d-lg max-w-3xl">
+      <main id="main" data-ground="bone">
+        <section className="skills-head" aria-labelledby="skills-heading">
+          <div className="wrap">
+            <h1 id="skills-heading" className="d-title">
               Eleven skills, from the idea to the release.
             </h1>
-            <p className="home-lede mt-7">
-              Each one keeps a single discipline that fast building tends to
-              skip. Type its name in Claude Code, or let Claude start it when the
-              work fits.
-            </p>
-            <div className="mt-7 inline-flex max-w-full items-center gap-3 border border-line bg-ink-raised px-4 py-2.5">
-              <span className="font-mono text-xs uppercase tracking-wide text-bone-faint">
-                Install
-              </span>
-              <code className="min-w-0 font-mono text-sm text-command [overflow-wrap:anywhere]">
-                npx skills@latest add horizon-foundry/foundry
-              </code>
+            <div className="skills-head-grid">
+              <p className="t-lead">
+                Each one keeps a single discipline that fast building tends to
+                skip. Type its name in Claude Code, or let Claude start it when the
+                work fits.
+              </p>
+              <CommandField
+                command={`npx skills@latest add ${REPO_SLUG}`}
+                surface="skills-index"
+              />
             </div>
           </div>
         </section>
 
-        <section className="home-stages-sec" aria-label="The skills, by stage">
-          <div className="home-wrap">
+        <section className="skills-list" aria-label="The skills, by stage">
+          <div className="wrap">
             <StageRail taglines headingLevel={2} />
           </div>
         </section>

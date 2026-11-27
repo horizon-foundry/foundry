@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CopyButton } from "./CopyButton";
+import { CommandField } from "./CommandField";
 import {
   REPO_SLUG,
   REPO_URL,
@@ -34,22 +35,13 @@ export async function getStars(): Promise<number | null> {
   }
 }
 
+// A text link, with the count beside it as a mono figure.
 export function StarButton({ stars }: { stars: number | null }) {
   return (
-    <a
-      href={REPO_URL}
-      target="_blank"
-      rel="noreferrer"
-      className="lift inline-flex min-h-11 items-center gap-2 border border-line-strong px-3 py-2 font-mono text-xs uppercase tracking-wide text-bone transition-colors hover:border-bone-faint"
-    >
-      <svg viewBox="0 0 16 16" className="size-3.5 fill-current" aria-hidden="true">
-        <path d="M8 1.5l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 11.8 4.2 13.3l.7-4.3-3.1-3 4.3-.6z" />
-      </svg>
-      Star on GitHub
+    <a href={REPO_URL} target="_blank" rel="noreferrer" className="tl tl-figure">
+      <span>Star on GitHub</span>
       {stars !== null && (
-        <span className="border-l border-line pl-2 tabular-nums text-bone-dim">
-          {stars.toLocaleString()}
-        </span>
+        <span className="tl-count tabular-nums">{stars.toLocaleString()}</span>
       )}
     </a>
   );
@@ -58,7 +50,7 @@ export function StarButton({ stars }: { stars: number | null }) {
 // A command a reader types, inside running prose: the command style (DESIGN.md,
 // Colors), so every command on the page reads the same.
 function Cmd({ children }: { children: React.ReactNode }) {
-  return <span className="font-mono text-command">{children}</span>;
+  return <span className="cmd">{children}</span>;
 }
 
 const DETAIL: { k: string; d: React.ReactNode }[] = [
@@ -101,84 +93,66 @@ export async function InstallBlock({ heading }: { heading?: React.ReactNode } = 
   // version-check disclosure stays visible: it is part of the feature, not a
   // footnote (instrumentation skill, "The gate demands a decision").
   return (
-    <section id="install" className="scroll-mt-20 border-b border-line bg-ink-raised">
-      <div className="mx-auto max-w-[1180px] px-5 py-16 sm:px-8">
+    <section id="install" data-ground="bone">
+      <div className="wrap py-(--section-y)">
         <div className="flex flex-wrap items-end justify-between gap-4">
-          {heading ?? (
-            <h2 className="font-display text-2xl tracking-normal text-bone sm:text-3xl">
-              Install Foundry
-            </h2>
-          )}
+          {heading ?? <h2 className="d-h2">Install Foundry</h2>}
           <StarButton stars={stars} />
         </div>
 
-        <div className="mt-6 max-w-3xl min-w-0 border border-line bg-ink">
-          <div className="flex items-center justify-between border-b border-line px-4 py-2">
-            <span className="font-mono text-[0.6875rem] uppercase tracking-wide text-signal">
-              one command
-            </span>
-            <CopyButton
-              text={NPX_CMD}
-              analytics={{ command_kind: "npx", surface: "install-block" }}
-            />
-          </div>
-          <pre className="whitespace-pre-wrap break-all px-4 py-4 font-mono text-sm leading-relaxed sm:overflow-x-auto sm:whitespace-pre sm:break-normal">
-            <code>
-              <span className="text-bone-faint">$ </span>
-              <span className="text-command">{NPX_CMD}</span>
-            </code>
-          </pre>
-          <p className="border-t border-line px-4 py-2.5 font-mono text-xs leading-relaxed text-bone-dim">
+        <div className="mt-10 max-w-3xl">
+          <CommandField command={NPX_CMD} surface="install-block" />
+          <p className="mt-4 text-fg">
             Then open Claude Code in your project and run{" "}
-            <span className="text-command">/production-audit</span>.
+            <span className="cmd">/production-audit</span>.
           </p>
         </div>
 
-        <p className="mt-4 max-w-measure text-sm leading-relaxed text-bone-faint">
+        <p className="mt-4 max-w-measure text-[0.96875rem] leading-relaxed text-fg-2">
           No account, no build step. At most once a day a skill asks this site
           for the current version, sending only its name and version.{" "}
-          <span className="font-mono text-bone-dim">FOUNDRY_NO_VERSION_CHECK</span>{" "}
-          turns it off.
+          <span className="cmd">FOUNDRY_NO_VERSION_CHECK</span> turns it off.
         </p>
 
-        <details className="group mt-8 max-w-3xl border-y border-line">
-          <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between font-mono text-xs uppercase tracking-wide text-bone-dim transition-colors hover:text-bone [&::-webkit-details-marker]:hidden">
+        <details className="group mt-10 max-w-3xl border-y-2 border-rule">
+          <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 font-semibold text-fg [&::-webkit-details-marker]:hidden">
             From source, requirements, and what it installs
-            <span aria-hidden="true" className="transition-transform duration-quick group-open:rotate-90">
-              →
+            <span aria-hidden="true" className="font-mono text-fg-2 group-open:hidden">
+              +
+            </span>
+            <span aria-hidden="true" className="hidden font-mono text-fg-2 group-open:inline">
+              -
             </span>
           </summary>
           <div className="pb-6">
-            <div className="min-w-0 border border-line bg-ink">
-              <div className="flex items-center justify-between border-b border-line px-4 py-2">
-                <span className="font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
-                  from source
-                </span>
+            <div className="min-w-0 border-2 border-fg bg-field">
+              <div className="flex items-center justify-between border-b border-ledger py-1 pl-4 pr-1">
+                <span className="label">From source</span>
                 <CopyButton
                   text={SOURCE_CMDS}
                   analytics={{ command_kind: "clone", surface: "install-block" }}
                 />
               </div>
-              <pre className="whitespace-pre-wrap break-all px-4 py-4 font-mono text-sm leading-relaxed sm:overflow-x-auto sm:whitespace-pre sm:break-normal">
+              <pre className="whitespace-pre-wrap break-all px-4 py-4 font-mono text-[0.9375rem] font-medium leading-relaxed text-fg sm:overflow-x-auto sm:whitespace-pre sm:break-normal">
                 <code>
-                  <span className="text-bone-faint">$ </span>
-                  <span className="text-command">git clone {REPO_URL}</span>
+                  <span className="text-fg-2">$ </span>
+                  git clone {REPO_URL}
                   {"\n"}
-                  <span className="text-bone-faint">$ </span>
-                  <span className="text-command">cd foundry</span>
+                  <span className="text-fg-2">$ </span>
+                  cd foundry
                   {"\n"}
-                  <span className="text-bone-faint">$ </span>
-                  <span className="text-command">make install</span>
+                  <span className="text-fg-2">$ </span>
+                  make install
                 </code>
               </pre>
             </div>
-            <dl className="mt-4 divide-y divide-line border-y border-line">
+            <dl className="mt-4 divide-y divide-ledger border-t border-ledger">
               {DETAIL.map((item) => (
-                <div key={item.k} className="grid gap-1 py-3 sm:grid-cols-[11rem_minmax(0,1fr)] sm:gap-6">
-                  <dt className="font-mono text-xs font-semibold uppercase tracking-wide text-bone">
+                <div key={item.k} className="grid gap-1 py-4 sm:grid-cols-[13rem_minmax(0,1fr)] sm:gap-6">
+                  <dt className="label pt-0.5">
                     {item.k}
                   </dt>
-                  <dd className="max-w-measure text-sm leading-relaxed text-bone-dim">
+                  <dd className="max-w-measure text-[0.96875rem] leading-relaxed text-fg-2">
                     {item.d}
                   </dd>
                 </div>
@@ -187,22 +161,24 @@ export async function InstallBlock({ heading }: { heading?: React.ReactNode } = 
           </div>
         </details>
 
-        <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-xs text-bone-faint">
-          <span>
-            <span className="text-bone-dim">v{suiteVersion()}</span> · pre-1.0
-          </span>
-          <a href={REPO_LICENSE_URL} target="_blank" rel="noreferrer" className="transition-colors hover:text-bone-dim">
-            MIT license
-          </a>
-          <a href={REPO_URL} target="_blank" rel="noreferrer" className="transition-colors hover:text-bone-dim">
-            Source
-          </a>
-          <a href={REPO_ISSUES_URL} target="_blank" rel="noreferrer" className="transition-colors hover:text-bone-dim">
-            Report an issue
-          </a>
-          <a href={REPO_CONTRIBUTING_URL} target="_blank" rel="noreferrer" className="transition-colors hover:text-bone-dim">
-            Contributing
-          </a>
+        <div className="meta mt-6 flex flex-wrap items-center gap-x-6">
+          <span className="text-fg">v{suiteVersion()} · pre-1.0</span>
+          {[
+            [REPO_LICENSE_URL, "MIT license"],
+            [REPO_URL, "Source"],
+            [REPO_ISSUES_URL, "Report an issue"],
+            [REPO_CONTRIBUTING_URL, "Contributing"],
+          ].map(([href, label]) => (
+            <a
+              key={href}
+              href={href}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex min-h-11 items-center text-fg underline decoration-1 underline-offset-4 hover:decoration-2"
+            >
+              {label}
+            </a>
+          ))}
         </div>
       </div>
     </section>
@@ -215,27 +191,11 @@ export async function InstallBlock({ heading }: { heading?: React.ReactNode } = 
 export async function HeroInstall() {
   const stars = await getStars();
   return (
-    <div className="mt-8 max-w-xl">
-      <div className="flex min-w-0 items-stretch border border-line-strong bg-ink-raised">
-        <pre className="min-w-0 flex-1 overflow-x-auto px-3 py-2.5 font-mono text-sm leading-relaxed">
-          <code>
-            <span className="text-bone-faint">$ </span>
-            <span className="text-command">{NPX_CMD}</span>
-          </code>
-        </pre>
-        <div className="flex items-center border-l border-line px-2">
-          <CopyButton
-            text={NPX_CMD}
-            analytics={{ command_kind: "npx", surface: "hero" }}
-          />
-        </div>
-      </div>
-      <div className="mt-3 flex flex-wrap items-center gap-3">
-        <Link
-          href="/skills"
-          className="inline-flex min-h-11 items-center border border-line px-3 py-2 font-mono text-sm text-bone-dim transition-colors hover:border-line-strong hover:text-bone"
-        >
-          See the skills →
+    <div className="home-hero-install">
+      <CommandField command={NPX_CMD} surface="hero" />
+      <div className="home-hero-links">
+        <Link href="/skills" className="tl">
+          See the skills
         </Link>
         <StarButton stars={stars} />
       </div>

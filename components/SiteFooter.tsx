@@ -13,34 +13,23 @@ const SECONDARY = [
   { href: REPO_LICENSE_URL, label: "License (MIT)", external: true },
 ];
 
+// Ink on every page, like the header. The attribution is the parent's line
+// for a suite, word for word (Horizon Foundry BRAND.md, Attribution).
 export function SiteFooter() {
   return (
-    <footer className="border-t border-line">
-      <div className="mx-auto flex max-w-[1180px] flex-col gap-6 px-5 py-8 sm:flex-row sm:items-start sm:justify-between sm:px-8">
-        <div className="flex flex-col gap-2">
-          <Wordmark className="text-xs" />
-          <p className="font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
-            A Horizon Foundry project · v{suiteVersion()}
-          </p>
-        </div>
-        <nav className="flex flex-wrap gap-x-5 gap-y-2 font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
+    <footer data-ground="ink">
+      <div className="wrap ftr-row">
+        <Wordmark size="footer" />
+        <p className="label">A Horizon Foundry suite.</p>
+        <p className="meta">v{suiteVersion()}</p>
+        <nav aria-label="Secondary" className="ftr-nav">
           {SECONDARY.map((item) =>
             item.external ? (
-              <a
-                key={item.href}
-                href={item.href}
-                target="_blank"
-                rel="noreferrer"
-                className="-my-2 py-2 transition-colors hover:text-bone-dim"
-              >
+              <a key={item.href} href={item.href} target="_blank" rel="noreferrer">
                 {item.label}
               </a>
             ) : (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="-my-2 py-2 transition-colors hover:text-bone-dim"
-              >
+              <Link key={item.href} href={item.href}>
                 {item.label}
               </Link>
             ),

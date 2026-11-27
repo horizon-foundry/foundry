@@ -1,18 +1,22 @@
 import Link from "next/link";
 import type { CSSProperties, ElementType } from "react";
 import { Reveal } from "@/components/Reveal";
+import { UnitBar } from "@/components/brand/UnitBar";
 import { HANDOFF, STAGES, THREAD, listSkills } from "@/lib/skills";
 
-// The skills by stage: a static rail with a node per stage, the stage's word
-// at display size, its skills as command links in rows, and the line each
-// stage hands to the next. After the last stage comes the thread that ties the
-// three together. Shared by the homepage and /skills.
+// The skills by stage: three ruled rows, one per stage. Each has the stage's
+// word at display size behind a unit bar, its skills as command links in
+// rows, and the line the stage hands to the next. After the last stage comes
+// the thread that ties the three together. Shared by the homepage and /skills.
 //
-// Nothing here is tied to scroll position. The rail is drawn complete; a stage's
-// node lights once, and its command rows and handoff fade in and rise 8px once,
-// when that stage first enters the viewport (Reveal). The stage's own words
-// (number, title, line) never fade or move (DESIGN.md, Motion and Anti-goals). Without script, under
-// reduced motion and in print the stage is simply there, with no movement.
+// The unit bars are Slate, Amber and Ink, the parent's order on a light
+// ground, and they mark the same three words the parent's method marks.
+//
+// Nothing here is tied to scroll position. A stage's command rows and handoff
+// fade in and rise 8px once, when that stage first enters the viewport
+// (Reveal). The stage's own words (title, caption, line) never fade or move.
+// Without script, under reduced motion and in print the stage is simply
+// there, with no movement.
 //
 // headingLevel is the level of each stage's title. The homepage sits the rail
 // under an h2, so the default is h3; a page that puts it directly under its h1
@@ -29,6 +33,8 @@ const command = (s: { slug: string; name: string }) =>
 const longest = (list: { slug: string; name: string }[]) =>
   Math.max(...list.map((s) => command(s).length));
 
+const STAGE_BAR = { distill: "slate", forge: "amber", deliver: "ink" } as const;
+
 export function StageRail({
   taglines = false,
   headingLevel = 3,
@@ -42,7 +48,6 @@ export function StageRail({
   return (
     <>
       <div className="home-stages">
-        <div className="home-rail" aria-hidden="true" />
         {STAGES.map((stage, i) => {
           const list = skills.filter((s) => s.stage === stage.id);
           const handoff = HANDOFF[stage.id];
@@ -54,20 +59,18 @@ export function StageRail({
               className="home-stage"
               aria-labelledby={`stage-${stage.id}`}
             >
-              <span className="home-node" aria-hidden="true" />
               <div className="home-stage-grid">
                 <div>
-                  <p className="home-stage-n">
-                    {String(i + 1).padStart(2, "0")} · {stage.caption}
-                  </p>
                   <Title id={`stage-${stage.id}`} className="home-stage-title">
+                    <UnitBar fill={STAGE_BAR[stage.id]} />
                     {stage.label}
                   </Title>
+                  <p className="home-stage-n label">{stage.caption}</p>
                   <p className="home-stage-line">{stage.line}</p>
                 </div>
                 <ul
                   role="list"
-                  className={`home-cmds${list.length > 3 ? " home-cmds-2" : ""}`}
+                  className={`home-cmds${list.length > 3 ? " home-cmds-2" : ""}${taglines ? " home-cmds-tag" : ""}`}
                   style={{ "--cmd-ch": longest(list) } as CSSProperties}
                 >
                   {list.map((s, k) => (

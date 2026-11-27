@@ -1,150 +1,102 @@
-/* Homepage surface (app/page.tsx, components/AreaGrid.tsx). The stage rail
-   it embeds lives in stages.css. Imported by globals.css. The shared figure
-   primitives (.c, .cells, .frame, .stamp, the reveal hooks) live in
-   globals.css; only what is specific to this page goes here, ported from the
-   approved Instrument prototype (tmp/directions/instrument/src/style.css).
-   Every duration and easing is a DESIGN.md token. */
+/* Homepage surface (app/page.tsx, components/AreaGrid.tsx). The stage rail it
+   embeds lives in stages.css. Imported by globals.css. The grounds, the type
+   ramp, the button, the text link, the command field, the sheet and the
+   figure primitives (.c, .cells, .frame, the reveal hooks) live in
+   globals.css; only what is specific to this page goes here. Every color is
+   ground-relative (--fg, --fg-2, --rule, --ledger), so a section changes
+   ground by changing its data-ground and nothing else. */
 
+/* ---- older names, kept so the sections the rebrand has not rebuilt still
+   set their type on the ramp ---- */
 .home-wrap {
-  max-width: 1180px;
-  margin: 0 auto;
-  padding: 0 20px;
+  max-width: calc(var(--content) + 2 * var(--gutter));
+  margin-inline: auto;
+  padding-inline: var(--gutter);
 }
-@media (min-width: 640px) {
-  .home-wrap {
-    padding: 0 32px;
-  }
-}
-
-/* ---- type ---- */
 .home-d-xl,
 .home-d-lg,
 .home-d-md {
   font-family: var(--font-display);
-  font-weight: 400;
-  letter-spacing: 0;
-  color: var(--color-bone);
+  font-weight: 900;
+  letter-spacing: var(--tracking-display);
+  color: var(--fg);
+  text-wrap: balance;
 }
-.home-d-xl {
-  font-size: clamp(42px, 5.8vw, 80px);
-  line-height: 1.02;
-}
+.home-d-xl,
 .home-d-lg {
-  font-size: clamp(38px, 5vw, 68px);
-  line-height: 1.02;
+  font-size: var(--text-title);
+  line-height: var(--text-title--line-height);
 }
 .home-d-md {
-  font-size: clamp(30px, 3.6vw, 48px);
-  line-height: 1.06;
+  font-size: var(--text-h2);
+  line-height: var(--text-h2--line-height);
 }
 .home-lede {
-  color: var(--color-bone-dim);
-  font-size: clamp(17px, 1.4vw, 20px);
-  line-height: 1.5;
-  max-width: 46ch;
+  max-width: 34rem;
+  font-size: var(--text-lead);
+  line-height: var(--text-lead--line-height);
+  color: var(--fg-2);
 }
 
-/* ---- buttons ---- */
+/* ---- actions: one filled button, then text links ---- */
 .home-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 28px;
-}
-.home-btn {
-  display: inline-flex;
   align-items: center;
-  gap: 10px;
-  min-height: 48px;
-  padding: 0 18px;
-  border: 1px solid var(--color-line-strong);
-  font: 400 14px/1 var(--font-mono);
-  color: var(--color-bone);
-  text-decoration: none;
-  /* Out is fast and straight, in is quick and eased (DESIGN.md, Motion). */
-  transition:
-    border-color var(--transition-duration-tick) var(--ease-exit),
-    color var(--transition-duration-tick) var(--ease-exit),
-    background-color var(--transition-duration-tick) var(--ease-exit);
-}
-.home-btn:hover {
-  border-color: var(--color-signal);
-  color: var(--color-signal);
-  transition:
-    border-color var(--transition-duration-quick) var(--ease-entrance),
-    color var(--transition-duration-quick) var(--ease-entrance),
-    background-color var(--transition-duration-quick) var(--ease-entrance);
-}
-.home-btn:active {
-  background: var(--color-ink-raised-2);
-  transition-duration: var(--transition-duration-tick);
-  transition-timing-function: var(--ease-exit);
-}
-.home-btn-solid {
-  background: var(--color-bone);
-  color: var(--color-ink);
-  border-color: var(--color-bone);
-}
-.home-btn-solid:hover {
-  background: var(--color-signal);
-  color: var(--color-ink);
-}
-.home-btn-q {
-  border-color: transparent;
-  padding-left: 4px;
-}
-.home-btn-q:hover {
-  border-color: transparent;
+  gap: 8px 32px;
+  margin-top: 32px;
 }
 
-/* ---- the section rule: a mark that draws once, with its section ---- */
-.home-rule {
-  display: block;
-  width: 48px;
-  height: 1px;
-  background: var(--color-bone);
-  margin-bottom: 24px;
-  transform-origin: left;
-}
-[data-reveal="armed"] .home-rule {
-  transform: scaleX(0);
-}
-[data-reveal="in"] .home-rule {
-  transform: scaleX(1);
-  transition: transform var(--transition-duration-draw) var(--ease-draw);
-}
-
-/* ---- 1. hero ---- */
+/* ---- 1. hero: the h1 and the command on the left, the verdict sheet on
+   the right. The sheet is the largest object on the first screen. ---- */
 .home-hero {
-  padding: 96px 0 104px;
+  padding: clamp(40px, 5vw, 72px) 0 clamp(56px, 6vw, 88px);
 }
 .home-hero-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
-  gap: 64px;
-  align-items: center;
+  grid-template-columns: minmax(0, 1.04fr) minmax(0, 0.96fr);
+  gap: 72px;
+  align-items: start;
+}
+.home-hero-copy .t-lead {
+  margin-top: 28px;
+}
+.home-hero-install {
+  margin-top: 36px;
+  max-width: 38rem;
+}
+.home-hero-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 32px;
+  margin-top: 12px;
+}
+/* Room for the registration ticks, which sit outside the sheet's edge. */
+.home-hero-sheet {
+  min-width: 0;
+  margin-top: 10px;
 }
 
-/* ---- 2. problem ---- */
+/* ---- 2. the problem: the claim, on Slate ---- */
 .home-band {
-  border-top: 1px solid var(--color-line);
-  border-bottom: 1px solid var(--color-line);
-  background: color-mix(in srgb, var(--color-ink) 60%, var(--color-ink-raised));
-  padding: 72px 0;
+  padding: clamp(56px, 6vw, 88px) 0;
 }
 .home-band-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 64px;
+  grid-template-columns: minmax(0, 1.04fr) minmax(0, 0.96fr);
+  gap: 72px;
   align-items: center;
 }
-.home-band .home-d-md {
-  max-width: 19ch;
+.home-band .d-h2 {
+  max-width: 13em;
+}
+.home-band .t-lead {
+  color: var(--fg);
 }
 
-/* ---- 3. production-audit sub-hero ---- */
+/* ---- 3. production-audit: the run behind the verdict ---- */
 .home-sub {
-  padding: 128px 0;
+  padding: var(--section-y) 0;
 }
 .home-sub-grid {
   display: grid;
@@ -152,39 +104,56 @@
   gap: 72px;
   align-items: center;
 }
+.home-sub-cmd {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font: 500 var(--text-lead) / 1.3 var(--font-mono);
+  color: var(--fg);
+}
+.home-sub-cmd svg {
+  flex: none;
+  width: 26px;
+  height: auto;
+}
+.home-sub .d-title {
+  margin-top: 20px;
+}
+.home-sub .t-lead {
+  margin-top: 24px;
+}
 .home-run {
   --cs: 13px;
   min-width: 0;
 }
 .home-run-row {
-  padding: 18px 18px 4px;
+  padding: 20px 20px 20px;
+  border-bottom: 1px solid var(--ledger);
+}
+.home-run-row:last-of-type {
+  border-bottom: 0;
 }
 .home-run-lab {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 10px;
+  gap: 4px 12px;
   align-items: baseline;
-  margin-bottom: 10px;
-  font: 400 13px/1.4 var(--font-mono);
-  color: var(--color-bone-dim);
+  margin-bottom: 12px;
+  font: 400 var(--text-meta) / 1.4 var(--font-mono);
+  color: var(--fg);
 }
 .home-run-lab b {
   font-weight: 500;
-  font-size: 20px;
-  color: var(--color-bone);
+  font-size: 1.5rem;
+  color: var(--fg);
 }
 .home-run-lab span {
-  font-size: 12px;
-  color: var(--color-bone-faint);
-}
-.home-stamp {
-  margin: 22px 18px 18px;
+  color: var(--fg-2);
 }
 
 /* ---- 4. stages ---- */
 .home-stages-sec {
-  border-top: 1px solid var(--color-line);
-  padding: 120px 0 40px;
+  padding: var(--section-y) 0;
 }
 .home-sec-head {
   margin-bottom: 0;
@@ -192,8 +161,7 @@
 
 /* ---- 5. readiness ---- */
 .home-ready {
-  border-top: 1px solid var(--color-line);
-  padding: 120px 0;
+  padding: var(--section-y) 0;
 }
 .home-ready-grid {
   display: grid;
@@ -215,14 +183,14 @@
 .home-ready-btn {
   grid-area: btn;
   align-self: start;
-  margin-top: 32px;
+  margin-top: 24px;
 }
 .home-legend {
   display: flex;
   flex-wrap: wrap;
   gap: 10px 28px;
-  font: 400 13px/1 var(--font-mono);
-  color: var(--color-bone-dim);
+  font: 400 var(--text-meta) / 1 var(--font-mono);
+  color: var(--fg-2);
 }
 .home-legend li {
   display: flex;
@@ -231,13 +199,13 @@
 }
 .home-legend b {
   font-weight: 500;
-  color: var(--color-bone);
+  color: var(--fg);
 }
 .home-legend-note {
   max-width: 56ch;
   margin-top: 12px;
-  font: 400 13px/1.5 var(--font-mono);
-  color: var(--color-bone-faint);
+  font: 400 var(--text-meta) / 1.5 var(--font-mono);
+  color: var(--fg-2);
 }
 .home-agrid {
   --cs: 12px;
@@ -245,7 +213,7 @@
   grid-template-columns: 1fr 1fr;
   column-gap: 40px;
   margin-top: 28px;
-  border-top: 1px solid var(--color-line);
+  border-top: 2px solid var(--rule);
 }
 .home-ag-row {
   display: grid;
@@ -253,11 +221,11 @@
   gap: 12px;
   align-items: center;
   min-height: 40px;
-  border-bottom: 1px solid var(--color-line);
+  border-bottom: 1px solid var(--ledger);
 }
 .home-ag-name {
-  font: 400 13px/1.25 var(--font-sans);
-  color: var(--color-bone-dim);
+  font: 400 0.8125rem/1.25 var(--font-sans);
+  color: var(--fg);
 }
 .home-ag-cells {
   display: flex;
@@ -271,23 +239,26 @@
 
 /* ---- 7. who built this ---- */
 .home-who {
-  padding: 112px 0 128px;
+  padding: var(--section-y) 0;
 }
 .home-who-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1.04fr) minmax(0, 0.96fr);
   gap: 72px;
   align-items: start;
 }
 
-/* ---- tablet and phone ---- */
-@media (max-width: 900px) {
+/* ---- two columns stack under the split (1100) ---- */
+@media (width < 68.75rem) {
   .home-hero-grid,
   .home-band-grid,
   .home-sub-grid,
   .home-who-grid {
     grid-template-columns: minmax(0, 1fr);
-    gap: 40px;
+    gap: 48px;
+  }
+  .home-band-grid {
+    gap: 24px;
   }
   .home-ready-grid {
     grid-template-columns: minmax(0, 1fr);
@@ -299,60 +270,17 @@
   .home-ready-copy {
     align-self: start;
   }
+  .home-ready-copy .home-lede {
+    margin-bottom: 36px;
+  }
+  /* The ticks need the gutter; the sheet keeps clear of the copy above. */
+  .home-hero-sheet {
+    margin-top: 8px;
+    max-width: 40rem;
+  }
 }
 
-@media (max-width: 600px) {
-  .home-d-xl {
-    font-size: 52px;
-    line-height: 0.98;
-  }
-  .home-d-lg {
-    font-size: 38px;
-  }
-  .home-d-md {
-    font-size: 32px;
-  }
-  .home-lede {
-    font-size: 17px;
-  }
-  .home-actions {
-    margin-top: 14px;
-    gap: 8px;
-  }
-
-  /* The hero fills the first screen and the replay waits below it. */
-  .home-hero {
-    padding: 0 0 72px;
-  }
-  .home-hero-grid {
-    gap: 16px;
-  }
-  .home-hero-copy {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    min-height: calc(100svh - 8rem);
-    padding-bottom: 24px;
-  }
-
-  .home-band {
-    padding: 64px 0;
-  }
-  .home-band-grid {
-    gap: 20px;
-  }
-  .home-sub {
-    padding: 88px 0;
-  }
-  .home-sub-grid {
-    gap: 56px;
-  }
-  .home-sub .home-btn,
-  .home-who .home-btn,
-  .home-ready-btn .home-btn {
-    width: 100%;
-    justify-content: space-between;
-  }
+@media (width < 40rem) {
   .home-run {
     --cs: 11px;
   }
@@ -363,21 +291,9 @@
     --cs: 16px;
     gap: 5px;
   }
-
-  .home-stages-sec {
-    padding: 88px 0 8px;
-  }
-
-  .home-ready {
-    padding: 88px 0;
-  }
-  .home-ready-copy .home-lede {
-    margin-bottom: 36px;
-  }
   .home-legend {
     flex-direction: column;
     gap: 14px;
-    font-size: 14px;
   }
   /* Compact, one column, every area still shown. */
   .home-agrid {
@@ -389,23 +305,7 @@
     min-height: 34px;
     padding: 4px 0;
   }
-  .home-ready-btn {
-    margin-top: 32px;
-  }
-
-  .home-who {
-    padding: 88px 0 96px;
-  }
-}
-
-/* ---- motion guards ---- */
-@media (prefers-reduced-motion: reduce) {
-  [data-reveal] .home-rule {
-    transform: none !important;
-  }
-}
-@media print {
-  [data-reveal] .home-rule {
-    transform: none !important;
+  .home-actions .btn {
+    width: 100%;
   }
 }

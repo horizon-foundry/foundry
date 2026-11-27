@@ -77,6 +77,18 @@
      severity/verdict colors in the reports. */
   --color-command: #d99a2e;
 
+  /* The parent's palette under the parent's names (Horizon Foundry BRAND.md,
+     Inheritance). New work uses these, or the ground-relative tokens below.
+     `line` and `command` above are this repo's older aliases of slate and
+     amber, kept only for the surfaces the rebrand has not reached. White, fog
+     and mist are the parent site's support values: a ground and a field, and
+     the two text tints for dark grounds. */
+  --color-slate: #334455;
+  --color-amber: #d99a2e; /* only ever fills a bar: never text, a border or a wash */
+  --color-white: #ffffff;
+  --color-fog: #9aa4b0; /* secondary text on Ink */
+  --color-mist: #c9d0d8; /* body text on Ink and Slate */
+
   --color-critical: #ff5c5c;
   --color-high: #ff9f45;
   --color-medium: #f5ce4b;
@@ -123,9 +135,10 @@
      and would always beat this @theme-layer declaration in the cascade if
      they shared a name, silently dropping the fallback chain below. See
      lib/fonts.ts. */
-  --font-display: var(--font-archivo-black), ui-sans-serif, system-ui,
-    sans-serif;
-  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-zalando), "Helvetica Neue", Arial, ui-sans-serif,
+    system-ui, sans-serif;
+  --font-sans: var(--font-zalando), "Helvetica Neue", Arial, ui-sans-serif,
+    system-ui, sans-serif;
   --font-mono: var(--font-plex-mono), ui-monospace, monospace;
   --font-serif: var(--font-plex-serif), ui-serif, Georgia, serif;
   /* The measure: about 75 characters per line (DESIGN.md Layout). A ch is the
@@ -134,6 +147,153 @@
      sans body, 61ch for the serif doc prose. */
   --container-measure: 58ch;
   --container-measure-serif: 61ch;
+
+  /* Square corners everywhere (the parent's Shapes rule). Every radius
+     utility resolves to zero, so a leftover `rounded-sm` draws a square. */
+  --radius-xs: 0;
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+
+  /* The type ramp, in rem so it follows the font size a visitor sets. Fluid
+     steps run from the 390 phone to 1440. Display steps are Zalando Black at
+     -0.015em. The steps are the parent's, minus the ones this site does not
+     set; `meta` is this product's own step, the mono line of a report. */
+  --text-title: clamp(2.75rem, 1.81875rem + 3.81vw, 5.25rem); /* 44 to 84 */
+  --text-title--line-height: 1;
+  --text-h2: clamp(2.375rem, 1.95625rem + 1.714vw, 3.5rem); /* 38 to 56 */
+  --text-h2--line-height: 1;
+  --text-statement: clamp(1.875rem, 1.59375rem + 1.143vw, 2.625rem); /* 30 to 42 */
+  --text-statement--line-height: 1.08;
+  --text-h3: clamp(1.3125rem, 1.24375rem + 0.286vw, 1.5rem); /* 21 to 24 */
+  --text-h3--line-height: 1.15;
+  --text-lead: clamp(1.125rem, 1.05625rem + 0.286vw, 1.25rem); /* 18 to 20 */
+  --text-lead--line-height: 1.5;
+  --text-body: 1.0625rem; /* 17 */
+  --text-body--line-height: 1.5;
+  --text-small: 0.96875rem; /* 15.5 */
+  --text-small--line-height: 1.5;
+  --text-nav: 0.9375rem; /* 15 */
+  --text-nav--line-height: 1.25;
+  --text-label: 0.875rem; /* 14: uppercase labels, 600, 0.14em */
+  --text-label--line-height: 1.3;
+  --text-meta: 0.8125rem; /* 13: mono metadata (dates, commits, counts) */
+  --text-meta--line-height: 1.4;
+  --tracking-display: -0.015em;
+  --tracking-head: -0.01em;
+  --tracking-label: 0.14em;
+}
+
+/* Ground-relative colors. A component that uses these reads right on every
+   ground, because the ground sets them (see "Grounds" below). `inline` makes
+   the utility emit the var() itself, so the value resolves where the class
+   is used and not at :root. */
+@theme inline {
+  --color-ground: var(--ground);
+  --color-fg: var(--fg);
+  --color-fg-2: var(--fg-2);
+  --color-fg-3: var(--fg-3);
+  --color-rule: var(--rule);
+  --color-ledger: var(--ledger);
+  --color-field: var(--field);
+}
+
+/* ============================================================
+   Grounds (the light instrument).
+   The company site opens on Ink. This suite opens on Bone and White, the
+   parent's working-text grounds, so a page reads as a printed report: Ink
+   type, 2px Ink rules, mono metadata. A section states its ground with
+   data-ground, and the ground sets the text, rule and field colors for
+   everything inside it.
+
+     --fg      text                 --rule    the 2px rule and a frame's edge
+     --fg-2    secondary text       --ledger  the 1px line inside a dense figure
+     --fg-3    faint text           --field   the ground of a command field
+
+   Bone is the default. The header and the footer are Ink on every page.
+   Slate carries a claim. Text contrast, measured: Ink on Bone 14.88, Slate on
+   Bone 8.43, Ink on White 17.67, Slate on White 10.01, Bone on Ink 14.88,
+   Mist on Ink 11.36, Fog on Ink 6.99, Bone on Slate 8.43, Mist on Slate 6.43.
+   Fog never sits on Slate (3.96), so Slate has no third text color.
+   ============================================================ */
+:root {
+  --gutter: clamp(20px, 0.69px + 4.952vw, 72px);
+  --section-y: clamp(64px, 49.1px + 3.81vw, 104px);
+  --header-h: 64px;
+  --content: 1296px;
+  /* The bar: the cut's horizontal run is always 0.75 of the bar's height. */
+  --cut: 0.75;
+  /* The one easing for everything the rebrand has rebuilt. */
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+}
+:root,
+[data-ground="bone"] {
+  --ground: var(--color-bone);
+  --fg: var(--color-ink);
+  --fg-2: var(--color-slate);
+  --fg-3: var(--color-slate);
+  --rule: var(--color-ink);
+  --ledger: var(--color-slate);
+  --field: var(--color-white);
+  --focus: var(--color-ink);
+  --edge-w: 2px; /* a frame's edge and a section rule */
+  --cell-edge: var(--color-ink); /* a hue cell is outlined on a light ground */
+}
+[data-ground="white"] {
+  --ground: var(--color-white);
+  --fg: var(--color-ink);
+  --fg-2: var(--color-slate);
+  --fg-3: var(--color-slate);
+  --rule: var(--color-ink);
+  --ledger: var(--color-slate);
+  --field: var(--color-white);
+  --focus: var(--color-ink);
+  --edge-w: 2px;
+  --cell-edge: var(--color-ink);
+}
+[data-ground="slate"] {
+  --ground: var(--color-slate);
+  --fg: var(--color-bone);
+  --fg-2: var(--color-mist);
+  --fg-3: var(--color-mist);
+  --rule: var(--color-bone);
+  --ledger: var(--color-mist);
+  --field: var(--color-slate);
+  --focus: var(--color-bone);
+  --edge-w: 2px;
+  --cell-edge: transparent;
+}
+/* A <main> that states no ground is a page the rebrand has not reached. It
+   keeps the old Ink ground, so its Bone text still reads. Delete this
+   selector when the last page states its ground. */
+[data-ground="ink"],
+main:not([data-ground]) {
+  --ground: var(--color-ink);
+  --fg: var(--color-bone);
+  --fg-2: var(--color-mist);
+  --fg-3: var(--color-fog);
+  --rule: var(--color-slate);
+  --ledger: var(--color-slate);
+  --field: var(--color-ink-raised);
+  --focus: var(--color-bone);
+  --edge-w: 1px;
+  --cell-edge: transparent;
+}
+[data-ground],
+main:not([data-ground]) {
+  background-color: var(--ground);
+  color: var(--fg);
+}
+/* The old pages are a centered 1180 column, so their Ink has to come from
+   the canvas behind the column. Goes with the selector above. */
+html:has(main:not([data-ground])),
+body:has(> main:not([data-ground])) {
+  background-color: var(--color-ink);
+}
+
+::selection {
+  background: var(--fg);
+  color: var(--ground);
 }
 
 /* No global smooth scroll: it made Next's scroll-to-top on route change animate,
@@ -172,40 +332,28 @@ html {
   }
 }
 
+html {
+  background-color: var(--color-bone);
+  /* The header is pinned; an anchor must land clear of it. */
+  scroll-padding-top: calc(var(--header-h) + 16px);
+  -webkit-text-size-adjust: 100%;
+}
 body {
-  background-color: var(--color-ink);
-  color: var(--color-bone);
+  background-color: var(--color-bone);
+  color: var(--color-ink);
   font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
-/* Consistent, visible keyboard focus on every interactive element (WCAG 2.4.7).
-   A bone ring with offset reads on the steel ground; command surfaces get an
-   amber ring so the accent's meaning carries into focus. */
+/* Visible keyboard focus on every interactive element (WCAG 2.4.7): a 2px
+   ring with an offset, Ink on a light ground and Bone on a dark one (the
+   ground sets --focus). Never amber: amber only fills a bar. */
 :where(a, button, [role="button"], input, summary, [tabindex]):focus-visible {
-  outline: 2px solid var(--color-bone);
-  outline-offset: 2px;
-  border-radius: 1px;
-}
-.text-command:focus-visible,
-:where(a, button):has(> .text-command):focus-visible {
-  outline-color: var(--color-command);
-}
-
-/* Faint film grain over the ground: printed-stock texture, no color.
-   A tiny inline SVG turbulence, fixed so it doesn't scroll. */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  /* Behind all content. Using a negative z-index (rather than elevating every
-     body child) keeps the grain back WITHOUT forcing position: relative on the
-     header, which would override the sticky utility and break the anchored nav. */
-  z-index: -1;
-  pointer-events: none;
-  opacity: 0.035;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
 }
 
 /* Staggered entrance for slide content and hero. Children rise in sequence. */
@@ -322,7 +470,6 @@ body::before {
   font-size: 0.85em;
   background: var(--color-ink-raised-2);
   border: 1px solid var(--color-line);
-  border-radius: 3px;
   padding: 0.05em 0.35em;
   color: var(--color-bone);
 }
@@ -338,7 +485,6 @@ body::before {
   font-family: var(--font-mono);
   background: var(--color-ink-raised);
   border: 1px solid var(--color-line);
-  border-radius: 4px;
   padding: 1rem;
   overflow-x: auto;
   font-size: 0.82rem;
@@ -556,16 +702,21 @@ a:hover .text-command,
 /* Owner and map state */
 .c-pa,
 .c-lit {
-  background: var(--color-bone);
+  background: var(--fg);
 }
 .c-sk {
   background: var(--cell-sk);
 }
 .c-out {
-  border-color: var(--color-line-strong);
+  border-color: var(--fg-2);
 }
 .c-off {
-  border-color: var(--color-line);
+  border-color: var(--ledger);
+}
+/* A hue on a light ground is a fill with an Ink edge, never text: yellow on
+   White is 1.5 to 1, and the edge is what makes the cell a cell. */
+.c[class*=" s-"] {
+  border: 1px solid var(--cell-edge);
 }
 /* Severity */
 .s-critical {
@@ -586,48 +737,44 @@ a:hover .text-command,
 /* A skeptic's ruling: solid held, hatched downgraded, hollow and struck
    refuted, dashed not assessed */
 .v-confirmed {
-  background: var(--color-bone);
+  background: var(--fg);
 }
+/* Downgraded: the fill pulled in from the edge. Refuted: hollow, struck
+   through. Both are flat fills clipped to the cell's content box, so no
+   gradient draws them. */
 .v-downgraded {
-  border-color: var(--color-bone);
-  background: repeating-linear-gradient(
-    135deg,
-    transparent 0 3px,
-    color-mix(in srgb, var(--color-bone) 55%, transparent) 3px 4.5px
-  );
+  border-color: var(--fg);
+  padding: 3px;
+  background: var(--fg) content-box;
 }
 .v-refuted {
-  border-color: var(--color-bone);
-  background: linear-gradient(
-    to top right,
-    transparent calc(50% - 0.75px),
-    var(--color-bone) calc(50% - 0.75px) calc(50% + 0.75px),
-    transparent calc(50% + 0.75px)
-  );
+  border-color: var(--fg);
+  padding: calc(var(--cs, 14px) / 2 - 2.25px) 0;
+  background: var(--fg) content-box;
 }
 .v-na {
-  border-color: var(--color-line-strong);
+  border-color: var(--fg-2);
   border-style: dashed;
 }
 
 /* The frame: a bordered excerpt with a caption at each end of its head. */
 .frame {
-  border: 1px solid var(--color-line-strong);
-  background: var(--color-ink-raised);
+  border: var(--edge-w) solid var(--rule);
+  background: var(--field);
 }
 .frame-head {
   display: flex;
   justify-content: space-between;
   gap: 16px;
-  padding: 12px 18px;
-  border-bottom: 1px solid var(--color-line);
-  font: 400 12px/1.4 var(--font-mono);
-  color: var(--color-bone-faint);
+  padding: 12px 20px;
+  border-bottom: var(--edge-w) solid var(--rule);
+  font: 400 var(--text-meta) / 1.4 var(--font-mono);
+  color: var(--fg-2);
 }
 .frame figcaption {
-  padding: 0 18px 16px;
-  font: 400 12px/1.5 var(--font-mono);
-  color: var(--color-bone-faint);
+  padding: 0 20px 18px;
+  font: 400 var(--text-meta) / 1.5 var(--font-mono);
+  color: var(--fg-2);
 }
 @media (max-width: 600px) {
   .frame-head {
@@ -784,5 +931,481 @@ a:hover .text-command,
     .js [data-panel][hidden] {
       display: block !important;
     }
+  }
+}
+
+/* ============================================================
+   The light instrument: shared primitives.
+   What the rebuilt pages are made of. Type is rem, the frame is px.
+   ============================================================ */
+
+/* The old display utility, on the pages the rebrand has not reached: Zalando
+   Sans has a Black, so a heading that was Archivo at 400 is now 900. */
+.font-display {
+  font-weight: 900;
+  letter-spacing: var(--tracking-display);
+}
+
+/* Content cap: 1296 with a fluid gutter, 20 on a phone to 72 at 1440. */
+.wrap {
+  max-width: calc(var(--content) + 2 * var(--gutter));
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+/* Display type: Zalando Sans Black on the ramp. */
+.d-title,
+.d-h2,
+.d-statement {
+  font-family: var(--font-display);
+  font-weight: 900;
+  letter-spacing: var(--tracking-display);
+  color: var(--fg);
+  text-wrap: balance;
+}
+.d-title {
+  font-size: var(--text-title);
+  line-height: var(--text-title--line-height);
+}
+.d-h2 {
+  font-size: var(--text-h2);
+  line-height: var(--text-h2--line-height);
+}
+.d-statement {
+  font-size: var(--text-statement);
+  line-height: var(--text-statement--line-height);
+}
+.t-lead {
+  max-width: 34rem;
+  font-size: var(--text-lead);
+  line-height: var(--text-lead--line-height);
+  color: var(--fg-2);
+}
+/* A label names a block. It is never a kicker above a heading. */
+.label {
+  font: 600 var(--text-label) / var(--text-label--line-height) var(--font-sans);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--fg-2);
+}
+/* The mono line of a report: a date, a commit, a count, a path. */
+.meta {
+  font: 400 var(--text-meta) / var(--text-meta--line-height) var(--font-mono);
+  color: var(--fg-2);
+}
+/* A command in a line of text: mono in the text's own color, a step heavier.
+   Never amber: amber only fills a bar. */
+.cmd {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  color: var(--fg);
+}
+
+/* The button: one filled box in the text color of its ground, so Ink on
+   Bone and White, Bone on Ink. Square, semibold, 52px at least. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  padding: 0.5rem 26px;
+  border: 0;
+  background: var(--fg);
+  color: var(--ground);
+  font: 600 var(--text-body) / 1.25 var(--font-sans);
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 240ms var(--ease),
+    color 240ms var(--ease);
+}
+.btn:hover {
+  background: var(--color-slate);
+  color: var(--color-bone);
+}
+[data-ground="slate"] .btn:hover {
+  background: var(--color-ink);
+}
+.btn-sm {
+  min-height: 44px;
+  padding-inline: 18px;
+  font-size: var(--text-nav);
+}
+
+/* The text link: body size, semibold, a 1.5px line under the text that
+   thickens to 3px on hover. The anchor is the 44px target. */
+.tl {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font: 600 var(--text-body) / 1.5 var(--font-sans);
+  color: var(--fg);
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 5px;
+}
+.tl:hover {
+  text-decoration-thickness: 3px;
+}
+/* A link with a figure beside it: the line sits under the words only. */
+.tl-figure {
+  text-decoration: none;
+}
+.tl-figure > span:first-child {
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 5px;
+}
+.tl-figure:hover > span:first-child {
+  text-decoration-thickness: 3px;
+}
+.tl-count {
+  margin-left: 0.5em;
+  font: 400 var(--text-meta) / 1 var(--font-mono);
+  color: var(--fg-2);
+}
+
+/* The command field: the one way a runnable command is set. A White field
+   with a 2px Ink border, the command in Ink mono, an amber unit bar in front
+   of it (the mark of a command you fire), and the copy control joined to its
+   right edge. Below 40rem the control joins under the field and the command
+   wraps at its spaces, so nothing scrolls sideways. */
+.cmd-field {
+  display: flex;
+  align-items: stretch;
+  min-width: 0;
+  max-width: 100%;
+  border: 2px solid var(--fg);
+  background: var(--field);
+}
+.cmd-field-line {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  min-height: 54px;
+  padding: 10px 18px;
+}
+.cmd-field-bar {
+  flex: none;
+  width: 26px;
+  height: auto;
+}
+.cmd-field code {
+  min-width: 0;
+  font: 500 1rem/1.4 var(--font-mono);
+  color: var(--fg);
+  overflow-wrap: anywhere;
+}
+.cmd-copy {
+  flex: none;
+  min-width: 96px;
+  min-height: 44px;
+  padding: 0 20px;
+  border: 0;
+  background: var(--fg);
+  color: var(--ground);
+  font: 600 var(--text-nav) / 1.25 var(--font-sans);
+  cursor: pointer;
+  transition: background-color 240ms var(--ease);
+}
+.cmd-copy:hover {
+  background: var(--color-slate);
+  color: var(--color-bone);
+}
+.cmd-copy:focus-visible {
+  outline-offset: -6px;
+  outline-color: var(--ground);
+}
+@media (width < 40rem) {
+  .cmd-field {
+    flex-direction: column;
+  }
+  .cmd-copy {
+    min-height: 52px;
+  }
+}
+
+/* The sheet: a verdict as a printed page. Always White with a 2px Ink edge,
+   whatever ground it sits on, with a registration tick off each corner (the
+   stamp's own marks, kept). The verdict hue is a fill under Ink type, never
+   the color of the type: Ink on the safe green is 8.4 to 1, on the risk
+   yellow 11.6, on the no-ship red 5.6. */
+.sheet {
+  position: relative;
+  container-type: inline-size;
+  border: 2px solid var(--color-ink);
+}
+.sheet-tk {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border: 0 solid var(--color-ink);
+}
+.sheet-tk-tl {
+  top: -18px;
+  left: -18px;
+  border-right-width: 2px;
+  border-bottom-width: 2px;
+}
+.sheet-tk-tr {
+  top: -18px;
+  right: -18px;
+  border-left-width: 2px;
+  border-bottom-width: 2px;
+}
+.sheet-tk-bl {
+  bottom: -18px;
+  left: -18px;
+  border-right-width: 2px;
+  border-top-width: 2px;
+}
+.sheet-tk-br {
+  bottom: -18px;
+  right: -18px;
+  border-left-width: 2px;
+  border-top-width: 2px;
+}
+.sheet-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 2px 16px;
+  padding: 12px 24px;
+  border-bottom: 2px solid var(--color-ink);
+}
+.sheet-verdict {
+  padding: 20px 24px 22px;
+  border-bottom: 2px solid var(--color-ink);
+  background: var(--hue);
+}
+.sheet-verdict .label {
+  color: var(--color-ink);
+}
+/* The word is a drawing sized from the sheet, not a ramp step: 18.5 percent
+   of the sheet's width sets "Safe to" on one line at every width. */
+.sheet-word {
+  margin-top: 10px;
+  font: 900 18.5cqw/0.86 var(--font-display);
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--color-ink);
+  overflow-wrap: break-word;
+}
+.sheet-body {
+  padding: 20px 24px 24px;
+}
+.sheet-posture {
+  max-width: 30rem;
+  margin-top: 10px;
+  font: 600 var(--text-lead) / 1.35 var(--font-sans);
+  color: var(--color-ink);
+}
+.sheet-sev {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  border-top: 2px solid var(--color-ink);
+}
+.sheet-sev > div {
+  padding: 12px 0 14px 16px;
+  border-left: 1px solid var(--color-slate);
+}
+.sheet-sev > div:first-child {
+  border-left: 0;
+  padding-left: 24px;
+}
+.sheet-sev dt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font: 500 0.75rem/1.3 var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-slate);
+}
+.sheet-sev dt .c {
+  --cs: 10px;
+}
+.sheet-sev dd {
+  margin-top: 6px;
+  font: 500 1.75rem/1 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
+}
+.sheet-sev dd[data-zero] {
+  color: var(--color-slate);
+}
+.sheet-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 24px;
+  padding: 8px 24px;
+  border-top: 2px solid var(--color-ink);
+}
+.sheet-foot .meta {
+  flex: 1 1 16rem;
+  padding: 6px 0;
+}
+@container (width < 420px) {
+  .sheet-head,
+  .sheet-verdict,
+  .sheet-body,
+  .sheet-foot {
+    padding-inline: 16px;
+  }
+  .sheet-sev > div {
+    padding-left: 10px;
+  }
+  .sheet-sev > div:first-child {
+    padding-left: 16px;
+  }
+  .sheet-sev dd {
+    font-size: 1.375rem;
+  }
+  .sheet-sev dt {
+    gap: 5px;
+    letter-spacing: 0;
+  }
+}
+
+/* The site header: one Ink band, 64px, pinned on every ground. */
+.hdr {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  border-bottom: 1px solid var(--color-slate);
+}
+.hdr-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: var(--header-h);
+}
+.hdr-home {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+/* The product lockup's words: the parent's wordmark setting (Black, capitals,
+   0.05em), in live text. The size is set inline from the mark's height. */
+.lockup-word {
+  font-family: var(--font-display);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--fg);
+}
+.hdr-nav {
+  display: flex;
+  align-items: center;
+  gap: 34px;
+}
+.hdr-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font: 400 var(--text-nav) / var(--text-nav--line-height) var(--font-sans);
+  color: var(--fg-2);
+  text-decoration: none;
+  text-underline-offset: 7px;
+  text-decoration-thickness: 1.5px;
+}
+.hdr-link:hover,
+.hdr-link[aria-current="page"] {
+  color: var(--fg);
+  text-decoration-line: underline;
+}
+.hdr-menu {
+  display: none;
+}
+@media (width < 48rem) {
+  .hdr-nav {
+    display: none;
+  }
+  .hdr-menu {
+    display: block;
+  }
+}
+.hdr-menu > summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--color-fog);
+  font: 400 var(--text-nav) / 1.25 var(--font-sans);
+  color: var(--fg);
+  list-style: none;
+  cursor: pointer;
+}
+.hdr-menu > summary::-webkit-details-marker {
+  display: none;
+}
+.hdr-menu[open] > summary {
+  background: var(--fg);
+  color: var(--ground);
+}
+.hdr-menu-panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  padding: 0 var(--gutter) 20px;
+  border-bottom: 1px solid var(--color-slate);
+  background: var(--color-ink);
+}
+.hdr-menu-panel a {
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+  border-top: 1px solid var(--color-slate);
+  font: 900 var(--text-h3) / 1.15 var(--font-display);
+  letter-spacing: var(--tracking-display);
+  color: var(--fg);
+  text-decoration: none;
+}
+.hdr-menu-panel a[aria-current="page"] {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+}
+
+/* The site footer: Ink, the lockup, the attribution, the links. */
+.ftr-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 40px;
+  padding-block: 40px;
+}
+.ftr-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 28px;
+  margin-left: auto;
+}
+.ftr-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font: 400 var(--text-small) / 1.5 var(--font-sans);
+  color: var(--fg-2);
+  text-decoration: none;
+  text-underline-offset: 6px;
+  text-decoration-thickness: 1.5px;
+}
+.ftr-nav a:hover {
+  color: var(--fg);
+  text-decoration-line: underline;
+}
+@media (width < 48rem) {
+  .ftr-nav {
+    margin-left: 0;
+    width: 100%;
   }
 }

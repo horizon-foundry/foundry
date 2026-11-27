@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { archivoBlack, plexSans, plexMono, plexSerif } from "@/lib/fonts";
-import { HfSymbolDefs } from "@/components/Wordmark";
+import { zalando, plexMono, plexSerif } from "@/lib/fonts";
 import { ConsoleSignature } from "@/components/ConsoleSignature";
 import "./globals.css";
 
@@ -104,7 +103,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${archivoBlack.variable} ${plexSans.variable} ${plexMono.variable} ${plexSerif.variable}`}
+      className={`${zalando.variable} ${plexMono.variable} ${plexSerif.variable}`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: JS_CLASS }} />
@@ -115,14 +114,13 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
         />
         {/* Keyboard users skip the repeated chrome (WCAG 2.4.1). Visible only
-            on focus; styled as a command chip so it belongs to the system. */}
+            on focus: a Bone box with Ink text over the Ink header, 44px. */}
         <a
           href="#main"
-          className="absolute left-4 top-4 z-50 -translate-y-24 border border-line-strong bg-ink-raised px-3 py-2 font-mono text-xs uppercase tracking-wide text-bone transition-transform focus-visible:translate-y-0"
+          className="absolute left-4 top-2.5 z-50 flex min-h-11 -translate-y-24 items-center bg-bone px-4 font-sans text-[0.9375rem] font-semibold text-ink focus-visible:translate-y-0"
         >
           Skip to content
         </a>
-        <HfSymbolDefs />
         <ConsoleSignature />
         {children}
       </body>
