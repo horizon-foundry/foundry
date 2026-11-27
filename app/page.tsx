@@ -22,10 +22,10 @@ import { RESUME_URL, REPO_URL } from "@/lib/site";
   principles live on /skills/production-audit. Every number below is read from
   the published self-audit or the readiness map, never typed here.
 
-  The page is a printed report (rebrand rough B, "the light instrument"): it
-  opens on Bone, sections alternate Bone and White, the one claim sits on
-  Slate, and the type is Ink. The first screen's largest object is the real
-  verdict of the published self-audit, as a sheet.
+  The page is a dark tool that hands you a paper verdict (rebrand rough D,
+  "the dark instrument"): sections alternate Ink and Slate, the type is Bone,
+  and the first screen's largest object is the real verdict of the published
+  self-audit as a White sheet, the one light thing on the screen.
 */
 
 const LINK =
@@ -60,7 +60,7 @@ export default function Home() {
             the first screen. The words on the sheet are the report's. */}
         <section
           className="home-hero"
-          data-ground="bone"
+          data-ground="slate"
           aria-labelledby="hero-heading"
         >
           <div className="wrap home-hero-grid">
@@ -103,10 +103,10 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 2. The problem: the one claim, on Slate. */}
+        {/* 2. The problem: the one claim, on Ink. */}
         <section
           className="home-band"
-          data-ground="slate"
+          data-ground="ink"
           aria-labelledby="problem-heading"
         >
           <div className="wrap home-band-grid">
@@ -127,7 +127,7 @@ export default function Home() {
             real report, and only as a fill. */}
         <section
           className="home-sub"
-          data-ground="white"
+          data-ground="slate"
           aria-labelledby="audit-heading"
         >
           <div className="wrap home-sub-grid">
@@ -222,7 +222,7 @@ export default function Home() {
         <section
           id="stages"
           className="home-stages-sec"
-          data-ground="bone"
+          data-ground="ink"
           aria-labelledby="skills-heading"
         >
           <div className="home-wrap">
@@ -238,7 +238,7 @@ export default function Home() {
         {/* 5. What ready means: the map as one figure. */}
         <section
           className="home-ready"
-          data-ground="white"
+          data-ground="slate"
           aria-labelledby="ready-heading"
         >
           <div className="home-wrap home-ready-grid">
@@ -298,7 +298,7 @@ export default function Home() {
             Craig named. */}
         <section
           className="home-who"
-          data-ground="white"
+          data-ground="slate"
           aria-labelledby="who-heading"
         >
           <div className="home-wrap home-who-grid">

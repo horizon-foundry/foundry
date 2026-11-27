@@ -17,8 +17,12 @@ export default function SkillsIndex() {
   return (
     <>
       <SiteHeader />
-      <main id="main" data-ground="bone">
-        <section className="skills-head" aria-labelledby="skills-heading">
+      <main id="main" data-ground="ink">
+        <section
+          className="skills-head"
+          data-ground="slate"
+          aria-labelledby="skills-heading"
+        >
           <div className="wrap">
             <h1 id="skills-heading" className="d-title">
               Eleven skills, from the idea to the release.

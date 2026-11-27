@@ -77,7 +77,7 @@
   margin-top: 10px;
 }
 
-/* ---- 2. the problem: the claim, on Slate ---- */
+/* ---- 2. the problem: the claim, on Ink under the Slate hero ---- */
 .home-band {
   padding: clamp(56px, 6vw, 88px) 0;
 }
@@ -281,6 +281,26 @@
 }
 
 @media (width < 40rem) {
+  /* A phone's first screen has to reach the verdict word, so the hero is
+     set tighter here than the ramp would give. */
+  .home-hero {
+    padding-top: 28px;
+  }
+  .home-hero-grid {
+    gap: 30px;
+  }
+  .home-hero-copy .t-lead {
+    margin-top: 18px;
+  }
+  .home-hero-install {
+    margin-top: 24px;
+  }
+  .home-hero-install .cmd-copy {
+    min-height: 44px;
+  }
+  .home-hero-links {
+    margin-top: 6px;
+  }
   .home-run {
     --cs: 11px;
   }

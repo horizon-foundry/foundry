@@ -7,9 +7,10 @@ import { SEVERITY_ORDER, type Severity } from "@/lib/report-types";
 // counts. Every word and number comes from the report (lib/self-audit.ts
 // derives them), so the sheet cannot disagree with the page it links to.
 //
-// It is White with a 2px Ink edge on every ground. The verdict hue fills the
-// band under the word and the small cell beside each severity; the type is
-// Ink throughout (globals.css, "The sheet").
+// It is White with a 2px Ink edge on every ground, and on this dark site it
+// is the one light object. The verdict hue fills the band under the word and
+// the small cell beside each severity; the type is Ink throughout
+// (globals.css, "The sheet").
 
 const SEV_LABEL: Record<Severity, string> = {
   critical: "crit",

@@ -199,22 +199,25 @@
 }
 
 /* ============================================================
-   Grounds (the light instrument).
-   The company site opens on Ink. This suite opens on Bone and White, the
-   parent's working-text grounds, so a page reads as a printed report: Ink
-   type, 2px Ink rules, mono metadata. A section states its ground with
-   data-ground, and the ground sets the text, rule and field colors for
-   everything inside it.
+   Grounds (the dark instrument).
+   The site is dark, as developer tools are: Ink and Slate, the parent's two
+   dark grounds, with Bone type. The one light object is the verdict sheet, a
+   White page that lies on the dark ground (see "The sheet"). A section states
+   its ground with data-ground, and the ground sets the text, rule and field
+   colors for everything inside it.
 
-     --fg      text                 --rule    the 2px rule and a frame's edge
+     --fg      text                 --rule    the rule and a frame's edge
      --fg-2    secondary text       --ledger  the 1px line inside a dense figure
      --fg-3    faint text           --field   the ground of a command field
+     --on-fg   type on a filled control (a button is a box in --fg)
 
-   Bone is the default. The header and the footer are Ink on every page.
-   Slate carries a claim. Text contrast, measured: Ink on Bone 14.88, Slate on
-   Bone 8.43, Ink on White 17.67, Slate on White 10.01, Bone on Ink 14.88,
-   Mist on Ink 11.36, Fog on Ink 6.99, Bone on Slate 8.43, Mist on Slate 6.43.
-   Fog never sits on Slate (3.96), so Slate has no third text color.
+   Ink is the default. The header and the footer are Ink on every page. Rules
+   follow the parent by ground: 2px Bone on Slate, Slate on Ink, 2px Ink on
+   White and Bone. A field is always Ink, so a command sits in the same dark
+   well on Ink and on Slate. Text contrast, measured: Bone on Ink 14.88, Mist
+   on Ink 11.36, Fog on Ink 6.99, Bone on Slate 8.43, Mist on Slate 6.43, Ink
+   on White 17.67, Slate on White 10.01, Ink on Bone 14.88, Slate on Bone
+   8.43. Fog never sits on Slate (3.96), so Slate has no third text color.
    ============================================================ */
 :root {
   --gutter: clamp(20px, 0.69px + 4.952vw, 72px);
@@ -227,18 +230,37 @@
   --ease: cubic-bezier(0.2, 0, 0, 1);
 }
 :root,
-[data-ground="bone"] {
-  --ground: var(--color-bone);
-  --fg: var(--color-ink);
-  --fg-2: var(--color-slate);
-  --fg-3: var(--color-slate);
-  --rule: var(--color-ink);
+[data-ground="ink"] {
+  --ground: var(--color-ink);
+  --fg: var(--color-bone);
+  --fg-2: var(--color-mist);
+  --fg-3: var(--color-fog);
+  --rule: var(--color-slate);
   --ledger: var(--color-slate);
-  --field: var(--color-white);
-  --focus: var(--color-ink);
+  --field: var(--color-ink);
+  --focus: var(--color-bone);
   --edge-w: 2px; /* a frame's edge and a section rule */
-  --cell-edge: var(--color-ink); /* a hue cell is outlined on a light ground */
+  --cell-edge: transparent; /* a hue cell needs no edge on a dark ground */
+  --cell-sk: #6f7a8a;
+  --on-fg: var(--color-ink); /* type on a filled control */
 }
+[data-ground="slate"] {
+  --ground: var(--color-slate);
+  --fg: var(--color-bone);
+  --fg-2: var(--color-mist);
+  --fg-3: var(--color-mist);
+  --rule: var(--color-bone);
+  --ledger: var(--color-mist);
+  --field: var(--color-ink);
+  --focus: var(--color-bone);
+  --edge-w: 2px;
+  --cell-edge: transparent;
+  /* The mid cell has to clear Slate: Fog on Slate is 3.96 to 1. */
+  --cell-sk: var(--color-fog);
+  --on-fg: var(--color-ink);
+}
+/* The two light grounds are paper: only the sheet uses them. */
+[data-ground="bone"],
 [data-ground="white"] {
   --ground: var(--color-white);
   --fg: var(--color-ink);
@@ -249,24 +271,15 @@
   --field: var(--color-white);
   --focus: var(--color-ink);
   --edge-w: 2px;
-  --cell-edge: var(--color-ink);
+  --cell-edge: var(--color-ink); /* a hue cell is outlined on a light ground */
+  --on-fg: var(--color-white);
 }
-[data-ground="slate"] {
-  --ground: var(--color-slate);
-  --fg: var(--color-bone);
-  --fg-2: var(--color-mist);
-  --fg-3: var(--color-mist);
-  --rule: var(--color-bone);
-  --ledger: var(--color-mist);
-  --field: var(--color-slate);
-  --focus: var(--color-bone);
-  --edge-w: 2px;
-  --cell-edge: transparent;
+[data-ground="bone"] {
+  --ground: var(--color-bone);
 }
-/* A <main> that states no ground is a page the rebrand has not reached. It
-   keeps the old Ink ground, so its Bone text still reads. Delete this
-   selector when the last page states its ground. */
-[data-ground="ink"],
+/* A <main> that states no ground is a page the rebrand has not reached (the
+   report views, the skill pages, the readiness map). They were drawn for Ink
+   with 1px Slate lines and a raised field, and they keep exactly that. */
 main:not([data-ground]) {
   --ground: var(--color-ink);
   --fg: var(--color-bone);
@@ -278,6 +291,7 @@ main:not([data-ground]) {
   --focus: var(--color-bone);
   --edge-w: 1px;
   --cell-edge: transparent;
+  --on-fg: var(--color-ink);
 }
 [data-ground],
 main:not([data-ground]) {
@@ -333,14 +347,14 @@ html {
 }
 
 html {
-  background-color: var(--color-bone);
+  background-color: var(--color-ink);
   /* The header is pinned; an anchor must land clear of it. */
   scroll-padding-top: calc(var(--header-h) + 16px);
   -webkit-text-size-adjust: 100%;
 }
 body {
-  background-color: var(--color-bone);
-  color: var(--color-ink);
+  background-color: var(--color-ink);
+  color: var(--color-bone);
   font-family: var(--font-sans);
   font-size: var(--text-body);
   line-height: var(--text-body--line-height);
@@ -667,11 +681,9 @@ a:hover .text-command,
    an owner or a map state is told apart by luminance and outline.
    ============================================================ */
 
-:root {
-  /* The mid slate of a skill-owned cell, between bone (production-audit) and
-     the hollow outline (outside the suite). Not a theme color: no utility. */
-  --cell-sk: #6f7a8a;
-}
+/* --cell-sk, the mid tone of a skill-owned cell (between Bone for
+   production-audit and the hollow outline for outside the suite), is set by
+   the ground. Not a theme color: no utility. */
 
 .cells {
   display: flex;
@@ -935,7 +947,7 @@ a:hover .text-command,
 }
 
 /* ============================================================
-   The light instrument: shared primitives.
+   The dark instrument: shared primitives.
    What the rebuilt pages are made of. Type is rem, the frame is px.
    ============================================================ */
 
@@ -1001,8 +1013,9 @@ a:hover .text-command,
   color: var(--fg);
 }
 
-/* The button: one filled box in the text color of its ground, so Ink on
-   Bone and White, Bone on Ink. Square, semibold, 52px at least. */
+/* The button: one filled box in the text color of its ground, so Bone on
+   Ink and Slate, Ink on the sheet. Square, semibold, 52px at least. On a dark
+   ground the hover is White (the parent's own), on paper it is Slate. */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -1011,7 +1024,7 @@ a:hover .text-command,
   padding: 0.5rem 26px;
   border: 0;
   background: var(--fg);
-  color: var(--ground);
+  color: var(--on-fg);
   font: 600 var(--text-body) / 1.25 var(--font-sans);
   text-decoration: none;
   cursor: pointer;
@@ -1020,11 +1033,12 @@ a:hover .text-command,
     color 240ms var(--ease);
 }
 .btn:hover {
+  background: var(--color-white);
+  color: var(--color-ink);
+}
+:is([data-ground="white"], [data-ground="bone"]) .btn:hover {
   background: var(--color-slate);
   color: var(--color-bone);
-}
-[data-ground="slate"] .btn:hover {
-  background: var(--color-ink);
 }
 .btn-sm {
   min-height: 44px;
@@ -1065,10 +1079,10 @@ a:hover .text-command,
   color: var(--fg-2);
 }
 
-/* The command field: the one way a runnable command is set. A White field
-   with a 2px Ink border, the command in Ink mono, an amber unit bar in front
-   of it (the mark of a command you fire), and the copy control joined to its
-   right edge. Below 40rem the control joins under the field and the command
+/* The command field: the one way a runnable command is set. An Ink field
+   with a 2px Bone border, the command in Bone mono, an amber unit bar in
+   front of it (the mark of a command you fire), and the copy control joined
+   to its right edge. Below 40rem the control joins under the field and the command
    wraps at its spaces, so nothing scrolls sideways. */
 .cmd-field {
   display: flex;
@@ -1105,18 +1119,18 @@ a:hover .text-command,
   padding: 0 20px;
   border: 0;
   background: var(--fg);
-  color: var(--ground);
+  color: var(--on-fg);
   font: 600 var(--text-nav) / 1.25 var(--font-sans);
   cursor: pointer;
   transition: background-color 240ms var(--ease);
 }
 .cmd-copy:hover {
-  background: var(--color-slate);
-  color: var(--color-bone);
+  background: var(--color-white);
+  color: var(--color-ink);
 }
 .cmd-copy:focus-visible {
   outline-offset: -6px;
-  outline-color: var(--ground);
+  outline-color: var(--on-fg);
 }
 @media (width < 40rem) {
   .cmd-field {
@@ -1127,11 +1141,14 @@ a:hover .text-command,
   }
 }
 
-/* The sheet: a verdict as a printed page. Always White with a 2px Ink edge,
-   whatever ground it sits on, with a registration tick off each corner (the
-   stamp's own marks, kept). The verdict hue is a fill under Ink type, never
-   the color of the type: Ink on the safe green is 8.4 to 1, on the risk
-   yellow 11.6, on the no-ship red 5.6. */
+/* The sheet: a verdict as a printed page, and the one light object on a dark
+   site. Always White with Ink type and 2px Ink rules, whatever ground it lies
+   on. Its 2px Ink edge shows on Slate and is the paper's own edge on Ink. A
+   registration tick stands off each corner in the ground's text color (the
+   stamp's own marks, kept): they are printed on the ground, not on the page,
+   which is what puts the page ON the ground. The verdict hue is a fill under
+   Ink type, never the color of the type: Ink on the safe green is 8.4 to 1,
+   on the risk yellow 11.6, on the no-ship red 5.6. */
 .sheet {
   position: relative;
   container-type: inline-size;
@@ -1141,7 +1158,7 @@ a:hover .text-command,
   position: absolute;
   width: 12px;
   height: 12px;
-  border: 0 solid var(--color-ink);
+  border: 0 solid var(--color-bone);
 }
 .sheet-tk-tl {
   top: -18px;
@@ -1271,7 +1288,7 @@ a:hover .text-command,
   }
 }
 
-/* The site header: one Ink band, 64px, pinned on every ground. */
+/* The site header: one band, 64px, pinned on every ground. */
 .hdr {
   position: sticky;
   top: 0;
@@ -1337,7 +1354,7 @@ a:hover .text-command,
   align-items: center;
   min-height: 44px;
   padding: 0 14px;
-  border: 1px solid var(--color-fog);
+  border: 1px solid var(--fg-3);
   font: 400 var(--text-nav) / 1.25 var(--font-sans);
   color: var(--fg);
   list-style: none;
@@ -1357,7 +1374,7 @@ a:hover .text-command,
   right: 0;
   padding: 0 var(--gutter) 20px;
   border-bottom: 1px solid var(--color-slate);
-  background: var(--color-ink);
+  background: var(--ground);
 }
 .hdr-menu-panel a {
   display: flex;
@@ -1375,7 +1392,11 @@ a:hover .text-command,
   text-underline-offset: 6px;
 }
 
-/* The site footer: Ink, the lockup, the attribution, the links. */
+/* The site footer: Ink, the lockup, the attribution, the links. It follows
+   an Ink section on some pages, so it opens with the parent's rule on Ink. */
+footer[data-ground="ink"] {
+  border-top: 1px solid var(--color-slate);
+}
 .ftr-row {
   display: flex;
   flex-wrap: wrap;

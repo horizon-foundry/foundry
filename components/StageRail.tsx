@@ -9,8 +9,9 @@ import { HANDOFF, STAGES, THREAD, listSkills } from "@/lib/skills";
 // rows, and the line the stage hands to the next. After the last stage comes
 // the thread that ties the three together. Shared by the homepage and /skills.
 //
-// The unit bars are Slate, Amber and Ink, the parent's order on a light
-// ground, and they mark the same three words the parent's method marks.
+// The unit bars are Slate, Amber and Bone, the parent's order on Ink (its
+// hero's three bars), and they mark the same three words. The rail is always
+// on Ink: a Slate bar does not show on Slate.
 //
 // Nothing here is tied to scroll position. A stage's command rows and handoff
 // fade in and rise 8px once, when that stage first enters the viewport
@@ -33,7 +34,7 @@ const command = (s: { slug: string; name: string }) =>
 const longest = (list: { slug: string; name: string }[]) =>
   Math.max(...list.map((s) => command(s).length));
 
-const STAGE_BAR = { distill: "slate", forge: "amber", deliver: "ink" } as const;
+const STAGE_BAR = { distill: "slate", forge: "amber", deliver: "bone" } as const;
 
 export function StageRail({
   taglines = false,

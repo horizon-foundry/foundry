@@ -11,8 +11,8 @@ const FILL = {
 
 // The small bar: the parent's one graphic device at the size of a letter. It
 // never carries text and always stands beside the word it marks. On this
-// site it has two jobs: Slate, Amber and Ink mark the three stages (the
-// parent's own order on a light ground), and Amber marks a command field,
+// site it has two jobs: Slate, Amber and Bone mark the three stages (the
+// parent's own order on Ink), and Amber marks a command field,
 // which is where this product's "amber means a command you fire" now lives.
 export function UnitBar({
   fill,

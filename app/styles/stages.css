@@ -1,7 +1,7 @@
 /* The stages: three ruled rows, one per stage. Each has the stage's word at
-   display size behind a unit bar (Slate, Amber, Ink: the parent's order on a
-   light ground), its skills as command links, and the line it hands to the
-   next stage. Shared by the homepage and /skills (components/StageRail.tsx).
+   display size behind a unit bar (Slate, Amber, Bone: the parent's order on
+   Ink), its skills as command links, and the line it hands to the next
+   stage. Always on Ink. Shared by the homepage and /skills (components/StageRail.tsx).
    Imported by globals.css. Colors are ground-relative. */
 
 /* The list closes with the rule it opens with. */
@@ -161,7 +161,7 @@
 
 /* ---- /skills: the page head over the same three stages ---- */
 .skills-head {
-  padding: clamp(40px, 5vw, 72px) 0 0;
+  padding: clamp(40px, 5vw, 72px) 0 clamp(48px, 5vw, 72px);
 }
 .skills-head .d-title {
   max-width: 13em;
@@ -175,6 +175,15 @@
 }
 .skills-list {
   padding: 0 0 var(--section-y);
+}
+/* The Slate head already ends where the list begins, so the list does not
+   open with a rule of its own. */
+.skills-list .home-stages {
+  margin-top: 0;
+}
+.skills-list .home-stage:first-child {
+  border-top: 0;
+  padding-top: 48px;
 }
 @media (width < 68.75rem) {
   .skills-head-grid {

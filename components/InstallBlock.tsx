@@ -93,7 +93,7 @@ export async function InstallBlock({ heading }: { heading?: React.ReactNode } = 
   // version-check disclosure stays visible: it is part of the feature, not a
   // footnote (instrumentation skill, "The gate demands a decision").
   return (
-    <section id="install" data-ground="bone">
+    <section id="install" data-ground="ink">
       <div className="wrap py-(--section-y)">
         <div className="flex flex-wrap items-end justify-between gap-4">
           {heading ?? <h2 className="d-h2">Install Foundry</h2>}
