@@ -1,7 +1,8 @@
-// Hairline glyphs, one per overview slide. Monochrome, geometric, square-cut to
-// match the mark and the instrument aesthetic. Stroke inherits the text color;
-// on entry each draws itself (see .glyph-draw in globals.css, reduced-motion
-// safe). Kept abstract, a quiet visual anchor, not an illustration.
+// Line glyphs, one per overview slide. Monochrome, geometric and square-cut,
+// drawn with the site's 2px rule (the box is 48 units, and the deck sets it
+// 40px to 64px wide). The stroke takes the text color of its holder; on entry
+// each draws itself (see .glyph-draw in globals.css, reduced-motion safe).
+// Kept abstract, a quiet visual anchor, not an illustration.
 
 export type GlyphName =
   | "problem"
@@ -16,7 +17,7 @@ export type GlyphName =
 const stroke = {
   fill: "none",
   stroke: "currentColor",
-  strokeWidth: 1.25,
+  strokeWidth: 2,
   strokeLinejoin: "miter" as const,
   strokeLinecap: "square" as const,
 };
@@ -93,9 +94,9 @@ export function SlideGlyph({ name }: { name: GlyphName }) {
   return (
     <svg
       viewBox="0 0 48 48"
-      className="glyph-draw h-full w-full text-bone-faint"
-      role="img"
+      className="glyph-draw h-full w-full"
       aria-hidden="true"
+      focusable="false"
     >
       <Glyph name={name} />
     </svg>

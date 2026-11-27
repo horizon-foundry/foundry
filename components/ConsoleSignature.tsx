@@ -6,7 +6,9 @@ import { useEffect } from "react";
 // something product-specific (not AI-slop filler). Logged once per load.
 export function ConsoleSignature() {
   useEffect(() => {
-    const label = "color:#d99a2e;font-weight:600"; // the forge glow
+    // A command is Bone and a step heavier. Amber only fills a bar, so it is
+    // never the color of type, in the console as on the page.
+    const label = "color:#e8ecf0;font-weight:600";
     const dim = "color:#8b94a4";
     const bone = "color:#e8ecf0";
     console.log(

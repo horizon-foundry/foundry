@@ -1,111 +1,298 @@
 <!doctype html>
 <!--
-  Share card source for public/og.png (1200x630).
+  Source for public/og.png, the share card (1200x630). The PNG is a render of
+  this file, so edit here and re-render with `make og-card`, which also
+  records both digests in scripts/og/rendered.json and prints the URL token
+  for app/layout.tsx. Never touch up the PNG.
 
-  The card that shipped with v0.1.0 had no recipe: it existed only as a PNG,
-  which is why it still carried the retired mark and a pre-Archivo display face
-  months after both had been replaced everywhere a test could see. This file is
-  the recipe, so the next brand change is a re-render rather than an archaeology
-  problem.
+  The card is the product's first screen at the size of a link preview: the
+  product lockup, the h1, the install command in its Ink well behind the amber
+  unit bar, and the published self-audit's verdict as a White sheet on Slate.
 
-  Same tokens as app/globals.css and DESIGN.md: the ink ground, the 56px
-  hairline grid masked from the top, Archivo Black display over IBM Plex Mono.
-  The mark is a copy of the design kit's canonical cut (kit v1.3), pinned by
-  reference/brand-kit.json; when the kit changes, this card is re-cut and
-  re-rendered in the same pass.
+  What is a copy, and of what:
+  - The mark and the unit bar are the Horizon Foundry handoff's own paths
+    (reference/brand-kit.json pins them, and scripts/check-brand-assets.mjs
+    holds this file to the pin by exact equality).
+  - The h1 and the command are the home page's (app/page.tsx).
+  - Every word and number on the sheet is the published self-audit's
+    (reports/foundry-<date>.json). check-brand-assets.mjs compares them to the
+    report, so a regenerated self-audit fails the gate until this card is
+    re-typed and re-rendered.
 
-  No ambient glow here, deliberately. DESIGN.md codifies the amber forge glow
-  behind the HERO, and its Anti-goals ban glows outright; a share card is not
-  the hero, so the card takes the flat ink ground and the grid and nothing
-  else. Two independent critics, one seeing only this image and the anti-goals,
-  read the glow as decoration.
-
-  Regenerate after a mark or copy change (fonts load from Google Fonts, so the
-  render needs network; a first run on a new machine needs
-  `npx --yes playwright install chromium-headless-shell`):
-
-    make og-card
-
-  That records BOTH digests in scripts/og/rendered.json, this file's and the
-  PNG's, and prints the version token to paste into app/layout.tsx's og:image
-  URL. `make validate` checks all three, so editing this file without
-  re-rendering fails, replacing or deleting the PNG fails, and re-rendering
-  without bumping the URL fails. Mtimes cannot do any of that, because git does
-  not preserve them.
-
-  The token is not decoration: X and LinkedIn cache og:image by URL for weeks
-  and ignore cache headers, so a new card at the same URL reaches nobody who
-  already shared a link.
-
-  The host in the footer line is the canonical one (SITE_URL in app/layout.tsx),
-  not fly.toml's SITE_ORIGIN. The two deliberately disagree (CLAUDE.md says
-  why), and the card that shipped with v0.1.0 carried the fly.dev host on the
-  site's most-shared surface.
+  Fonts: Zalando Sans is the repo's own file (app/fonts/). IBM Plex Mono
+  comes from Google Fonts, so the render needs network.
 -->
 <html lang="en">
-<head>
-<meta charset="utf-8">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=IBM+Plex+Mono:wght@400;500&display=block" rel="stylesheet">
-<style>
-  html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; }
-  body {
-    background: #14191f;
-    color: #e8ecf0;
-    font-family: "IBM Plex Mono", ui-monospace, monospace;
-    position: relative;
-  }
-  /* The hero's ground, reproduced: .grid-field from app/globals.css at this
-     card's scale. */
-  .grid-field {
-    position: absolute; inset: 0;
-    background-image:
-      linear-gradient(to right, #334455 1px, transparent 1px),
-      linear-gradient(to bottom, #334455 1px, transparent 1px);
-    background-size: 56px 56px;
-    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #14191f 20%, transparent 75%);
-    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #14191f 20%, transparent 75%);
-  }
-  .card {
-    position: absolute; inset: 0;
-    padding: 80px;
-    box-sizing: border-box;
-    display: flex; flex-direction: column; justify-content: center;
-    gap: 40px;
-  }
-  /* The chrome lockup, at the card's scale: the mark plus live-text
-     "Foundry" in Archivo Black, uppercase at 0.04em (DESIGN.md). This is the
-     Foundry sub-brand lockup, not the kit's HORIZON FOUNDRY one. At 56px tall
-     the mark is 86px wide, clear of the kit's 48px floor, so it takes the
-     canonical cut. */
-  .lockup { display: flex; align-items: center; gap: 28px; }
-  .lockup svg { height: 56px; width: auto; fill: #e8ecf0; }
-  .lockup span {
-    font-family: "Archivo Black", sans-serif;
-    font-size: 40px; line-height: 1;
-    text-transform: uppercase; letter-spacing: 0.04em;
-  }
-  h1 {
-    font-family: "Archivo Black", sans-serif;
-    font-size: 62px; line-height: 1.05; letter-spacing: 0;
-    margin: 0;
-  }
-  h1 .signal { color: #ffffff; }
-  .foot {
-    font-size: 19px; color: #8b94a4;
-    text-transform: uppercase; letter-spacing: 0.14em;
-  }
-</style>
-</head>
-<body>
-<div class="grid-field"></div>
-<div class="card">
-  <div class="lockup">
-    <svg viewBox="0 0 378.19 246" aria-hidden="true"><path d="M0 246 L67.03 170.59 L194.58 142.25 L235.69 96 L378.19 246 L303.7 246 L237.01 175.79 L174.6 246 L102.35 246 L158.27 183.1 L120.75 191.43 L72.25 246 Z M82.92 152.72 L218.67 0 L255.99 39.29 L172.95 132.71 Z M245.02 85.5 L286.1 39.29 L378.19 136.23 L328.53 136.23 L286.98 92.49 L269.9 111.69 Z"/></svg>
-    <span>Foundry</span>
-  </div>
-  <h1>Forge shippable software<br>from <span class="signal">AI-built code</span>.</h1>
-  <p class="foot">Claude Code skills · Audit · Verdict · foundry.thehorizonfoundry.com</p>
-</div>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=block"
+      rel="stylesheet"
+    />
+    <style>
+      @font-face {
+        font-family: "Zalando Sans";
+        src: url("../../app/fonts/ZalandoSans-wght.woff2") format("woff2");
+        font-weight: 200 900;
+        font-style: normal;
+        font-display: block;
+      }
+      :root {
+        --ink: #14191f;
+        --bone: #e8ecf0;
+        --slate: #334455;
+        --white: #ffffff;
+        --mist: #c9d0d8;
+        --safe: #3fcb7a;
+        --sans: "Zalando Sans", "Helvetica Neue", Arial, sans-serif;
+        --mono: "IBM Plex Mono", ui-monospace, monospace;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        width: 1200px;
+        height: 630px;
+      }
+      body {
+        display: grid;
+        grid-template-columns: 548px 456px;
+        justify-content: space-between;
+        align-items: stretch;
+        padding: 56px 72px 56px 64px;
+        background: var(--slate);
+        color: var(--bone);
+        font-family: var(--sans);
+        -webkit-font-smoothing: antialiased;
+      }
+      .copy {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      /* The product lockup: the mark 44px tall, capitals 0.4 of that (Zalando's
+         cap height is 0.714em), the gap 0.4 of it, the tracking 0.05em. */
+      .lockup {
+        display: flex;
+        align-items: center;
+        gap: 17.6px;
+      }
+      .lockup svg {
+        width: 56.32px;
+        height: 44px;
+      }
+      .lockup span {
+        font-size: 24.65px;
+        font-weight: 900;
+        line-height: 1;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+      h1 {
+        font-size: 68px;
+        font-weight: 900;
+        line-height: 1;
+        letter-spacing: -0.015em;
+      }
+      /* The command well: an Ink field, a 2px Bone border, the amber unit bar. */
+      .well {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        height: 58px;
+        padding: 0 18px;
+        border: 2px solid var(--bone);
+        background: var(--ink);
+      }
+      .well svg {
+        flex: none;
+        width: 26px;
+        height: 16.8px;
+      }
+      .well code {
+        font: 500 17px/1 var(--mono);
+        white-space: nowrap;
+      }
+
+      /* The verdict sheet: White, Ink type, 2px Ink rules, the verdict hue as
+         a fill under the word, a registration tick off each corner. */
+      .sheet {
+        position: relative;
+        align-self: center;
+        border: 2px solid var(--ink);
+        background: var(--white);
+        color: var(--ink);
+      }
+      .tk {
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        border: 0 solid var(--bone);
+      }
+      .tk-tl {
+        top: -18px;
+        left: -18px;
+        border-right-width: 2px;
+        border-bottom-width: 2px;
+      }
+      .tk-tr {
+        top: -18px;
+        right: -18px;
+        border-left-width: 2px;
+        border-bottom-width: 2px;
+      }
+      .tk-bl {
+        bottom: -18px;
+        left: -18px;
+        border-right-width: 2px;
+        border-top-width: 2px;
+      }
+      .tk-br {
+        bottom: -18px;
+        right: -18px;
+        border-left-width: 2px;
+        border-top-width: 2px;
+      }
+      .head {
+        display: flex;
+        justify-content: space-between;
+        padding: 11px 22px;
+        border-bottom: 2px solid var(--ink);
+        font: 400 13px/1.4 var(--mono);
+        color: var(--slate);
+      }
+      .head b {
+        font-weight: 500;
+        color: var(--ink);
+      }
+      .label {
+        font: 600 13px/1.3 var(--sans);
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+      .verdict {
+        padding: 18px 22px 20px;
+        border-bottom: 2px solid var(--ink);
+        background: var(--safe);
+      }
+      .word {
+        margin-top: 8px;
+        font: 900 84px/0.86 var(--sans);
+        letter-spacing: -0.02em;
+        text-transform: uppercase;
+      }
+      .body {
+        padding: 18px 22px 20px;
+      }
+      .body .label {
+        color: var(--slate);
+      }
+      .posture {
+        margin-top: 8px;
+        font: 600 18px/1.35 var(--sans);
+      }
+      .sev {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        border-top: 2px solid var(--ink);
+      }
+      .sev div {
+        padding: 11px 0 13px 14px;
+        border-left: 1px solid var(--slate);
+      }
+      .sev div:first-child {
+        padding-left: 22px;
+        border-left: 0;
+      }
+      .sev dt {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font: 500 12px/1.3 var(--mono);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--slate);
+      }
+      .sev i {
+        width: 10px;
+        height: 10px;
+        border: 1px solid var(--ink);
+      }
+      .sev dd {
+        margin-top: 5px;
+        font: 500 26px/1 var(--mono);
+      }
+      .sev dd.zero {
+        color: var(--slate);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="copy">
+      <div class="lockup">
+        <svg viewBox="0 0 128 100" aria-hidden="true">
+          <path d="M81 40H116L99.5 62H81Z" fill="#D99A2E" />
+          <path
+            d="M0 0H24V40H58V0H128L111.5 22H82V100H58V40L41.5 62H24V100H0Z"
+            fill="#E8ECF0"
+          />
+        </svg>
+        <span>Foundry Skills</span>
+      </div>
+      <h1>Forge<br />shippable<br />software from<br />AI-built code.</h1>
+      <div class="well">
+        <svg viewBox="0 0 34 22" aria-hidden="true">
+          <path d="M0 0H34L17.5 22H0Z" fill="#D99A2E" />
+        </svg>
+        <code>npx skills@latest add horizon-foundry/foundry</code>
+      </div>
+    </div>
+
+    <figure class="sheet">
+      <span class="tk tk-tl"></span>
+      <span class="tk tk-tr"></span>
+      <span class="tk tk-bl"></span>
+      <span class="tk tk-br"></span>
+      <div class="head">
+        <span><b>/production-audit</b> on Foundry</span>
+        <span data-fact="stamp">2026-10-16 · 72a0f99</span>
+      </div>
+      <div class="verdict">
+        <p class="label">Release recommendation</p>
+        <p class="word" data-fact="verdict">Safe to ship</p>
+      </div>
+      <div class="body">
+        <p class="label" data-fact="scope">Static review + runtime pass</p>
+        <p class="posture" data-fact="posture">No finding survived verification as a risk; 83 improvements to schedule, led by the work owed before the first owned report.</p>
+      </div>
+      <dl class="sev">
+        <div>
+          <dt><i style="background: #ff5c5c"></i>crit</dt>
+          <dd class="zero" data-fact="critical">0</dd>
+        </div>
+        <div>
+          <dt><i style="background: #ff9f45"></i>high</dt>
+          <dd class="zero" data-fact="high">0</dd>
+        </div>
+        <div>
+          <dt><i style="background: #f5ce4b"></i>med</dt>
+          <dd data-fact="medium">10</dd>
+        </div>
+        <div>
+          <dt><i style="background: #5ab0e6"></i>low</dt>
+          <dd data-fact="low">61</dd>
+        </div>
+        <div>
+          <dt><i style="background: #8b93a0"></i>info</dt>
+          <dd data-fact="informational">12</dd>
+        </div>
+      </dl>
+    </figure>
+  </body>
 </html>

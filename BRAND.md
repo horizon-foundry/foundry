@@ -12,9 +12,30 @@ The voice source of truth for Foundry, and the record of what its identity inher
 The three lines above are the machine-readable sign-off the `brand-voice` skill reads: this brand is `approved`, so its glossary and copy rules are enforced, not merely suggested. They and this note are wrapped in internal markers because the public brand tab renders this file, and a visitor has no use for either (lib/docs.ts, stripInternalBlocks). The header stays at the top of the file, in this shape, because that is where the skill looks for it.
 <!-- internal:end -->
 
-The inherited display face is Archivo Black, decided 2026-07-24 (revised from the initial Big Shoulders pick on 2026-07-23, reversed on letterform grounds before any merge). Type is [DESIGN.md](DESIGN.md)'s fact, not duplicated here.
+## Identity: the dark instrument
 
-The mark is the parent's too, and it was redrawn: this site carries the revision of 2026-09-19, taken from the parent's design kit (kit v1.3). The drawing before it is retired, and no surface here may still show it. The kit permits the mark bone on ink or slate, ink on bone or white, and slate on white or bone, never slate with ink either way; it also draws one amber alternate, an outline on a full ink ground at 96px and up, which this site does not use because amber here means a command. How the mark is set, in which cut and at which sizes, is again [DESIGN.md](DESIGN.md)'s fact.
+<!-- internal:start -->
+Direction chosen by Craig Martin on 2026-11-27, from the rough named D: "it's developer tooling and most devs prefer dark mode". This section records what the identity inherits and what it owns. How each part is built is [DESIGN.md](DESIGN.md)'s fact, and `reference/brand-kit.json` pins every file and path copied from the company.
+<!-- internal:end -->
+
+Foundry is a dark site in the Horizon Foundry design language. Its own signature is the instrument: a tool that reads code and prints a verdict. Developer tools are dark, so the grounds are Ink and Slate. The verdict is the one light object, a White printed sheet.
+
+Inherited from Horizon Foundry, and never redefined here:
+
+- **The mark.** The HF monogram, used whole, with its one amber bar. It is never cropped, recolored or redrawn. The mark this site carried before it is retired, and no surface here may still show it.
+- **The lockup's form.** The mark, then the product's name in Zalando Sans Black capitals at the company's own ratios. The lockup reads FOUNDRY SKILLS, the company's name for the product. In a sentence the suite is Foundry (Glossary).
+- **The four colors.** Ink `#14191F`, Bone `#E8ECF0`, Slate `#334455`, Amber `#D99A2E`. Amber only ever fills a bar. It is never text, a border or a wash.
+- **The display face.** Zalando Sans, at its natural width, for every heading and for running text.
+- **The bar.** The company's one graphic device, a rectangle cut on the mark's diagonal. This site uses its small form, the unit bar.
+- **The icon.** The browser tab and home screen icons are the company's own files.
+- **The voice rules and the attribution line.** Third person and no em dashes, and the footer line "A Horizon Foundry suite."
+
+Owned by this product:
+
+- **The verdict sheet.** A verdict is set as a White page with Ink type and 2px Ink rules, lying on a dark ground. Nothing else on the site is White.
+- **The mono voice.** IBM Plex Mono sets what a terminal or a report prints: a command, a path, a date, a commit, a count, a report value. It never sets a heading or a sentence.
+- **The command well.** A command to run sits in an Ink field with a Bone border, with the amber unit bar in front of it. The bar is where "amber means a command you fire" lives, so the command's type is Bone.
+- **The severity and verdict hues.** Five severity hues and three verdict hues extend the palette. A hue means a severity or a verdict and nothing else.
 
 ## Purpose
 

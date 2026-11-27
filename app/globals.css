@@ -563,28 +563,6 @@ body {
    the reduced-motion block below disables every effect.
    ============================================================ */
 
-/* Command micro-interaction: the amber tokens warm slightly and lift on hover,
-   reinforcing "this is executable". */
-/* The hover warms the colour and nothing else. It used to add a 14px amber
-   text-shadow, which is a glow (banned in Anti-goals), animated as a paint
-   property, making it the last paint-driven animation on the site after the
-   hero rewrite removed two others for that reason. It was live on /skills and
-   unreachable on the home page, so it was simultaneously a violation and a
-   promise the page never kept. Emphasis reads by luminance here, per Colors. */
-.text-command {
-  transition: color var(--transition-duration-tick) var(--ease-exit);
-}
-a:hover .text-command,
-.group:hover .text-command {
-  color: color-mix(in srgb, var(--color-command) 82%, white);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  /* .text-command used to animate a text-shadow and was killed outright here.
-     It is colour-only now, which is exactly what this preference keeps, so the
-     kill is gone. */
-}
-
 /* Feedback layer: interactive cards lift slightly on hover/focus (transform +
    border only, GPU-friendly). Applied ONLY to genuinely interactive cards, not
    decorative ones. */
@@ -624,30 +602,22 @@ a:hover .text-command,
   .press:active {
     transform: none !important;
   }
-  /* The border takes the command colour, which is a real change on both plate
-     buttons (they sit at --color-line-strong) and cannot touch the label's
-     contrast. The first cut of this rule set the background to
-     --color-ink-raised on .press globally, which put #14191f text on #1e2530 at
-     1.15:1 on the two bone CTAs: an acknowledgement that erased the word it was
-     acknowledging, for reduced-motion users only.
-     `:not(:disabled)` because the amber is this brand's invocable-command
-     colour and the /unlock submit is disabled while a request is in flight, so
-     without it a press registered on a control that cannot be invoked.
-     Measured, and recorded because it is the marginal number here rather than
-     the one that reads well: amber against the bone plate is 2.05:1 and against
-     the page ground 7.25:1, and the idle-to-active change is 3.08:1. That
-     passes WCAG 1.4.11 on both readings, with 0.08 of headroom and nothing
-     guarding it, so a future nudge to --color-command or --color-line-strong
-     drops it below 3:1 silently.
-     The third call site is NOT covered here and does not try to be: a
-     borderless, plateless button has no border to change, and an earlier
-     version of this comment claimed its `hover:text-bone` confirmed the press,
-     which is wrong twice over (hover is pointing, not pressing, and a keyboard
-     activation never matches :hover). It carries its own `active:text-bone`
-     instead, which brightens rather than dims and is the brand's luminance
-     rule. */
+  /* The border takes White, the brightest value in the system, which is a
+     real change on a plate button whose border is --color-line-strong and
+     cannot touch the label's contrast. It was amber until the rebrand: amber
+     only ever fills a bar, so it is never a border (scripts/lib/
+     brand-rules.mjs fails the build on one). The first cut of this rule set
+     the background on .press globally, which put Ink text on a raised Ink
+     plate at 1.15:1 on the Bone buttons: an acknowledgement that erased the
+     word it was acknowledging, for reduced-motion users only.
+     `:not(:disabled)` because the /unlock submit is disabled while a request
+     is in flight, so without it a press registered on a control that cannot
+     be invoked.
+     A borderless, plateless button has no border to change and is NOT
+     covered here: it carries its own `active:text-bone` instead, which
+     brightens and never dims, the brand's luminance rule. */
   .press:active:not(:disabled) {
-    border-color: var(--color-command);
+    border-color: var(--color-white);
   }
 }
 

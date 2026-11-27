@@ -1,8 +1,8 @@
 import { SlideDeck, type Slide } from "@/components/SlideDeck";
 
-// The overview deck. Slide grammar: category kicker + heading + body +
-// evidence items, with a curated quote from
-// the engineering-rigor canon anchored to the bottom of each slide.
+// The overview deck. Slide grammar: a category (set in the deck's head row
+// beside the slide's count), a heading, body and evidence items, with a
+// curated quote from the engineering-rigor canon closing a slide that has one.
 const SLIDES: Slide[] = [
   {
     category: "The Problem",
@@ -31,6 +31,7 @@ const SLIDES: Slide[] = [
       "Technical readiness is audited before real users arrive (foundry + production-audit).",
     ],
     chips: ["Distill", "Forge", "Deliver"],
+    chipKind: "stages",
   },
   {
     category: "The Memory",
@@ -83,25 +84,26 @@ const SLIDES: Slide[] = [
     heading: "Install once, invoke anywhere.",
     body: "npx skills@latest add horizon-foundry/foundry adds the suite to your Claude Code skills (or clone and make install from source). Then run a skill by name: scaffold a project, document it, or gate a release with production-audit. When a project is nearing release, foundry check previews the release gates read-only, and foundry prepare closes the gaps.",
     chips: ["npx skills@latest add", "/foundry", "/production-audit", "/scaffold"],
+    chipKind: "commands",
   },
 ]
 
 export default function BehindOverview() {
   return (
-    <div className="flex flex-1 flex-col">
-      <SlideDeck
-        slides={SLIDES}
-        title="Foundry"
-        tagline="Eleven Claude Code skills that turn fast, AI-built code into something you can ship."
-        statChips={[
-          "Distill. Forge. Deliver.",
-          "Docs as memory",
-          "Ends in a verdict",
-        ]}
-      />
-      <p className="mt-4 font-mono text-[0.7rem] uppercase tracking-wide text-bone-faint">
-        Arrow keys or the dots to navigate.
-      </p>
-    </div>
+    <section className="bh-sec" data-ground="ink" aria-label="Overview deck">
+      <div className="wrap">
+        <SlideDeck
+          slides={SLIDES}
+          title="Foundry"
+          tagline="Eleven Claude Code skills that turn fast, AI-built code into something you can ship."
+          statChips={[
+            "Distill. Forge. Deliver.",
+            "Docs as memory",
+            "Ends in a verdict",
+          ]}
+        />
+        <p className="dk-hint">Arrow keys or the dots to navigate.</p>
+      </div>
+    </section>
   );
 }

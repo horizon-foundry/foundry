@@ -15,12 +15,14 @@ const LINKS = [
   { href: "/behind/brand", label: "Brand" },
 ];
 
-// Tab bar. Active tab gets a signal underline rule, not a filled pill: action
-// is not selection (DESIGN.md).
+// The tab row stands on the lower edge of the hub's Slate head. The current
+// tab is Ink, the ground of the page under it (app/styles/behind.css). The
+// nav carries the hub's name, which the page no longer sets as a line above
+// its h1.
 export function BehindNav() {
   const pathname = usePathname();
   return (
-    <nav className="flex flex-wrap items-center gap-x-1 gap-y-2 font-mono text-xs uppercase tracking-wide">
+    <nav aria-label="Behind the Build" className="bh-tabs">
       {LINKS.map((l) => {
         const active = pathname === l.href;
         return (
@@ -28,12 +30,7 @@ export function BehindNav() {
             key={l.href}
             href={l.href}
             aria-current={active ? "page" : undefined}
-            className={[
-              "border-b-2 px-2.5 py-1.5 transition-colors",
-              active
-                ? "border-signal text-bone"
-                : "border-transparent text-bone-faint hover:text-bone",
-            ].join(" ")}
+            className="bh-tab"
           >
             {l.label}
           </Link>

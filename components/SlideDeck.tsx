@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, type KeyboardEvent } from "react";
-import { BrandMark } from "./Wordmark";
+import { ProductLockup } from "./brand/ProductLockup";
+import { UnitBar } from "./brand/UnitBar";
 import { SlideGlyph, type GlyphName } from "./SlideGlyph";
 
 export type Slide = {
@@ -10,6 +11,9 @@ export type Slide = {
   body: string;
   items?: string[];
   chips?: string[];
+  // What the chips are, which decides how they are set: the three stage
+  // words behind their unit bars, or commands to run in mono.
+  chipKind?: "stages" | "commands";
   quote?: { text: string; attribution: string };
   glyph?: GlyphName;
 };
@@ -21,29 +25,36 @@ type Props = {
   statChips: string[];
 };
 
+// The stage bars' order on Ink, the stage rail's own (components/StageRail).
+const STAGE_FILL = ["slate", "amber", "bone"] as const;
+
 function Chevron({ dir }: { dir: "left" | "right" }) {
   return (
     <svg
       viewBox="0 0 16 16"
-      className="size-[14px]"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      strokeWidth="2"
+      strokeLinecap="square"
+      strokeLinejoin="miter"
       aria-hidden="true"
+      focusable="false"
     >
       {dir === "left" ? <path d="M10 3 5 8l5 5" /> : <path d="M6 3l5 5-5 5" />}
     </svg>
   );
 }
 
-// The Behind-the-Build overview deck: a title slide + content slides, driven by
+// The Behind-the-Build overview deck: a cover + content slides, driven by
 // buttons, dot indicators, or Left/Right arrows WHEN FOCUS IS INSIDE THE DECK.
 // (A window-level listener hijacked arrows page-wide, and Up/Down fought the
 // page scroll, so keys are scoped to the region and limited to Left/Right.)
-// Fixed template (top-aligned header, bottom-anchored quote) so nothing jumps
-// between slides.
+//
+// It is a frame on Ink (globals.css, "The frame"). The head row holds the
+// slide's place (a mono count), its category (a label that names the slide,
+// in the frame's head, never a line above the heading) and every control, so
+// the controls stay put when one slide is taller than the last. Styles live
+// in app/styles/behind.css.
 export function SlideDeck({ slides, title, tagline, statChips }: Props) {
   const total = slides.length + 1;
   const [current, setCurrent] = useState(0);
@@ -62,165 +73,142 @@ export function SlideDeck({ slides, title, tagline, statChips }: Props) {
   const next = () => setCurrent((c) => Math.min(c + 1, total - 1));
 
   const heading = current === 0 ? title : slides[current - 1].heading;
+  const category = current === 0 ? null : slides[current - 1].category;
 
   return (
     <div
       role="region"
       aria-label={`${title}: overview deck`}
       onKeyDown={onKeyDown}
-      className="flex min-h-[460px] flex-1 select-none flex-col border border-line bg-ink-raised"
+      className="frame dk"
     >
       {/* Announces slide changes to assistive tech without moving focus. */}
       <p aria-live="polite" className="sr-only">
         Slide {current + 1} of {total}: {heading}
       </p>
-      <div className="flex min-h-0 flex-1 overflow-y-auto px-6 py-9 sm:px-10">
-        {/* Title slide (centered: a cover page) */}
-        <div
-          className={`mx-auto w-full max-w-2xl flex-col justify-center ${current !== 0 ? "hidden" : "flex"}`}
-        >
-          <div className="stagger-rise space-y-5 text-center">
-            <div className="flex justify-center text-bone">
-              {/* h-12 is 48px tall, 74px wide: clear of the kit's 48px floor,
-                  so the canonical cut, not the small one the chrome uses. */}
-              <BrandMark className="h-12 w-auto" />
-            </div>
-            {/* This is a mark + wordmark lockup (BrandMark above), so it
-                gets the same uppercase, open-tracking treatment as the
-                header/footer Wordmark, not the sentence-case display
-                heading style used elsewhere in this deck. */}
-            <h2 className="font-display text-4xl uppercase tracking-[0.04em] text-bone">
-              {title}
-            </h2>
-            <p className="mx-auto max-w-xl leading-relaxed text-bone-dim">
-              {tagline}
-            </p>
-            <div className="flex flex-wrap justify-center gap-2 pt-1">
-              {statChips.map((chip) => (
-                <span
-                  key={chip}
-                  className="inline-flex items-center border border-line bg-ink px-2.5 py-1 font-mono text-xs text-bone-dim"
-                >
-                  {chip}
-                </span>
-              ))}
-            </div>
+
+      <div className="dk-head">
+        <p className="dk-place" aria-hidden="true">
+          <span className="meta dk-count">
+            {current + 1} / {total}
+          </span>
+          {category && <span className="label">{category}</span>}
+        </p>
+        <div className="dk-ctl">
+          <button
+            type="button"
+            onClick={prev}
+            disabled={current === 0}
+            className="dk-step"
+          >
+            <Chevron dir="left" />
+            {/* Icon-only below sm: nine 24px dots and two 44px buttons make
+                304px, which fits the row a 360 phone leaves. */}
+            <span className="sr-only sm:not-sr-only">Prev</span>
+          </button>
+          {/* Each dot's button IS its target: 24px wide (WCAG 2.5.8) and 44px
+              tall, side by side with no gap, so no two targets can overlap. An
+              expanded ::before hit area overlapped its neighbour here and sent
+              7 of 9 taps to the next slide. */}
+          <div className="dk-dots" role="group" aria-label="Go to slide">
+            {Array.from({ length: total }).map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => setCurrent(i)}
+                className="dk-dot"
+                aria-label={`Go to slide ${i + 1}`}
+                aria-current={i === current ? "true" : undefined}
+              >
+                <span aria-hidden="true" />
+              </button>
+            ))}
           </div>
+          <button
+            type="button"
+            onClick={next}
+            disabled={current === total - 1}
+            className="dk-step"
+          >
+            <span className="sr-only sm:not-sr-only">Next</span>
+            <Chevron dir="right" />
+          </button>
+        </div>
+      </div>
+
+      <div className="dk-body">
+        {/* The cover: the product lockup stands where a title would. */}
+        <div className="dk-slide dk-cover stagger-rise" hidden={current !== 0}>
+          <h2 className="dk-cover-title">
+            <span className="hidden sm:inline-flex">
+              <ProductLockup ground="dark" markHeight={56} />
+            </span>
+            <span className="inline-flex sm:hidden">
+              <ProductLockup ground="dark" markHeight={34} />
+            </span>
+          </h2>
+          <p className="d-statement">{tagline}</p>
+          <ul className="dk-stats">
+            {statChips.map((chip) => (
+              <li key={chip} className="label">
+                {chip}
+              </li>
+            ))}
+          </ul>
         </div>
 
-        {/* Content slides */}
         {slides.map((slide, i) => (
           <div
             key={slide.heading}
-            className={`mx-auto min-h-full w-full max-w-3xl flex-col ${current !== i + 1 ? "hidden" : "flex"}`}
+            className="dk-slide stagger-rise"
+            hidden={current !== i + 1}
           >
-            <div className="stagger-rise flex min-h-full flex-1 flex-col space-y-4">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex items-center gap-3 pt-1">
-                  <span className="draw-rule h-px w-8 bg-signal" />
-                  <span className="font-mono text-sm text-bone-dim">
-                    {slide.category}
-                  </span>
+            <div className="dk-top">
+              <h3 className="d-statement">{slide.heading}</h3>
+              {slide.glyph && (
+                <div className="dk-glyph">
+                  <SlideGlyph name={slide.glyph} />
                 </div>
-                {slide.glyph && (
-                  <div className="h-10 w-10 shrink-0 sm:h-12 sm:w-12">
-                    <SlideGlyph name={slide.glyph} />
-                  </div>
-                )}
-              </div>
-              <h3 className="font-mono text-2xl font-semibold leading-tight tracking-tight text-bone sm:text-3xl">
-                {slide.heading}
-              </h3>
-              <p className="max-w-measure leading-relaxed text-bone-dim">
-                {slide.body}
-              </p>
-              {slide.items && (
-                <ul className="max-w-measure divide-y divide-line border-y border-line text-sm">
-                  {slide.items.map((it) => (
-                    <li
-                      key={it}
-                      className="py-2 leading-relaxed text-bone-dim"
-                    >
-                      {it}
-                    </li>
-                  ))}
-                </ul>
-              )}
-              {slide.chips && (
-                <div className="flex flex-wrap gap-2 pt-1">
-                  {slide.chips.map((c) => (
-                    <span
-                      key={c}
-                      className="border border-line px-2 py-0.5 font-mono text-[0.6875rem] uppercase tracking-wide text-bone-dim"
-                    >
-                      {c}
-                    </span>
-                  ))}
-                </div>
-              )}
-              {slide.quote && (
-                <figure className="mt-auto border-t border-line pt-4">
-                  <blockquote className="font-serif text-sm italic leading-relaxed text-bone-dim">
-                    &ldquo;{slide.quote.text}&rdquo;
-                  </blockquote>
-                  <figcaption className="mt-1.5 font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
-                    {slide.quote.attribution}
-                  </figcaption>
-                </figure>
               )}
             </div>
+            <p className="dk-text">{slide.body}</p>
+            {slide.items && (
+              <ul className="dk-items">
+                {slide.items.map((it) => (
+                  <li key={it}>{it}</li>
+                ))}
+              </ul>
+            )}
+            {slide.chips && slide.chipKind === "stages" && (
+              <ul className="dk-stages">
+                {slide.chips.map((c, n) => (
+                  <li key={c}>
+                    <UnitBar fill={STAGE_FILL[n % STAGE_FILL.length]} />
+                    {c}
+                  </li>
+                ))}
+              </ul>
+            )}
+            {slide.chips && slide.chipKind !== "stages" && (
+              <ul className="dk-cmds">
+                {slide.chips.map((c, n) => (
+                  <li key={c}>
+                    {n === 0 && <UnitBar fill="amber" />}
+                    {c}
+                  </li>
+                ))}
+              </ul>
+            )}
+            {slide.quote && (
+              <figure className="dk-quote">
+                <blockquote>&ldquo;{slide.quote.text}&rdquo;</blockquote>
+                <figcaption className="label">
+                  {slide.quote.attribution}
+                </figcaption>
+              </figure>
+            )}
           </div>
         ))}
-      </div>
-
-      {/* Nav bar */}
-      <div className="flex items-center justify-between border-t border-line px-[4px] py-1 sm:px-4">
-        <button
-          type="button"
-          onClick={prev}
-          disabled={current === 0}
-          className="inline-flex min-h-11 min-w-[24px] items-center justify-center sm:min-w-[36px] gap-1.5 font-mono text-xs uppercase tracking-wide text-bone-dim transition-colors hover:text-bone disabled:cursor-not-allowed disabled:opacity-30"
-        >
-          <Chevron dir="left" />
-          {/* Icon-only and 24px wide below sm: nine 24px dots, two 24px buttons and
-              4px padding make 272px, which fits the 278px a 320 viewport leaves. */}
-          <span className="sr-only sm:not-sr-only">Prev</span>
-        </button>
-        {/* Each dot's button IS its target: 24px wide (WCAG 2.5.8) and 44px
-            tall, side by side with no gap, so no two targets can overlap. An
-            expanded ::before hit area overlapped its neighbour here and sent 7
-            of 9 taps to the next slide. Nine 44px-wide targets would not fit
-            beside Prev and Next at 320. */}
-        <div className="flex items-center" role="group" aria-label="Go to slide">
-          {Array.from({ length: total }).map((_, i) => (
-            <button
-              key={i}
-              type="button"
-              onClick={() => setCurrent(i)}
-              className="group flex min-h-11 min-w-[24px] items-center justify-center"
-              aria-label={`Go to slide ${i + 1}`}
-              aria-current={i === current ? "true" : undefined}
-            >
-              <span
-                aria-hidden="true"
-                className={`block h-1.5 transition-colors ${
-                  i === current
-                    ? "w-5 bg-signal"
-                    : "w-1.5 bg-line-strong group-hover:bg-bone-faint"
-                }`}
-              />
-            </button>
-          ))}
-        </div>
-        <button
-          type="button"
-          onClick={next}
-          disabled={current === total - 1}
-          className="inline-flex min-h-11 min-w-[24px] items-center justify-center sm:min-w-[36px] gap-1.5 font-mono text-xs uppercase tracking-wide text-bone-dim transition-colors hover:text-bone disabled:cursor-not-allowed disabled:opacity-30"
-        >
-          <span className="sr-only sm:not-sr-only">Next</span>
-          <Chevron dir="right" />
-        </button>
       </div>
     </div>
   );

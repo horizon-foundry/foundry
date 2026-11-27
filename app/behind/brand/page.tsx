@@ -1,8 +1,8 @@
-import { MarkdownDoc } from "@/components/MarkdownDoc";
+import { BehindDoc } from "@/components/BehindDoc";
 import { readDoc } from "@/lib/docs";
 
 export const metadata = { title: "Brand" };
 
 export default function BrandDoc() {
-  return <MarkdownDoc content={readDoc("BRAND.md")} />;
+  return <BehindDoc content={readDoc("BRAND.md")} />;
 }
