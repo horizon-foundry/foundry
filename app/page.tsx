@@ -4,7 +4,6 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { HeroInstall, InstallBlock } from "@/components/InstallBlock";
 import { Cells, type CellVariant } from "@/components/Cells";
 import { Frame } from "@/components/Frame";
-import { Reveal } from "@/components/Reveal";
 import { StageRail } from "@/components/StageRail";
 import { AreaGrid } from "@/components/AreaGrid";
 import { VerdictSheet } from "@/components/VerdictSheet";
@@ -29,7 +28,7 @@ import { RESUME_URL, REPO_URL } from "@/lib/site";
 */
 
 const LINK =
-  "font-semibold text-fg underline decoration-[1.5px] underline-offset-[5px] hover:decoration-[3px]";
+  "font-semibold text-fg underline decoration-[1.5px] underline-offset-[5px] hover:decoration-[3px] active:text-fg-2";
 
 // A count as the word a sentence wants. Counts come from the directory and the
 // map; this only spells them.
@@ -218,60 +217,66 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 4. The skills, by stage. */}
+        {/* 4. The skills, by stage. The rail is shared with /skills; this page
+            sets its heading over it and the closing thread on its columns. */}
         <section
           id="stages"
           className="home-stages-sec"
           data-ground="ink"
           aria-labelledby="skills-heading"
         >
-          <div className="home-wrap">
-            <Reveal className="home-sec-head">
-              <h2 id="skills-heading" className="home-d-md">
-                {spell(skillCount)} skills, from the idea to the release.
-              </h2>
-            </Reveal>
+          <div className="wrap home-stages-wrap">
+            <h2 id="skills-heading" className="d-h2">
+              {spell(skillCount)} skills, from the idea to the release.
+            </h2>
             <StageRail />
           </div>
         </section>
 
-        {/* 5. What ready means: the map as one figure. */}
+        {/* 5. What ready means: the whole map as one figure, an Ink well on
+            the Slate ground. Its head is the key (who owns a cell, and how
+            many), its body one cell per concern by area, and its caption the
+            one thing the key cannot say. */}
         <section
           className="home-ready"
           data-ground="slate"
           aria-labelledby="ready-heading"
         >
-          <div className="home-wrap home-ready-grid">
-            <Reveal className="home-ready-copy">
-              <h2 id="ready-heading" className="home-d-md">
-                {owned.total} concerns decide whether it is ready.
-              </h2>
-              <p className="home-lede mt-6">
-                Each one names who can show it, including the ones no skill can.
-              </p>
-            </Reveal>
-            <div className="home-ready-vis">
-              <ul className="home-legend" role="list" aria-label="Owner">
+          <div className="wrap home-ready-grid">
+            <h2 id="ready-heading" className="d-h2">
+              {owned.total} concerns decide whether it is ready.
+            </h2>
+            <p className="t-lead home-ready-lede">
+              Each one names who can show it, including the ones no skill can.
+            </p>
+            <figure className="home-map" data-ground="ink">
+              <ul className="home-map-key" role="list" aria-label="Owner">
                 <li>
                   <i className="c c-pa" aria-hidden="true" />
-                  production-audit <b>{owned.auditRows}</b>
+                  <span className="cmd">production-audit</span>
+                  <b>{owned.auditRows}</b>
                 </li>
                 <li>
                   <i className="c c-sk" aria-hidden="true" />
-                  {spell(skillCount - 1)} other skills <b>{owned.otherSkillRows}</b>
+                  {spell(skillCount - 1)} other skills
+                  <b>{owned.otherSkillRows}</b>
                 </li>
                 <li>
                   <i className="c c-out" aria-hidden="true" />
-                  Your team signs off <b>{owned.outsideRows}</b>
+                  Your team signs off
+                  <b>{owned.outsideRows}</b>
                 </li>
               </ul>
-              <p className="home-legend-note">
-                No skill can prove these: billing, legal, support, staffing.
-                The map names who signs off.
-              </p>
               <AreaGrid />
-            </div>
-            <div className="home-ready-btn">
+              <figcaption>
+                <i className="c c-out" aria-hidden="true" />
+                <span>
+                  No skill can prove these: billing, legal, support, staffing.
+                  The map names who signs off.
+                </span>
+              </figcaption>
+            </figure>
+            <div className="home-ready-link">
               <Link href="/readiness" className="tl">
                 Open the readiness map
               </Link>
@@ -283,30 +288,31 @@ export default function Home() {
             so #install lands on it and the section has one h2. */}
         <InstallBlock
           heading={
-            <Reveal className="home-sec-head">
-              <h2 className="home-d-md">
+            <>
+              <h2 className="d-h2">
                 One command. {spell(skillCount)} skills.
               </h2>
-              <p className="home-lede mt-5">
+              <p className="t-lead">
                 Pick the skills you want. Each one installs as a command.
               </p>
-            </Reveal>
+            </>
           }
         />
 
         {/* 7. Who built this. DRAFT, for Craig: Horizon Foundry's voice, with
-            Craig named. */}
+            Craig named. The record is three addresses, set as a ledger: what
+            each one is, and where it lives. */}
         <section
           className="home-who"
           data-ground="slate"
           aria-labelledby="who-heading"
         >
-          <div className="home-wrap home-who-grid">
-            <h2 id="who-heading" className="home-d-md">
+          <div className="wrap home-who-grid">
+            <h2 id="who-heading" className="d-h2">
               Built the way it tells you to build.
             </h2>
             <div>
-              <p className="home-lede">
+              <p className="t-lead">
                 Foundry is made by Horizon Foundry, the studio of{" "}
                 <a href={RESUME_URL} target="_blank" rel="noreferrer" className={LINK}>
                   Craig Martin
@@ -314,24 +320,37 @@ export default function Home() {
                 . This site was built with Foundry: framed, planned, documented and
                 audited by its own skills, and the record is public.
               </p>
-              <div className="home-actions">
-                {featured && (
-                  <Link href={`/example/${featured.slug}`} className="tl">
-                    The self-audit
-                  </Link>
+              <ul className="rows home-record" role="list">
+                {featured && facts && (
+                  <li>
+                    <Link href={`/example/${featured.slug}`} className="row-link">
+                      <span className="row-name">The self-audit</span>
+                      <span className="row-meta">
+                        {facts.commit ? `${facts.date} · ${facts.commit}` : facts.date}
+                      </span>
+                    </Link>
+                  </li>
                 )}
-                <Link href="/behind" className="tl">
-                  How it was built
-                </Link>
-                <a
-                  href={REPO_URL}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="tl"
-                >
-                  The source
-                </a>
-              </div>
+                <li>
+                  <Link href="/behind" className="row-link">
+                    <span className="row-name">How it was built</span>
+                    <span className="row-meta">/behind</span>
+                  </Link>
+                </li>
+                <li>
+                  <a
+                    href={REPO_URL}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="row-link"
+                  >
+                    <span className="row-name">The source</span>
+                    <span className="row-meta">
+                      {REPO_URL.replace("https://", "")}
+                    </span>
+                  </a>
+                </li>
+              </ul>
             </div>
           </div>
         </section>

@@ -47,8 +47,8 @@ export function StarButton({ stars }: { stars: number | null }) {
   );
 }
 
-// A command a reader types, inside running prose: the command style (DESIGN.md,
-// Colors), so every command on the page reads the same.
+// A command a reader types, or a path, inside running prose: the command style
+// (DESIGN.md, Colors), so every command on the page reads the same.
 function Cmd({ children }: { children: React.ReactNode }) {
   return <span className="cmd">{children}</span>;
 }
@@ -78,7 +78,7 @@ const DETAIL: { k: string; d: React.ReactNode }[] = [
         newer suite is out. From source: <Cmd>git pull &amp;&amp; make install</Cmd>{" "}
         to update, <Cmd>make uninstall</Cmd> to remove the symlinks. Beyond the
         skills directory, the one file the skills touch is the version-check
-        stamp at ~/.claude/.foundry-version-checked.
+        stamp at <Cmd>~/.claude/.foundry-version-checked</Cmd>.
       </>
     ),
   },
@@ -86,99 +86,87 @@ const DETAIL: { k: string; d: React.ReactNode }[] = [
 
 // `heading` replaces the default "Install Foundry" h2, so a page that titles
 // the section itself (the homepage) keeps one heading on the #install anchor.
+//
+// Two columns from the split: the heading and the star link on the left, and
+// on the right the instrument, top to bottom in the order a reader acts on it.
+// The command in its Ink well behind the amber unit bar, the command to run
+// next, the version-check disclosure, everything else folded, and the mono
+// line of the release. The disclosure stays visible: it is part of the
+// feature, not a footnote (instrumentation skill, "The gate demands a
+// decision"). Styles: app/styles/home.css, "6. install".
 export async function InstallBlock({ heading }: { heading?: React.ReactNode } = {}) {
   const stars = await getStars();
 
-  // One command and the first thing to run, then everything else folded. The
-  // version-check disclosure stays visible: it is part of the feature, not a
-  // footnote (instrumentation skill, "The gate demands a decision").
   return (
-    <section id="install" data-ground="ink">
-      <div className="wrap py-(--section-y)">
-        <div className="flex flex-wrap items-end justify-between gap-4">
+    <section id="install" className="install" data-ground="ink">
+      <div className="wrap install-grid">
+        <div className="install-head">
           {heading ?? <h2 className="d-h2">Install Foundry</h2>}
           <StarButton stars={stars} />
         </div>
 
-        <div className="mt-10 max-w-3xl">
+        <div className="install-body">
           <CommandField command={NPX_CMD} surface="install-block" />
-          <p className="mt-4 text-fg">
+          <p className="install-next">
             Then open Claude Code in your project and run{" "}
             <span className="cmd">/production-audit</span>.
           </p>
-        </div>
+          <p className="install-note">
+            No account, no build step. At most once a day a skill asks this site
+            for the current version, sending only its name and version.{" "}
+            <span className="cmd">FOUNDRY_NO_VERSION_CHECK</span> turns it off.
+          </p>
 
-        <p className="mt-4 max-w-measure text-[0.96875rem] leading-relaxed text-fg-2">
-          No account, no build step. At most once a day a skill asks this site
-          for the current version, sending only its name and version.{" "}
-          <span className="cmd">FOUNDRY_NO_VERSION_CHECK</span> turns it off.
-        </p>
-
-        <details className="group mt-10 max-w-3xl border-y-2 border-rule">
-          <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 font-semibold text-fg [&::-webkit-details-marker]:hidden">
-            From source, requirements, and what it installs
-            <span aria-hidden="true" className="font-mono text-fg-2 group-open:hidden">
-              +
-            </span>
-            <span aria-hidden="true" className="hidden font-mono text-fg-2 group-open:inline">
-              -
-            </span>
-          </summary>
-          <div className="pb-6">
-            <div className="min-w-0 border-2 border-fg bg-field">
-              <div className="flex items-center justify-between border-b border-ledger py-1 pl-4 pr-1">
-                <span className="label">From source</span>
+          <details className="install-more">
+            <summary>
+              From source, requirements, and what it installs
+              <span aria-hidden="true" className="install-more-mark" />
+            </summary>
+            <div className="install-more-body">
+              <p className="label">From source</p>
+              <div className="cmd-field install-source">
+                <pre className="cmd-field-line">
+                  <code>
+                    <span className="install-prompt">$ </span>
+                    git clone {REPO_URL}
+                    {"\n"}
+                    <span className="install-prompt">$ </span>
+                    cd foundry
+                    {"\n"}
+                    <span className="install-prompt">$ </span>
+                    make install
+                  </code>
+                </pre>
                 <CopyButton
+                  joined
                   text={SOURCE_CMDS}
                   analytics={{ command_kind: "clone", surface: "install-block" }}
                 />
               </div>
-              <pre className="whitespace-pre-wrap break-all px-4 py-4 font-mono text-[0.9375rem] font-medium leading-relaxed text-fg sm:overflow-x-auto sm:whitespace-pre sm:break-normal">
-                <code>
-                  <span className="text-fg-2">$ </span>
-                  git clone {REPO_URL}
-                  {"\n"}
-                  <span className="text-fg-2">$ </span>
-                  cd foundry
-                  {"\n"}
-                  <span className="text-fg-2">$ </span>
-                  make install
-                </code>
-              </pre>
+              <dl className="install-detail">
+                {DETAIL.map((item) => (
+                  <div key={item.k}>
+                    <dt className="label">{item.k}</dt>
+                    <dd>{item.d}</dd>
+                  </div>
+                ))}
+              </dl>
             </div>
-            <dl className="mt-4 divide-y divide-ledger border-t border-ledger">
-              {DETAIL.map((item) => (
-                <div key={item.k} className="grid gap-1 py-4 sm:grid-cols-[13rem_minmax(0,1fr)] sm:gap-6">
-                  <dt className="label pt-0.5">
-                    {item.k}
-                  </dt>
-                  <dd className="max-w-measure text-[0.96875rem] leading-relaxed text-fg-2">
-                    {item.d}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-        </details>
+          </details>
 
-        <div className="meta mt-6 flex flex-wrap items-center gap-x-6">
-          <span className="text-fg">v{suiteVersion()} · pre-1.0</span>
-          {[
-            [REPO_LICENSE_URL, "MIT license"],
-            [REPO_URL, "Source"],
-            [REPO_ISSUES_URL, "Report an issue"],
-            [REPO_CONTRIBUTING_URL, "Contributing"],
-          ].map(([href, label]) => (
-            <a
-              key={href}
-              href={href}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex min-h-11 items-center text-fg underline decoration-1 underline-offset-4 hover:decoration-2"
-            >
-              {label}
-            </a>
-          ))}
+          <div className="install-meta">
+            <span className="meta">v{suiteVersion()} · pre-1.0</span>
+            {[
+              [REPO_LICENSE_URL, "MIT license"],
+              [REPO_URL, "Source"],
+              [REPO_ISSUES_URL, "Report an issue"],
+              [REPO_CONTRIBUTING_URL, "Contributing"],
+            ].map(([href, label]) => (
+              <a key={href} href={href} target="_blank" rel="noreferrer">
+                {label}
+              </a>
+            ))}
+          </div>
         </div>
       </div>
     </section>
