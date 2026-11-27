@@ -12,13 +12,15 @@ import {
 import { SkillTabs } from "@/components/SkillTabs";
 import { OwnedBand } from "@/components/OwnedBand";
 import { AuditMethod } from "@/components/AuditMethod";
-import { CopyButton } from "@/components/CopyButton";
+import { CommandField } from "@/components/CommandField";
+import { UnitBar } from "@/components/brand/UnitBar";
 import { Reveal } from "@/components/Reveal";
 import {
   highlightsFor,
   notForParts,
   type Highlight,
 } from "@/lib/skill-figures";
+import { rowsOwnedBy } from "@/lib/readiness-owners";
 import { REPO_SLUG } from "@/lib/site";
 import { getSkill, listSkills, stageOf, type SkillCopy } from "@/lib/skills";
 
@@ -51,6 +53,12 @@ const num = (i: number) => String(i + 1).padStart(2, "0");
 // where a reader decides to adopt, so the way in sits at its close.
 const NPX_CMD = `npx skills@latest add ${REPO_SLUG}`;
 
+// A band's ground. The hero is Slate and the bands under it alternate, Ink
+// first, so the selected tab (an Ink box on the hero's foot) runs into the
+// band it opens.
+type Ground = "ink" | "slate";
+const groundAt = (i: number): Ground => (i % 2 ? "slate" : "ink");
+
 // The page is the sell: what the skill is for, one hero figure, highlights as
 // figures, the moments it is built for, and the share of the readiness map it
 // owns. The full SKILL.md, which is what the agent runs, is the second tab.
@@ -68,40 +76,53 @@ export default async function SkillPage({
   const lead = (
     <>
       <p className="sk-crumb">
-        <Link href="/skills">
-          <span aria-hidden="true">←</span> All skills
-        </Link>
+        <Link href="/skills">All skills</Link>
         {stage && (
-          <span>
+          <span className="label">
             {stage.label} · {stage.caption}
           </span>
         )}
       </p>
       <h1 id="sk-h" className="sk-cmd">
+        <UnitBar fill="amber" />
         /{skill.name}
       </h1>
       {copy ? (
         <>
           <p className="sk-headline">{copy.headline}</p>
-          <p className="sk-lede">{copy.sub}</p>
+          <p className="t-lead sk-lede">{copy.sub}</p>
         </>
       ) : (
-        <p className="sk-lede">{skill.tagline}</p>
+        <p className="t-lead sk-lede">{skill.tagline}</p>
       )}
     </>
   );
 
+  // The bands in the order they are drawn, so each takes the next ground.
+  const all = copy ? highlightsFor(slug, copy) : [];
+  const figured = all.filter(
+    (h): h is FiguredHighlight => h.figure !== undefined,
+  );
+  const plain = all.filter((h) => !h.figure);
+  const owns = rowsOwnedBy(slug).length > 0;
+  const iPlain = figured.length;
+  const iMoments = iPlain + (plain.length > 0 ? 1 : 0);
+  const iOwned = iMoments + (copy ? 1 : 0);
+  const iMethod = iOwned + (owns ? 1 : 0);
+
   const sell = (
     <>
-      {copy && <Highlights slug={slug} copy={copy} />}
-      {copy && <Moments copy={copy} />}
-      <OwnedBand slug={slug} />
-      {slug === "production-audit" && <AuditMethod />}
+      {copy && <Highlights figured={figured} plain={plain} />}
+      {copy && <Moments copy={copy} ground={groundAt(iMoments)} />}
+      <OwnedBand slug={slug} ground={groundAt(iOwned)} />
+      {slug === "production-audit" && (
+        <AuditMethod ground={groundAt(iMethod)} />
+      )}
     </>
   );
 
   const md = (
-    <div className="sk-wrap sk-md-wrap">
+    <div className="wrap sk-md-wrap">
       <p className="sk-md-src">skills/{slug}/SKILL.md, as installed</p>
       <MarkdownDoc content={skill.body} anchors className="sk-md" />
     </div>
@@ -110,7 +131,7 @@ export default async function SkillPage({
   return (
     <>
       <SiteHeader />
-      <main id="main" className="sk-page">
+      <main id="main" className="sk-page" data-ground="ink">
         <SkillTabs
           lead={lead}
           figure={
@@ -130,27 +151,29 @@ export default async function SkillPage({
 // Highlights with a figure each take a band, alternating text and figure.
 // Highlights without one sit together in one numbered row, never as stacked
 // full-width text bands. Numbers run in the order they are shown.
-function Highlights({ slug, copy }: { slug: string; copy: SkillCopy }) {
-  const all = highlightsFor(slug, copy);
-  const figured = all.filter(
-    (h): h is FiguredHighlight => h.figure !== undefined,
-  );
-  const plain = all.filter((h) => !h.figure);
+function Highlights({
+  figured,
+  plain,
+}: {
+  figured: FiguredHighlight[];
+  plain: Highlight[];
+}) {
   return (
     <>
       {figured.map((h, i) => (
         <section
           key={h.title}
           className={`sk-band sk-hl${i % 2 ? " sk-hl-flip" : ""}`}
+          data-ground={groundAt(i)}
           aria-labelledby={`sk-hl-${i}`}
         >
-          <div className="sk-wrap sk-hl-grid">
+          <div className="wrap sk-hl-grid">
             <div className="sk-hl-copy">
               <p className="sk-n">{num(i)}</p>
-              <h2 id={`sk-hl-${i}`} className="sk-d-sm">
+              <h2 id={`sk-hl-${i}`} className="d-statement">
                 {h.title}
               </h2>
-              <p className="sk-hl-line">{h.line}</p>
+              <p className="t-lead sk-hl-line">{h.line}</p>
             </div>
             <div className="sk-hl-fig">
               <HighlightFigure figure={h.figure} />
@@ -159,13 +182,16 @@ function Highlights({ slug, copy }: { slug: string; copy: SkillCopy }) {
         </section>
       ))}
       {plain.length > 0 && (
-        <div className="sk-band sk-plain">
-          <div className="sk-wrap">
+        <div
+          className="sk-band sk-plain"
+          data-ground={groundAt(figured.length)}
+        >
+          <div className="wrap">
             <ol className={`sk-plain-grid sk-cols-${Math.min(plain.length, 3)}`}>
               {plain.map((h, i) => (
                 <li key={h.title}>
                   <p className="sk-n">{num(figured.length + i)}</p>
-                  <h2 className="sk-d-xs">{h.title}</h2>
+                  <h2 className="sk-h3">{h.title}</h2>
                   <p className="sk-hl-line">{h.line}</p>
                 </li>
               ))}
@@ -177,18 +203,19 @@ function Highlights({ slug, copy }: { slug: string; copy: SkillCopy }) {
   );
 }
 
-function Moments({ copy }: { copy: SkillCopy }) {
+function Moments({ copy, ground }: { copy: SkillCopy; ground: Ground }) {
   const notFor = copy.notFor;
   const parts = notFor ? notForParts(notFor.text) : null;
   return (
-    <section className="sk-band sk-moments" aria-labelledby="sk-mo-h">
-      <div className="sk-wrap sk-mo-grid">
-        <div>
-          <span className="sk-rule" aria-hidden="true" />
-          <h2 id="sk-mo-h" className="sk-d-sm">
-            Built for these moments.
-          </h2>
-        </div>
+    <section
+      className="sk-band sk-moments"
+      data-ground={ground}
+      aria-labelledby="sk-mo-h"
+    >
+      <div className="wrap sk-mo-grid">
+        <h2 id="sk-mo-h" className="d-h2">
+          Built for these moments.
+        </h2>
         <Reveal as="div">
           <ol className="sk-mo-list">
             {copy.moments.map((m, i) => (
@@ -200,7 +227,7 @@ function Moments({ copy }: { copy: SkillCopy }) {
           </ol>
         </Reveal>
       </div>
-      <div className="sk-wrap sk-notfor">
+      <div className="wrap sk-notfor">
         {notFor && (
           <p>
             {parts ? (
@@ -216,25 +243,15 @@ function Moments({ copy }: { copy: SkillCopy }) {
             )}
           </p>
         )}
-        <a href="#skill-md" className="sk-btn">
-          Read the full SKILL.md <span aria-hidden="true">→</span>
+        <a href="#skill-md" className="tl">
+          Read the full SKILL.md
         </a>
       </div>
-      <div className="sk-wrap">
-        <div className="sk-install">
-          <code>
-            <span aria-hidden="true">$ </span>
-            {NPX_CMD}
-          </code>
-          <CopyButton
-            text={NPX_CMD}
-            label="install command"
-            analytics={{ command_kind: "npx", surface: "skill-page" }}
-          />
-          <Link href="/#install" className="sk-install-more">
-            Other ways to install <span aria-hidden="true">→</span>
-          </Link>
-        </div>
+      <div className="wrap sk-install">
+        <CommandField command={NPX_CMD} surface="skill-page" />
+        <Link href="/#install" className="tl">
+          Other ways to install
+        </Link>
       </div>
     </section>
   );

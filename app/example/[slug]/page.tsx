@@ -41,34 +41,34 @@ export default async function ExampleReport({
       {/* Funnel A value proxy: the worked example actually read. */}
       <CaptureView event="example_report_viewed" properties={{ slug }} />
       <SiteHeader />
-      <main id="main" className="mx-auto min-h-[70vh] max-w-[1180px] px-5 py-10 sm:px-8">
-        {/* Provenance line: this one report is public; the full history is
-            gated. One plain line, not a bordered banner, so the stamp and the
-            scorecard keep the first screen on a phone (DESIGN.md Anti-goals). */}
-        <div className="mb-6 flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
-          <p className="font-mono text-xs text-bone-dim">
-            {isSelfAudit ? (
+      <main id="main" data-ground="ink">
+        {/* Provenance: this one report is public; the full history is gated.
+            One plain line in the report's head, not a bordered banner, so the
+            sheet and the scorecard keep the first screen on a phone
+            (DESIGN.md Anti-goals). */}
+        <ReportView
+          report={report}
+          back={
+            <Link href="/reports" className="rp-link">
+              All reports
+            </Link>
+          }
+          note={
+            isSelfAudit ? (
               <>
-                <span className="text-signal">Our own audit.</span> We ran{" "}
-                <span className="text-command">/production-audit</span>{" "}
-                on Foundry&apos;s own public repo. Check it against the source.
+                <strong>Our own audit.</strong> We ran{" "}
+                <span className="cmd">/production-audit</span> on Foundry&apos;s
+                own public repo. Check it against the source.
               </>
             ) : (
               <>
-                <span className="text-signal">Illustrative example.</span> Perch
-                is a fictional sample application, audited in full to show the
-                method on a payments-and-concurrency product.
+                <strong>Illustrative example.</strong> Perch is a fictional
+                sample application, audited in full to show the method on a
+                payments-and-concurrency product.
               </>
-            )}
-          </p>
-          <Link
-            href="/reports"
-            className="shrink-0 self-start font-mono text-xs text-bone-faint transition-colors hover:text-bone"
-          >
-            All reports →
-          </Link>
-        </div>
-        <ReportView report={report} />
+            )
+          }
+        />
       </main>
       <SiteFooter />
     </>

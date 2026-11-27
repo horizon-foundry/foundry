@@ -20,28 +20,27 @@ export default async function Unlock({
   const { error, sent } = await searchParams;
   const message = error ? ERRORS[error] : null;
 
+  // One Slate page: the heading on the left, the words and the form on the
+  // right (app/styles/report.css, "sign-in").
   if (sent) {
     return (
       <>
         <SiteHeader />
-        <main id="main" className="mx-auto flex min-h-[70vh] max-w-[1180px] items-center px-5 sm:px-8">
-          <div className="w-full max-w-md">
-            <p className="font-mono text-sm text-bone-dim">
-              Access · check your inbox
-            </p>
-            <h1 className="mt-3 font-display text-2xl tracking-normal text-bone sm:text-3xl">
-              Sign-in link sent.
-            </h1>
-            <p className="mt-3 text-sm leading-relaxed text-bone-dim">
-              We emailed a one-time sign-in link to{" "}
-              <span className="font-mono text-bone">{sent}</span>. Open it on
-              this device to view your reports. The link expires after a short
-              window; if it lapses, request a fresh one.
-            </p>
-            <p className="mt-3 text-sm leading-relaxed text-bone-faint">
-              Nothing after a minute? Check your spam folder, then request a
-              fresh link.
-            </p>
+        <main id="main" className="ul" data-ground="slate">
+          <div className="wrap ul-grid">
+            <h1 className="d-h2">Sign-in link sent.</h1>
+            <div className="ul-body">
+              <p className="t-lead">
+                We emailed a one-time sign-in link to{" "}
+                <span className="ul-sent">{sent}</span>. Open it on this device
+                to view your reports. The link expires after a short window; if
+                it lapses, request a fresh one.
+              </p>
+              <p className="t-lead">
+                Nothing after a minute? Check your spam folder, then request a
+                fresh link.
+              </p>
+            </div>
           </div>
         </main>
         <SiteFooter />
@@ -52,55 +51,46 @@ export default async function Unlock({
   return (
     <>
       <SiteHeader />
-      <main id="main" className="mx-auto flex min-h-[70vh] max-w-[1180px] items-center px-5 sm:px-8">
-        <div className="w-full max-w-md">
-          <p className="font-mono text-sm text-bone-dim">
-            Report history
-          </p>
-          <h1 className="mt-3 font-display text-2xl tracking-normal text-bone sm:text-3xl">
-            Sign in to view your reports.
-          </h1>
-          <p className="mt-3 text-sm leading-relaxed text-bone-dim">
-            The skills never require an account. Signing in exists for one
-            thing only: viewing your audit reports, which carry findings and
-            are never public. Enter your email and we send a one-time sign-in
-            link.
-          </p>
+      <main id="main" className="ul" data-ground="slate">
+        <div className="wrap ul-grid">
+          <h1 className="d-h2">Sign in to view your reports.</h1>
+          <div className="ul-body">
+            <p className="t-lead">
+              The skills never require an account. Signing in exists for one
+              thing only: viewing your audit reports, which carry findings and
+              are never public. Enter your email and we send a one-time sign-in
+              link.
+            </p>
 
-          <form action={requestMagicLink} className="mt-7 space-y-3">
-            <div>
-              <label
-                htmlFor="email"
-                className="font-mono text-xs uppercase tracking-wide text-bone-faint"
-              >
-                Email
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                autoComplete="email"
-                placeholder="you@example.com"
-                aria-describedby={message ? "gate-error" : undefined}
-                aria-invalid={message ? true : undefined}
-                className="mt-1.5 w-full border border-line bg-ink-raised px-3 py-2.5 font-mono text-base text-bone outline-none transition-colors placeholder:text-bone-faint focus:border-signal"
+            <form action={requestMagicLink} className="ul-form">
+              <div>
+                <label htmlFor="email" className="label">
+                  Email
+                </label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  autoComplete="email"
+                  placeholder="you@example.com"
+                  aria-describedby={message ? "gate-error" : undefined}
+                  aria-invalid={message ? true : undefined}
+                  className="ul-input"
+                />
+              </div>
+              {message && (
+                <p id="gate-error" role="alert" className="ul-error">
+                  <i className="c s-critical" aria-hidden="true" />
+                  {message}
+                </p>
+              )}
+              <SubmitButton
+                label="Email me a sign-in link"
+                pendingLabel="Sending the link…"
               />
-            </div>
-            {message && (
-              <p
-                id="gate-error"
-                role="alert"
-                className="border border-critical/40 bg-critical/5 px-3 py-2 text-sm text-critical"
-              >
-                {message}
-              </p>
-            )}
-            <SubmitButton
-              label="Email me a sign-in link"
-              pendingLabel="Sending the link…"
-            />
-          </form>
+            </form>
+          </div>
         </div>
       </main>
       <SiteFooter />

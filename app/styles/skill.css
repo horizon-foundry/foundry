@@ -1,76 +1,72 @@
 /* Skill pages (app/skills/[slug]/page.tsx and the components it lays out:
    SkillTabs, SkillFigure, Specimen, OwnedBand, AuditMethod). Imported by
-   globals.css. The shared figure primitives (.c, .cells, .frame, .stamp, .tk,
-   the reveal and the collapsible panel contract) live at the end of
+   globals.css. The grounds, the type ramp, the content cap (.wrap), the
+   button, the text link, the command field and the figure primitives (.c,
+   .cells, .frame, the reveal and the collapsible panel contract) live in
    globals.css; only what is specific to a skill page goes here. Prefix: sk-.
 
-   Ported from the approved Instrument prototype (tmp/directions/instrument,
-   skill-frame.html and skill-production-audit.html). Where the prototype broke
-   a DESIGN.md rule the codebase rule wins: mono labels are sentence case with
-   no letter tracking, text is never dimmed, nothing animates by scroll
-   position, and hue appears only inside a frame that excerpts the real report
-   (the verdict trio). Hover and press states are colour and border only. */
+   The page in the dark instrument: it opens on Slate under the pinned Ink
+   header, and its bands alternate Ink and Slate (the page sets each band's
+   data-ground). Every color is ground-relative (--fg, --fg-2, --fg-3,
+   --rule, --ledger), so a band changes ground by its attribute and nothing
+   else. Headings are Zalando Sans on the ramp. IBM Plex Mono is the voice of
+   commands, paths, dates and counts. Amber only fills the unit bar in front
+   of a command to run. Rules are 2px; the 1px ledger line divides the rows
+   inside a ruled list or a frame. Hue appears only inside a frame that
+   excerpts the real report (the verdict trio), where it fills a band under
+   Ink type. Hover and press states are color and line only. */
 
 /* ---------- page ---------- */
 .sk-page {
   min-height: 70vh;
 }
-.sk-wrap {
-  max-width: 1228px;
-  margin: 0 auto;
-  padding: 0 24px;
-}
-.sk-d-md,
-.sk-d-sm,
-.sk-d-xs {
-  font-family: var(--font-display);
-  font-weight: 400;
-  letter-spacing: 0;
-  color: var(--color-bone);
-}
-.sk-d-md {
-  font-size: clamp(30px, 3.6vw, 48px);
-  line-height: 1.06;
-}
-.sk-d-sm {
-  font-size: clamp(26px, 2.6vw, 36px);
-  line-height: 1.08;
-}
-.sk-d-xs {
-  font-size: clamp(22px, 2vw, 28px);
-  line-height: 1.12;
-}
-.sk-n {
-  margin-bottom: 18px;
-  font: 400 13px/1 var(--font-mono);
-  color: var(--color-bone-faint);
+/* The inside of a frame is an Ink field on either ground, so what it holds
+   reads as it does on Ink: Fog is legible there, and its ledger is Slate. */
+.sk-page .frame {
+  --fg-3: var(--color-fog);
+  --ledger: var(--color-slate);
 }
 .sk-band {
-  padding: 112px 0;
-  border-top: 1px solid var(--color-line);
+  padding: var(--section-y) 0;
+}
+/* A count: the mono numeral of a figure. */
+.sk-n {
+  margin-bottom: 14px;
+  font: 400 var(--text-meta) / 1 var(--font-mono);
+  color: var(--fg-2);
 }
 .sk-en {
-  font: 400 12px/1 var(--font-mono);
-  color: var(--color-bone-faint);
+  font: 400 0.75rem/1 var(--font-mono);
+  color: var(--fg-3);
+}
+/* A mid heading: Zalando Extrabold on the h3 step. */
+.sk-h3 {
+  font: 800 var(--text-h3) / var(--text-h3--line-height) var(--font-display);
+  letter-spacing: var(--tracking-head);
+  color: var(--fg);
 }
 
 /* ---------- hero ---------- */
+/* Slate, with the tablist on its foot. With script the selected tab is an Ink
+   box that runs into the Ink panel under it, so the hero has no padding at
+   its foot; without script there is no tablist and the padding returns. */
 .sk-hero {
-  padding: 72px 0 96px;
+  padding: clamp(32px, 4vw, 56px) 0 clamp(48px, 5vw, 72px);
+}
+.js .sk-hero {
+  padding-bottom: 0;
 }
 /* The lead, the tablist and the figure are three grid children. Wide: the lead
-   and the tabs stack in the left column and the figure spans the right, with a
-   flexible row above and below so the left column stays centered against a
-   taller figure instead of opening a gap between lead and tabs. */
+   and the tabs stack in the left column and the figure spans the right. The
+   lead's row takes the height a taller figure leaves, so the tabs stay on
+   the foot. */
 .sk-hero-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  grid-template-rows: 1fr auto auto 1fr;
+  grid-template-columns: minmax(0, 1.04fr) minmax(0, 0.96fr);
+  grid-template-rows: 1fr auto;
   grid-template-areas:
-    ". fig"
     "lead fig"
-    "tabs fig"
-    ". fig";
+    "tabs fig";
   column-gap: 72px;
 }
 .sk-hero-grid > * {
@@ -83,6 +79,9 @@
   grid-area: fig;
   align-self: center;
 }
+.js .sk-hero-fig {
+  margin-bottom: clamp(48px, 5vw, 72px);
+}
 /* A page with no hero figure (production-audit without a published report). */
 .sk-hero-solo {
   grid-template-columns: minmax(0, 1fr);
@@ -94,116 +93,107 @@
 .sk-crumb {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 18px;
+  gap: 0 24px;
   align-items: center;
-  margin-bottom: 28px;
-  font: 400 13px/1 var(--font-mono);
-  color: var(--color-bone-faint);
+  margin-bottom: 20px;
 }
 .sk-crumb a {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
   min-height: 44px;
-  color: var(--color-bone-dim);
-  text-decoration: none;
-  transition: color var(--transition-duration-quick) var(--ease-entrance);
+  font: 600 var(--text-small) / 1.5 var(--font-sans);
+  color: var(--fg);
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 5px;
 }
 .sk-crumb a:hover {
-  color: var(--color-signal);
+  text-decoration-thickness: 3px;
 }
-/* The page's h1 is its command: amber, mono, larger than the lede and smaller
-   than the headline beneath it. */
+/* The page's h1 is its command: Bone mono behind the amber unit bar, the
+   mark of a command you fire. The headline under it is the display line. */
 .sk-cmd {
-  margin: 0 0 18px;
-  font: 400 clamp(22px, 2.2vw, 30px) / 1.2 var(--font-mono);
-  color: var(--color-command);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 20px;
+  font: 500 var(--text-h3) / 1.2 var(--font-mono);
+  color: var(--fg);
   overflow-wrap: anywhere;
 }
+.sk-cmd svg {
+  flex: none;
+  width: 30px;
+  height: auto;
+}
 .sk-headline {
-  font: 400 clamp(38px, 5vw, 68px) / 1.02 var(--font-display);
-  letter-spacing: 0;
-  color: var(--color-bone);
+  font: 900 var(--text-h2) / var(--text-h2--line-height) var(--font-display);
+  letter-spacing: var(--tracking-display);
+  color: var(--fg);
+  text-wrap: balance;
   overflow-wrap: break-word;
 }
 .sk-lede {
-  max-width: 46ch;
   margin-top: 24px;
-  font-size: clamp(17px, 1.4vw, 20px);
-  line-height: 1.5;
-  color: var(--color-bone-dim);
 }
 
 /* The tablist exists only with script (the .js class); without it both
-   panels simply render, the sell and then the spec. */
+   panels simply render, the sell and then the spec. The selected tab is Ink,
+   the ground of the panel it opens. */
 .sk-tabs {
   grid-area: tabs;
+  align-self: end;
   display: none;
-  gap: 4px;
-  margin-top: 36px;
-  border-bottom: 1px solid var(--color-line);
-  scroll-margin-top: 112px;
+  margin-top: 40px;
+  scroll-margin-top: calc(var(--header-h) + 16px);
 }
 .js .sk-tabs {
   display: flex;
 }
 .sk-tabs button {
-  min-height: 48px;
-  padding: 0 16px;
-  margin-bottom: -1px;
-  border-bottom: 2px solid transparent;
-  font: 400 14px/1 var(--font-mono);
-  color: var(--color-bone-faint);
+  min-height: 52px;
+  padding: 0 24px;
+  font: 600 var(--text-nav) / 1.25 var(--font-sans);
+  color: var(--fg-2);
+  text-underline-offset: 6px;
+  text-decoration-thickness: 1.5px;
   cursor: pointer;
-  transition: color var(--transition-duration-quick) var(--ease-entrance);
+  transition:
+    color 240ms var(--ease),
+    background-color 240ms var(--ease);
 }
 .sk-tabs button:hover {
-  color: var(--color-bone);
+  color: var(--fg);
+  text-decoration-line: underline;
 }
 .sk-tabs button[aria-selected="true"] {
+  background: var(--color-ink);
   color: var(--color-bone);
-  border-bottom-color: var(--color-bone);
+  text-decoration-line: none;
+}
+.sk-tabs button:focus-visible {
+  outline-offset: -6px;
 }
 @media print {
   .sk-tabs {
     display: none !important;
   }
+  .js .sk-hero {
+    padding-bottom: 48px;
+  }
 }
 
-/* ---------- buttons and links ---------- */
-.sk-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 48px;
-  padding: 0 18px;
-  border: 1px solid var(--color-line-strong);
-  font: 400 14px/1 var(--font-mono);
-  color: var(--color-bone);
-  text-decoration: none;
-  transition:
-    border-color var(--transition-duration-quick) var(--ease-entrance),
-    color var(--transition-duration-quick) var(--ease-entrance),
-    background-color var(--transition-duration-quick) var(--ease-entrance);
-}
-.sk-btn:hover {
-  border-color: var(--color-signal);
-  color: var(--color-signal);
-}
-.sk-btn:active {
-  background: var(--color-ink-raised-2);
-  transition-duration: var(--transition-duration-tick);
-}
+/* ---------- a command in a sentence, as a link ---------- */
 .sk-cmdlink {
   font-family: var(--font-mono);
-  color: var(--color-command);
-  text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: border-color var(--transition-duration-quick)
-    var(--ease-entrance);
+  font-weight: 500;
+  color: var(--fg);
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 4px;
 }
 .sk-cmdlink:hover {
-  border-bottom-color: var(--color-command);
+  text-decoration-thickness: 3px;
 }
 
 /* ---------- figures, shared ---------- */
@@ -212,8 +202,8 @@
 }
 .sk-fig figcaption {
   padding-top: 16px;
-  font: 400 12px/1.5 var(--font-mono);
-  color: var(--color-bone-faint);
+  font: 400 var(--text-meta) / 1.5 var(--font-mono);
+  color: var(--fg-2);
 }
 
 /* Highlights with a figure: a band, text and figure alternating. The text is
@@ -221,8 +211,8 @@
    wide column on the left. */
 .sk-hl-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
-  gap: 88px;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: 72px;
   align-items: center;
 }
 .sk-hl-grid > * {
@@ -232,24 +222,17 @@
   order: -1;
 }
 .sk-hl-line {
-  max-width: 40ch;
   margin-top: 18px;
-  font-size: 19px;
-  line-height: 1.5;
-  color: var(--color-bone-dim);
 }
 
-/* Highlights without a figure: one numbered row. */
-.sk-plain {
-  padding: 96px 0;
-}
+/* Highlights without a figure: one numbered row, each under its rule. */
 .sk-plain-grid {
   display: grid;
-  gap: 56px 48px;
+  gap: 40px 52px;
 }
 .sk-cols-1 {
   grid-template-columns: minmax(0, 1fr);
-  max-width: 52ch;
+  max-width: 34rem;
 }
 .sk-cols-2 {
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -258,17 +241,22 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 .sk-plain-grid li {
-  padding-top: 24px;
-  border-top: 1px solid var(--color-line-strong);
+  padding-top: 20px;
+  border-top: 2px solid var(--rule);
 }
 .sk-plain-grid .sk-hl-line {
-  font-size: 18px;
+  max-width: 34rem;
+  margin-top: 12px;
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
+  color: var(--fg-2);
 }
 
 /* stat and states */
 .sk-stat-n {
-  font: 400 clamp(56px, 6vw, 96px) / 1 var(--font-display);
-  color: var(--color-bone);
+  font: 500 var(--text-title) / 1 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--fg);
 }
 .sk-states {
   display: flex;
@@ -278,50 +266,56 @@
   display: flex;
   align-items: center;
   max-width: 100%;
-  min-height: 64px;
-  margin: 0 -1px -1px 0;
-  padding: 18px 22px;
-  border: 1px solid var(--color-line-strong);
-  font: 400 16px/1.3 var(--font-mono);
-  color: var(--color-bone);
+  min-height: 60px;
+  margin: 0 -2px -2px 0;
+  padding: 14px 22px;
+  border: 2px solid var(--rule);
+  font: 500 1rem/1.3 var(--font-mono);
+  color: var(--fg);
 }
 
 /* ---------- production-audit ---------- */
-/* The verdict trio: the lit verdict is a stamp in its hue (R1's .stamp, .tk
-   and .hue-*), and it is the one thing on the page whose hue is derived from
-   the report. */
+/* The verdict trio: three rows in an Ink frame. The verdict the self-audit
+   reached is a band filled with its hue under Ink type, as on the verdict
+   sheet; the two it did not reach are outlined. The hue is read from the
+   report. Ink on the safe green is 8.4 to 1, on the risk yellow 11.6, on
+   the no-ship red 5.8. */
 .sk-trio-list {
   padding: 18px;
 }
 .sk-trio-list li {
-  position: relative;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: baseline;
   gap: 4px 16px;
   margin-top: -1px;
-  padding: 18px 20px;
-  border: 1px solid var(--color-line);
+  padding: 16px 20px;
+  border: 1px solid var(--ledger);
 }
 .sk-trio-list li strong {
-  font: 500 18px/1.2 var(--font-mono);
+  font: 800 1.125rem/1.2 var(--font-display);
+  letter-spacing: var(--tracking-head);
   text-transform: uppercase;
+  color: var(--fg-3);
 }
-.sk-trio-list li:not(.sk-trio-on) strong {
-  color: var(--color-bone-faint);
-}
-.sk-trio-list li span:not(.tk) {
-  font: 400 12px/1.2 var(--font-mono);
-  color: var(--color-bone-faint);
+.sk-trio-list li span {
+  font: 400 var(--text-meta) / 1.3 var(--font-mono);
 }
 .sk-trio-list .sk-trio-on {
+  position: relative;
   z-index: 1;
-  padding: 26px 20px;
+  padding: 20px 20px 22px;
   border-color: var(--hue);
+  background: var(--hue);
+  color: var(--color-ink);
 }
 .sk-trio-list .sk-trio-on strong {
-  font-size: 28px;
+  font-weight: 900;
+  font-size: 2.25rem;
+  line-height: 0.95;
+  letter-spacing: var(--tracking-display);
+  color: var(--color-ink);
 }
 .sk-trio-list .sk-trio-scope {
   flex-basis: 100%;
@@ -335,28 +329,35 @@
 }
 .sk-nums b {
   display: block;
-  font: 400 clamp(56px, 6vw, 96px) / 1 var(--font-display);
-  color: var(--color-bone);
+  font: 500 var(--text-title) / 1 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--fg);
 }
 .sk-nums span {
-  font: 400 13px/1 var(--font-mono);
-  color: var(--color-bone-faint);
+  display: block;
+  margin-top: 8px;
+  font: 400 var(--text-meta) / 1 var(--font-mono);
+  color: var(--fg-2);
 }
 
 .sk-bars ul {
-  border-top: 1px solid var(--color-line);
+  border-top: 2px solid var(--rule);
+  border-bottom: 2px solid var(--rule);
 }
 .sk-bars li {
   display: grid;
   grid-template-columns: 200px minmax(0, 1fr) 36px;
   gap: 16px;
   align-items: center;
-  min-height: 34px;
-  border-bottom: 1px solid var(--color-line);
+  min-height: 36px;
+  border-bottom: 1px solid var(--ledger);
+}
+.sk-bars li:last-child {
+  border-bottom: 0;
 }
 .sk-bl {
-  font: 400 13px/1.2 var(--font-mono);
-  color: var(--color-bone-dim);
+  font: 400 var(--text-meta) / 1.2 var(--font-mono);
+  color: var(--fg-2);
 }
 .sk-bt {
   position: relative;
@@ -367,14 +368,15 @@
 .sk-bt i {
   position: absolute;
   inset: 0;
-  background: var(--color-bone);
+  background: var(--fg);
   transform-origin: left;
   transform: scaleX(var(--w));
 }
 .sk-bn {
-  font: 500 14px/1 var(--font-mono);
+  font: 500 0.875rem/1 var(--font-mono);
+  font-variant-numeric: tabular-nums;
   text-align: right;
-  color: var(--color-bone);
+  color: var(--fg);
 }
 
 .sk-na-top {
@@ -383,24 +385,29 @@
   align-items: center;
 }
 .sk-na-top b {
-  font: 400 clamp(72px, 8vw, 128px) / 1 var(--font-display);
-  color: var(--color-bone);
+  font: 500 var(--text-title) / 1 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--fg);
 }
 .sk-na-top .cells {
   max-width: 300px;
 }
 .sk-na-list {
   margin-top: 28px;
-  border-top: 1px solid var(--color-line);
+  border-top: 2px solid var(--rule);
+  border-bottom: 2px solid var(--rule);
 }
 .sk-na-list li {
   padding: 12px 0;
-  border-bottom: 1px solid var(--color-line);
-  font: 400 14px/1.4 var(--font-mono);
-  color: var(--color-bone-dim);
+  border-bottom: 1px solid var(--ledger);
+  font: 400 0.875rem/1.4 var(--font-mono);
+  color: var(--fg);
+}
+.sk-na-list li:last-child {
+  border-bottom: 0;
 }
 .sk-na-list .sk-more {
-  color: var(--color-bone-faint);
+  color: var(--fg-2);
 }
 
 /* ---------- frame ---------- */
@@ -417,40 +424,40 @@
   min-height: 112px;
   margin: 0 -1px -1px 0;
   padding: 14px;
-  border: 1px solid var(--color-line);
+  border: 1px solid var(--ledger);
 }
 .sk-et {
-  font: 500 16px/1.25 var(--font-sans);
-  color: var(--color-bone-dim);
+  font: 600 1rem/1.25 var(--font-sans);
+  color: var(--fg-2);
 }
 .sk-ef {
   margin-top: auto;
-  font: 500 12px/1 var(--font-mono);
-  color: var(--color-bone);
+  font: 500 0.75rem/1 var(--font-mono);
+  color: var(--fg);
 }
 .sk-ew {
-  font: 400 12px/1.35 var(--font-mono);
-  color: var(--color-bone-dim);
+  font: 400 0.75rem/1.35 var(--font-mono);
+  color: var(--fg-2);
   overflow-wrap: anywhere;
 }
 .sk-ok {
+  width: 14px;
+  height: 14px;
   margin-top: auto;
-  font: 400 13px/1 var(--font-mono);
-  color: var(--color-bone-faint);
+  color: var(--fg-3);
 }
+/* A flagged entry is told apart by luminance and line, never by hue: a
+   finding has a solid Bone edge, a blank a dashed one. */
 .sk-ent-grid li.sk-flag {
   z-index: 1;
-  border-color: var(--color-bone);
+  outline: 2px solid var(--fg);
+  outline-offset: -1px;
 }
 .sk-ent-grid li.sk-flag .sk-et {
-  color: var(--color-bone);
+  color: var(--fg);
 }
 .sk-ent-grid li.sk-flag-blank {
-  background: repeating-linear-gradient(
-    135deg,
-    transparent 0 6px,
-    color-mix(in srgb, var(--color-bone) 8%, transparent) 6px 8px
-  );
+  outline-style: dashed;
 }
 
 .sk-pair-row {
@@ -463,37 +470,41 @@
   flex-direction: column;
   gap: 10px;
   min-height: 120px;
-  padding: 22px 18px;
-  border: 1px solid var(--color-bone);
-  font: 500 20px/1.2 var(--font-sans);
-  color: var(--color-bone);
+  padding: 20px 18px;
+  border: 2px solid var(--fg);
+  font: 600 var(--text-lead) / 1.2 var(--font-sans);
+  color: var(--fg);
+}
+.sk-pt .sk-en {
+  color: var(--fg-2);
 }
 .sk-pl {
   position: relative;
   text-align: center;
-  font: 400 13px/1 var(--font-mono);
-  color: var(--color-bone-dim);
+  font: 400 var(--text-meta) / 1 var(--font-mono);
+  color: var(--fg-2);
 }
 .sk-pl span {
   position: relative;
-  top: -14px;
+  top: -16px;
 }
 .sk-pl i {
   position: absolute;
   left: 0;
   right: 0;
   top: 50%;
-  height: 1px;
-  background: var(--color-bone);
+  height: 2px;
+  margin-top: -1px;
+  background: var(--fg);
 }
 .sk-pl i::before,
 .sk-pl i::after {
   content: "";
   position: absolute;
   top: -4px;
-  width: 9px;
-  height: 9px;
-  background: var(--color-bone);
+  width: 10px;
+  height: 10px;
+  background: var(--fg);
 }
 .sk-pl i::before {
   left: 0;
@@ -503,8 +514,8 @@
 }
 .sk-pair-cap {
   margin-top: 24px;
-  font: 400 14px/1.4 var(--font-mono);
-  color: var(--color-bone-dim);
+  font: 400 0.875rem/1.4 var(--font-mono);
+  color: var(--fg-2);
 }
 
 .sk-sec-list {
@@ -516,30 +527,25 @@
   gap: 14px;
   align-items: baseline;
   padding: 14px 0;
-  border-bottom: 1px solid var(--color-line);
+  border-bottom: 1px solid var(--ledger);
 }
 .sk-sec-list li:last-child {
   border-bottom: 0;
 }
 .sk-sk {
-  font: 500 16px/1.3 var(--font-sans);
-  color: var(--color-bone);
+  font: 600 1rem/1.3 var(--font-sans);
+  color: var(--fg);
 }
 .sk-sv {
-  font: 400 14px/1.4 var(--font-mono);
-  color: var(--color-bone-dim);
+  font: 400 0.875rem/1.4 var(--font-mono);
+  color: var(--fg-2);
 }
 .sk-sec-list li.sk-blank .sk-sv {
   justify-self: start;
   padding: 2px 8px;
-  border: 1px solid var(--color-bone);
-  font-size: 12px;
-  color: var(--color-bone);
-  background: repeating-linear-gradient(
-    135deg,
-    transparent 0 6px,
-    color-mix(in srgb, var(--color-bone) 8%, transparent) 6px 8px
-  );
+  border: 2px dashed var(--fg);
+  font-size: 0.75rem;
+  color: var(--fg);
 }
 .sk-sec-to {
   display: flex;
@@ -547,26 +553,26 @@
   gap: 6px 14px;
   align-items: baseline;
   padding: 16px 18px;
-  border-top: 1px solid var(--color-line);
-  font: 400 14px/1.5 var(--font-mono);
-  color: var(--color-bone-dim);
+  border-top: 1px solid var(--ledger);
+  font: 400 0.875rem/1.5 var(--font-mono);
+  color: var(--fg-2);
 }
 .sk-sec-out {
   margin-left: auto;
-  color: var(--color-bone);
+  color: var(--fg);
 }
 
 /* ---------- the specimen (every other skill's hero figure) ---------- */
 .sk-spec-table {
   padding: 6px 18px 18px;
-  font: 400 13px/1.5 var(--font-mono);
+  font: 400 var(--text-meta) / 1.5 var(--font-mono);
 }
 .sk-spec-row {
   display: grid;
   column-gap: 20px;
   padding: 10px 0;
-  border-top: 1px solid var(--color-line);
-  color: var(--color-bone-dim);
+  border-top: 1px solid var(--ledger);
+  color: var(--fg-2);
 }
 .sk-spec-row > span {
   min-width: 0;
@@ -574,113 +580,88 @@
 }
 .sk-spec-head {
   border-top: 0;
-  border-bottom: 1px solid var(--color-line-strong);
-  font-size: 12px;
-  color: var(--color-bone-faint);
+  font-size: 0.75rem;
+  color: var(--fg-3);
 }
-/* The one flagged row, in signal white, with a bar. Luminance, not hue. */
+/* The one flagged row: Bone type inside a Bone edge, and its flag as a filled
+   Bone tag. Luminance, not hue. The row after it needs no line of its own. */
 .sk-spec-row.sk-spec-flagged {
-  margin: 0 -18px;
-  padding: 10px 18px;
-  color: var(--color-signal);
-  background: var(--color-ink-raised-2);
-  box-shadow: inset 2px 0 0 var(--color-signal);
+  margin: 0 -10px;
+  padding: 10px 8px 12px;
+  border: 2px solid var(--fg);
+  color: var(--fg);
+}
+.sk-spec-flagged + .sk-spec-row {
+  border-top-color: transparent;
 }
 .sk-spec-flag {
   grid-column: 1 / -1;
   justify-self: start;
-  margin-top: 6px;
-  padding: 0 8px;
-  border: 1px solid var(--color-line-strong);
-  font-size: 12px;
-  color: var(--color-signal);
+  margin-top: 8px;
+  padding: 1px 8px;
+  background: var(--fg);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--on-fg);
 }
 
 /* ---------- moments ---------- */
-.sk-moments {
-  padding: 112px 0 96px;
-}
 .sk-mo-grid {
   display: grid;
-  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-  gap: 72px;
-}
-.sk-rule {
-  display: block;
-  width: 48px;
-  height: 1px;
-  margin-bottom: 24px;
-  background: var(--color-bone);
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 52px;
 }
 .sk-mo-list {
-  border-top: 1px solid var(--color-line);
+  border-top: 2px solid var(--rule);
+  border-bottom: 2px solid var(--rule);
 }
 .sk-mo-list li {
   display: flex;
-  gap: 28px;
-  padding: 26px 0;
-  border-bottom: 1px solid var(--color-line);
-  font-size: clamp(19px, 1.7vw, 24px);
-  line-height: 1.35;
-  color: var(--color-bone);
+  gap: 24px;
+  align-items: baseline;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--ledger);
+  font: 600 var(--text-lead) / 1.4 var(--font-sans);
+  color: var(--fg);
+}
+.sk-mo-list li:last-child {
+  border-bottom: 0;
 }
 .sk-mo-n {
-  font: 400 13px/2 var(--font-mono);
-  color: var(--color-bone-faint);
+  flex: none;
+  font: 400 var(--text-meta) / 1 var(--font-mono);
+  color: var(--fg-2);
 }
+/* The sibling it is not, and the way to the spec. */
 .sk-notfor {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
-  margin-top: 72px;
+  gap: 4px 32px;
+  margin-top: 56px;
 }
 .sk-notfor p {
-  font-size: 17px;
-  color: var(--color-bone-dim);
+  font-size: var(--text-body);
+  color: var(--fg-2);
 }
-/* The compact install line: the command, its copy button, a link to the full
-   install section. Colour and border only on hover. */
+/* The way in: the command field, then the link to every other way. */
 .sk-install {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 16px;
-  margin-top: 32px;
-  padding: 8px 8px 8px 16px;
-  border: 1px solid var(--color-line);
-  background: var(--color-ink-raised);
+  gap: 8px 32px;
+  margin-top: 24px;
 }
-.sk-install code {
-  flex: 1 1 18rem;
-  min-width: 0;
-  font: 400 14px/1.5 var(--font-mono);
-  color: var(--color-command);
-  overflow-wrap: anywhere;
-}
-.sk-install code span {
-  color: var(--color-bone-faint);
-}
-.sk-install-more {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 44px;
-  font: 400 13px/1 var(--font-mono);
-  color: var(--color-bone-dim);
-  text-decoration: none;
-  transition: color var(--transition-duration-quick) var(--ease-entrance);
-}
-.sk-install-more:hover {
-  color: var(--color-signal);
+.sk-install .cmd-field {
+  flex: 0 1 38rem;
 }
 
 /* ---------- the share of the readiness map ---------- */
 .sk-own-grid {
   display: grid;
-  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-  gap: 88px;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 52px;
   align-items: start;
 }
 .sk-own-grid > * {
@@ -689,47 +670,59 @@
 .sk-own-n {
   display: flex;
   align-items: baseline;
-  gap: 6px;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
 }
 .sk-own-n b {
-  font: 400 clamp(80px, 9vw, 140px) / 0.9 var(--font-display);
-  color: var(--color-bone);
+  font-weight: 500;
+  font-size: var(--text-title);
+  line-height: 0.9;
+  color: var(--fg);
 }
 .sk-own-n span[aria-hidden] {
-  font: 400 clamp(28px, 2.6vw, 40px) / 1 var(--font-display);
-  color: var(--color-bone-faint);
+  font-size: var(--text-h3);
+  line-height: 1;
+  color: var(--fg-2);
 }
 .sk-own-cap {
-  margin: 14px 0 28px;
-  font: 400 13px/1.4 var(--font-mono);
-  color: var(--color-bone-faint);
+  max-width: 24rem;
+  margin: 16px 0 20px;
+  font-size: var(--text-lead);
+  line-height: var(--text-lead--line-height);
+  color: var(--fg-2);
 }
 .sk-own-rows {
-  border-top: 1px solid var(--color-line);
+  border-top: 2px solid var(--rule);
+  border-bottom: 2px solid var(--rule);
 }
 .sk-own-rows li {
-  border-bottom: 1px solid var(--color-line);
+  border-bottom: 1px solid var(--ledger);
+}
+.sk-own-rows li:last-child {
+  border-bottom: 0;
 }
 .sk-own-rows a {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
   gap: 16px;
-  min-height: 48px;
+  min-height: 52px;
   padding: 14px 0;
   text-decoration: none;
 }
 .sk-or-id {
-  font: 500 16px/1.3 var(--font-mono);
-  color: var(--color-bone);
-  transition: color var(--transition-duration-quick) var(--ease-entrance);
+  font: 500 1rem/1.3 var(--font-mono);
+  color: var(--fg);
+  text-underline-offset: 5px;
+  text-decoration-thickness: 2px;
 }
 .sk-own-rows a:hover .sk-or-id {
-  color: var(--color-signal);
+  text-decoration-line: underline;
 }
 .sk-or-when {
-  font: 400 13px/1.3 var(--font-mono);
-  color: var(--color-bone-faint);
+  font: 400 var(--text-meta) / 1.3 var(--font-mono);
+  color: var(--fg-2);
   text-align: right;
 }
 /* production-audit's rows are too many to list: the map, its cells lit. One
@@ -741,6 +734,10 @@
   justify-content: start;
   gap: 22px;
 }
+/* A concern that is not this skill's: an outline that still shows on Ink. */
+.sk-map .c-off {
+  border-color: var(--fg-3);
+}
 .sk-map .cells {
   display: grid;
   grid-template-columns: repeat(4, var(--cs));
@@ -749,31 +746,224 @@
 }
 
 /* ---------- How it works (production-audit) ---------- */
-.sk-method {
-  padding: 112px 0 120px;
+.sk-me-phases {
+  margin-top: 40px;
+  border-top: 2px solid var(--rule);
+  border-bottom: 2px solid var(--rule);
+}
+.sk-me-phases li {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 8px 32px;
+  padding: 24px 0 26px;
+  border-bottom: 1px solid var(--ledger);
+}
+.sk-me-phases li:last-child {
+  border-bottom: 0;
+}
+.sk-me-n {
+  font: 500 var(--text-h3) / var(--text-h3--line-height) var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--fg-2);
+}
+.sk-me-p {
+  max-width: 36rem;
+  margin-top: 8px;
+  color: var(--fg-2);
+}
+.sk-me-h {
+  margin-top: 72px;
+}
+/* The dimensions and the principles: ruled items in three columns, not
+   boxes. Each sits under its own rule. */
+.sk-me-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0 52px;
+  margin-top: 24px;
+}
+.sk-me-grid > div {
+  padding: 18px 0 30px;
+  border-top: 2px solid var(--rule);
+}
+.sk-me-grid h4 {
+  font: 600 var(--text-body) / 1.3 var(--font-sans);
+  color: var(--fg);
+}
+.sk-me-grid p {
+  margin-top: 8px;
+  font-size: var(--text-small);
+  line-height: var(--text-small--line-height);
+  color: var(--fg-2);
+}
+.sk-me-note {
+  max-width: 36rem;
+  margin-top: 8px;
+  color: var(--fg-2);
+}
+.sk-me-after {
+  margin-top: 20px;
+}
+/* The ways to run it: an Ink well, each command behind the amber unit bar. */
+.sk-runs {
+  --ledger: var(--color-slate);
+  max-width: 46rem;
+  margin-top: 24px;
+  border: 2px solid var(--fg);
+  background: var(--field);
+}
+.sk-runs li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 14px;
+  min-height: 54px;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--ledger);
+}
+.sk-runs li:last-child {
+  border-bottom: 0;
+}
+.sk-runs svg {
+  flex: none;
+  width: 26px;
+  height: auto;
+}
+.sk-runs code {
+  font: 500 1rem/1.4 var(--font-mono);
+  color: var(--color-bone);
+  overflow-wrap: anywhere;
+}
+.sk-runs span {
+  margin-left: auto;
+  font: 400 var(--text-meta) / 1.4 var(--font-mono);
+  color: var(--color-mist);
 }
 
 /* ---------- the SKILL.md panel ---------- */
+/* On Ink. The shared .doc-prose look belongs to the docs pages; a skill's
+   spec is set in the instrument's own type here, under two classes so these
+   rules outrank it. */
 .sk-md-wrap {
-  padding-top: 24px;
-  padding-bottom: 120px;
+  padding-top: 40px;
+  padding-bottom: var(--section-y);
 }
 .sk-md-src {
-  margin-bottom: 32px;
-  font: 400 12px/1 var(--font-mono);
-  color: var(--color-bone-faint);
+  margin-bottom: 28px;
+  font: 400 var(--text-meta) / 1.4 var(--font-mono);
+  color: var(--fg-3);
 }
-.sk-md {
-  max-width: 68ch;
-  font-size: 1.0625rem;
+.sk-page .sk-md {
+  max-width: 44rem;
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  color: var(--fg-2);
 }
-/* A link into a heading of the spec lands below the sticky header. */
-.sk-md :is(h2, h3, h4, h5, h6) {
-  scroll-margin-top: 112px;
+/* A link into a heading of the spec lands below the pinned header. */
+.sk-page .sk-md :is(h2, h3, h4, h5, h6) {
+  scroll-margin-top: calc(var(--header-h) + 16px);
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: var(--tracking-head);
+  color: var(--fg);
+}
+.sk-page .sk-md h2 {
+  margin: 0 0 1rem;
+  padding: 0;
+  border: 0;
+  font-size: var(--text-statement);
+  font-weight: 900;
+  line-height: var(--text-statement--line-height);
+  letter-spacing: var(--tracking-display);
+}
+.sk-page .sk-md h3 {
+  margin: 3rem 0 0.75rem;
+  padding: 1.125rem 0 0;
+  border-top: 2px solid var(--rule);
+  font-size: var(--text-h3);
+  line-height: var(--text-h3--line-height);
+}
+.sk-page .sk-md h4 {
+  margin: 2rem 0 0.5rem;
+  font-size: var(--text-lead);
+  line-height: 1.3;
+}
+.sk-page .sk-md :is(h5, h6) {
+  margin: 1.5rem 0 0.4rem;
+  font-size: var(--text-body);
+  font-weight: 600;
+  letter-spacing: 0;
+}
+.sk-page .sk-md :is(p, li) {
+  line-height: 1.6;
+  color: var(--fg-2);
+}
+.sk-page .sk-md p {
+  margin: 0.75rem 0;
+}
+.sk-page .sk-md strong {
+  font-weight: 600;
+  color: var(--fg);
+}
+.sk-page .sk-md a {
+  color: var(--fg);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 4px;
+}
+.sk-page .sk-md a:hover {
+  text-decoration-thickness: 3px;
+}
+/* A code span is Bone mono in the line, with no box: a spec is full of them. */
+.sk-page .sk-md code {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 0.9em;
+  font-weight: 500;
+  color: var(--fg);
+}
+.sk-page .sk-md pre {
+  margin: 1.25rem 0;
+  padding: 16px 18px;
+  border: 2px solid var(--rule);
+  background: var(--color-ink);
+  font-size: var(--text-meta);
+  line-height: 1.55;
+}
+.sk-page .sk-md pre code {
+  font-size: inherit;
+  font-weight: 400;
+}
+.sk-page .sk-md blockquote {
+  margin: 1.25rem 0;
+  padding: 4px 18px;
+  border: 2px solid var(--rule);
+  font-style: normal;
+  color: var(--fg-2);
+}
+.sk-page .sk-md table {
+  margin: 1.25rem 0;
+  font-size: var(--text-small);
+}
+.sk-page .sk-md :is(th, td) {
+  padding: 8px 12px;
+  border: 1px solid var(--ledger);
+  vertical-align: top;
+}
+.sk-page .sk-md th {
+  border-bottom-width: 2px;
+  background: none;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  color: var(--fg);
+}
+.sk-page .sk-md hr {
+  margin: 2.5rem 0;
+  border-top: 2px solid var(--rule);
 }
 
-/* ---------- tablet and phone ---------- */
-@media (max-width: 900px) {
+/* ---------- two columns stack under the split (1100) ---------- */
+@media (width < 68.75rem) {
   /* Lead, figure, tabs: the tablist is the last thing before the panels, so a
      tab change is seen where the tabs are. */
   .sk-hero-grid {
@@ -783,7 +973,7 @@
       "lead"
       "fig"
       "tabs";
-    row-gap: 40px;
+    row-gap: 44px;
   }
   .sk-hero-solo {
     grid-template-areas:
@@ -792,9 +982,10 @@
   }
   .sk-hero-fig {
     align-self: start;
+    max-width: 44rem;
   }
-  .sk-hero {
-    padding-bottom: 32px;
+  .js .sk-hero-fig {
+    margin-bottom: 0;
   }
   .sk-tabs {
     margin-top: 0;
@@ -808,73 +999,58 @@
   .sk-hl:not(.sk-hl-flip) .sk-hl-fig {
     order: 0;
   }
-  .sk-cols-2,
+  .sk-hl-fig {
+    max-width: 44rem;
+  }
   .sk-cols-3 {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 40px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .sk-me-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
-@media (max-width: 600px) {
-  .sk-wrap {
-    padding: 0 16px;
-  }
-  .sk-band {
-    padding: 88px 0;
-  }
-  .sk-plain {
-    padding: 72px 0;
-  }
-  .sk-moments {
-    padding: 88px 0 72px;
-  }
-  .sk-method {
-    padding: 88px 0 96px;
-  }
+@media (width < 40rem) {
   .sk-hero {
-    padding: 24px 0 32px;
+    padding-top: 20px;
   }
   .sk-hero-grid {
-    row-gap: 48px;
+    row-gap: 36px;
   }
   .sk-crumb {
-    margin-bottom: 18px;
+    margin-bottom: 12px;
   }
-  .sk-headline {
-    font-size: 38px;
+  .sk-cmd {
+    margin-bottom: 16px;
   }
-  .sk-d-md {
-    font-size: 32px;
+  .sk-cmd svg {
+    width: 26px;
   }
-  .sk-d-sm {
-    font-size: 28px;
+  .sk-lede {
+    margin-top: 18px;
   }
   .sk-tabs button {
     flex: 1;
     padding: 0 8px;
   }
   .sk-hl-grid {
-    gap: 36px;
+    gap: 32px;
   }
-  .sk-hl-line {
-    font-size: 17px;
-  }
-  .sk-btn {
-    width: 100%;
-    justify-content: space-between;
+  .sk-cols-2,
+  .sk-cols-3 {
+    grid-template-columns: minmax(0, 1fr);
   }
   .sk-notfor {
-    margin-top: 48px;
+    margin-top: 40px;
+  }
+  .sk-install .cmd-field {
+    flex-basis: 100%;
   }
   .sk-mo-list li {
     gap: 16px;
-    padding: 20px 0;
-    font-size: 19px;
-  }
-  .sk-md {
-    font-size: 1rem;
+    padding: 18px 0;
   }
   .sk-md-wrap {
-    padding-bottom: 96px;
+    padding-top: 28px;
   }
 
   .sk-trio-list {
@@ -885,19 +1061,16 @@
     flex-wrap: nowrap;
     align-items: flex-start;
     gap: 6px;
-    padding: 16px;
+    padding: 14px 16px;
   }
   .sk-trio-list li strong {
-    font-size: 15px;
+    font-size: 1rem;
   }
   .sk-trio-list .sk-trio-on strong {
-    font-size: 24px;
+    font-size: 1.875rem;
   }
   .sk-nums {
     gap: 16px 28px;
-  }
-  .sk-nums b {
-    font-size: 64px;
   }
   .sk-bars li {
     grid-template-columns: minmax(0, 1fr) auto;
@@ -914,19 +1087,13 @@
     grid-row: 1;
     grid-column: 2;
   }
-  .sk-bl {
-    font-size: 12px;
-  }
   .sk-na-top {
     gap: 18px;
   }
-  .sk-na-top b {
-    font-size: 80px;
-  }
   .sk-states li {
     min-height: 56px;
-    padding: 14px 16px;
-    font-size: 15px;
+    padding: 12px 16px;
+    font-size: 0.9375rem;
   }
 
   .sk-ent-grid {
@@ -971,8 +1138,9 @@
     right: auto;
     top: 0;
     bottom: 0;
-    width: 1px;
+    width: 2px;
     height: auto;
+    margin: 0 0 0 -1px;
   }
   .sk-pl i::before {
     left: -4px;
@@ -1012,12 +1180,12 @@
     display: block;
   }
   .sk-spec-row > span[role="cell"]:first-child {
-    font: 500 15px/1.35 var(--font-sans);
-    color: var(--color-bone);
+    font: 600 0.9375rem/1.35 var(--font-sans);
+    color: var(--fg);
   }
   .sk-spec-row > span[role="cell"]:not(:first-child, .sk-spec-flag)::before {
     content: attr(data-label) ": ";
-    color: var(--color-bone-faint);
+    color: var(--fg-3);
   }
   .sk-spec-flag {
     display: inline-block;
@@ -1035,5 +1203,26 @@
     --cs: 13px;
     grid-template-columns: repeat(4, auto);
     gap: 16px 20px;
+  }
+  .sk-me-phases li {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 20px 0 22px;
+  }
+  .sk-me-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .sk-me-h {
+    margin-top: 56px;
+  }
+  .sk-runs span {
+    flex-basis: 100%;
+    margin-left: 40px;
+  }
+}
+/* The narrowest phones: four clusters of the map still fit the column. */
+@media (width < 23rem) {
+  .sk-map {
+    --cs: 11px;
+    gap: 14px 16px;
   }
 }

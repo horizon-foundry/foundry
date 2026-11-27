@@ -19,7 +19,7 @@ export function SubmitButton({
       type="submit"
       disabled={pending}
       aria-busy={pending}
-      className="press min-h-11 w-full border border-line-strong bg-bone px-3 py-2.5 font-mono text-sm font-semibold uppercase tracking-wide text-ink transition-opacity hover:opacity-90 disabled:cursor-progress disabled:opacity-60"
+      className="btn ul-submit"
     >
       {pending ? pendingLabel : label}
     </button>

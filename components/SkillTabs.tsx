@@ -25,7 +25,9 @@ import { flushSync } from "react-dom";
 // collapsed), on load and on hashchange; a hash into the sell (#method)
 // selects the sell, and so does an emptied hash (browser Back).
 //
-// The tablist is its own grid child of the hero. Wide, it sits under `lead` in
+// The hero is Slate and the panels are Ink. The tablist is its own grid child
+// of the hero and sits on its foot, so the selected tab (an Ink box) runs into
+// the panel it opens. Wide, it sits under `lead` in
 // the left column beside `figure`. Narrow, the order is lead, figure, tabs, so
 // the tablist is the last thing before the panels and a tab change happens
 // where the tabs are, not off screen below a figure (app/styles/skill.css).
@@ -170,8 +172,8 @@ export function SkillTabs({
 
   return (
     <>
-      <section className="sk-hero" aria-labelledby="sk-h">
-        <div className={`sk-wrap sk-hero-grid${figure ? "" : " sk-hero-solo"}`}>
+      <section className="sk-hero" data-ground="slate" aria-labelledby="sk-h">
+        <div className={`wrap sk-hero-grid${figure ? "" : " sk-hero-solo"}`}>
           <div className="sk-hero-lead">{lead}</div>
           <div
             ref={listRef}

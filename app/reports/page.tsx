@@ -15,25 +15,36 @@ const VERDICT_TEXT: Record<VerdictLevel, string> = {
   "ship-with-known-risks": "text-verdict-risk",
   "do-not-ship": "text-verdict-noship",
 };
+// The cell beside a verdict, filled with the same hue.
+const VERDICT_FILL: Record<VerdictLevel, string> = {
+  "safe-to-ship": "bg-verdict-safe",
+  "ship-with-known-risks": "bg-verdict-risk",
+  "do-not-ship": "bg-verdict-noship",
+};
+
+// A verdict named in its hue: the cell, then the words. On Ink only.
+function Verdict({ level }: { level: VerdictLevel }) {
+  return (
+    <span className={`rp-sev ${VERDICT_TEXT[level]}`}>
+      <i className={`c ${VERDICT_FILL[level]}`} aria-hidden="true" />
+      {VERDICT_LABEL[level]}
+    </span>
+  );
+}
 
 // One owned report: links to the gated detail (/reports/[slug]).
 function OwnedRow({ r }: { r: ReportSummary }) {
   return (
     <li>
-      <Link
-        href={`/reports/${r.slug}`}
-        className="group grid gap-3 py-5 transition-colors hover:bg-ink-raised sm:grid-cols-[1fr_auto] sm:items-center"
-      >
-        <div className="min-w-0">
-          <h2 className="break-words font-mono text-lg font-semibold tracking-tight text-bone">
-            {r.project}
-          </h2>
-          <p className="mt-0.5 font-mono text-xs uppercase tracking-wide text-bone-faint">
-            {r.date}
-          </p>
+      <Link href={`/reports/${r.slug}`} className="rps-row rps-owned">
+        <div>
+          <div className="rps-name">
+            <h2>{r.project}</h2>
+          </div>
+          <p className="rps-facts">{r.date}</p>
         </div>
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-          <div className="flex items-center gap-2 font-mono text-xs tabular-nums">
+        <div className="rps-state">
+          <div className="rps-counts">
             <span className="text-critical">{r.bySeverity.critical}C</span>
             <span className="text-high">{r.bySeverity.high}H</span>
             <span className="text-medium">{r.bySeverity.medium}M</span>
@@ -42,17 +53,7 @@ function OwnedRow({ r }: { r: ReportSummary }) {
               {r.bySeverity.informational}i
             </span>
           </div>
-          <span
-            className={`font-mono text-xs uppercase tracking-wide ${VERDICT_TEXT[r.verdictLevel]}`}
-          >
-            {VERDICT_LABEL[r.verdictLevel]}
-          </span>
-          <span
-            className="font-mono text-bone-faint transition-transform group-hover:translate-x-0.5"
-            aria-hidden="true"
-          >
-            →
-          </span>
+          <Verdict level={r.verdictLevel} />
         </div>
       </Link>
     </li>
@@ -76,41 +77,24 @@ function ExampleCard({
   const isSelfAudit = r.slug.startsWith("foundry-");
   return (
     <li>
-      <Link
-        href={`/example/${r.slug}`}
-        className="group block p-5 transition-colors hover:bg-ink sm:p-6"
-      >
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-          <Title className="font-mono text-lg font-semibold text-bone">
-            {r.project}
-          </Title>
-          <span className="border border-line px-2 py-0.5 font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
+      <Link href={`/example/${r.slug}`} className="rps-row">
+        <div className="rps-name">
+          <Title>{r.project}</Title>
+          <span className="label">
             {isSelfAudit ? "Our own audit" : "Illustrative sample"}
           </span>
-          <span
-            className={`ml-auto font-mono text-xs uppercase tracking-wide ${VERDICT_TEXT[r.verdictLevel]}`}
-          >
-            {VERDICT_LABEL[r.verdictLevel]}
-          </span>
         </div>
-        <p className="mt-3 font-mono text-[0.7rem] uppercase tracking-wide text-bone-faint">
+        <Verdict level={r.verdictLevel} />
+        <p className="rps-facts">
           {risks} {risks === 1 ? "risk" : "risks"} · {improvements} improvements
-          · audited {r.date}
+          · audited <span className="whitespace-nowrap">{r.date}</span>
         </p>
-        <p className="mt-3 max-w-measure text-sm leading-relaxed text-bone-dim">
+        <p className="rps-what">
           {isSelfAudit
-            ? <>Foundry ran <span className="font-mono text-command">/production-audit</span> against its own code, and the repository is public so you can check the report against the source.</>
+            ? <>Foundry ran <span className="cmd">/production-audit</span> against its own code, and the repository is public so you can check the report against the source.</>
             : "A fictional booking app audited in full, to show the method on a payments-and-concurrency product the self-audit's own surface cannot exercise."}
         </p>
-        <span className="mt-4 inline-flex items-center font-mono text-xs uppercase tracking-wide text-bone-dim transition-colors group-hover:text-bone">
-          Read the report{" "}
-          <span
-            className="ml-1 transition-transform group-hover:translate-x-0.5"
-            aria-hidden="true"
-          >
-            →
-          </span>
-        </span>
+        <span className="rp-link rps-go">Read the report</span>
       </Link>
     </li>
   );
@@ -125,76 +109,89 @@ export default async function ReportsIndex() {
   const owned = email ? listReportsFor({ email, admin }) : [];
   const examples = listPublicReports();
 
+  const examplesLead = (
+    <p className="t-lead">
+      Public examples, rendered by the same template every audit uses:
+      Foundry&apos;s own audit of this repository, and an illustrative sample
+      of a traditional SaaS product. Each ends in a scope-qualified verdict,
+      with risks separated from improvements.
+    </p>
+  );
+
+  // The page opens on Slate with its one h1: the report history when signed
+  // in, the examples when signed out. The lists are on Ink, where a severity
+  // or a verdict hue is legible as type.
   return (
-    <div className="space-y-14">
-      {email && (
-        <section>
-          <h1 className="font-display text-3xl tracking-normal text-bone [overflow-wrap:anywhere] sm:text-4xl">
-            {admin ? "Audit reports" : "Your audit reports"}
-          </h1>
-          {owned.length === 0 ? (
-            <p className="mt-4 max-w-measure text-sm leading-relaxed text-bone-dim">
-              No reports are associated with {email} yet. Run{" "}
-              <span className="font-mono text-command">/production-audit</span>{" "}
-              on your project; published reports stamped with your email appear
-              here.
-            </p>
+    <>
+      <section className="rps-head" data-ground="slate">
+        <div className="wrap">
+          {email ? (
+            <h1 className="d-title">
+              {admin ? "Audit reports" : "Your audit reports"}
+            </h1>
           ) : (
-            <ul className="mt-8 divide-y divide-line border-y border-line">
-              {owned.map((r) => (
-                <OwnedRow key={r.slug} r={r} />
-              ))}
-            </ul>
+            <>
+              <h1 className="d-title">What a Production Audit returns</h1>
+              {examplesLead}
+            </>
           )}
+        </div>
+      </section>
+
+      {email && (
+        <section className="rps-sec">
+          <div className="wrap">
+            {owned.length === 0 ? (
+              <p className="rps-empty">
+                No reports are associated with {email} yet. Run{" "}
+                <span className="cmd">/production-audit</span> on your project;
+                published reports stamped with your email appear here.
+              </p>
+            ) : (
+              <ul className="rps-list">
+                {owned.map((r) => (
+                  <OwnedRow key={r.slug} r={r} />
+                ))}
+              </ul>
+            )}
+          </div>
         </section>
       )}
 
-      <section>
-        {/* Signed out, this is the page's only title, so it is the h1;
-            signed in, the report history above owns the h1. */}
-        {email ? (
-          <h2 className="font-display text-3xl tracking-normal text-bone sm:text-4xl">
-            Example reports
-          </h2>
-        ) : (
-          <h1 className="font-display text-3xl tracking-normal text-bone [overflow-wrap:anywhere] sm:text-4xl">
-            What a Production Audit returns
-          </h1>
-        )}
-        <p className="mt-3 max-w-measure text-sm leading-relaxed text-bone-dim">
-          Public examples, rendered by the same template every audit uses:
-          Foundry&apos;s own audit of this repository, and an illustrative sample
-          of a traditional SaaS product. Each ends in a scope-qualified verdict,
-          with risks separated from improvements.
-        </p>
-        <ul className="mt-8 divide-y divide-line border border-line bg-ink-raised">
-          {examples.map((r) => (
-            <ExampleCard key={r.slug} r={r} titleAs={email ? "h3" : "h2"} />
-          ))}
-        </ul>
-      </section>
+      <section className="rps-sec">
+        <div className="wrap">
+          {/* Signed out, the examples are the page and the h1 above names
+              them; signed in, the report history owns the h1 and this is its
+              second section. */}
+          {email && (
+            <>
+              <h2 className="d-h2">Example reports</h2>
+              {examplesLead}
+            </>
+          )}
+          <ul className="rps-list">
+            {examples.map((r) => (
+              <ExampleCard key={r.slug} r={r} titleAs={email ? "h3" : "h2"} />
+            ))}
+          </ul>
 
-      {!email && (
-        <div className="flex flex-col gap-3 border-t border-line pt-6 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="font-mono text-sm font-semibold text-bone">
-              Your own reports
-            </p>
-            <p className="mt-1 max-w-measure text-sm leading-relaxed text-bone-dim">
-              Published audits are private to their owner. Run{" "}
-              <span className="font-mono text-command">/production-audit</span>{" "}
-              on your project, then sign in to see any reports that belong to
-              you.
-            </p>
-          </div>
-          <Link
-            href="/unlock"
-            className="inline-flex min-h-11 shrink-0 items-center justify-center border border-line-strong bg-bone px-4 py-2 font-mono text-sm font-semibold text-ink transition-opacity hover:opacity-90"
-          >
-            Sign in
-          </Link>
+          {!email && (
+            <div className="rps-own">
+              <div>
+                <p className="rp-h">Your own reports</p>
+                <p>
+                  Published audits are private to their owner. Run{" "}
+                  <span className="cmd">/production-audit</span> on your
+                  project, then sign in to see any reports that belong to you.
+                </p>
+              </div>
+              <Link href="/unlock" className="btn">
+                Sign in
+              </Link>
+            </div>
+          )}
         </div>
-      )}
-    </div>
+      </section>
+    </>
   );
 }

@@ -60,31 +60,22 @@ export function ReportScorecard({
 
   return (
     <>
-      {/* overflow-wrap: normal opts out of ReportView's inherited break-words:
-          every label here is a fixed short token, and splitting one ("MEDIU/M"
-          at 320) is worse than its sub-pixel overhang. */}
-      <div className="grid grid-cols-5 divide-x divide-line border border-line [overflow-wrap:normal]">
+      {/* The grid opts out of the report's inherited break-word: every label
+          here is a fixed short token, and splitting one ("MEDIU/M" at 320) is
+          worse than its sub-pixel overhang. */}
+      <div className="rp-score">
         {ORDER.map((sev) => {
           const n = bySeverity[sev];
-          const clickable = n > 0;
           return (
             <button
               key={sev}
               type="button"
               onClick={() => goSeverity(sev)}
-              aria-disabled={!clickable}
-              className={`px-2 py-3 text-center transition-colors ${
-                clickable
-                  ? "cursor-pointer hover:bg-ink-raised-2"
-                  : "cursor-default"
-              }`}
+              aria-disabled={n === 0}
+              className="rp-score-cell"
             >
-              <div
-                className={`font-mono text-2xl font-semibold tabular-nums ${SEV_TEXT[sev]}`}
-              >
-                {n}
-              </div>
-              <div className="mt-1 font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
+              <span className={`rp-score-n ${SEV_TEXT[sev]}`}>{n}</span>
+              <span className="rp-k">
                 {SEV_SHORT[sev] ? (
                   <>
                     <span aria-hidden="true">{SEV_SHORT[sev]}</span>
@@ -93,25 +84,17 @@ export function ReportScorecard({
                 ) : (
                   sev
                 )}
-              </div>
+              </span>
             </button>
           );
         })}
       </div>
-      <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-1 font-mono text-[0.7rem] uppercase tracking-wide text-bone-faint">
-        <button
-          type="button"
-          onClick={() => goSection("risks")}
-          className="cursor-pointer uppercase transition-colors hover:text-bone-dim"
-        >
+      <div className="rp-tally">
+        <button type="button" onClick={() => goSection("risks")}>
           {riskCount} {riskCount === 1 ? "risk" : "risks"}
         </button>
         {improvementCount > 0 && (
-          <button
-            type="button"
-            onClick={() => goSection("improvements")}
-            className="cursor-pointer uppercase transition-colors hover:text-bone-dim"
-          >
+          <button type="button" onClick={() => goSection("improvements")}>
             {improvementCount} improvements
           </button>
         )}

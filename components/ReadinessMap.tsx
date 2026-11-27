@@ -21,15 +21,15 @@ import type { ReadinessArea, ReadinessRow } from "@/lib/readiness-types";
 // the callers that already read them from the component.
 export type { ReadinessRow, ReadinessArea };
 
-// Backticks in a cell render as inline code. Bone, not amber: amber is the
-// invocable command (DESIGN.md), and a code span in a concern is not one.
+// Backticks in a cell render as inline code: Bone mono, a step heavier than
+// the line it sits in.
 export function Inline({ text }: { text: string }) {
   const parts = text.split(/`([^`]+)`/);
   return (
     <>
       {parts.map((part, i) =>
         i % 2 === 1 ? (
-          <code key={i} className="font-mono text-[0.9em] text-bone">
+          <code key={i} className="rd-code">
             {part}
           </code>
         ) : (
@@ -70,7 +70,7 @@ function Owner({
           /{head}
         </Link>
       ) : (
-        <span className="font-mono text-bone">{head}</span>
+        <span className="rd-code">{head}</span>
       )}
       {tail && <span> · {tail}</span>}
     </span>

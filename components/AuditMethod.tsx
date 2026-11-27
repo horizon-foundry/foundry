@@ -2,8 +2,11 @@
 // the run flags. These lived on the homepage until 2026-10-19, where they
 // made the front page a second production-audit page; the skill's own page is
 // where a reader who wants the method goes looking for it. It sits below the
-// sell, in the skill page's wrap (app/styles/skill.css). Labels are sentence
-// case with no tracking: the one tracked kicker on the site is the hero's.
+// sell as one more band of the skill page (app/styles/skill.css): the phases
+// as a ruled list, the dimensions and the principles as ruled items in three
+// columns, and the ways to run it in an Ink well, each command behind the
+// amber unit bar.
+import { UnitBar } from "@/components/brand/UnitBar";
 
 const DIMENSIONS = [
   {
@@ -89,75 +92,59 @@ const RUNS = [
   ["/production-audit --runtime", "add a live browser pass"],
 ] as const;
 
-export function AuditMethod() {
+export function AuditMethod({ ground }: { ground: "ink" | "slate" }) {
   return (
     <section
       id="method"
       aria-labelledby="method-heading"
       className="sk-band sk-method scroll-mt-24"
+      data-ground={ground}
     >
-      <div className="sk-wrap">
-        <h2 id="method-heading" className="sk-d-md">
+      <div className="wrap">
+        <h2 id="method-heading" className="d-h2">
           How it works
         </h2>
 
-        <ol className="mt-10 border-t border-line">
+        <ol className="sk-me-phases">
           {PHASES.map((p) => (
-            <li
-              key={p.n}
-              className="grid gap-2 border-b border-line py-6 sm:grid-cols-[6rem_minmax(0,1fr)] sm:gap-8"
-            >
-              <span className="font-mono text-3xl tabular-nums text-bone-faint">
-                {p.n}
-              </span>
+            <li key={p.n}>
+              <span className="sk-me-n">{p.n}</span>
               <div>
-                <h3 className="font-mono text-base font-medium text-bone">
-                  {p.t}
-                </h3>
-                <p className="mt-2 max-w-measure leading-relaxed text-bone-dim">
-                  {p.d}
-                </p>
+                <h3 className="sk-h3">{p.t}</h3>
+                <p className="sk-me-p">{p.d}</p>
               </div>
             </li>
           ))}
         </ol>
 
-        <h3 className="mt-16 font-mono text-base font-medium text-bone">
+        <h3 className="sk-h3 sk-me-h">
           Eleven dimensions, resolved per project
         </h3>
-        <div className="mt-5 grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+        <div className="sk-me-grid">
           {DIMENSIONS.map((dim) => (
-            <div key={dim.k} className="bg-ink p-5">
-              <h4 className="font-mono text-sm font-medium text-bone">
-                {dim.k}
-              </h4>
-              <p className="mt-2 text-sm leading-relaxed text-bone-dim">
-                {dim.d}
-              </p>
+            <div key={dim.k}>
+              <h4>{dim.k}</h4>
+              <p>{dim.d}</p>
             </div>
           ))}
         </div>
-        <p className="mt-5 max-w-measure leading-relaxed text-bone-dim">
+        <p className="sk-me-note">
           These six usually apply. Five more resolve per project: operability,
           testing confidence, data and migration safety, release safety, and
           performance. Even these six drop out where there is no surface.
           Anything left out is named with a reason, never quietly skipped.
         </p>
 
-        <h3 className="mt-16 font-mono text-base font-medium text-bone">
-          What makes the findings trustworthy
-        </h3>
-        <div className="mt-5 grid gap-px border border-line bg-line md:grid-cols-2 lg:grid-cols-3">
+        <h3 className="sk-h3 sk-me-h">What makes the findings trustworthy</h3>
+        <div className="sk-me-grid">
           {PRINCIPLES.map((pr) => (
-            <div key={pr.t} className="bg-ink p-5">
-              <h4 className="text-sm font-semibold text-bone">{pr.t}</h4>
-              <p className="mt-2 max-w-measure text-sm leading-relaxed text-bone-dim">
-                {pr.d}
-              </p>
+            <div key={pr.t}>
+              <h4>{pr.t}</h4>
+              <p>{pr.d}</p>
             </div>
           ))}
         </div>
-        <p className="mt-6 max-w-measure leading-relaxed text-bone-dim">
+        <p className="sk-me-note">
           You set the scope, not the bar. Which dimensions apply comes from what
           your product is, and which risks you accept is your call, on the
           record. The severity rubric and the meaning of the verdict are fixed
@@ -165,21 +152,17 @@ export function AuditMethod() {
           comfort this exists to replace.
         </p>
 
-        <h3 className="mt-16 font-mono text-base font-medium text-bone">
-          Ways to run it
-        </h3>
-        <div className="mt-5 max-w-2xl space-y-3 border border-line-strong bg-ink-raised p-5 font-mono text-sm">
+        <h3 className="sk-h3 sk-me-h">Ways to run it</h3>
+        <ul className="sk-runs" role="list">
           {RUNS.map(([cmd, note]) => (
-            <div
-              key={cmd}
-              className="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6"
-            >
-              <span className="text-command [overflow-wrap:anywhere]">{cmd}</span>
-              <span className="text-bone-faint">{note}</span>
-            </div>
+            <li key={cmd}>
+              <UnitBar fill="amber" />
+              <code>{cmd}</code>
+              <span>{note}</span>
+            </li>
           ))}
-        </div>
-        <p className="mt-5 max-w-measure leading-relaxed text-bone-dim">
+        </ul>
+        <p className="sk-me-note sk-me-after">
           The audit is read-only. It never changes your code, and it tells you
           what it did not look at. It reads code and traces flows; it is not a
           penetration test.

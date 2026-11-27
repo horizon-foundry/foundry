@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { AuditReport, Finding, Severity } from "@/lib/report-types";
 import {
   SEVERITY_ORDER,
@@ -51,37 +52,24 @@ function FindingRow({ f }: { f: Finding }) {
     <details
       id={`finding-${f.id}`}
       data-severity={f.severity}
-      className="group/row scroll-mt-24 border-l-2 border-l-transparent open:border-l-line-strong"
+      className="rp-finding"
     >
-      {/* Below sm the id/chip row stacks ABOVE the issue text; sharing one
-          row squeezed the finding text to a ~18ch measure on phones, the
+      {/* Wide, the ID, the severity and the issue are three columns that hold
+          across rows. On a phone the ID and severity sit ABOVE the issue:
+          sharing one row squeezed the finding text to a ~18ch measure, the
           product's core artifact at its worst. */}
-      <summary className="flex cursor-pointer list-none flex-col gap-2 px-4 py-3.5 sm:flex-row sm:items-start sm:gap-4 [&::-webkit-details-marker]:hidden">
-        <span className="flex shrink-0 flex-wrap items-center gap-2.5 sm:pt-0.5">
-          <span
-            className={`font-mono text-xs font-semibold tabular-nums ${SEV_TEXT[f.severity]}`}
-          >
-            {f.id}
-          </span>
-          <SeverityChip severity={f.severity} />
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="block max-w-measure text-sm font-medium leading-snug text-bone">
-            {f.issue}
-          </span>
-          <span className="mt-1 block break-words font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
+      <summary className="rp-toggle">
+        <span className={`rp-fid ${SEV_TEXT[f.severity]}`}>{f.id}</span>
+        <SeverityChip severity={f.severity} />
+        <span className="rp-what">
+          <span className="rp-issue">{f.issue}</span>
+          <span className="rp-where">
             {f.dimension} · {loc(f.location)}
           </span>
         </span>
-        <span
-          className="hidden shrink-0 pt-0.5 font-mono text-bone-faint transition-transform group-open/row:rotate-90 sm:block"
-          aria-hidden="true"
-        >
-          ›
-        </span>
       </summary>
 
-      <div className="space-y-4 border-t border-line px-4 py-4 text-sm">
+      <div className="rp-detail">
         <Field label="Impact">{f.impact}</Field>
         <Field label="Evidence" mono>
           {f.evidence}
@@ -96,18 +84,16 @@ function FindingRow({ f }: { f: Finding }) {
             {f.instances.map((i) => loc(i)).join("  ·  ")}
           </Field>
         )}
-        <div className="flex flex-wrap gap-x-6 gap-y-2 border-t border-line pt-3 font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
-          <span>Confidence: {CONFIDENCE_LABEL[f.confidence]}</span>
-          <span>
+        <div className="rp-conf">
+          <span className="rp-k">Confidence: {CONFIDENCE_LABEL[f.confidence]}</span>
+          <span className="rp-k">
             {VERIFY_LABEL[f.verification.status]}
             {f.verification.method &&
               ` (${VERIFY_METHOD_LABEL[f.verification.method]})`}
           </span>
         </div>
         {f.verification.refutationNotes && (
-          <p className="max-w-measure border-l-2 border-line-strong pl-3 text-xs italic leading-relaxed text-bone-faint">
-            {f.verification.refutationNotes}
-          </p>
+          <p className="rp-refute">{f.verification.refutationNotes}</p>
         )}
       </div>
     </details>
@@ -120,21 +106,13 @@ function Field({
   mono = false,
 }: {
   label: string;
-  children: React.ReactNode;
+  children: ReactNode;
   mono?: boolean;
 }) {
   return (
     <div>
-      <div className="font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
-        {label}
-      </div>
-      <div
-        className={`mt-1 leading-relaxed text-bone-dim ${
-          mono
-            ? "whitespace-pre-wrap break-words rounded-sm bg-ink-raised-2 p-2 font-mono text-[0.78rem]"
-            : "max-w-measure"
-        }`}
-      >
+      <div className="rp-k">{label}</div>
+      <div className={`rp-field-v${mono ? " rp-field-mono" : ""}`}>
         {children}
       </div>
     </div>
@@ -156,19 +134,16 @@ function FindingList({
   const shown = collapseMinor ? items.filter((f) => !isMinor(f)) : items;
   const folded = collapseMinor ? items.filter(isMinor) : [];
   return (
-    <div className="divide-y divide-line border border-line bg-ink-raised">
+    <div className="rp-list">
       {shown.map((f) => (
         <FindingRow key={f.id} f={f} />
       ))}
       {folded.length > 0 && (
-        <details className="group/fold">
-          <summary className="flex cursor-pointer list-none items-center justify-between border-l-2 border-l-transparent px-4 py-3 font-mono text-xs uppercase tracking-wide text-bone-dim [&::-webkit-details-marker]:hidden">
+        <details className="rp-fold">
+          <summary className="rp-toggle">
             <span>{folded.length} more · hygiene and polish</span>
-            <span className="text-bone-faint transition-transform group-open/fold:rotate-90">
-              ›
-            </span>
           </summary>
-          <div className="divide-y divide-line border-t border-line">
+          <div className="rp-fold-rows">
             {folded.map((f) => (
               <FindingRow key={f.id} f={f} />
             ))}
@@ -179,26 +154,42 @@ function FindingList({
   );
 }
 
+// A section of the report: its name (and the line under it) in the left
+// column, its rows in the right, under one 2px rule.
 function Block({
   label,
+  intro,
   children,
   id,
 }: {
-  label: string;
-  children: React.ReactNode;
+  label: ReactNode;
+  intro?: ReactNode;
+  children: ReactNode;
   id?: string;
 }) {
   return (
-    <section id={id} className={`mt-12 ${id ? "scroll-mt-24" : ""}`}>
-      <h2 className="font-mono text-base font-semibold text-bone">
-        {label}
-      </h2>
-      <div className="mt-5">{children}</div>
+    <section id={id} className="rp-block">
+      <div className="rp-block-head">
+        <h2 className="rp-h">{label}</h2>
+        {intro && <p className="rp-intro">{intro}</p>}
+      </div>
+      <div>{children}</div>
     </section>
   );
 }
 
-export function ReportView({ report }: { report: AuditReport }) {
+// `back` is the page's way back to the list of reports, and `note` the page's
+// line about where this report comes from; both sit in the head, beside the
+// sheet.
+export function ReportView({
+  report,
+  back,
+  note,
+}: {
+  report: AuditReport;
+  back?: ReactNode;
+  note?: ReactNode;
+}) {
   const { meta, verdict, stats, findings } = report;
   // Findings split by kind: risks (a path to harm, these drive the verdict) and
   // improvements (safe today, robustness over time). Each sorted by severity. A
@@ -210,332 +201,274 @@ export function ReportView({ report }: { report: AuditReport }) {
   const improvementFindings = SEVERITY_ORDER.flatMap((sev) =>
     findings.filter((f) => f.kind === "improvement" && f.severity === sev),
   );
+  const hasGates =
+    report.shipGates.length > 0 ||
+    (meta.scope.excludedDimensions?.length ?? 0) > 0;
 
   return (
-    // break-words is inherited: a report carries paths, URLs and identifiers,
+    // break-word is inherited: a report carries paths, URLs and identifiers,
     // and one of them at large text sizes pushed the page sideways.
-    <div className="break-words">
-      {/* Header. Leads with the product version when the report carries one, so
-          a public report is stamped to a release (v0.1.0) rather than a date
-          that reads stale as commits pile up; the audit date drops to the quiet
-          meta row. */}
-      <p className="font-mono text-xs text-bone-faint">
-        Audit report{meta.version ? ` · v${meta.version}` : ` · ${meta.date}`}
-      </p>
-      <h1 className="mt-2 font-mono text-3xl font-semibold tracking-tight text-bone sm:text-4xl">
-        {meta.project}
-      </h1>
-      <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 font-mono text-[0.7rem] uppercase tracking-wide text-bone-faint">
-        {meta.auditedCommit && <span>commit {meta.auditedCommit}</span>}
-        {meta.version && <span>audited {meta.date}</span>}
-        {meta.loc && <span>{meta.loc.toLocaleString()} loc</span>}
-        <span>
-          {meta.scope.dimensions.length} dimensions ·{" "}
-          {meta.scope.runtimePass ? "static + runtime" : "static only"}
-        </span>
-      </div>
-
-      {/* Verdict. Full-width stamp so the top matches the scorecard below it,
-          no half-then-full jump. The stamp carries the punch (human verdict +
-          punchy posture); the long-form justification collapses into a details
-          nobody has to read to get the call. */}
-      <div className="mt-8">
-        <VerdictStamp
-          level={verdict.level}
-          posture={verdict.posture}
-          assessedScope={verdict.assessedScope}
-        />
-        {verdict.justification && (
-          <details className="group mt-3 max-w-3xl">
-            <summary className="flex cursor-pointer list-none items-center gap-1.5 font-mono text-[0.7rem] uppercase tracking-wide text-bone-faint transition-colors hover:text-bone-dim [&::-webkit-details-marker]:hidden">
-              Why this verdict
-              <span
-                className="inline-block transition-transform group-open:rotate-90"
-                aria-hidden="true"
-              >
-                ›
+    <article className="rp">
+      {/* The head, on Slate: what was audited on the left, and the verdict as
+          the sheet on the right. The sheet's top line leads with the product
+          version when the report carries one, so a public report is stamped
+          to a release (v0.1.0) rather than a date that reads stale as commits
+          pile up; the audit date drops to the facts row. The sheet carries
+          the punch (the verdict and the posture); the long-form justification
+          collapses into a details nobody has to read to get the call. */}
+      <header className="rp-head" data-ground="slate">
+        <div className="wrap rp-head-grid">
+          <div className="rp-ident">
+            {back && <p className="rp-back">{back}</p>}
+            <h1 className="d-h2">{meta.project}</h1>
+            <p className="rp-facts">
+              {meta.auditedCommit && <span>commit {meta.auditedCommit}</span>}
+              {meta.version && <span>audited {meta.date}</span>}
+              {meta.loc && <span>{meta.loc.toLocaleString()} loc</span>}
+              <span>
+                {meta.scope.dimensions.length} dimensions ·{" "}
+                {meta.scope.runtimePass ? "static + runtime" : "static only"}
               </span>
-            </summary>
-            <p className="mt-2 max-w-measure text-sm leading-relaxed text-bone-dim">
-              {verdict.justification}
             </p>
-          </details>
-        )}
-      </div>
-      {/* Scorecard: the triage view. Severity mix, gate statuses, and what was
-          not assessed, in one glance under the verdict. Everything below is
-          detail the reader drills into; this is the part they must be able to
-          read in seconds. Gate notes appear only when a gate is at-risk or
-          not-met, because only those move the decision. */}
-      <div className="mt-8">
-        <h2 className="sr-only">Scorecard</h2>
-        <div>
-          <ReportScorecard
-            bySeverity={stats.bySeverity}
-            riskCount={riskFindings.length}
-            improvementCount={improvementFindings.length}
-            verification={stats.verification}
+            {note && <p className="rp-note">{note}</p>}
+          </div>
+          <VerdictStamp
+            ticks
+            head={
+              <span>
+                Audit report
+                {meta.version ? ` · v${meta.version}` : ` · ${meta.date}`}
+              </span>
+            }
+            level={verdict.level}
+            posture={verdict.posture}
+            assessedScope={verdict.assessedScope}
           />
+          {verdict.justification && (
+            <details className="rp-why">
+              <summary className="rp-toggle">
+                <span>Why this verdict</span>
+              </summary>
+              <p>{verdict.justification}</p>
+            </details>
+          )}
         </div>
-        {(report.shipGates.length > 0 ||
-          (meta.scope.excludedDimensions?.length ?? 0) > 0) && (
-          <div className="mt-4 space-y-2.5 border-t border-line pt-3.5">
-            {report.shipGates.length > 0 && (
-              <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 font-mono text-[0.7rem] uppercase tracking-wide">
-                <span className="text-bone-faint">Gates</span>
-                {report.shipGates.map((g) => (
-                  <span key={g.gate} className="text-bone-dim">
-                    {SHIP_GATE_LABEL[g.gate]}{" "}
-                    <span className={SHIP_GATE_STATUS_COLOR[g.status]}>
-                      {SHIP_GATE_STATUS_LABEL[g.status]}
+      </header>
+
+      <div className="wrap rp-body">
+        {/* Scorecard: the triage view. Severity mix, gate statuses, and what
+            was not assessed, in one glance under the verdict. Everything below
+            is detail the reader drills into; this is the part they must be
+            able to read in seconds. Gate notes appear only when a gate is
+            at-risk or not-met, because only those move the decision. */}
+        <section className="rp-block">
+          <div>
+            <h2 className="sr-only">Scorecard</h2>
+            <ReportScorecard
+              bySeverity={stats.bySeverity}
+              riskCount={riskFindings.length}
+              improvementCount={improvementFindings.length}
+              verification={stats.verification}
+            />
+          </div>
+          {hasGates && (
+            <div>
+              {report.shipGates.length > 0 && (
+                <p className="rp-gates">
+                  <span className="rp-k">Gates</span>
+                  {report.shipGates.map((g) => (
+                    <span key={g.gate}>
+                      {SHIP_GATE_LABEL[g.gate]}{" "}
+                      <b className={SHIP_GATE_STATUS_COLOR[g.status]}>
+                        {SHIP_GATE_STATUS_LABEL[g.status]}
+                      </b>
                     </span>
-                  </span>
-                ))}
-              </div>
-            )}
-            {report.shipGates
-              .filter((g) => g.status === "not-met" || g.status === "at-risk")
-              .map((g) => (
-                <p key={g.gate} className="max-w-measure text-xs leading-relaxed text-bone-dim">
-                  <span
-                    className={`font-mono uppercase ${SHIP_GATE_STATUS_COLOR[g.status]}`}
-                  >
-                    {SHIP_GATE_LABEL[g.gate]}:
-                  </span>{" "}
-                  {g.note}
-                </p>
-              ))}
-            {meta.scope.excludedDimensions &&
-              meta.scope.excludedDimensions.length > 0 && (
-                <p className="font-mono text-[0.7rem] uppercase tracking-wide text-bone-faint">
-                  Not assessed this run:{" "}
-                  <span className="normal-case text-bone-dim">
-                    {meta.scope.excludedDimensions
-                      .map((d) => d.dimension)
-                      .join(", ")}
-                  </span>
+                  ))}
                 </p>
               )}
-          </div>
-        )}
-      </div>
-
-      {/* Drivers follow the scorecard, so the scorecard stays on the first
-          screen (DESIGN.md Interaction, settled 2026-10-06). */}
-      {verdict.blockingFindingIds.length > 0 && (
-        <div className="mt-8">
-          <h2 className="font-mono text-base font-semibold text-bone">
-            What drives this verdict
-          </h2>
-          <ul className="mt-2.5 space-y-2">
-            {verdict.blockingFindingIds.map((id) => {
-              const f = findings.find((x) => x.id === id);
-              return (
-                <li key={id} className="flex flex-col gap-1 sm:flex-row sm:gap-3">
-                  <a
-                    href={`#finding-${id}`}
-                    className={`shrink-0 font-mono text-xs font-semibold hover:underline ${
-                      f ? SEV_TEXT[f.severity] : "text-bone-faint"
-                    }`}
-                  >
-                    {id}
-                  </a>
-                  {f && (
-                    <span className="max-w-measure text-sm leading-snug text-bone-dim">
-                      {f.issue}
+              {report.shipGates
+                .filter((g) => g.status === "not-met" || g.status === "at-risk")
+                .map((g) => (
+                  <p key={g.gate} className="rp-gate-note">
+                    <span className={`rp-k ${SHIP_GATE_STATUS_COLOR[g.status]}`}>
+                      {SHIP_GATE_LABEL[g.gate]}:
+                    </span>{" "}
+                    {g.note}
+                  </p>
+                ))}
+              {meta.scope.excludedDimensions &&
+                meta.scope.excludedDimensions.length > 0 && (
+                  <p className="rp-k rp-left-out">
+                    Not assessed this run:{" "}
+                    <span>
+                      {meta.scope.excludedDimensions
+                        .map((d) => d.dimension)
+                        .join(", ")}
                     </span>
+                  </p>
+                )}
+            </div>
+          )}
+        </section>
+
+        {/* Drivers follow the scorecard, so the scorecard stays on the first
+            screen (DESIGN.md Interaction, settled 2026-10-06). */}
+        {verdict.blockingFindingIds.length > 0 && (
+          <Block label="What drives this verdict">
+            <ul className="rp-list">
+              {verdict.blockingFindingIds.map((id) => {
+                const f = findings.find((x) => x.id === id);
+                return (
+                  <li key={id} className="rp-driver">
+                    <a
+                      href={`#finding-${id}`}
+                      className={`rp-fid ${f ? SEV_TEXT[f.severity] : "text-fg-3"}`}
+                    >
+                      {id}
+                    </a>
+                    {f && <span>{f.issue}</span>}
+                  </li>
+                );
+              })}
+            </ul>
+          </Block>
+        )}
+
+        {/* Strengths: lead with what's solid (green = safe). Collapsed to
+            scannable headlines, the reassurance at a glance for a reader who
+            will not read five paragraphs; the note is one click away. */}
+        {report.strengths && report.strengths.length > 0 && (
+          <Block label={`What's solid (${report.strengths.length})`}>
+            <ul className="rp-list">
+              {report.strengths.map((s) => (
+                <li key={s.area}>
+                  <details className="rp-strength">
+                    <summary className="rp-toggle">
+                      <i className="c rp-ok" aria-hidden="true" />
+                      <span className="rp-title">{s.area}</span>
+                    </summary>
+                    <p>{s.note}</p>
+                  </details>
+                </li>
+              ))}
+            </ul>
+          </Block>
+        )}
+
+        {/* Risks first: the findings with a path to harm, the ones the verdict
+            weighs. A report with none says so plainly, so a healthy app reads
+            as healthy rather than as a wall of problems. */}
+        <Block
+          id="risks"
+          label={`Risks to weigh (${riskFindings.length})`}
+          intro="Findings with a path to harm in production. These are what the verdict weighs."
+        >
+          {riskFindings.length === 0 ? (
+            <p className="rp-empty">
+              No risks surfaced. Nothing here has a path to harm in production.
+            </p>
+          ) : (
+            <FindingList items={riskFindings} collapseMinor={false} />
+          )}
+        </Block>
+
+        {/* Improvements: safe today, robustness over time. Never cap the
+            verdict. The low + informational bulk folds so the list reads as a
+            punch list, not a body count. */}
+        {improvementFindings.length > 0 && (
+          <Block
+            id="improvements"
+            label={`Improvements (${improvementFindings.length})`}
+            intro="Safe today. Ways to make the app more robust, observable, and consistent over time. These do not affect the verdict."
+          >
+            <FindingList items={improvementFindings} collapseMinor={true} />
+          </Block>
+        )}
+
+        {report.remediationPlan.length > 0 && (
+          <Block label="Prioritised remediation plan">
+            <ol className="rp-list">
+              {report.remediationPlan.map((step, i) => (
+                <li key={step.title} className="rp-row rp-step">
+                  <span className="rp-step-n">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <div>
+                    <p className="rp-title">{step.title}</p>
+                    {step.detail && <p className="rp-text">{step.detail}</p>}
+                    {step.findingIds.length > 0 && (
+                      <p className="rp-ids">{step.findingIds.join(", ")}</p>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </Block>
+        )}
+
+        {report.quickWins.length > 0 && (
+          <Block label="Quick wins: low regression risk">
+            <ul className="rp-list">
+              {report.quickWins.map((w) => (
+                <li key={w.title} className="rp-row">
+                  <div className="rp-win-head">
+                    <p className="rp-title">{w.title}</p>
+                    {w.findingId && <span className="rp-ids">{w.findingId}</span>}
+                  </div>
+                  <p className="rp-text">Blast radius: {w.blastRadius}</p>
+                </li>
+              ))}
+            </ul>
+          </Block>
+        )}
+
+        {report.deeperInvestigation.length > 0 && (
+          <Block label="Requires deeper investigation">
+            <ul className="rp-list">
+              {report.deeperInvestigation.map((d) => (
+                <li key={d.title} className="rp-row">
+                  <p className="rp-title">{d.title}</p>
+                  {d.detail && <p className="rp-text">{d.detail}</p>}
+                  {d.findingIds && d.findingIds.length > 0 && (
+                    <p className="rp-ids">{d.findingIds.join(", ")}</p>
                   )}
                 </li>
-              );
-            })}
-          </ul>
-        </div>
-      )}
-
-      {/* Strengths: lead with what's solid (green = safe). Collapsed to
-          scannable headlines, the reassurance at a glance for a reader who will
-          not read five paragraphs; the note is one click away. */}
-      {report.strengths && report.strengths.length > 0 && (
-        <Block label={`What's solid (${report.strengths.length})`}>
-          <ul className="divide-y divide-line border border-line bg-ink-raised">
-            {report.strengths.map((s) => (
-              <li key={s.area}>
-                <details className="group">
-                  <summary className="flex cursor-pointer list-none items-center gap-2.5 px-4 py-3 [&::-webkit-details-marker]:hidden">
-                    <span
-                      className="shrink-0 font-mono text-sm text-verdict-safe"
-                      aria-hidden="true"
-                    >
-                      +
-                    </span>
-                    <span className="min-w-0 flex-1 font-mono text-xs font-semibold uppercase tracking-wide text-bone">
-                      {s.area}
-                    </span>
-                    <span
-                      className="shrink-0 font-mono text-bone-faint transition-transform group-open:rotate-90"
-                      aria-hidden="true"
-                    >
-                      ›
-                    </span>
-                  </summary>
-                  <p className="border-t border-line px-4 py-3 text-sm leading-relaxed text-bone-dim">
-                    <span className="block max-w-measure">{s.note}</span>
-                  </p>
-                </details>
-              </li>
-            ))}
-          </ul>
-        </Block>
-      )}
-
-      {/* Risks first: the findings with a path to harm, the ones the verdict
-          weighs. A report with none says so plainly, so a healthy app reads as
-          healthy rather than as a wall of problems. */}
-      <Block id="risks" label={`Risks to weigh (${riskFindings.length})`}>
-        <p className="-mt-2 mb-4 max-w-measure text-sm leading-relaxed text-bone-dim">
-          Findings with a path to harm in production. These are what the verdict
-          weighs.
-        </p>
-        {riskFindings.length === 0 ? (
-          <p className="border border-line bg-ink-raised px-4 py-3.5 text-sm text-bone-dim">
-            No risks surfaced. Nothing here has a path to harm in production.
-          </p>
-        ) : (
-          <FindingList items={riskFindings} collapseMinor={false} />
+              ))}
+            </ul>
+          </Block>
         )}
-      </Block>
 
-      {/* Improvements: safe today, robustness over time. Never cap the verdict.
-          The low + informational bulk folds so the list reads as a punch list,
-          not a body count. */}
-      {improvementFindings.length > 0 && (
-        <Block id="improvements" label={`Improvements (${improvementFindings.length})`}>
-          <p className="-mt-2 mb-4 max-w-measure text-sm leading-relaxed text-bone-dim">
-            Safe today. Ways to make the app more robust, observable, and
-            consistent over time. These do not affect the verdict.
-          </p>
-          <FindingList items={improvementFindings} collapseMinor={true} />
-        </Block>
-      )}
-
-      {report.remediationPlan.length > 0 && (
-      <Block label="Prioritised remediation plan">
-        <ol className="divide-y divide-line border border-line bg-ink-raised">
-          {report.remediationPlan.map((step, i) => (
-            <li
-              key={step.title}
-              className="flex gap-4 p-3.5"
-            >
-              <span className="font-mono text-sm font-semibold tabular-nums text-bone-faint">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              <div className="min-w-0">
-                <p className="text-sm font-medium text-bone">{step.title}</p>
-                {step.detail && (
-                  <p className="mt-1 max-w-measure text-sm leading-relaxed text-bone-dim">
-                    {step.detail}
+        {report.notAssessed.length > 0 && (
+          <Block label="Not assessed: runtime-only checks skipped">
+            <ul className="rp-list">
+              {report.notAssessed.map((n) => (
+                <li key={n.check} className="rp-row">
+                  <p className="rp-title">{n.check}</p>
+                  <p className="rp-text">
+                    <span className="rp-k">To verify:</span> {n.howToVerify}
                   </p>
-                )}
-                {step.findingIds.length > 0 && (
-                  <p className="mt-1.5 font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
-                    {step.findingIds.join(", ")}
-                  </p>
-                )}
-              </div>
-            </li>
-          ))}
-        </ol>
-      </Block>
-      )}
+                </li>
+              ))}
+            </ul>
+          </Block>
+        )}
 
-      {report.quickWins.length > 0 && (
-      <Block label="Quick wins: low regression risk">
-        <ul className="divide-y divide-line border border-line bg-ink-raised">
-          {report.quickWins.map((w) => (
-            <li key={w.title} className="p-3.5">
-              <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                <p className="min-w-0 flex-1 basis-40 text-sm font-medium text-bone">{w.title}</p>
-                {w.findingId && (
-                  <span className="shrink-0 font-mono text-[0.6875rem] uppercase text-bone-faint">
-                    {w.findingId}
-                  </span>
-                )}
-              </div>
-              <p className="mt-1 max-w-measure text-xs leading-relaxed text-bone-faint">
-                Blast radius: {w.blastRadius}
-              </p>
-            </li>
-          ))}
-        </ul>
-      </Block>
-      )}
-
-      {report.deeperInvestigation.length > 0 && (
-      <Block label="Requires deeper investigation">
-        <ul className="divide-y divide-line border border-line bg-ink-raised">
-          {report.deeperInvestigation.map((d) => (
-            <li key={d.title} className="p-3.5">
-              <p className="text-sm font-medium text-bone">{d.title}</p>
-              {d.detail && (
-                <p className="mt-1 max-w-measure text-sm leading-relaxed text-bone-dim">
-                  {d.detail}
-                </p>
-              )}
-              {d.findingIds && d.findingIds.length > 0 && (
-                <p className="mt-1.5 font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
-                  {d.findingIds.join(", ")}
-                </p>
-              )}
-            </li>
-          ))}
-        </ul>
-      </Block>
-      )}
-
-      {report.notAssessed.length > 0 && (
-      <Block label="Not assessed: runtime-only checks skipped">
-        <ul className="divide-y divide-line border border-line bg-ink-raised">
-          {report.notAssessed.map((n) => (
-            <li key={n.check} className="p-3.5">
-              <p className="text-sm font-medium text-bone">{n.check}</p>
-              <p className="mt-1 max-w-measure text-xs leading-relaxed text-bone-dim">
-                <span className="font-mono uppercase tracking-wide text-bone-faint">
-                  To verify:
-                </span>{" "}
-                {n.howToVerify}
-              </p>
-            </li>
-          ))}
-        </ul>
-      </Block>
-      )}
-
-      {/* Mechanical sweeps: the pre-audit tool passes. Tail detail for the
-          reader who wants it, compact rows rather than cards. */}
-      {report.mechanicalSweeps.length > 0 && (
-        <Block label="Mechanical sweeps">
-          <ul className="divide-y divide-line border-y border-line">
-            {report.mechanicalSweeps.map((s) => (
-              <li
-                key={s.name}
-                className="flex flex-wrap items-baseline gap-x-4 gap-y-1 py-2.5"
-              >
-                <span className="font-mono text-xs uppercase tracking-wide text-bone">
-                  {s.name}
-                </span>
-                <span className="font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
-                  {s.outcome}
-                </span>
-                {s.summary && (
-                  <span className="w-full max-w-measure text-xs leading-relaxed text-bone-dim sm:w-auto sm:flex-1">
-                    {s.summary}
-                  </span>
-                )}
-              </li>
-            ))}
-          </ul>
-        </Block>
-      )}
-    </div>
+        {/* Mechanical sweeps: the pre-audit tool passes. Tail detail for the
+            reader who wants it, compact rows rather than cards. */}
+        {report.mechanicalSweeps.length > 0 && (
+          <Block label="Mechanical sweeps">
+            <ul className="rp-list">
+              {report.mechanicalSweeps.map((s) => (
+                <li key={s.name} className="rp-sweep">
+                  <span className="rp-sweep-name">{s.name}</span>
+                  <span className="rp-sweep-out">{s.outcome}</span>
+                  {s.summary && <span className="rp-text">{s.summary}</span>}
+                </li>
+              ))}
+            </ul>
+          </Block>
+        )}
+      </div>
+    </article>
   );
 }

@@ -1,18 +1,16 @@
+import type { ReactNode } from "react";
 import type {
   Severity,
   VerdictLevel,
   AssessedScope,
-  AuditReport,
 } from "@/lib/report-types";
-import {
-  SEV_SHORT,
-  SEVERITY_ORDER,
-  VERDICT_LABEL,
-} from "@/lib/report-types";
+import { SEVERITY_ORDER, VERDICT_LABEL } from "@/lib/report-types";
 
-// Literal class maps so Tailwind's JIT sees every class. Color is the ONLY
-// saturated ink in the system and it always means a severity or a verdict
-// (DESIGN.md). text + border are the severity hue; the row rail uses the same.
+// Literal class maps so Tailwind's scanner sees every class. Hue is the only
+// saturated color in the system and it always means a severity or a verdict
+// (DESIGN.md). As type it sits on Ink only, where all five severity hues and
+// the three verdict hues clear 4.5 to 1 (app/styles/report.css has the
+// numbers). On the White sheet a hue is a fill under Ink type.
 const SEV_TEXT: Record<Severity, string> = {
   critical: "text-critical",
   high: "text-high",
@@ -20,48 +18,28 @@ const SEV_TEXT: Record<Severity, string> = {
   low: "text-low",
   informational: "text-informational",
 };
-const SEV_BORDER: Record<Severity, string> = {
-  critical: "border-critical",
-  high: "border-high",
-  medium: "border-medium",
-  low: "border-low",
-  informational: "border-informational",
-};
-// Translucent fill for chips: the severity hue at 12% so the label (same hue
-// at full strength) stays readable on it. A solid severity bg under severity
-// text was invisible (same-color-on-same-color); the tint keeps the chip's
-// identity without killing the text.
-const SEV_FILL: Record<Severity, string> = {
-  critical: "bg-critical/12",
-  high: "bg-high/12",
-  medium: "bg-medium/12",
-  low: "bg-low/12",
-  informational: "bg-informational/12",
+
+// The suffix of a verdict's `hue-*` class in globals.css.
+const VERDICT_HUE: Record<VerdictLevel, "safe" | "risk" | "noship"> = {
+  "safe-to-ship": "safe",
+  "ship-with-known-risks": "risk",
+  "do-not-ship": "noship",
 };
 
-const VERDICT_TEXT: Record<VerdictLevel, string> = {
-  "safe-to-ship": "text-verdict-safe",
-  "ship-with-known-risks": "text-verdict-risk",
-  "do-not-ship": "text-verdict-noship",
-};
-const VERDICT_BORDER: Record<VerdictLevel, string> = {
-  "safe-to-ship": "border-verdict-safe",
-  "ship-with-known-risks": "border-verdict-risk",
-  "do-not-ship": "border-verdict-noship",
-};
-
+// A severity named in its hue: the cell filled with the hue, then the word in
+// it. No box and no tint: the cell is the site's one visual atom, and it is
+// what the verdict sheet puts beside each count.
 export function SeverityChip({ severity }: { severity: Severity }) {
   return (
-    <span
-      className={`inline-flex items-center border-l-2 ${SEV_FILL[severity]} ${SEV_BORDER[severity]} border-y border-r border-y-line border-r-line px-2 py-0.5 font-mono text-[0.6875rem] font-medium uppercase tracking-widest ${SEV_TEXT[severity]}`}
-    >
+    <span className={`rp-sev ${SEV_TEXT[severity]}`}>
+      <i className={`c s-${severity}`} aria-hidden="true" />
       {severity}
     </span>
   );
 }
 
-// Visual labels for the stamp's severity row. The full name stays for screen
-// readers beside each one, as in StatStrip.
+// Visual labels for the sheet's severity row. The full name stays for screen
+// readers beside each one.
 const SEV_LABEL: Record<Severity, string> = {
   critical: "crit",
   high: "high",
@@ -70,122 +48,85 @@ const SEV_LABEL: Record<Severity, string> = {
   informational: "info",
 };
 
+// The verdict of a report, as the sheet: a White page with a 2px Ink edge,
+// the release recommendation in Ink on a band filled with the verdict's hue,
+// then the evidence base and the posture. It is the one light object on the
+// page (globals.css, "The sheet"; components/VerdictSheet.tsx draws the same
+// sheet for the home page from the self-audit's facts). It fills its
+// container's width, and the word is sized from that width.
 export function VerdictStamp({
   level,
   posture,
   assessedScope,
   severityRow,
+  head,
+  ticks = false,
   className = "",
 }: {
   level: VerdictLevel;
   posture?: string;
   assessedScope?: AssessedScope;
   // Opt-in: the five severity counts as a row under the posture. A caller that
-  // already shows the counts (ReportView's strip) leaves it off.
+  // already shows the counts (ReportView's scorecard) leaves it off.
   severityRow?: Record<Severity, number>;
+  // Opt-in: the line across the top of the sheet, which says what it is.
+  head?: ReactNode;
+  // Opt-in: the registration ticks, which stand 18px off each corner on the
+  // ground. A caller sets them only where the sheet has that room.
+  ticks?: boolean;
   className?: string;
 }) {
   // Plain, human recommendation. The evidence base (static vs runtime) is stated
   // in its own line right below, so a static run is never mistaken for a
   // runtime-verified one without resorting to a jargon headline.
   const label = VERDICT_LABEL[level];
-  // A stamped block: bordered all the way around in the verdict color, with
-  // corner registration ticks. Not a card with a colored side tab (DESIGN.md:
-  // "the verdict presents as a stamped block... never a pill"). It fills its
-  // container width; the summary text inside is capped for readable line length.
   return (
     <div
-      className={`relative border ${VERDICT_BORDER[level]} bg-ink-raised p-5 sm:p-7 ${className}`}
+      className={`sheet rp-sheet hue-${VERDICT_HUE[level]} ${className}`.trim()}
+      data-ground="white"
+      data-level={level}
     >
-      <span
-        className={`pointer-events-none absolute -left-px -top-px h-3 w-3 border-l-2 border-t-2 ${VERDICT_BORDER[level]}`}
-        aria-hidden="true"
-      />
-      <span
-        className={`pointer-events-none absolute -bottom-px -right-px h-3 w-3 border-b-2 border-r-2 ${VERDICT_BORDER[level]}`}
-        aria-hidden="true"
-      />
-      <p className="font-mono text-[0.6875rem] uppercase tracking-[0.2em] text-bone-faint">
-        Release recommendation
-      </p>
-      <p
-        className={`mt-1.5 font-mono text-3xl font-semibold uppercase tracking-tight sm:text-4xl ${VERDICT_TEXT[level]}`}
-      >
-        {label}
-      </p>
-      {assessedScope && (
-        <p className="mt-2 font-mono text-[0.6875rem] uppercase tracking-wide text-bone-dim">
-          {assessedScope === "static"
-            ? "Static review · runtime not exercised"
-            : "Static review + runtime pass"}
-        </p>
+      {ticks && (
+        <>
+          <span className="sheet-tk sheet-tk-tl" aria-hidden="true" />
+          <span className="sheet-tk sheet-tk-tr" aria-hidden="true" />
+          <span className="sheet-tk sheet-tk-bl" aria-hidden="true" />
+          <span className="sheet-tk sheet-tk-br" aria-hidden="true" />
+        </>
       )}
-      {posture && (
-        <p className="mt-4 max-w-measure text-lg font-semibold leading-snug text-bone sm:text-xl">
-          {posture}
-        </p>
+      {head != null && <div className="sheet-head meta">{head}</div>}
+      <div className="sheet-verdict">
+        <p className="label">Release recommendation</p>
+        <p className="sheet-word">{label}</p>
+      </div>
+      {(assessedScope || posture) && (
+        <div className="sheet-body">
+          {assessedScope && (
+            <p className="label">
+              {assessedScope === "static"
+                ? "Static review · runtime not exercised"
+                : "Static review + runtime pass"}
+            </p>
+          )}
+          {posture && <p className="sheet-posture">{posture}</p>}
+        </div>
       )}
       {severityRow && (
-        <dl className="mt-4 grid grid-cols-5 border-t border-line">
+        <dl className="sheet-sev">
           {SEVERITY_ORDER.map((sev) => (
-            <div
-              key={sev}
-              className={`border-l-[3px] pl-2 pt-2.5 ${SEV_BORDER[sev]}`}
-            >
-              <dt className="font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
+            <div key={sev}>
+              <dt>
+                <i className={`c s-${sev}`} aria-hidden="true" />
                 <span aria-hidden="true">{SEV_LABEL[sev]}</span>
                 <span className="sr-only select-none">{sev}</span>
               </dt>
-              <dd
-                className={`mt-1.5 font-mono text-xl font-medium tabular-nums ${
-                  severityRow[sev] ? "text-bone" : "text-bone-faint"
-                }`}
-              >
+              <dd data-zero={severityRow[sev] ? undefined : ""}>
                 {severityRow[sev]}
               </dd>
             </div>
           ))}
         </dl>
       )}
-    </div>
-  );
-}
-
-// Tabular counts by severity: each number in its severity color, labels in
-// faint mono, the two longest names shortened (SEV_SHORT in report-types).
-export function StatStrip({
-  bySeverity,
-}: {
-  bySeverity: AuditReport["stats"]["bySeverity"];
-}) {
-  const order: Severity[] = [
-    "critical",
-    "high",
-    "medium",
-    "low",
-    "informational",
-  ];
-  return (
-    <div className="grid grid-cols-5 divide-x divide-line border border-line">
-      {order.map((sev) => (
-        <div key={sev} className="px-2 py-3 text-center">
-          <div
-            className={`font-mono text-2xl font-semibold tabular-nums ${SEV_TEXT[sev]}`}
-          >
-            {bySeverity[sev]}
-          </div>
-          <div className="mt-1 font-mono text-[0.6875rem] uppercase tracking-wide text-bone-faint">
-            {SEV_SHORT[sev] ? (
-              <>
-                <span aria-hidden="true">{SEV_SHORT[sev]}</span>
-                <span className="sr-only select-none">{sev}</span>
-              </>
-            ) : (
-              sev
-            )}
-          </div>
-        </div>
-      ))}
     </div>
   );
 }
