@@ -34,8 +34,8 @@
 //   * `scripts/og/card.html` is a served asset's SOURCE and no build output
 //     carries it, so the retired-mark sweep covers tracked and untracked
 //     source too.
-//   * The freshness check watches everything the repo tracks, because the
-//     markdown docs, skills/ and reports/ are all read at build time.
+//   * The freshness check watches everything the repo tracks, because
+//     skills/, reference/ and reports/ are all read at build time.
 //   * Placement counts cover EVERY prerendered page by a default, because an
 //     enumeration left pages that could lose their marks and stay green.
 //
@@ -67,9 +67,11 @@ const ROOT = process.cwd();
 
 const SELF = "scripts/check-built-mark.mjs";
 // The one file allowed to carry a retired mark's geometry: it is where the
-// retired marks are named. It turns up twice, in the repo and inside
-// .next/standalone (Next's tracer copies the project into the bundle because
-// lib/docs.ts reads the repo's markdown at runtime), and is skipped in both.
+// retired marks are named. It is skipped by its path's ending, so a copy of
+// it inside .next/standalone is skipped too. Next's tracer put one there
+// while lib/docs.ts read the repo's root markdown at runtime; since that
+// file was cut (2026-11-28) the bundle holds only skills/, reference/,
+// reports/ and VERSION.
 const RULES = "scripts/lib/brand-rules.mjs";
 
 // Guarded, and reported as a finding rather than a stack trace: a truncated or
@@ -152,36 +154,16 @@ const repoFiles = () => listRepoFiles(ROOT);
 // the sweep blind to the exact class of change it exists to catch. Only
 // exclusions that can be argued belong here.
 //
-// The markdown half is DERIVED rather than listed: lib/docs.ts decides which
-// documents the site renders, so any root markdown outside its allowlist is
-// not a build input. If that parse ever fails, every markdown file counts as
-// an input, which is the safe direction.
-// Strict or nothing. The first version sliced to the first `]` after the
-// declaration and returned whatever string literals it found, so a partial
-// parse was indistinguishable from a complete one: a comment containing `]`
-// inside the literal (`readDoc[name]` in a sentence about `app/behind/[tab]`)
-// truncated the list and quietly dropped BRAND.md and DESIGN.md from the
-// build-input set, which is the exact blindness this check exists to remove.
-// Now the whole literal has to be a plain list of quoted .md names, or the
-// answer is null and every markdown file counts as an input.
-function renderedDocs() {
-  try {
-    const src = readFileSync(join(ROOT, "lib/docs.ts"), "utf8");
-    const m = src.match(/const ALLOWED\s*=\s*new Set\(\[([\s\S]*?)\]\)/);
-    if (!m) return null;
-    const body = m[1].replace(/\/\/[^\n]*/g, "").replace(/\/\*[\s\S]*?\*\//g, "");
-    // Anything that is not a quoted .md name, a comma or whitespace means the
-    // list is computed (a spread, a constant, a template) and this parse
-    // cannot claim to know what is in it.
-    if (!/^(\s*"[^"]+\.md"\s*,?)+\s*$/.test(body)) return null;
-    const names = [...body.matchAll(/"([^"]+\.md)"/g)].map((x) => x[1]);
-    return names.length ? names : null;
-  } catch {
-    return null;
-  }
-}
+// The markdown half: the site renders no root markdown. The hub that rendered
+// PRODUCT.md and BRAND.md was cut on 2026-11-28, and lib/docs.ts, whose
+// allowlist this gate used to derive the rendered set from, went with it. So
+// root markdown is not a build input. Markdown under a directory is: the
+// skill pages read skills/, and the readiness map reads reference/. A page
+// that starts reading a root markdown file names it here in the same change,
+// or this check is blind to it.
+const RENDERED_ROOT_DOCS = [];
 
-function isBuildInput(f, rendered) {
+function isBuildInput(f) {
   // Nothing under app/, components/ or lib/ imports from scripts/ (checked),
   // public/ is served straight off disk and swept from disk, and the rest is
   // repo housekeeping the bundler never opens.
@@ -190,10 +172,7 @@ function isBuildInput(f, rendered) {
   // The gates' own record of what was taken from the design kit. Read by the
   // two scripts, never by the bundler.
   if (f === "reference/brand-kit.json") return false;
-  if (f.endsWith(".md")) {
-    if (rendered === null) return true;
-    return rendered.includes(f) || f.includes("/");
-  }
+  if (f.endsWith(".md")) return f.includes("/") || RENDERED_ROOT_DOCS.includes(f);
   return true;
 }
 
@@ -215,15 +194,14 @@ check(
 // carry over from whatever was last built; a stale build makes this whole
 // sweep blind to exactly the class of defect it exists for. The source set is
 // everything the repo carries, not an enumeration of build inputs: the
-// enumeration was the bug (the markdown docs, skills/ and reports/ are all
-// read at build time and none of them were on the old list).
+// enumeration was the bug (skills/, reference/ and reports/ are all read at
+// build time and none of them were on the old list).
 {
   const built = statSync(join(APP_OUT, "index.html")).mtimeMs;
-  const rendered = renderedDocs();
   let newest = { path: "", mtime: 0 };
   const unreadable = [];
   for (const f of repoFiles()) {
-    if (!isBuildInput(f, rendered)) continue;
+    if (!isBuildInput(f)) continue;
     let m;
     try {
       m = statSync(join(ROOT, f)).mtimeMs;
@@ -344,11 +322,9 @@ check(
   // width) and the footer sets it once.
   const DEFAULT = { marks: 3, lockups: 3 };
   const EXPECTED = {
-    // The chrome, plus the deck's cover, which sets the lockup at two sizes.
-    "behind.html": { marks: 5, lockups: 5 },
     // The chrome, plus the design-system page's specimens: the lockup at its
     // two chrome sizes, and the mark alone.
-    "behind/design-system.html": { marks: 6, lockups: 5 },
+    "design-system.html": { marks: 6, lockups: 5 },
     // Next's global error boundary replaces the root layout, chrome included.
     "_global-error.html": { marks: 0, lockups: 0 },
   };
@@ -507,8 +483,9 @@ check(
 // 5. The display face. Zalando Sans is the company's one family, and the
 //    face this site retired is in nothing the build emits: no stylesheet, no
 //    chunk, no page, no font file name. .next/standalone is left out: it
-//    holds a copy of the repo's markdown, where the retired face may be named
-//    as history, and its build output is the same as the two trees read here.
+//    holds a copy of skills/ and reference/, where the retired face may be
+//    named as history, and its build output is the same as the two trees
+//    read here.
 // 6. Amber only ever fills a bar. In the built stylesheets no rule sets it on
 //    type, a border, an outline, a decoration or a shadow, in a mix, or
 //    behind an alias. In pages and chunks no utility and no inline style does

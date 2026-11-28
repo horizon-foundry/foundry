@@ -129,7 +129,7 @@
      the entrance whose END POINT IS FIXED: a rule reaching exactly its full
      width, a row landing exactly on its resting line. --ease-entrance would
      overshoot past that and snap back, which reads as a bounce on a hairline.
-     Used by .stagger-rise and the figure reveal. */
+     Used by the figure reveal. */
   --ease-draw: cubic-bezier(0.2, 0.7, 0.2, 1);
 
   /* Two distinct variable names: next/font's generated rule is unlayered CSS
@@ -349,55 +349,9 @@ body {
   outline-offset: 3px;
 }
 
-/* Staggered entrance for slide content and hero. Children rise in sequence. */
-@keyframes rise {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-/* 500ms matches no token: a staggered arrival is its own job and is left alone
-   rather than forced into --transition-duration-settle. The curve IS a token,
-   --ease-draw, because these rows land on a fixed resting line.
-   Every child of a stagger container is a thing that staggers, with no
-   exclusions. There used to be one, for a decorative element that was a child
-   of this container, and it could not be mirrored onto the delays because
-   :nth-child() counts ALL children regardless of :not(). The right answer was
-   that a decoration had no business being in the container; the decoration is
-   gone entirely now. */
-.stagger-rise > * {
-  opacity: 0;
-  animation: rise 0.5s var(--ease-draw) forwards;
-}
-.stagger-rise > *:nth-child(1) {
-  animation-delay: 0.04s;
-}
-.stagger-rise > *:nth-child(2) {
-  animation-delay: 0.1s;
-}
-.stagger-rise > *:nth-child(3) {
-  animation-delay: 0.16s;
-}
-.stagger-rise > *:nth-child(4) {
-  animation-delay: 0.22s;
-}
-.stagger-rise > *:nth-child(5) {
-  animation-delay: 0.28s;
-}
-.stagger-rise > *:nth-child(6) {
-  animation-delay: 0.34s;
-}
-.stagger-rise > *:nth-child(7) {
-  animation-delay: 0.4s;
-}
-
-/* Long-form rendered doc prose: the base under the hub docs (.bh-doc,
-   styles/behind.css) and the SKILL.md panel (.sk-md, styles/skill.css), which
-   each set their own look over it. Overrides Tailwind typography. */
+/* Long-form rendered doc prose: the base under the SKILL.md panel (.sk-md,
+   styles/skill.css), which sets its own look over it. Overrides Tailwind
+   typography. */
 .doc-prose {
   font-family: var(--font-sans);
   color: var(--color-bone);
@@ -583,30 +537,6 @@ body {
      brightens and never dims, the brand's luminance rule. */
   .press:active:not(:disabled) {
     border-color: var(--color-white);
-  }
-}
-
-/* Overview-slide glyphs draw themselves in on entry (a hairline sketch). Each
-   stroke element sweeps from a dash offset to full. Reduced-motion shows them
-   already drawn. */
-@keyframes glyph-stroke {
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-.glyph-draw :is(path, line, rect, circle, polygon) {
-  stroke-dasharray: 220;
-  stroke-dashoffset: 220;
-  /* 900ms matches no token and is left alone deliberately: a token is matched
-     by the job, never by the nearest number. The curve was a hand-written copy
-     of --ease-entrance and is now the token. */
-  animation: glyph-stroke 0.9s var(--ease-entrance) 0.25s forwards;
-}
-@media (prefers-reduced-motion: reduce) {
-  .glyph-draw :is(path, line, rect, circle, polygon) {
-    stroke-dasharray: none !important;
-    stroke-dashoffset: 0 !important;
-    animation: none !important;
   }
 }
 

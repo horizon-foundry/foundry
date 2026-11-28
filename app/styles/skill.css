@@ -906,7 +906,7 @@
   color: var(--fg);
 }
 /* The file carries no italic, so emphasis is the text color, never a slanted
-   upright (the hub docs do the same, behind.css). */
+   upright. */
 .sk-page .sk-md em {
   font-style: normal;
   color: var(--fg);

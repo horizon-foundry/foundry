@@ -177,8 +177,8 @@ The ramp, in rem so it follows the font size a visitor sets. Steps with two valu
 | Step | Desktop | Phone | Line height | Use |
 |---|---|---|---|---|
 | title | 84 | 44 | 1 | A page's h1, a stage's word |
-| h2 | 56 | 38 | 1 | Section headings, the hub's h1 |
-| statement | 42 | 30 | 1.08 | A statement line, a deck slide's heading, a design-system part |
+| h2 | 56 | 38 | 1 | Section headings |
+| statement | 42 | 30 | 1.08 | A statement line, a design-system part |
 | h3 | 24 | 21 | 1.15 | Mid headings (800) |
 | lead | 20 | 18 | 1.5 | The paragraph under a heading |
 | body | 17 | 17 | 1.5 | Text, buttons, text links |
@@ -189,9 +189,9 @@ The ramp, in rem so it follows the font size a visitor sets. Steps with two valu
 
 The verdict word is not a ramp step. It is a drawing sized from its sheet: 18.5 percent of the sheet's width, so "Safe to" sits on one line at every width.
 
-A label names a block (a column, a status, a slide's category in the deck's head row). It is never a kicker above a heading: a heading carries its own weight.
+A label names a block (a column, a status). It is never a kicker above a heading: a heading carries its own weight.
 
-Long text is capped near 75 characters a line: 34rem for a lead, 38rem for a rendered doc.
+Long text is capped near 75 characters a line: 34rem for a lead.
 
 ## Layout
 
@@ -199,11 +199,11 @@ The frame is the company's. Design width is 1440 with a 72px gutter, fluid from 
 
 The header is one Ink band, 64px, pinned on every page and every ground. An anchor lands clear of it (`scroll-padding-top`).
 
-Two-column sections are a 420px heading column, a 52px gap, then the content, from 1100 wide (68.75rem). Below that they stack with the heading on top. The hub's doc pages and the design-system page use it.
+Two-column sections are a 420px heading column, a 52px gap, then the content, from 1100 wide (68.75rem). Below that they stack with the heading on top. The design-system page uses it.
 
 Rules, by ground: 2px Slate on Ink, 2px Bone on Slate, 2px Ink on the sheet. The line inside a dense figure (a ruled list's rows, a table's rows, a command list) is 1px in `--ledger`. A ruled list opens and closes with the 2px rule and divides its rows with the 1px line.
 
-Targets are 44px or taller, and a target is its own box, never a pseudo-element grown past the control: grown areas overlap their neighbors and the later sibling takes the tap (the deck's dots opened the wrong slide on 7 of 9 that way until v0.2.1). A target that carries no text, such as a deck dot, is sized in px, because text-only zoom scales rem and would push a row of them off a phone. Nothing scrolls sideways at 390.
+Targets are 44px or taller, and a target is its own box, never a pseudo-element grown past the control: grown areas overlap their neighbors and the later sibling takes the tap (the dots of the overview deck, which was cut on 2026-11-28, opened the wrong slide on 7 of 9 that way until v0.2.1). A target that carries no text is sized in px, because text-only zoom scales rem and would push a row of them off a phone. Nothing scrolls sideways at 390.
 
 ## Elevation & Depth
 
@@ -217,7 +217,7 @@ Square corners everywhere. Every radius token resolves to zero. The one rounded 
 
 The mark is the HF monogram (`components/brand/Mark.tsx`): viewBox `0 0 128 100`, the amber bar's path drawn first, then the body's. The body is Bone on a dark ground and Ink on a light one. The amber bar is a literal and is never recolored. The mark is never cropped and never redrawn. The paths in `components/brand/paths.ts` are copies of the company's, held by `reference/brand-kit.json`.
 
-The product lockup (`components/brand/ProductLockup.tsx`) is the untouched mark, then FOUNDRY SKILLS in Zalando Sans Black capitals. It follows the company's one-line lockup: the capitals are 0.4 of the mark's height, the gap is 0.4 of it, the tracking is `0.05em`. It is live text, because its words are this product's. The header sets it with a 34px mark from 1024 wide and a 26px mark below; the footer uses 26px; the deck's cover uses 56px, and 34px on a phone.
+The product lockup (`components/brand/ProductLockup.tsx`) is the untouched mark, then FOUNDRY SKILLS in Zalando Sans Black capitals. It follows the company's one-line lockup: the capitals are 0.4 of the mark's height, the gap is 0.4 of it, the tracking is `0.05em`. It is live text, because its words are this product's. The header sets it with a 34px mark from 1024 wide and a 26px mark below; the footer uses 26px.
 
 The browser tab and home screen icons are the company's own files (an Ink tile, the Bone mark, the amber bar), byte copies under `public/`: `favicon.svg`, `favicon-16.png`, `-32`, `-48`, `apple-touch-icon-180.png`, `icon-192.png`, `icon-512.png`. The 16 is pixel-fitted, so nothing is scaled or generated. There is no `favicon.ico`, no maskable tile and no `mask-icon`: the company supplies none, and a one-color tint cannot keep the amber bar. The product shares the company's icon, so the two sites show the same tab icon.
 
@@ -240,23 +240,22 @@ Motion is a token system. Every duration is named for what the motion DOES, and 
 | `--transition-duration-quick` | 220ms | A hover or focus state arriving |
 | `--transition-duration-settle` | 420ms | An element arriving: a figure's rows revealing once |
 | `--transition-duration-draw` | 600ms | A rule or a bar drawing itself in, once |
-| `--ease` | `cubic-bezier(0.2, 0, 0, 1)` | The controls: a button, a copy control, a deck step (240ms) |
+| `--ease` | `cubic-bezier(0.2, 0, 0, 1)` | The controls: a button, a copy control (240ms) |
 | `--ease-entrance` | `cubic-bezier(0.22, 1, 0.36, 1)` | Entrances and settles; the only easing with overshoot |
 | `--ease-exit` | `cubic-bezier(0.4, 0, 0.2, 1)` | Exits and hover-outs; no overshoot on the way out |
 | `--ease-draw` | `cubic-bezier(0.2, 0.7, 0.2, 1)` | An entrance whose end point is fixed, where overshoot would read as a bounce |
 | `--default-transition-duration` | `var(--transition-duration-quick)` | Every bare `transition-*` utility |
 
-The durations sit in the `--transition-duration-*` namespace because that is the one Tailwind v4 resolves the `duration-*` utility against. Named anything else, `class="duration-quick"` emits nothing, silently. Two raw values match no token and say so in the stylesheet: `.stagger-rise` (500ms) and `.glyph-draw` (900ms).
+The durations sit in the `--transition-duration-*` namespace because that is the one Tailwind v4 resolves the `duration-*` utility against. Named anything else, `class="duration-quick"` emits nothing, silently.
 
 What moves, and why:
 
 - **A figure reveals once.** A figure that starts below the fold arms itself and reveals when it scrolls into view: cells scale in, rows rise 8px, a bar draws to its width, and a stamp lands last because it is the figure's conclusion (`components/Reveal.tsx`). The server HTML is the final state, so with no script nothing is hidden.
-- **A deck slide arrives.** Its lines rise in sequence and its glyph draws itself, once per slide change.
 - **A control answers.** A button or a copy control changes its fill; a press moves 1px.
 
 **Asymmetry is the default.** A close runs faster and quieter than an open. Overshoot belongs to entrances only. Motion that feels late loses duration before it gains delay, and a hover-out is never delayed.
 
-**Reduced motion drops spatial movement and keeps the meaning.** It is not an off switch: feedback that confirms an action still has to read. Under it a figure does not arm, a slide shows at once, and a press is acknowledged by its border turning White.
+**Reduced motion drops spatial movement and keeps the meaning.** It is not an off switch: feedback that confirms an action still has to read. Under it a figure does not arm, and a press is acknowledged by its border turning White.
 
 ### Motion anti-goals
 
@@ -285,14 +284,11 @@ Shared primitives live at the end of `app/globals.css` ("The dark instrument: sh
 - **Readout** (`.readout`): one mono line in an Ink well with a 2px Bone edge, for what the server said: the status and the requested path on the 404, the error's digest on the error page.
 - **Install block** (`components/InstallBlock.tsx`): the heading on the left and the instrument on the right. The command well, the line that says what to run next, and one fold (a drawn plus mark) that holds the from-source commands in the same well, the requirements, and what an install touches.
 - **Readiness figure** (home, `.home-map`): the whole map as one Ink well with a Bone edge across the content width. Its head is the key, its body one cell per concern by area, its caption the one thing the key cannot say.
-- **Skill page** (`app/skills/[slug]/page.tsx`, `app/styles/skill.css`): a Slate hero that holds the command as the h1 behind its amber unit bar, the claim, and the skill's specimen in a frame; then bands that turn Ink and Slate. Two tabs stand on the hero's foot, and the current one is Ink like the panel under it, as in the hub. The SKILL.md panel is the rendered doc's look under `.sk-md`.
+- **Skill page** (`app/skills/[slug]/page.tsx`, `app/styles/skill.css`): a Slate hero that holds the command as the h1 behind its amber unit bar, the claim, and the skill's specimen in a frame; then bands that turn Ink and Slate. Two tabs stand on the hero's foot, and the current one is Ink like the panel under it. The SKILL.md panel is the `.doc-prose` base with its own look under `.sk-md`.
 - **Report view** (`components/ReportView.tsx`, `components/report-ui.tsx`, `app/styles/report.css`): a report opens on Slate with its name, its mono meta and the verdict sheet (`VerdictStamp` draws the sheet). Everything under it is on Ink, because three severity hues fail as type on Slate: each section's name in a 420px column and its rows beside it. `/reports` and `/unlock` share the sheet's file. The sign-in field is the command well's own: Ink, a 2px Bone edge, mono.
 - **Cells** (`components/Cells.tsx`, `.c`): the figures' one atom, a square that is filled, hollow or hatched. Hue appears on a cell only for a severity; an owner or a map state is told by luminance and outline.
 - **Frame** (`components/Frame.tsx`, `.frame`): a bordered excerpt with a caption at each end of its head. The edge is the ground's 2px rule and the field is Ink.
-- **Hub head and tabs** (`app/behind/layout.tsx`, `components/BehindNav.tsx`): the hub's h1 and lead on Slate, with four tabs standing on the head's lower edge. The current tab is Ink, the ground of the page under it, so the tab and its page are one piece. Selection is a change of ground, never a pill.
-- **Overview deck** (`components/SlideDeck.tsx`): a frame on Ink. Its head row holds the slide's place as a mono count, the slide's category as a label, and every control (Prev, nine dots, Next), so the controls never move when one slide is taller than the last. A slide is a statement heading with one line glyph beside it, text, then a ruled list, the three stage words behind their unit bars, commands in mono behind an amber unit bar, or a quote. The cover sets the product lockup. One glyph per slide, never more, and never an illustration (settled 2026-10-08): a slide must not be a wall of text.
-- **Rendered doc** (`components/BehindDoc.tsx`): the doc's name and its sections in the heading column, the text beside it. Headings and text are Zalando Sans; code is mono in the heading color with no field; a table is a ledger with 2px rules to open and close and 1px lines between rows.
-- **Design-system page** (`app/behind/design-system/page.tsx`): the system in its own parts, each a section on its own ground, Ink and Slate in turn. Every specimen is the shipped component or the shipped token. Amber's swatch is a bar, because amber has no other form.
+- **Design-system page** (`app/design-system/page.tsx`, `app/styles/design-system.css`): a Slate head with the h1, then the system in its own parts, each a section on its own ground, Ink and Slate in turn. Every specimen is the shipped component or the shipped token. Amber's swatch is a bar, because amber has no other form.
 
 ## The report reads like a triage tool, not a document (codified 2026-07-16)
 
@@ -330,4 +326,4 @@ The identity is held by two scripts that `make validate` runs, and by the tests 
 - A report page must not bury the verdict. The first screen is the verdict, the one-line summary and the scorecard.
 - No long text wider than about 75 characters a line.
 - No hype or marketing warmth, and no em dashes in any copy.
-- No decorative element that can vanish on a phone with nothing lost. The sheet's registration ticks, a deck slide's glyph and the unit bars are marks, not decoration.
+- No decorative element that can vanish on a phone with nothing lost. The sheet's registration ticks and the unit bars are marks, not decoration.

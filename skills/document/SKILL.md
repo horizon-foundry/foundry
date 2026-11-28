@@ -1,7 +1,7 @@
 ---
 name: document
 version: 0.2.1
-description: Use to keep a project's documentation true to the code and current across every surface, or to turn the repo's own docs into a product surface (the public hub, the overview deck, showcase copy). Modes: public, internal, reconcile. Not for creating a doc set from nothing (that is scaffold) or judging release readiness (that is production-audit).
+description: "Use to keep a project's documentation true to the code and current across every surface that repeats it. Modes: public, internal, reconcile. A rendered docs surface (a public hub, an overview deck, a gated portal) is an option the builder asks for, never the default. Not for creating a doc set from nothing (that is scaffold) or judging release readiness (that is production-audit)."
 ---
 
 # document
@@ -12,7 +12,7 @@ description: Use to keep a project's documentation true to the code and current 
 
 Documenting a project is a lifecycle stage, not a favor you do when asked. The build sequence is scaffold, build, **document**, audit, ship. The document step is the one that silently gets skipped, because nobody is blocked without it. The cost lands later: a cold-start agent has no map, a stakeholder cannot see what was built, and worst, a wrong doc gets trusted and built on.
 
-This skill owns the project's words on two layers. **Truth**: the docs must agree with the running code (a wrong doc is worse than no doc). **Presentation**: the docs become a live surface (the overview deck, the "Behind the Build" hub) so they cannot rot unseen. User-invoked and idempotent: a run that finds everything current changes nothing. Assumes the doc set defined by the suite's doc-set spec, `reference/doc-set-spec.md` in the repo; an install ships only this skill's directory, so from anywhere else read it at https://raw.githubusercontent.com/horizon-foundry/foundry/main/reference/doc-set-spec.md.
+This skill owns the project's words on two layers. **Truth** is the job: the docs must agree with the running code (a wrong doc is worse than no doc). **Presentation** is an option: where the builder asks for a rendered docs surface (a public hub, an overview deck, an internal portal), this skill builds it and keeps it current. A rendered page does not keep a doc true; the truth checklist does. User-invoked and idempotent: a run that finds everything current changes nothing. Assumes the doc set defined by the suite's doc-set spec, `reference/doc-set-spec.md` in the repo; an install ships only this skill's directory, so from anywhere else read it at https://raw.githubusercontent.com/horizon-foundry/foundry/main/reference/doc-set-spec.md.
 
 ## When NOT to use
 
@@ -29,7 +29,7 @@ The sections after this one are the reference each step points at.
 
 0. Confirm an external audience is declared or confirmed by the human. When in doubt the mode is `internal`, never `public`. Check: the audience confirmation, named in the report.
 1. Run the truth checklist. Artifact: the per-item report, each item pass, repaired, or regression-flagged.
-2. Establish or reconcile the public hub and the overview deck. For the hub, read `hub.md` in this skill's directory; for the deck, read `deck.md`. Check: one hub, one deck, established or reconciled, never a second.
+2. Establish or reconcile the public hub, and the overview deck where the builder wants one. For the hub, read `hub.md` in this skill's directory; for the deck, read `deck.md`. Check: one hub and at most one deck, established or reconciled, never a second.
 3. Run the sanitization sweep. For what sanitized means and the pre-publish checklist, read `sanitization.md` in this skill's directory. Check: zero marker hits, and every publicly rendered section listed with its public-or-private call.
 4. Close with the convergence statement: what was already current, what changed, and that on a re-run of an unchanged project the touched-surface diff is empty and the report says so.
 
@@ -81,11 +81,11 @@ The cadence: a decision worth preserving updates `NOTES.md` before moving on; a 
 
 A documentation *surface* serves one of two audiences, and those audiences want opposite things. The mode names which you are building.
 
-- **`document public`** builds and maintains the **public** hub: a curated, external-facing surface for someone who does not know the project. It renders only the finished, sanitized docs (the overview deck, the design system, the forever spec, the brand); it **never** renders raw session logs, decision records, or friction notes. Written for a reader, not for continuity.
+- **`document public`** builds and maintains the **public** hub: a curated, external-facing surface for someone who does not know the project. It renders only the finished, sanitized docs (the design system, the forever spec, the brand, and an overview deck where the project has one); it **never** renders raw session logs, decision records, or friction notes. Written for a reader, not for continuity.
 - **`document internal`** builds and maintains the **internal** portal: the raw source docs rendered directly (including `PROMPTS.md`, `NOTES.md`, `FRICTION.md`), optimized for continuity and inspection. Private or authenticated, never a public URL. Because it is gated, rendering raw internal docs here is fine.
 - **`document reconcile`** is the idempotent update pass over both the truth layer (docs versus code, above) and whichever presentation surfaces exist: pull each back up to date with what shipped, change nothing already current.
 
-**The showcase is conditional on the project type.** A public product, an OSS tool, a portfolio piece, or consulting output wants the deck and the public hub. An internal service, a private repo, or an experiment gets the truth layer and (at most) the internal portal. Building a marketing surface for a project with no external audience is drift of a different kind.
+**The showcase is a choice, never a default.** The truth layer is the whole job for most projects, and `reconcile` is the mode most runs use. Build a public hub or a deck only when the builder asks for one and an external audience has a reason to read it. Rendering the docs does not prove that anyone maintains them, and a page that repeats the README or the landing page adds a surface to keep true and nothing to read. An internal service, a private repo, or an experiment gets the truth layer and (at most) the internal portal. Building a marketing surface for a project with no external audience is drift of a different kind.
 
 **Establish, then reconcile.** The first time you run `public` or `internal`, no hub exists, so you establish it. Every run after is a reconcile: one hub per mode, never a second. If the doc set itself does not exist yet, that is `scaffold`'s job, not this skill's. Do not fabricate docs to render.
 
@@ -95,7 +95,7 @@ A documentation *surface* serves one of two audiences, and those audiences want 
 
 A run with nothing to change produces no diff; if a second run of an unchanged project churns, you were rewriting, not reconciling.
 
-The presentation surfaces, from least to most drift-prone:
+The presentation surfaces a project can have, from least to most drift-prone. Check the ones this project has:
 
 - **The doc-set tabs** render from source, so they are inherently current. Confirm the whitelist still covers the intended docs (and, for the public hub, that it excludes the raw logs).
 - **The overview deck** is hand-authored, so it is where drift lives. Check each slide against shipped capability: a shipped feature with no beat, or a slide describing something removed or renamed, is drift. Add the missing beat, fix or cut the stale one, leave accurate slides untouched.

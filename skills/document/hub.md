@@ -2,9 +2,11 @@
 
 Read this at `public` step 2, when establishing or reconciling the public hub.
 
-A `/behind` (or "insider") route with a tab bar. The kicker is "Behind the Build", the heading "How this was made". Curated, external-facing tabs only:
+The hub is an option. Build it only when the builder asked for a public docs surface (`SKILL.md`, "Three modes"). A tab earns its place when it shows a reader something the rest of the site does not: leave out a tab that repeats the README or the landing page.
 
-- **Overview**, the slide deck (`deck.md` in this skill's directory).
+A route with a tab bar. The route and its name are the project's own. Curated, external-facing tabs only:
+
+- **Overview**, the slide deck (`deck.md` in this skill's directory), where the builder wants one.
 - **Design system**, `DESIGN.md`, ideally rendered from the tokens themselves so it cannot disagree with them.
 - **Product**, `PRODUCT.md`, the forever spec (present-tense truth, written for a reader).
 - **Brand**, `BRAND.md`, if it reads as outward brand rather than internal strategy.

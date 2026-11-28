@@ -9,7 +9,7 @@ Approved on: 2026-07-16
 The voice source of truth for Foundry, and the record of what its identity inherits. The identity itself is the parent's: the mark, the four palette values, the display face and the attribution line are owned in Horizon Foundry's own BRAND.md (the horizon-foundry/horizon-foundry repo) and are never redefined here. Distinct from [DESIGN.md](DESIGN.md) (how it looks, including which of the inherited values this product extends and how) and [PRODUCT.md](PRODUCT.md) (what it is and who for). Copy, marketing, and UI strings reference this file.
 
 <!-- internal:start -->
-The three lines above are the machine-readable sign-off the `brand-voice` skill reads: this brand is `approved`, so its glossary and copy rules are enforced, not merely suggested. They and this note are wrapped in internal markers because the public brand tab renders this file, and a visitor has no use for either (lib/docs.ts, stripInternalBlocks). The header stays at the top of the file, in this shape, because that is where the skill looks for it.
+The three lines above are the machine-readable sign-off the `brand-voice` skill reads: this brand is `approved`, so its glossary and copy rules are enforced, not merely suggested. They and this note are wrapped in internal markers from the time the site rendered this file on a public brand tab, where a visitor had no use for either. No page renders this file now (the tab was removed on 2026-11-28). The markers stay, so a later render can still leave these lines out. The header stays at the top of the file, in this shape, because that is where the skill looks for it.
 <!-- internal:end -->
 
 ## Identity: the dark instrument

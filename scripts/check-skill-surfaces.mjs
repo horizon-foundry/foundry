@@ -157,10 +157,10 @@ if (readme === null) {
 
 // ------------------------------------------------- PRODUCT.md suite listing
 
-// The forever spec enumerates the suite in prose and renders publicly at
-// /behind/product. PR #11 added a skill, updated the README table and
-// lib/skills.ts, and left this list at nine: a count check alone would not have
-// caught it, because the omission is a missing bullet, not a wrong number.
+// The forever spec enumerates the suite in prose, and it is the present-tense
+// record of what the suite is. PR #11 added a skill, updated the README table
+// and lib/skills.ts, and left this list at nine: a count check alone would not
+// have caught it, because the omission is a missing bullet, not a wrong number.
 const product = read("PRODUCT.md");
 if (product === null) {
   errors.push("PRODUCT.md is missing");
@@ -174,7 +174,7 @@ if (product === null) {
     const section = m[1];
     for (const s of skills) {
       if (!section.includes(`\`${s}\``) && !new RegExp(`\\b${s}\\b`).test(section)) {
-        errors.push(`PRODUCT.md '## The suite' does not mention \`${s}\`; it renders publicly at /behind/product`);
+        errors.push(`PRODUCT.md '## The suite' does not mention \`${s}\`; the forever spec lists every skill`);
       }
     }
   }
@@ -196,8 +196,7 @@ const expectedWord = WORDS[expected] ?? String(expected);
 // text rather than hidden in this script.
 // Deliberately excludes the dated-narrative docs (CHANGELOG, TODOS, NOTES,
 // PROMPTS): their counts are historical by nature and scanning them would be
-// noise. Everything here is present-tense and reader-facing, including the
-// overview deck's slide data, which carries two of these claims in prose.
+// noise. Everything here is present-tense and reader-facing.
 const COUNT_FILES = [
   "README.md",
   "PRODUCT.md",
@@ -205,7 +204,6 @@ const COUNT_FILES = [
   "lib/site.ts",
   "app/page.tsx",
   "app/skills/page.tsx",
-  "app/behind/page.tsx",
   "lib/skills.ts",
   "lib/readiness-copy.ts",
   "components/AuditMethod.tsx",

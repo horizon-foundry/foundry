@@ -3,11 +3,11 @@ import { Wordmark } from "./Wordmark";
 import { REPO_URL, REPO_LICENSE_URL } from "@/lib/site";
 import { suiteVersion } from "@/lib/version";
 
-// Secondary navigation lives here (issue 5): Behind the Build and the private
-// reports are for people who already care, not the first thing a new visitor
-// needs. "Reports" is renamed "Private reports" so the gate is not a surprise.
+// Secondary navigation lives here (issue 5): the design system and the
+// private reports are for people who already care, not the first thing a new
+// visitor needs. "Reports" is renamed "Private reports" so the gate is not a surprise.
 const SECONDARY = [
-  { href: "/behind", label: "Behind the build", external: false },
+  { href: "/design-system", label: "Design system", external: false },
   { href: "/reports", label: "Private reports", external: false },
   { href: REPO_URL, label: "GitHub", external: true },
   { href: REPO_LICENSE_URL, label: "License (MIT)", external: true },

@@ -1,0 +1,208 @@
+/* The design-system page (app/design-system/page.tsx). Imported by that page,
+   not by globals.css, so these rules load only there. Plain CSS: it reads the
+   theme's tokens and the ground-relative colors (--fg, --fg-2, --fg-3, --rule,
+   --ledger, --field) that app/globals.css sets by ground.
+
+   The dark instrument's rules hold here as everywhere: Ink and Slate, flat,
+   alternating by section; Zalando Sans for headings and text; IBM Plex Mono
+   for a command, a path, a date, a commit, a count and a token's value;
+   amber only as the fill of a bar; section rules 2px, the line inside a dense
+   figure 1px (--ledger); no radius, no shadow, no gradient. */
+
+/* The head: Slate under the pinned Ink header, as on /skills and /readiness. */
+.ds-head {
+  padding: clamp(40px, 5vw, 72px) 0 clamp(40px, 5vw, 64px);
+}
+
+/* Each part of the system is one section on its own ground, a full-bleed
+   ground with the content cap inside: the heading and the rule in the heading
+   column, the specimen beside it. */
+.ds-sec {
+  padding-block: var(--section-y);
+}
+.ds-grid {
+  display: grid;
+  gap: 32px 52px;
+}
+@media (width >= 68.75rem) {
+  .ds-grid {
+    grid-template-columns: 420px minmax(0, 1fr);
+    align-items: start;
+  }
+}
+.ds-note {
+  max-width: 30rem;
+  margin-top: 16px;
+  color: var(--fg-2);
+}
+.ds-spec {
+  min-width: 0;
+}
+/* A ruled list of specimens: 2px to open and close, 1px between rows. */
+.ds-rows {
+  border-top: 2px solid var(--rule);
+  border-bottom: 2px solid var(--rule);
+}
+.ds-row {
+  display: grid;
+  gap: 8px 32px;
+  align-items: center;
+  padding: 20px 0;
+}
+.ds-row + .ds-row {
+  border-top: 1px solid var(--ledger);
+}
+@media (width >= 40rem) {
+  .ds-row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 18rem);
+  }
+}
+.ds-row .meta {
+  overflow-wrap: anywhere;
+}
+.ds-caption {
+  margin-top: 14px;
+}
+/* A caption is a sentence, so it is the small sans step, never mono. */
+.ds-cap {
+  font-size: var(--text-small);
+  line-height: var(--text-small--line-height);
+  color: var(--fg-2);
+}
+
+/* The palette: one swatch per value. A swatch keeps a 2px edge in the text
+   color, so Ink shows on Ink and Slate on Slate. Amber has no square: it only
+   ever fills a bar, so its swatch is one. */
+.ds-swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+  gap: 28px 24px;
+}
+.ds-chip {
+  display: block;
+  height: 72px;
+  border: 2px solid var(--fg);
+}
+.ds-chip-bar {
+  display: block;
+  height: 72px;
+  width: auto;
+}
+.ds-swatch-name {
+  margin-top: 12px;
+  font: 600 var(--text-body) / 1.3 var(--font-sans);
+  color: var(--fg);
+}
+.ds-swatch .meta {
+  margin-top: 2px;
+}
+.ds-swatch-role {
+  margin-top: 6px;
+  font-size: var(--text-small);
+  line-height: 1.4;
+  color: var(--fg-2);
+}
+
+/* Type specimens. Each line is set in the step it names. */
+.ds-type-900 {
+  font: 900 var(--text-h2) / 1 var(--font-display);
+  letter-spacing: var(--tracking-display);
+}
+.ds-type-800 {
+  font: 800 var(--text-h3) / var(--text-h3--line-height) var(--font-display);
+  letter-spacing: var(--tracking-head);
+}
+.ds-type-600 {
+  font: 600 var(--text-lead) / 1.3 var(--font-sans);
+}
+.ds-type-400 {
+  font: 400 var(--text-body) / var(--text-body--line-height) var(--font-sans);
+  color: var(--fg-2);
+}
+.ds-type-mono {
+  font: 500 var(--text-lead) / 1.3 var(--font-mono);
+}
+.ds-mono-list {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 10px 28px;
+  align-items: baseline;
+  margin-top: 28px;
+}
+.ds-mono-list dd {
+  font: 500 var(--text-body) / 1.4 var(--font-mono);
+  color: var(--fg);
+  overflow-wrap: anywhere;
+}
+
+/* The bar: the three stage fills at one height, and the unit bar's cut. */
+.ds-bars {
+  display: grid;
+  gap: 14px;
+}
+.ds-bar {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.ds-bar svg {
+  flex: none;
+  height: 44px;
+  width: auto;
+}
+.ds-bar-word {
+  font: 900 var(--text-statement) / 1 var(--font-display);
+  letter-spacing: var(--tracking-display);
+  color: var(--fg);
+}
+
+/* Severity and verdict: the hue is a fill with its name beside it. */
+.ds-hue-id {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.ds-hue-id .c {
+  --cs: 18px;
+}
+.ds-hue-name {
+  min-width: 9.5em;
+  font: 500 var(--text-meta) / 1.3 var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg);
+}
+.ds-verdicts {
+  display: grid;
+  gap: 0;
+  margin-top: 36px;
+  border: 2px solid var(--rule);
+}
+@media (width >= 40rem) {
+  .ds-verdicts {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+/* The verdict hue is a fill under Ink type, as on the sheet: Ink on the safe
+   green is 8.4 to 1, on the risk yellow 11.6, on the no-ship red 5.6. */
+.ds-verdict {
+  padding: 16px 18px 18px;
+  background: var(--hue);
+  color: var(--color-ink);
+}
+.ds-verdict-word {
+  font: 900 var(--text-h3) / 1.05 var(--font-display);
+  letter-spacing: var(--tracking-display);
+  text-transform: uppercase;
+}
+.ds-verdict .meta {
+  margin-top: 8px;
+  color: var(--color-ink);
+}
+
+/* The sheet specimen keeps room above and below for its registration ticks.
+   At the sides they stand in the column's gap, or in the gutter on a phone. */
+.ds-sheet {
+  max-width: 36rem;
+  margin-block: 18px;
+}

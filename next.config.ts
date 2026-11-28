@@ -45,6 +45,16 @@ const nextConfig: NextConfig = {
         destination: `/example/${CURRENT_SELF_AUDIT}`,
         permanent: true,
       })),
+      // The Behind-the-Build hub was cut on 2026-11-28 and its addresses were
+      // public. The design-system page moved to /design-system and takes the
+      // hub's own address and the brand page's; the product page's readers
+      // land on the skills.
+      ...[
+        ["/behind", "/design-system"],
+        ["/behind/design-system", "/design-system"],
+        ["/behind/brand", "/design-system"],
+        ["/behind/product", "/skills"],
+      ].map(([source, destination]) => ({ source, destination, permanent: true })),
       // Sign-in must start and finish on one host: the PKCE verifier cookie is
       // host-only, and SITE_ORIGIN mails every link to the canonical host. So
       // the fly.dev host sends its sign-in and report pages there. /auth/confirm

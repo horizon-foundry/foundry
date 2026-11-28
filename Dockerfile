@@ -36,11 +36,13 @@ COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 
 # Files read at runtime via fs (not bundled by Next):
-#  - the markdown docs        : rendered by the Behind-the-Build tabs
-#  - reference/doc-set-spec.md : rendered on the /skills page
-#  - skills/*/SKILL.md         : rendered on the /skills pages
-#  - reports/*.json            : rendered by the gated /reports pages
-COPY --from=builder /app/PRODUCT.md /app/BRAND.md /app/DESIGN.md /app/NOTES.md /app/PROMPTS.md /app/FRICTION.md /app/VERSION ./
+#  - VERSION                     : every version shown, and /api/version
+#  - reference/readiness-map.md  : the readiness map, wherever its rows show
+#  - skills/*/SKILL.md           : rendered on the /skills pages
+#  - reports/*.json              : rendered by the gated /reports pages
+# NOTES, PROMPTS and FRICTION are copied and read by nothing; trimming them is
+# an open decision (CLAUDE.md, "The Dockerfile COPYs runtime-read files").
+COPY --from=builder /app/NOTES.md /app/PROMPTS.md /app/FRICTION.md /app/VERSION ./
 COPY --from=builder /app/reference ./reference
 COPY --from=builder /app/skills ./skills
 COPY --from=builder /app/reports ./reports

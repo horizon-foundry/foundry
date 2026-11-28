@@ -100,6 +100,8 @@ The working docs are maintained as work happens, never in an end-of-session clea
 
 The mechanics (what each of `NOTES.md`, `PROMPTS.md`, and `FRICTION.md` records, in what shape, and exactly when) are owned by the `document` skill's self-maintenance section; this spec states the invariant and defers the procedure there, per its own one-owner rule, and a project's `CLAUDE.md` points at that skill rather than restating the protocol.
 
-## Rendering the docs proves they are maintained
+## A check keeps the docs maintained
 
-Self-documentation needs a forcing function, or the docs quietly rot. The strongest one is to render the repo's own docs as a product surface (a "Behind the Build" hub). If the docs are the live site, staleness is visible, so it gets fixed. The `document` skill both enforces the docs-versus-code invariants (repair the doc, flag a suspected regression) and builds that surface and authors the overview deck: truth and presentation in one place.
+Self-documentation needs a forcing function, or the docs quietly rot. The forcing function is a check that runs. The `document` skill's truth checklist reconciles the docs against the code before a unit of work closes: it repairs the plain mismatches and flags a suspected regression, and its cold-start drill proves that a fresh session can resume from the docs alone. Where a script can check a fact (a count, a list, a path), put that check in the project's own gate, so a stale doc fails the build.
+
+Rendering the repo's docs as a product surface is an option, not the forcing function. A rendered page shows staleness only to a reader who already knows the truth, so it never replaces the check. Build one when an external audience has a reason to read it; the `document` skill's `public` and `internal` modes own how.

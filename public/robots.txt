@@ -1,6 +1,6 @@
 User-agent: *
 Allow: /$
-Allow: /behind
+Allow: /design-system
 Allow: /skills
 Allow: /readiness
 Allow: /example

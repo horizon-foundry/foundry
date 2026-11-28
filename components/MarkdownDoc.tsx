@@ -28,7 +28,7 @@ function textOf(node: ReactNode): string {
   return "";
 }
 
-export const headingId = (text: string) =>
+const headingId = (text: string) =>
   text
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
@@ -43,7 +43,7 @@ function heading(level: keyof typeof shift, anchors: boolean) {
 
 // `className` adds a surface's own rules on top of .doc-prose (the skill page
 // sets its heading offsets and sizes in app/styles/skill.css), so the shared
-// look the Behind-the-Build pages use is never edited for one surface.
+// base is never edited for one surface.
 export function MarkdownDoc({
   content,
   anchors = false,

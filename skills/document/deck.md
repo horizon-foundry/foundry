@@ -1,6 +1,6 @@
 # The overview deck
 
-Read this at `public` step 2, when establishing the overview deck, and at `reconcile` step 2 when the project has one.
+Read this at `public` step 2, when the builder wants an overview deck, and at `reconcile` step 2 when the project has one. A deck is an option: never author one that restates the landing page.
 
 The slide shape below is the default house shape: a project's own deck conventions override the shape. The authored-never-invented rule binds every deck.
 

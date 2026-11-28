@@ -300,7 +300,7 @@ export default function Home() {
         />
 
         {/* 7. Who built this. DRAFT, for Craig: Horizon Foundry's voice, with
-            Craig named. The record is three addresses, set as a ledger: what
+            Craig named. The record is two addresses, set as a ledger: what
             each one is, and where it lives. */}
         <section
           className="home-who"
@@ -331,12 +331,6 @@ export default function Home() {
                     </Link>
                   </li>
                 )}
-                <li>
-                  <Link href="/behind" className="row-link">
-                    <span className="row-name">How it was built</span>
-                    <span className="row-meta">/behind</span>
-                  </Link>
-                </li>
                 <li>
                   <a
                     href={REPO_URL}
