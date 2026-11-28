@@ -19,30 +19,12 @@ import { suiteVersion } from "@/lib/version";
 const NPX_CMD = `npx skills@latest add ${REPO_SLUG}`;
 const SOURCE_CMDS = [`git clone ${REPO_URL}`, "cd foundry", "make install"].join("\n");
 
-// Server-side star count. Returns null on any failure (private repo, rate limit,
-// network), in which case the button shows with no count. Cached for an hour.
-export async function getStars(): Promise<number | null> {
-  try {
-    const res = await fetch(`https://api.github.com/repos/${REPO_SLUG}`, {
-      headers: { Accept: "application/vnd.github+json" },
-      next: { revalidate: 3600 },
-    });
-    if (!res.ok) return null;
-    const data = (await res.json()) as { stargazers_count?: number };
-    return typeof data.stargazers_count === "number" ? data.stargazers_count : null;
-  } catch {
-    return null;
-  }
-}
-
-// A text link, with the count beside it as a mono figure.
-export function StarButton({ stars }: { stars: number | null }) {
+// A text link with no count beside it. A small count undersells the suite
+// (Craig, 2026-11-28), so the site shows none and makes no call to GitHub.
+export function StarButton() {
   return (
-    <a href={REPO_URL} target="_blank" rel="noreferrer" className="tl tl-figure">
-      <span>Star on GitHub</span>
-      {stars !== null && (
-        <span className="tl-count tabular-nums">{stars.toLocaleString()}</span>
-      )}
+    <a href={REPO_URL} target="_blank" rel="noreferrer" className="tl">
+      Star on GitHub
     </a>
   );
 }
@@ -94,15 +76,13 @@ const DETAIL: { k: string; d: React.ReactNode }[] = [
 // line of the release. The disclosure stays visible: it is part of the
 // feature, not a footnote (instrumentation skill, "The gate demands a
 // decision"). Styles: app/styles/home.css, "6. install".
-export async function InstallBlock({ heading }: { heading?: React.ReactNode } = {}) {
-  const stars = await getStars();
-
+export function InstallBlock({ heading }: { heading?: React.ReactNode } = {}) {
   return (
     <section id="install" className="install" data-ground="ink">
       <div className="wrap install-grid">
         <div className="install-head">
           {heading ?? <h2 className="d-h2">Install Foundry</h2>}
-          <StarButton stars={stars} />
+          <StarButton />
         </div>
 
         <div className="install-body">
@@ -176,8 +156,7 @@ export async function InstallBlock({ heading }: { heading?: React.ReactNode } = 
 // The install command where a visitor first lands, so installing never waits
 // for the bottom of the page. Same command, same install_copied event; the
 // surface property says it came from the hero.
-export async function HeroInstall() {
-  const stars = await getStars();
+export function HeroInstall() {
   return (
     <div className="home-hero-install">
       <CommandField command={NPX_CMD} surface="hero" />
@@ -185,7 +164,7 @@ export async function HeroInstall() {
         <Link href="/skills" className="tl">
           See the skills
         </Link>
-        <StarButton stars={stars} />
+        <StarButton />
       </div>
     </div>
   );

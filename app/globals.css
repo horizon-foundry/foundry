@@ -888,23 +888,6 @@ body {
 .tl:hover {
   text-decoration-thickness: 3px;
 }
-/* A link with a figure beside it: the line sits under the words only. */
-.tl-figure {
-  text-decoration: none;
-}
-.tl-figure > span:first-child {
-  text-decoration: underline;
-  text-decoration-thickness: 1.5px;
-  text-underline-offset: 5px;
-}
-.tl-figure:hover > span:first-child {
-  text-decoration-thickness: 3px;
-}
-.tl-count {
-  margin-left: 0.5em;
-  font: 400 var(--text-meta) / 1 var(--font-mono);
-  color: var(--fg-2);
-}
 
 /* The command field: the one way a runnable command is set. An Ink field
    with a 2px Bone border, the command in Bone mono, an amber unit bar in
