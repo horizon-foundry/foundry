@@ -121,56 +121,11 @@
 
 /* ---- 4. stages ----
    The rail itself (the three ruled stage rows and the thread under them) is
-   components/StageRail.tsx and stages.css, shared with /skills. This page
-   sets the heading over it and, from the split, two things on the rail's own
-   two columns.
-   One: a stage is two columns and nothing else. The left says what the stage
-   is; the right is what it gives, its commands and then, straight under
-   them, what it hands on, set as it already is on a phone (the key over the
-   line). The rail's markup puts the handoff in a row of its own under both
-   columns, which on this page left the key alone at the far left; here the
-   stage is the grid, so the handoff sits in the commands' column.
-   Two: the thread. The statement stands under the stage words, and the line
-   that names a command under the commands, on the statement's last line. */
+   components/StageRail.tsx and stages.css, shared with /skills, and so is
+   its two-column layout from the split. This page only sets the heading over
+   it and the section's own padding. */
 .home-stages-sec {
   padding: var(--section-y) 0;
-}
-@media (width >= 68.75rem) {
-  .home-stages-sec .home-stage {
-    display: grid;
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-    grid-template-rows: auto 1fr;
-    column-gap: 52px;
-  }
-  .home-stages-sec .home-stage-grid {
-    display: contents;
-  }
-  .home-stages-sec .home-stage-grid > div {
-    grid-row: 1 / span 2;
-  }
-  .home-stages-sec .home-cmds,
-  .home-stages-sec .home-handoff {
-    grid-column: 2;
-  }
-  .home-stages-sec .home-handoff {
-    grid-template-columns: minmax(0, 1fr);
-    align-self: start;
-    margin-top: 32px;
-  }
-  .home-stages-wrap {
-    display: grid;
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-    column-gap: 52px;
-    align-items: end;
-    align-items: last baseline;
-  }
-  .home-stages-wrap > h2,
-  .home-stages-wrap > .home-stages {
-    grid-column: 1 / -1;
-  }
-  .home-stages-wrap > .home-thread-sub {
-    margin-top: 0;
-  }
 }
 
 /* ---- 5. readiness: the map as one figure ----
@@ -405,7 +360,7 @@
    at a large font size). An inline box does both; nowrap would push the page
    sideways there. */
 .install-body .cmd,
-.home-stages-sec .home-thread-link {
+.home-thread-link {
   display: inline-block;
   max-width: 100%;
   overflow-wrap: anywhere;

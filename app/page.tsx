@@ -53,7 +53,7 @@ export default function Home() {
   return (
     <>
       <SiteHeader />
-      <main id="main">
+      <main id="main" data-ground="ink">
         {/* 1. Hero. The h1 and the command on the left; on the right the
             published self-audit's verdict as a sheet, the largest object on
             the first screen. The words on the sheet are the report's. */}

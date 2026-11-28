@@ -42,7 +42,7 @@ export default function SkillsIndex() {
         </section>
 
         <section className="skills-list" aria-label="The skills, by stage">
-          <div className="wrap">
+          <div className="wrap home-stages-wrap">
             <StageRail taglines headingLevel={2} />
           </div>
         </section>

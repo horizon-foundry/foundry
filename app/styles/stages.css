@@ -133,6 +133,55 @@
   text-decoration-thickness: 3px;
 }
 
+/* From the split, on the homepage and on /skills alike, two things sit on
+   the rail's own two columns.
+   One: a stage is two columns and nothing else. The left says what the stage
+   is; the right is what it gives, its commands and then, straight under
+   them, what it hands on, set as it already is on a phone (the key over the
+   line). The markup puts the handoff in a row of its own under both columns,
+   which left the key alone at the far left; so the stage is the grid, and
+   the handoff sits in the commands' column.
+   Two: the thread. The statement stands under the stage words, and the line
+   that names a command under the commands, on the statement's last line.
+   The wrapper that holds the rail carries .home-stages-wrap. */
+@media (width >= 68.75rem) {
+  .home-stage {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    grid-template-rows: auto 1fr;
+    column-gap: 52px;
+  }
+  .home-stage-grid {
+    display: contents;
+  }
+  .home-stage-grid > div {
+    grid-row: 1 / span 2;
+  }
+  .home-cmds,
+  .home-handoff {
+    grid-column: 2;
+  }
+  .home-handoff {
+    grid-template-columns: minmax(0, 1fr);
+    align-self: start;
+    margin-top: 32px;
+  }
+  .home-stages-wrap {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    column-gap: 52px;
+    align-items: end;
+    align-items: last baseline;
+  }
+  .home-stages-wrap > h2,
+  .home-stages-wrap > .home-stages {
+    grid-column: 1 / -1;
+  }
+  .home-stages-wrap > .home-thread-sub {
+    margin-top: 0;
+  }
+}
+
 @media (width < 68.75rem) {
   .home-stage-grid {
     grid-template-columns: minmax(0, 1fr);

@@ -757,8 +757,14 @@ button.rp-score-cell:not([aria-disabled="true"]):hover .rp-k {
 }
 
 /* ---- sign-in, on Slate ---- */
+/* A short page: the Slate runs down to the footer, as on the 404
+   (globals.css, .fstate). */
+body:has(> .ul) {
+  display: flex;
+  flex-direction: column;
+}
 .ul {
-  min-height: 70vh;
+  flex: 1 0 auto;
   padding: clamp(40px, 6vw, 88px) 0 var(--section-y);
 }
 .ul-grid {

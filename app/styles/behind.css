@@ -502,6 +502,11 @@
   line-height: 1.6;
   color: var(--fg);
 }
+/* A block's code keeps the block's size (the base sets 0.85em, which put it
+   under 12px). */
+.doc-prose.bh-doc pre code {
+  font-size: inherit;
+}
 .doc-prose.bh-doc blockquote {
   padding: 0;
   border: 0;

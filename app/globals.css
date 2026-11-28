@@ -129,7 +129,7 @@
      the entrance whose END POINT IS FIXED: a rule reaching exactly its full
      width, a row landing exactly on its resting line. --ease-entrance would
      overshoot past that and snap back, which reads as a bounce on a hairline.
-     Used by .draw-rule and .stagger-rise. */
+     Used by .stagger-rise and the figure reveal. */
   --ease-draw: cubic-bezier(0.2, 0.7, 0.2, 1);
 
   /* Two distinct variable names: next/font's generated rule is unlayered CSS
@@ -141,7 +141,6 @@
   --font-sans: var(--font-zalando), "Helvetica Neue", Arial, ui-sans-serif,
     system-ui, sans-serif;
   --font-mono: var(--font-plex-mono), ui-monospace, monospace;
-  --font-serif: var(--font-plex-serif), ui-serif, Georgia, serif;
   /* The measure: about 75 characters per line (DESIGN.md Layout). A ch is the
      width of a zero, not of an average character, so each text style gets the
      value that lands near 75 when measured against real text: 58ch for the
@@ -278,32 +277,11 @@
 [data-ground="bone"] {
   --ground: var(--color-bone);
 }
-/* A <main> that states no ground is a page the rebrand has not reached (the
-   report views, the skill pages, the readiness map). They were drawn for Ink
-   with 1px Slate lines and a raised field, and they keep exactly that. */
-main:not([data-ground]) {
-  --ground: var(--color-ink);
-  --fg: var(--color-bone);
-  --fg-2: var(--color-mist);
-  --fg-3: var(--color-fog);
-  --rule: var(--color-slate);
-  --ledger: var(--color-slate);
-  --field: var(--color-ink-raised);
-  --focus: var(--color-bone);
-  --edge-w: 1px;
-  --cell-edge: transparent;
-  --on-fg: var(--color-ink);
-}
-[data-ground],
-main:not([data-ground]) {
+/* Every <main> states its ground (Ink or Slate), and each section inside it
+   may state its own. */
+[data-ground] {
   background-color: var(--ground);
   color: var(--fg);
-}
-/* The old pages are a centered 1180 column, so their Ink has to come from
-   the canvas behind the column. Goes with the selector above. */
-html:has(main:not([data-ground])),
-body:has(> main:not([data-ground])) {
-  background-color: var(--color-ink);
 }
 
 ::selection {
@@ -417,24 +395,11 @@ body {
   animation-delay: 0.4s;
 }
 
-/* A hairline that draws itself from the left on entry (the "rule" gesture). */
-@keyframes draw-line {
-  from {
-    transform: scaleX(0);
-  }
-  to {
-    transform: scaleX(1);
-  }
-}
-.draw-rule {
-  transform-origin: left;
-  animation: draw-line var(--transition-duration-draw) var(--ease-draw) 0.2s both;
-}
-
-/* Long-form rendered doc prose (Behind-the-Build tabs). IBM Plex Serif,
-   bone on ink, narrow measure, hairline rules. Overrides Tailwind typography. */
+/* Long-form rendered doc prose: the base under the hub docs (.bh-doc,
+   styles/behind.css) and the SKILL.md panel (.sk-md, styles/skill.css), which
+   each set their own look over it. Overrides Tailwind typography. */
 .doc-prose {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   color: var(--color-bone);
   max-width: var(--container-measure-serif);
 }
@@ -766,8 +731,8 @@ body {
   }
 }
 
-/* The stamp for a verdict drawn outside VerdictStamp (the verdict trio). The
-   hue class sets --hue; the ticks are the corner registration marks. */
+/* A verdict's hue, for a verdict drawn outside the sheet (the verdict trio,
+   the design-system page). The hue class sets --hue. */
 .hue-safe {
   --hue: var(--color-verdict-safe);
 }
@@ -777,45 +742,6 @@ body {
 .hue-noship {
   --hue: var(--color-verdict-noship);
 }
-.hue-text {
-  color: var(--hue);
-}
-.stamp {
-  position: relative;
-  padding: 18px 22px;
-  border: 1px solid var(--hue, var(--color-line-strong));
-}
-.tk {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  border: 0 solid var(--hue, var(--color-line-strong));
-}
-.tk-tl {
-  top: -4px;
-  left: -4px;
-  border-top-width: 3px;
-  border-left-width: 3px;
-}
-.tk-tr {
-  top: -4px;
-  right: -4px;
-  border-top-width: 3px;
-  border-right-width: 3px;
-}
-.tk-bl {
-  bottom: -4px;
-  left: -4px;
-  border-bottom-width: 3px;
-  border-left-width: 3px;
-}
-.tk-br {
-  bottom: -4px;
-  right: -4px;
-  border-bottom-width: 3px;
-  border-right-width: 3px;
-}
-
 /* ------------------------------------------------------------
    Figure reveal (components/Reveal.tsx; DESIGN.md, Motion).
    Reveal sets data-reveal="armed" on a figure that starts below the fold, and

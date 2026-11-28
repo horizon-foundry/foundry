@@ -1,5 +1,5 @@
 import localFont from "next/font/local";
-import { IBM_Plex_Mono, IBM_Plex_Serif } from "next/font/google";
+import { IBM_Plex_Mono } from "next/font/google";
 
 // Zalando Sans is the parent brand's one family (Horizon Foundry BRAND.md,
 // Inheritance): display, the product lockup and running text. The file is the
@@ -31,14 +31,5 @@ export const plexMono = IBM_Plex_Mono({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
   variable: "--font-plex-mono",
-  display: "swap",
-});
-
-// Still loaded for the rendered docs under /behind, which the rebrand rough
-// did not reach.
-export const plexSerif = IBM_Plex_Serif({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-plex-serif",
   display: "swap",
 });

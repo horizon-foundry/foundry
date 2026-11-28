@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { zalando, plexMono, plexSerif } from "@/lib/fonts";
+import { zalando, plexMono } from "@/lib/fonts";
 import { ConsoleSignature } from "@/components/ConsoleSignature";
 import "./globals.css";
 
@@ -103,7 +103,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${zalando.variable} ${plexMono.variable} ${plexSerif.variable}`}
+      className={`${zalando.variable} ${plexMono.variable}`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: JS_CLASS }} />
