@@ -29,6 +29,7 @@ A row carries no status: status comes from running its owner, or from an outside
 | reset-links-single-use | A reset or magic link works once, expires soon, and dies when a newer link is issued or the password changes. | production-audit/security | the product has sign-in | code |
 | sessions-bounded | A session has a limited life, and the server ends every session after a password change, after a reset, and on the user's request. | production-audit/security | the product has sign-in | code |
 | session-cookie-hardened | The session cookie is Secure, HttpOnly and SameSite, and is scoped to the right domain. | production-audit/security | the product has sign-in | config |
+| private-pages-not-cached | A response that carries private data tells the browser not to store it, so back after sign-out shows nothing private. | production-audit/security | the product has sign-in | code |
 | sign-in-attempts-limited | Sign-in, reset, verification and second-factor endpoints cap attempts per account and per source. | production-audit/security | the product has sign-in | code |
 | lockout-not-a-weapon | A stranger cannot lock a named account out, or the owner has a way back in. | production-audit/security | the product locks accounts | code |
 | verification-before-access | An address grants access or links two accounts only after it is verified, and linking proves both identities. | production-audit/security | the product has sign-in | code |
@@ -70,6 +71,7 @@ A row carries no status: status comes from running its owner, or from an outside
 |---|---|---|---|---|
 | trust-boundaries-mapped | Every place untrusted input enters and every place privilege changes is listed with the file that handles it. | production-audit | always | code |
 | server-validates-input | The server validates every input. | production-audit/security | always | code |
+| input-length-bounded | The server caps the length of every untrusted text input before it is stored or sent to a costly sink. | production-audit/security | always | code |
 | injection-surfaces-closed | Untrusted text reaches queries, pages and commands only through parameterization or encoding. | production-audit/security | always | code |
 | csrf-guarded | A state-changing request that rides on a cookie carries a defense against cross-site forgery. | production-audit/security | the product uses cookie sessions | code |
 | uploads-contained | An uploaded file is size-limited, type-checked, scanned where it matters, and never run or served as code. | production-audit/security | the product accepts uploads | code |
@@ -78,6 +80,7 @@ A row carries no status: status comes from running its owner, or from an outside
 | server-fetches-restricted | A server that fetches a URL a user or model supplies uses an allowlist, blocks private and cloud-metadata addresses, and checks again after a redirect. | production-audit/security | the server fetches supplied URLs | code |
 | webhook-signatures-verified | An inbound webhook has its sender's signature verified before the product acts on it. | production-audit/security | the product receives webhooks | code |
 | server-secrets-stay-off-client | No server secret reaches the client bundle through a public environment prefix. | production-audit/security | the framework exposes public environment prefixes | code |
+| errors-expose-no-internals | Error responses and error pages show no stack trace, query text or internal path. | production-audit/security | always | code |
 
 ## Supply chain and infrastructure
 
@@ -103,6 +106,7 @@ A row carries no status: status comes from running its owner, or from an outside
 |---|---|---|---|---|
 | data-flows-inventoried | Every place user data leaves the system (logs, error tracker, analytics, replay, model providers, embeddings, vendors) is listed with the data classes that reach it. | production-audit/security | always | code |
 | logs-free-of-secrets | Logs and error payloads carry no password, token or card number. | production-audit/security | always | code |
+| browser-console-clean | No private data, token or secret reaches the browser console or a client-side error payload. | production-audit/security | the product has a user-facing surface | code |
 | card-data-stays-with-provider | Raw card numbers never reach the database, the logs or analytics. | production-audit/security | the product takes cards | code |
 | privacy-policy-matches-egress | A published privacy policy does not contradict where the data goes. | production-audit/security | a privacy policy is published | code |
 | consent-before-analytics | No analytics event fires before consent where consent applies. | instrumentation | consent applies to the product's visitors | runtime |
@@ -171,6 +175,7 @@ A row carries no status: status comes from running its owner, or from an outside
 | sending-domain-authenticated | The sending domain passes SPF, DKIM and DMARC. | production-audit/reliability | the product sends email | config |
 | bounces-suppressed | Bounce and complaint events feed a suppression list that is checked before every send. | production-audit/reliability | the product sends email | code |
 | unsubscribe-honored | Bulk and marketing email carries an unsubscribe link and honors the same suppression list. | production-audit/reliability | the product sends marketing email | code |
+| email-links-reach-canonical-origin | Every link in a transactional email is built from the canonical origin that sign-in and the redirect allowlist use. | production-audit/reliability | the product sends transactional email | code |
 | jobs-never-overlap | A scheduled job cannot overlap its previous run or run on two instances at once. | production-audit/concurrency | the product runs scheduled jobs | code |
 | caches-invalidate | Each cache names what invalidates it and how long it can serve stale data after a write, including after a permission change. | production-audit/concurrency | the product caches responses or data | code |
 | inbound-webhooks-deduped | Inbound webhooks are deduped on the provider's event ID, have a bounded replay window, and cannot move state backward when events arrive out of order. | production-audit/concurrency | the product receives webhooks | code |
@@ -221,6 +226,8 @@ A row carries no status: status comes from running its owner, or from an outside
 | forms-keep-input | After a rejected submit, every field still holds its entered value, and the error names the field. | production-audit/ui | the product has forms | code |
 | usable-on-poor-network | A slow or failed request shows a state, never a hang. | production-audit/ui | the product has a user-facing surface | runtime |
 | back-and-refresh-restore-view | The URL reflects meaningful view state, so back and refresh restore it and no history trap exists. | production-audit/ui | the product has a user-facing surface | runtime |
+| unknown-urls-not-found | An unknown route, a malformed ID or a deleted record shows a not-found state, never a server error or a blank page. | production-audit/ui | the product has a user-facing surface | code |
+| long-text-holds-layout | Long names, titles and pasted text wrap or truncate without breaking the layout or hiding a control. | production-audit/ui | the product has a user-facing surface | runtime |
 | design-tokens-conformed | Colors, type and spacing come from the project's design source of truth. | production-audit/ui | the project has a design source of truth | code |
 | works-on-a-phone | The primary flows work on a phone: at small widths, with touch, on a real device. | mobile | the product has a mobile or small-screen surface | runtime |
 | copy-in-brand-voice | User-facing copy follows the project's approved voice and glossary. | brand-voice | the product has user-facing copy and BRAND.md is approved | code |
@@ -266,6 +273,7 @@ A row carries no status: status comes from running its owner, or from an outside
 |---|---|---|---|---|
 | verdict-names-evidence | The verdict names the evidence it rests on and claims no more than the run could see. | production-audit | always | record |
 | repo-cannot-instruct-auditor | Nothing in the repository tells the auditor what to conclude, and an instruction found there is ignored. | production-audit | always | code |
+| runtime-pass-on-safe-target | A runtime pass writes data only on a non-production target with test accounts, and names the browser engines it exercised. | production-audit | the audit runs a runtime pass | record |
 
 ## Billing and revenue
 

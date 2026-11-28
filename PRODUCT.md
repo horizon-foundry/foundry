@@ -105,7 +105,7 @@ Audits embarrass themselves in predictable ways, so those ways are named and for
 
 ## The honest boundary
 
-Some things cannot be known from source. Rendered color contrast, whether a focus ring is actually visible, how a screen reader announces a live region, whether two tabs race in practice: these need a running browser. A static audit that asserts them anyway is manufacturing confidence. So it does not. Those checks are either reported as needs-verification with the exact runtime check to run, or listed plainly as not assessed. The report tells you what it did not look at. That honesty is the point of a verdict you can trust.
+Some things cannot be known from source. Rendered color contrast, whether a focus ring is actually visible, how a screen reader announces a live region, whether two tabs race in practice: these need a running browser. A static audit that asserts them anyway is manufacturing confidence. So it does not. Those checks are either reported as needs-verification with the exact runtime check to run, or listed plainly as not assessed. The report tells you what it did not look at. That honesty is the point of a verdict you can trust. A runtime pass is the other half of the boundary, and it acts on the system it observes: it submits forms twice, drops the network mid-write, and signs out and presses back. So it writes data only on a target the run has shown is not production, as a test account, and a scenario it could not run safely is listed as not assessed, never reported as passed.
 
 ## The verdict
 
